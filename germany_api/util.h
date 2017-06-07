@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-	/** Safe char array copy. Returns the number of characters actually writted. **/
+	/** Safe char array copy. Returns the number of characters actually written. **/
 	ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
 
 	/** Safe char array initialization and copy **/

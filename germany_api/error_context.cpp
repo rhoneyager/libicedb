@@ -5,11 +5,7 @@
 #include "error_context.h"
 #include "mem.h"
 
-#if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
-void a() {
-
-}
-#endif
+ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context = NULL;
 
 ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_create_impl(int code, const char* file, int line, const char* fsig)
 {
@@ -34,12 +30,15 @@ ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_create_impl(int co
 	snprintf(sline, slinesz, "%d", line);
 
 	ICEDB_error_context_add_string2(res, "line", sline);
+
+	if (__ICEDB_LOCAL_THREAD_error_context) ICEDB_free(__ICEDB_LOCAL_THREAD_error_context);
+	__ICEDB_LOCAL_THREAD_error_context = res;
 	return res;
 }
 
 ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_copy(const ICEDB_error_context *c)
 {
-	if (!c) ICEDB_DEBUG_RAISE_EXCEPTION();
+	if (!c) return NULL;
 	ICEDB_error_context* res = ICEDB_error_context_create(c->code);
 	res->code = c->code;
 	res->message_size = c->message_size;
@@ -47,7 +46,10 @@ ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_copy(const ICEDB_e
 	res->message_text = (char*)ICEDB_malloc(c->message_size_alloced);
 	ICEDB_COMPAT_strncpy_s(res->message_text, c->message_size_alloced, c->message_text, c->message_size_alloced);
 
-	return nullptr;
+	for (int i = 0; i < c->num_var_fields; ++i)
+		ICEDB_error_context_add_string2(res, c->var_vals[i].varname, c->var_vals[i].val);
+
+	return res;
 }
 
 ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append(ICEDB_error_context *c, uint16_t sz, const char * data)

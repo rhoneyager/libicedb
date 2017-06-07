@@ -24,7 +24,10 @@ extern "C" {
 		ICEDB_error_context_var_val* var_vals;
 	};
 
-	/** Creates an error context in the current thread. **/
+	extern ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context;
+
+	/** Creates and stores an error context in the current thread. If another object is occupying the TLS,
+	it is freed, so it is important to copy such objects using ICEDB_error_context_copy prior to read. **/
 	ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_create_impl(int,const char*, int, const char*);
 #define ICEDB_error_context_create(x) ICEDB_error_context_create_impl(x, __FILE__, (int)__LINE__,ICEDB_DEBUG_FSIG);
 

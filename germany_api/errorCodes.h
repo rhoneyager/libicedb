@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 	enum ICEDB_ERRORCODES {
+		ICEDB_ERRORCODES_NONE, // There is no error
 		ICEDB_ERRORCODES_TODO, // Placeholder error value
 		ICEDB_ERRORCODES_TOTAL // Not really an error, but used for counting
 	};

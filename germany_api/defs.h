@@ -40,7 +40,13 @@ extern "C" {
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-
+	/* Thread local storage stuff */
+#ifdef _MSC_FULL_VER
+#define ICEDB_THREAD_LOCAL __declspec( thread )
+#endif
+#ifdef __GNUC__
+#define ICEDB_THREAD_LOCAL __thread
+#endif
 #ifdef __cplusplus
 }
 #endif
