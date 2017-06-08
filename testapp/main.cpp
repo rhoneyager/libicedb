@@ -3,9 +3,6 @@
 #include "../germany_api/mem.h"
 #include <stdio.h>
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
 	int main(int, char**) {
 		ICEDB_error_code code = ICEDB_error_test();
 		if (code) {
@@ -16,11 +13,5 @@
 			ICEDB_error_context_deallocate(cxt);
 		}
 		
-		//ICEDB_error_context_to_stream(cxt, stdout);
-		
 		return 0;
 	}
-
-//#ifdef __cplusplus
-//}
-//#endif

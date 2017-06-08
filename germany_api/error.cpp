@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_message(const ICEDB_error_context * err, size_t buf_size, char * buf)
+ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_message(const struct ICEDB_error_context * err, size_t buf_size, char * buf)
 {
 	size_t total = 0;
 	if (err->message_text) {
@@ -44,7 +44,7 @@ ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_message(const ICEDB_error_co
 	return uint16_t(total);
 }
 
-ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_stream(const ICEDB_error_context * err, FILE * fp)
+ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_stream(const struct ICEDB_error_context * err, FILE * fp)
 {
 	int res = 0;
 	if (err->message_text) {
@@ -96,12 +96,12 @@ ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_code_to_stream(ICEDB_error_code err, FI
 	return uint16_t(res);
 }
 
-ICEDB_SYMBOL_SHARED ICEDB_error_context * ICEDB_get_error_context_thread_local()
+ICEDB_SYMBOL_SHARED struct ICEDB_error_context * ICEDB_get_error_context_thread_local()
 {
 	return __ICEDB_LOCAL_THREAD_error_context;
 }
 
-ICEDB_SYMBOL_SHARED void ICEDB_error_context_deallocate(ICEDB_error_context *c)
+ICEDB_SYMBOL_SHARED void ICEDB_error_context_deallocate(struct ICEDB_error_context *c)
 {
 	if (c->message_text) ICEDB_free(c->message_text);
 	if (c->var_vals) { // Should always exist, as the construction function automatically widens / allocates.

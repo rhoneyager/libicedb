@@ -7,7 +7,7 @@
 
 ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context = NULL;
 
-ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_create_impl(int code, const char* file, int line, const char* fsig)
+ICEDB_SYMBOL_PRIVATE struct ICEDB_error_context* ICEDB_error_context_create_impl(int code, const char* file, int line, const char* fsig)
 {
 	ICEDB_error_context* res = (ICEDB_error_context*) ICEDB_malloc(sizeof ICEDB_error_context);
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
@@ -36,7 +36,7 @@ ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_create_impl(int co
 	return res;
 }
 
-ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_copy(const ICEDB_error_context *c)
+ICEDB_SYMBOL_PRIVATE struct ICEDB_error_context* ICEDB_error_context_copy(const struct ICEDB_error_context *c)
 {
 	if (!c) return NULL;
 	ICEDB_error_context* res = ICEDB_error_context_create(c->code);
@@ -52,7 +52,7 @@ ICEDB_SYMBOL_PRIVATE ICEDB_error_context* ICEDB_error_context_copy(const ICEDB_e
 	return res;
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append(ICEDB_error_context *c, uint16_t sz, const char * data)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append(struct ICEDB_error_context *c, uint16_t sz, const char * data)
 {
 	if (data[sz] != '\0' && data[sz + 1] == '\0') sz++; // Null character check
 	const uint16_t min_alloc_size_inc = 256;
@@ -74,13 +74,13 @@ ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append(ICEDB_error_context *c, uin
 		(c->message_size_alloced < UINT16_MAX-1) ? c->message_size_alloced : UINT16_MAX-1)+1; // -1,+1 because message_size includes the null character.
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append_str(ICEDB_error_context *c, const char * data)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append_str(struct ICEDB_error_context *c, const char * data)
 {
 	uint16_t sz = (uint16_t) strnlen(data, UINT16_MAX);
 	ICEDB_error_context_append(c, sz+1, data);
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string(ICEDB_error_context *c, uint16_t var_sz, const char * var_name, uint16_t val_sz, const char * var_val)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string(struct ICEDB_error_context *c, uint16_t var_sz, const char * var_name, uint16_t val_sz, const char * var_val)
 {
 	if (c->num_var_fields == c->max_num_var_fields)
 		ICEDB_error_context_widen(c, 30);
@@ -89,7 +89,7 @@ ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string(ICEDB_error_context *c,
 	c->num_var_fields++;
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string2(ICEDB_error_context *c, const char * var_name, const char * var_val)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string2(struct ICEDB_error_context *c, const char * var_name, const char * var_val)
 {
 #if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
 	ICEDB_error_context_add_string(c, (uint16_t)strnlen_s(var_name, UINT16_MAX), var_name, (uint16_t)strnlen_s(var_val, UINT16_MAX), var_val);
@@ -98,7 +98,7 @@ ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string2(ICEDB_error_context *c
 #endif
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_widen(ICEDB_error_context *c, uint16_t numNewSpaces)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_widen(struct ICEDB_error_context *c, uint16_t numNewSpaces)
 {
 	ICEDB_error_context_var_val* newvals = (ICEDB_error_context_var_val*)ICEDB_malloc(
 		(numNewSpaces + c->max_num_var_fields) * (sizeof ICEDB_error_context));
