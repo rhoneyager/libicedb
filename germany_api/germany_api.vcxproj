@@ -121,10 +121,13 @@
     <ClInclude Include="dlls.h" />
     <ClInclude Include="dllsImpl.h" />
     <ClInclude Include="error.h" />
+    <ClInclude Include="error.hpp" />
     <ClInclude Include="errorCodes.h" />
+    <ClInclude Include="errorCodes.hpp" />
     <ClInclude Include="error_context.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="mem.h" />
+    <ClInclude Include="mem.hpp" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>

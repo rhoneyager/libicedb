@@ -22,6 +22,16 @@
 # define ICEDB_CALL_C
 #endif
 
+#if defined(__cplusplus) || defined(c_plusplus)
+# define ICEDB_BEGIN_DECL_CPP     
+# define ICEDB_END_DECL_CPP
+# define ICEDB_CALL_CPP
+#else
+# define ICEDB_BEGIN_DECL_CPP extern "CPP" {
+# define ICEDB_END_DECL_CPP }
+# define ICEDB_CALL_CPP extern "CPP"
+#endif
+
 ICEDB_BEGIN_DECL_C
 
 /* Compiler and version diagnostics */
