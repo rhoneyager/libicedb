@@ -3,9 +3,7 @@
 #define ICEDB_H_ERROR_CONTEXT
 #include "defs.h"
 #include "error.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
+ICEDB_BEGIN_DECL_C
 
 	/** This private header lists the symbols for manipulating error contexts. **/
 
@@ -47,7 +45,5 @@ extern "C" {
 	/** Widen the error_context var_vals array (safely and non-destructively) **/
 	ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_widen(struct ICEDB_error_context*, uint16_t numNewSpaces);
 
-#ifdef __cplusplus
-}
-#endif
+ICEDB_END_DECL_C
 #endif

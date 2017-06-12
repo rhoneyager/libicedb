@@ -6,9 +6,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <intsafe.h>
-#ifdef __cplusplus
-extern "C" {
-#endif
+
+ICEDB_BEGIN_DECL_C
 
 	/** Defines an error condition. This is an integer. Zero (0) indicates that there is no error. **/
 	typedef uint16_t ICEDB_error_code;
@@ -82,7 +81,6 @@ extern "C" {
 
 	/** Testing function that raises an error. **/
 	ICEDB_SYMBOL_SHARED ICEDB_error_code ICEDB_error_test();
-#ifdef __cplusplus
-}
-#endif
+
+	ICEDB_END_DECL_C
 #endif

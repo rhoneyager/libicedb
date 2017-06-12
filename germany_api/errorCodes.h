@@ -4,9 +4,7 @@
 
 #include "defs.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+ICEDB_BEGIN_DECL
 
 	enum ICEDB_ERRORCODES {
 		ICEDB_ERRORCODES_NONE, // There is no error
@@ -16,8 +14,6 @@ extern "C" {
 
 	extern ICEDB_SYMBOL_PRIVATE const char* ICEDB_ERRORCODES_MAP[ICEDB_ERRORCODES_TOTAL];
 
-#ifdef __cplusplus
-}
-#endif
+ICEDB_END_DECL
 
 #endif

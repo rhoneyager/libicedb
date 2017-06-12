@@ -2,14 +2,10 @@
 #ifndef ICEDB_H_DB
 #define ICEDB_H_DB
 #include "defs.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
+ICEDB_BEGIN_DECL
 
 
 
 
-#ifdef __cplusplus
-}
-#endif
+ICEDB_END_DECL
 #endif

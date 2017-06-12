@@ -2,9 +2,7 @@
 #ifndef ICEDB_H_UTIL
 #define ICEDB_H_UTIL
 #include "defs.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
+ICEDB_BEGIN_DECL_C
 
 	/** Safe char array copy. Returns the number of characters actually written. **/
 	ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
@@ -32,7 +30,5 @@ extern "C" {
 #define ICEDB_COMPAT_strnlen_s strnlen
 #endif
 
-#ifdef __cplusplus
-}
-#endif
+ICEDB_END_DECL_C
 #endif
