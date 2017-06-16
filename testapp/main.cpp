@@ -17,7 +17,7 @@
 		*/
 		auto td = create_testdll(NULL);
 		int res = td->testNum(td, 2);
-		printf("Res is %d,\n", res);
+		printf("Res is %d.\n", res);
 		destroy_testdll(td);
 		return 0;
 	}

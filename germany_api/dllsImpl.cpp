@@ -41,13 +41,13 @@ ICEDB_CALL_C HIDDEN_ICEDB struct _impl_interface_testdll {
 };
 
 ICEDB_CALL_C DL_ICEDB interface_testdll* create_testdll(ICEDB_DLL_BASE_HANDLE *base) {
-	if (!base) ICEDB_DEBUG_RAISE_EXCEPTION();
+	//if (!base) ICEDB_DEBUG_RAISE_EXCEPTION();
 	interface_testdll* p = (interface_testdll*) ICEDB_malloc(sizeof interface_testdll);
 	// The easy way to make sure everything is NULL.
 	// This is needed because the member variables / indicator flags must be set to null.
 	memset(p, NULL, sizeof(interface_testdll));
-	p->_base = base;
-	p->_base->_vtable->incRefCount(p->_base);
+	//p->_base = base;
+	//p->_base->_vtable->incRefCount(p->_base);
 	p->_p = (_impl_interface_testdll*)ICEDB_malloc(sizeof _impl_interface_testdll);
 	p->_p->p = new _pimpl_interface_testdll(p);
 	return p;
@@ -56,7 +56,7 @@ ICEDB_CALL_C DL_ICEDB interface_testdll* create_testdll(ICEDB_DLL_BASE_HANDLE *b
 ICEDB_CALL_C DL_ICEDB void destroy_testdll(interface_testdll* p) {
 	delete p->_p->p;
 	ICEDB_free(p->_p);
-	p->_base->_vtable->decRefCount(p->_base);
+	//p->_base->_vtable->decRefCount(p->_base);
 	ICEDB_free(p);
 }
 
