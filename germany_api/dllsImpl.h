@@ -59,19 +59,18 @@ struct ICEDB_DLL_BASE_HANDLE {
 };
 
 enum ICEDB_DLL_FUNCTION_STATUSES {
-	ICEDB_DLL_FUNCTION_UNLOADED,
+	ICEDB_DLL_FUNCTION_UNLOADED, // Must always be zero
 	ICEDB_DLL_FUNCTION_LOADED
 };
 
-//struct ICEDB_DLL_INTERFACE_vtable;
-//typedef void(*ICEDB_DLL_INTERFACE_ctor_f)(ICEDB_DLL_INTERFACE_vtable*);
-//struct ICEDB_DLL_INTERFACE_vtable {
-//	ICEDB_DLL_ctor_f _ctor;
-//};
-
 #define ICEDB_DLL_INTERFACE_BEGIN(InterfaceName) \
+	struct interface_##InterfaceName; \
+	ICEDB_CALL_C DL_ICEDB interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *); \
+	ICEDB_CALL_C DL_ICEDB void destroy_##InterfaceName(interface_##InterfaceName*); \
+    HIDDEN_ICEDB struct _impl_interface_##InterfaceName; \
 	struct interface_##InterfaceName { \
-		ICEDB_DLL_BASE_HANDLE *_base;
+		ICEDB_DLL_BASE_HANDLE *_base; \
+		_impl_interface_##InterfaceName *_p; \
 // m_funcname is the actual function
 // f_funcname is the implementation / handler, that will load the function if necessary.
 // f_funcname gets an extra pointer to the interface struct (interface_##InterfaceName),
@@ -82,7 +81,7 @@ enum ICEDB_DLL_FUNCTION_STATUSES {
 	typedef retVal (* TYPE_##FuncName)(__VA_ARGS__); \
 	typedef retVal (* F_TYPE_##FuncName)(interface_##InterfaceName *, __VA_ARGS__); \
 	TYPE_##FuncName m_##FuncName; \
-	F_TYPE_##FuncName f_##FuncName; \
+	F_TYPE_##FuncName FuncName; \
 	;
 #define ICEDB_DLL_INTERFACE_END \
 	};
@@ -111,31 +110,6 @@ ICEDB_DLL_INTERFACE_END
 		} \
 		return (retVal)NULL; \
 	}
-
-
-/// Defines a function in a dll-containing class.
-#define ICEDB_DLL_DECLARE_FUNCTION2(retVal, FuncName, ...) \
-   typedef  retVal (* TYPE_##FuncName)(__VA_ARGS__); \
-   TYPE_##FuncName m_##FuncName; \
-   short m_is##FuncName;\
-   retVal FuncName(__VA_ARGS__) \
-   { \
-      if (m_dllHandle) \
-      { \
-         if (FUNC_LOADED != m_is##FuncName) \
-         {\
-            m_##FuncName = NULL; \
-            m_##FuncName = (TYPE_##FuncName)GetProcAddress(m_dllHandle, #FuncName); \
-			m_is##FuncName = FUNC_LOADED; \
-         }\
-         if (NULL != m_##FuncName) \
-            return m_##FuncName(__VA_ARGS__); \
-         else \
-            return (retVal)NULL; \
-      } \
-      else \
-         return (retVal)NULL; \
-   }
 
 ICEDB_END_DECL
 #endif

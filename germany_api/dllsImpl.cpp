@@ -18,6 +18,48 @@ ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable
 	return res;
 }
 
+template<class InterfaceType, class ReturnType, class A>
+ReturnType TestBind(InterfaceType *iface, A) {
+	return (ReturnType) 42;
+}
+
+ICEDB_CALL_CPP PRIVATE_ICEDB struct _pimpl_interface_testdll {
+public:
+	_pimpl_interface_testdll(interface_testdll* obj) {
+		obj->status_m_testNum = ICEDB_DLL_FUNCTION_LOADED;
+		obj->m_testNum = NULL;
+		//interface_testdll::F_TYPE_testNum
+		interface_testdll::F_TYPE_testNum a = TestBind<interface_testdll,int,int>;
+		obj->testNum = a;
+	}
+	~_pimpl_interface_testdll() {}
+};
+
+// Odd wrapping scheme to accomodate differences between C and C++ structs.
+ICEDB_CALL_C HIDDEN_ICEDB struct _impl_interface_testdll {
+	_pimpl_interface_testdll* p;
+};
+
+ICEDB_CALL_C DL_ICEDB interface_testdll* create_testdll(ICEDB_DLL_BASE_HANDLE *base) {
+	if (!base) ICEDB_DEBUG_RAISE_EXCEPTION();
+	interface_testdll* p = (interface_testdll*) ICEDB_malloc(sizeof interface_testdll);
+	// The easy way to make sure everything is NULL.
+	// This is needed because the member variables / indicator flags must be set to null.
+	memset(p, NULL, sizeof(interface_testdll));
+	p->_base = base;
+	p->_base->_vtable->incRefCount(p->_base);
+	p->_p = (_impl_interface_testdll*)ICEDB_malloc(sizeof _impl_interface_testdll);
+	p->_p->p = new _pimpl_interface_testdll(p);
+	return p;
+}
+
+ICEDB_CALL_C DL_ICEDB void destroy_testdll(interface_testdll* p) {
+	delete p->_p->p;
+	ICEDB_free(p->_p);
+	p->_base->_vtable->decRefCount(p->_base);
+	ICEDB_free(p);
+}
+
 //ICEDB_BEGIN_DECL
 //ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, testNum, int);
 //ICEDB_END_DECL
