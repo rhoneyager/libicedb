@@ -17,11 +17,11 @@ ICEDB_SYMBOL_SHARED ICEDB_error_code ICEDB_error_context_to_code(const struct IC
 
 ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_message_size(const struct ICEDB_error_context* err) {
 	if (!err) ICEDB_DEBUG_RAISE_EXCEPTION();
-	size_t total = 0;
+	size_t total = 1;
 	uint16_t buf_size = UINT16_MAX - 1;
 	char buf[UINT16_MAX];
 	if (err->message_text) {
-		total = ICEDB_COMPAT_strncpy_s(buf, buf_size, err->message_text, err->message_size); // Reports the number of characters copied. Note lack of count of null.
+		total += ICEDB_COMPAT_strncpy_s(buf, buf_size, err->message_text, err->message_size); // Reports the number of characters copied. Note lack of count of null.
 	}
 	// Write the error variables
 	const char* sep = "\t%s\t=\t%s\n";

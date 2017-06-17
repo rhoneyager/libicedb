@@ -34,7 +34,7 @@ typedef void(*ICEDB_DLL_incRefCount_f)(ICEDB_DLL_BASE_HANDLE*);
 typedef void(*ICEDB_DLL_decRefCount_f)(ICEDB_DLL_BASE_HANDLE*);
 typedef void*(*ICEDB_DLL_getSym_f)(ICEDB_DLL_BASE_HANDLE*, const char* symbol_name);
 typedef const char*(*ICEDB_DLL_getPath_f)(ICEDB_DLL_BASE_HANDLE*);
-typedef void(*ICEDB_DLL_setPath_f)(ICEDB_DLL_BASE_HANDLE*, const char* symbol_name);
+typedef void(*ICEDB_DLL_setPath_f)(ICEDB_DLL_BASE_HANDLE*, const char* filename);
 typedef void(*ICEDB_DLL_ctor_f)(ICEDB_DLL_BASE_HANDLE*);
 
 struct ICEDB_DLL_BASE_HANDLE_vtable {
@@ -47,9 +47,11 @@ struct ICEDB_DLL_BASE_HANDLE_vtable {
 	ICEDB_DLL_decRefCount_f decRefCount;
 	ICEDB_DLL_getPath_f getPath;
 	ICEDB_DLL_setPath_f setPath;
-	ICEDB_DLL_ctor_f _ctor;
 };
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable();
+ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_destroy_vtable(ICEDB_DLL_BASE_HANDLE_vtable*);
+ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename);
+ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_HANDLE_destroy(ICEDB_DLL_BASE_HANDLE*);
 
 struct ICEDB_DLL_BASE_HANDLE {
 	dlHandleType dlHandle;
@@ -89,27 +91,20 @@ enum ICEDB_DLL_FUNCTION_STATUSES {
 ICEDB_DLL_INTERFACE_BEGIN(testdll)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, int, testNum, int)
 ICEDB_DLL_INTERFACE_END
-// ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, testNum, int);
 
+// This should only be in the implementation file, which is in C++.
+template <class InterfaceClass>
+void destroy_interface(InterfaceClass* p) {
+	delete p->_p->p;
+	ICEDB_free(p->_p);
+	p->_base->_vtable->decRefCount(p->_base);
+	ICEDB_free(p);
+}
 
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_END
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...) \
-	DL_ICEDB retVal FuncName(interface_##InterfaceName *InterfacePtr, __VA_ARGS__) { \
-		typedef retVal(*TYPE_##FuncName)(__VA_ARGS__); \
-		if (InterfacePtr->_base) \
-		{ \
-			if (ICEDB_DLL_FUNCTION_LOADED != InterfacePtr->status_m_##FuncName) \
-			{ \
-				InterfacePtr->m_##FuncName = NULL; \
-				InterfacePtr->m_##FuncName = (TYPE_##FuncName) InterfacePtr->_base->_vtable->getSym(InterfacePtr->_base,#FuncName); \
-				InterfacePtr->status_m_##FuncName = ICEDB_DLL_FUNCTION_LOADED; \
-			} \
-			if (NULL != InterfacePtr->m_##FuncName) \
-				return InterfacePtr->m_##FuncName(__VA_ARGS__); \
-		} \
-		return (retVal)NULL; \
-	}
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(InterfaceName) \
+	ICEDB_CALL_C DL_ICEDB void destroy_##InterfaceName(interface_##InterfaceName* p) { destroy_interface<interface_##InterfaceName>(p); }
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(InterfaceName)
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...)
 
 ICEDB_END_DECL
 #endif
