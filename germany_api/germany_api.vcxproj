@@ -120,6 +120,7 @@
     <ClInclude Include="defs.h" />
     <ClInclude Include="dlls.h" />
     <ClInclude Include="dllsImpl.h" />
+    <ClInclude Include="dllsImpl.hpp" />
     <ClInclude Include="error.h" />
     <ClInclude Include="error.hpp" />
     <ClInclude Include="errorCodes.h" />

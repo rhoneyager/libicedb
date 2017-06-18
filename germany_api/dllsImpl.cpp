@@ -1,4 +1,5 @@
 #include "dllsImpl.h"
+#include "dllsImpl.hpp"
 #include "mem.h"
 #include "error_context.h"
 #include "error.h"
@@ -6,11 +7,14 @@
 #include <stdarg.h>
 #include <functional>
 #include <mutex>
+#include <typeinfo>
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename) {
 	ICEDB_DLL_BASE_HANDLE *res = (ICEDB_DLL_BASE_HANDLE*)ICEDB_malloc(sizeof ICEDB_DLL_BASE_HANDLE);
 	res->refCount = 0;
-	res->dlHandle = NULL;
+	res->_dlHandle = (_dlHandleType_impl*) ICEDB_malloc(sizeof(_dlHandleType_impl));
+	if (!res->_dlHandle) ICEDB_DEBUG_RAISE_EXCEPTION();
+	res->_dlHandle->h = NULL;
 	res->path = NULL;
 	res->_vtable = ICEDB_DLL_BASE_create_vtable();
 	res->_vtable->setPath(res, filename);
@@ -31,26 +35,29 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_HANDLE_destroy(ICEDB_DLL_BASE_HANDLE* 
 		h->path = NULL;
 	}
 	if (h->_vtable->isOpen(h)) h->_vtable->close(h);
+	if (h->_dlHandle) ICEDB_free(h->_dlHandle);
 	ICEDB_DLL_BASE_destroy_vtable(h->_vtable);
+
 	ICEDB_free((void*)h);
 }
 
-dlHandleType ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
+ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 #if defined(__unix__) // Indicates that DLSYM is provided (unix, linux, mac, etc. (sometimes even windows))
 	//Check that file exists here
-	p->dlHandle = dlopen(p->path, RTLD_LAZY);
+	p->_dlHandle->h = dlopen(p->path, RTLD_LAZY);
 	const char* cerror = dlerror(); // This is thread safe.
 	if (cerror)
 	{
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_DLLOPEN);
 		ICEDB_error_context_add_string2(e, "dlopen-Error-Code", cerror);
 		ICEDB_error_context_add_string2(e, "DLL-Path", p->path);
+		return ICEDB_ERRORCODES_DLLOPEN;
 	}
-	return p->dlHandle;
+	return ICEDB_ERRORCODES_NONE;
 #elif defined(_WIN32)
-	p->dlHandle = LoadLibrary(p->path);
+	p->_dlHandle->h = LoadLibrary(p->path);
 	// Could not open the dll for some reason
-	if (p->dlHandle == NULL)
+	if (p->_dlHandle->h == NULL)
 	{
 		DWORD err = GetLastError(); // TODO: Thread sync here?
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_DLLOPEN);
@@ -59,33 +66,40 @@ dlHandleType ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 		snprintf(winErrString, errStrSz, "%u", err);
 		ICEDB_error_context_add_string2(e, "Win-Error-Code", winErrString);
 		ICEDB_error_context_add_string2(e, "DLL-Path", p->path);
+		return ICEDB_ERRORCODES_DLLOPEN;
 	}
-	return p->dlHandle;
+	return ICEDB_ERRORCODES_NONE;
 #endif
 }
-void ICEDB_DLL_BASE_HANDLE_IMPL_close(ICEDB_DLL_BASE_HANDLE *p) {
-	if (!p->dlHandle) return;
+ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_close(ICEDB_DLL_BASE_HANDLE *p) {
+	if (!p->_dlHandle->h) return ICEDB_ERRORCODES_NO_DLHANDLE;
 #if defined(__unix__)
 	dlclose(p->dlHandle);
 #elif defined(_WIN32)
-	FreeLibrary(p->dlHandle);
+	FreeLibrary(p->_dlHandle->h);
 #endif
-	p->dlHandle = NULL;
+	p->_dlHandle->h = NULL;
+	return ICEDB_ERRORCODES_NONE;
 }
-bool ICEDB_DLL_BASE_HANDLE_IMPL_isOpen(ICEDB_DLL_BASE_HANDLE *p) { return (p->dlHandle) ? true : false; }
+bool ICEDB_DLL_BASE_HANDLE_IMPL_isOpen(ICEDB_DLL_BASE_HANDLE *p) { return (p->_dlHandle->h) ? true : false; }
 uint16_t ICEDB_DLL_BASE_HANDLE_IMPL_getRefCount(ICEDB_DLL_BASE_HANDLE *p) { return p->refCount; }
 void ICEDB_DLL_BASE_HANDLE_IMPL_incRefCount(ICEDB_DLL_BASE_HANDLE *p) { p->refCount++; }
-void ICEDB_DLL_BASE_HANDLE_IMPL_decRefCount(ICEDB_DLL_BASE_HANDLE *p) { p->refCount--; }
+ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_decRefCount(ICEDB_DLL_BASE_HANDLE *p) {
+	if (p->refCount > 0) {
+		p->refCount--;
+		return ICEDB_ERRORCODES_NONE;
+	} else return ICEDB_ERRORCODES_DLL_DEC_REFS_LE_0;
+}
 void* ICEDB_DLL_BASE_HANDLE_IMPL_getSym(ICEDB_DLL_BASE_HANDLE* p, const char* symbol) {
-	if (!p->dlHandle) {
+	if (!p->_dlHandle->h) {
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_NO_DLHANDLE);
 		return NULL;
 	}
 	void* sym = nullptr;
 #if defined(__unix__)
-	sym = dlsym(p->dlHandle, symbol);
+	sym = dlsym(p->_dlHandle->h, symbol);
 #elif defined(_WIN32)
-	sym = GetProcAddress(p->dlHandle, symbol);
+	sym = GetProcAddress(p->_dlHandle->h, symbol);
 #endif
 	if (!sym)
 	{
@@ -107,10 +121,11 @@ void* ICEDB_DLL_BASE_HANDLE_IMPL_getSym(ICEDB_DLL_BASE_HANDLE* p, const char* sy
 	return (void*)sym;
 }
 const char* ICEDB_DLL_BASE_HANDLE_IMPL_getPath(ICEDB_DLL_BASE_HANDLE* p) { return p->path; }
-void ICEDB_DLL_BASE_HANDLE_IMPL_setPath(ICEDB_DLL_BASE_HANDLE* p, const char* filename) {
+ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_setPath(ICEDB_DLL_BASE_HANDLE* p, const char* filename) {
 	size_t sz = strlen(filename);
 	if (p->path) ICEDB_free((void*)p->path);
 	p->path = ICEDB_COMPAT_strdup_s(filename, sz);
+	return ICEDB_ERRORCODES_NONE;
 }
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable() {
@@ -131,103 +146,3 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_destroy_vtable(ICEDB_DLL_BASE_HANDLE_v
 	ICEDB_free((void*)h);
 }
 
-
-
-namespace icedb {
-	namespace dll {
-		namespace binding {
-
-			// Cannot be a member inside the struct. May decide to place in a namespace.
-			template<class InterfaceType, class SymbolName, class ReturnType, class ...Args>
-			ReturnType TestBind(InterfaceType *iface, Args... args) {
-				if (iface->status_m_testNum != ICEDB_DLL_FUNCTION_LOADED) {
-					iface->m_testNum = (interface_testdll::TYPE_testNum)
-						iface->_base->_vtable->getSym(iface->_base, SymbolName::Symbol());
-					iface->status_m_testNum = ICEDB_DLL_FUNCTION_LOADED;
-				}
-				return (ReturnType)iface->m_testNum(args...);
-			}
-
-
-		}
-	}
-}
-
-namespace _pimpl_interface_testdll_nm {
-	
-	ICEDB_CALL_CPP PRIVATE_ICEDB struct _pimpl_interface_testdll {
-	public:
-		struct tfname_testfunc { static const char* Symbol() { return "testfunc"; } };
-
-		_pimpl_interface_testdll(interface_testdll* obj) {
-			obj->status_m_testNum = ICEDB_DLL_FUNCTION_UNLOADED;
-			obj->m_testNum = NULL;
-			interface_testdll::F_TYPE_testNum a = 
-				icedb::dll::binding::TestBind<interface_testdll, tfname_testfunc, int, int>;
-			obj->testNum = a;
-		}
-		~_pimpl_interface_testdll() {}
-	};
-}
-
-// Odd wrapping scheme to accomodate differences between C and C++ structs.
-ICEDB_CALL_C HIDDEN_ICEDB struct _impl_interface_testdll {
-	_pimpl_interface_testdll_nm::_pimpl_interface_testdll* p;
-};
-
-ICEDB_CALL_C DL_ICEDB interface_testdll* create_testdll(ICEDB_DLL_BASE_HANDLE *base) {
-	if (!base) ICEDB_DEBUG_RAISE_EXCEPTION();
-	interface_testdll* p = (interface_testdll*) ICEDB_malloc(sizeof interface_testdll);
-	memset(p, NULL, sizeof(interface_testdll));
-	p->_base = base;
-	p->_base->_vtable->incRefCount(p->_base);
-	p->_p = (_impl_interface_testdll*)ICEDB_malloc(sizeof _impl_interface_testdll);
-	p->_p->p = new _pimpl_interface_testdll_nm::_pimpl_interface_testdll(p);
-	return p;
-}
-
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(testdll);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, testNum, int);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(testdll);
-//ICEDB_BEGIN_DECL
-//ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, testNum, int);
-//ICEDB_END_DECL
-
-/*
-template <class InterfaceType, class ReturnType, class ... InputTypes>
-void generateBindingFunction(const char* SymbolName, InterfaceType* InterfacePtr,
-	std::function<ReturnType(InputTypes)> &f)
-{
-	if (InterfacePtr->_base) {
-		if (ICEDB_DLL_FUNCTION_LOADED != InterfacePtr->status_m_testNum) { // replace the symbol name here
-			InterfacePtr->m_testNum = 0;
-			InterfacePtr->m_testNum = (TYPE_testNum)InterfacePtr->_base->_vtable->getSym(InterfacePtr->_base, SymbolName);
-			InterfacePtr->status_m_testNum = ICEDB_DLL_FUNCTION_LOADED;
-		}
-	}
-}
-
-
-// Creating a template that will properly handle the return type.
-template <class InterfaceType, class ReturnType, class ... InputTypes>
-ReturnType process(InterfaceType* InterfacePtr, InputTypes... i) {
-	if (InterfacePtr->_base) {
-		if (ICEDB_DLL_FUNCTION_LOADED != InterfacePtr->status_m_testNum) {
-			InterfacePtr->m_testNum = 0;
-			InterfacePtr->m_testNum = (TYPE_testNum)InterfacePtr->_base->_vtable->getSym(InterfacePtr->_base, "testNum");
-			InterfacePtr->status_m_testNum = ICEDB_DLL_FUNCTION_LOADED;
-		}
-		ReturnType res;
-		//if (0 != InterfacePtr->m_testNum) 
-		//	res = InterfacePtr->m_testNum(int);
-		return res;
-	return (ReturnType)(NULL);
-}
-
-template DL_ICEDB void process<interface_testdll, void, int, int, char>
-	(interface_testdll*, int, int, char);
-
-DL_ICEDB void a(interface_testdll *InterfacePtr) {
-	process<interface_testdll, void, int, int, char>(InterfacePtr, 0, 0, 'a');
-}
-*/

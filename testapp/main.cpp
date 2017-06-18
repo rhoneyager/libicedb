@@ -1,9 +1,53 @@
 #include "../germany_api/error.h"
 #include "../germany_api/error_context.h"
 #include "../germany_api/mem.h"
-#include "../germany_api/dllsImpl.h"
+#include "../germany_api/dllsImpl.hpp"
 #include "../germany_api/error.hpp"
 #include <stdio.h>
+#include <iostream>
+
+
+ICEDB_DLL_INTERFACE_BEGIN(testdll)
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, int, testNum, int)
+ICEDB_DLL_INTERFACE_END
+
+namespace _pimpl_interface_testdll_nm {
+
+	ICEDB_CALL_CPP PRIVATE_ICEDB struct _pimpl_interface_testdll {
+	public:
+		struct tfname_testfunc { static const char* Symbol() { return "testfunc"; } };
+
+		_pimpl_interface_testdll(interface_testdll* obj) {
+			obj->status_m_testNum = ICEDB_DLL_FUNCTION_UNLOADED;
+			obj->m_testNum = NULL;
+			interface_testdll::F_TYPE_testNum a =
+				icedb::dll::binding::DoBind<interface_testdll, tfname_testfunc, int, int>;
+			obj->testNum = a;
+		}
+		~_pimpl_interface_testdll() {}
+	};
+}
+
+// Odd wrapping scheme to accomodate differences between C and C++ structs.
+ICEDB_CALL_C HIDDEN_ICEDB struct _impl_interface_testdll {
+	_pimpl_interface_testdll_nm::_pimpl_interface_testdll* p;
+};
+
+ICEDB_CALL_C DL_ICEDB interface_testdll* create_testdll(ICEDB_DLL_BASE_HANDLE *base) {
+	if (!base) ICEDB_DEBUG_RAISE_EXCEPTION();
+	interface_testdll* p = (interface_testdll*)ICEDB_malloc(sizeof interface_testdll);
+	memset(p, NULL, sizeof(interface_testdll));
+	p->_base = base;
+	p->_base->_vtable->incRefCount(p->_base);
+	p->_p = (_impl_interface_testdll*)ICEDB_malloc(sizeof _impl_interface_testdll);
+	p->_p->p = new _pimpl_interface_testdll_nm::_pimpl_interface_testdll(p);
+	return p;
+}
+
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(testdll);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, testNum, int);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(testdll);
+
 
 int main(int, char**) {
 	/*
@@ -26,7 +70,5 @@ int main(int, char**) {
 	printf("Res is %d.\n", res);
 	destroy_testdll(td);
 	ICEDB_DLL_BASE_HANDLE_destroy(dll);
-	
-
 	return 0;
 }

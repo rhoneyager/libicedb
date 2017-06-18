@@ -2,6 +2,6 @@
 
 extern "C" {
 	SHARED_EXPORT_ICEDB int testfunc(int a) {
-		return (a < 16) ? 2 * a : 42;
+		return (a < 16) ? 2 * a : 43;
 	}
 }
