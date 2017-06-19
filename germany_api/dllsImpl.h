@@ -46,13 +46,15 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_destroy_vtable(ICEDB_DLL_BASE_HANDLE_v
 // f_funcname gets an extra pointer to the interface struct (interface_##InterfaceName),
 //  which has the base dll handle and the variables of interest (m_is... etc.)
 // The variable args are the list of parameters passed to the function (type names only).
-#define ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+/*#define ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(InterfaceName, retVal, FuncName, ...) \
 	short int status_m_##FuncName; \
 	typedef retVal (* TYPE_##FuncName)(__VA_ARGS__); \
 	typedef retVal (* F_TYPE_##FuncName)(interface_##InterfaceName *, __VA_ARGS__); \
 	TYPE_##FuncName m_##FuncName; \
-	F_TYPE_##FuncName FuncName; \
-	;
+	F_TYPE_##FuncName FuncName;*/
+#define ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+	typedef retVal (* F_TYPE_##FuncName)(interface_##InterfaceName *, __VA_ARGS__); \
+	F_TYPE_##FuncName FuncName;
 #define ICEDB_DLL_INTERFACE_END \
 	};
 
