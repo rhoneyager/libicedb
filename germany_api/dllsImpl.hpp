@@ -42,9 +42,39 @@ namespace icedb {
 }
 
 #define ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(InterfaceName) \
-	ICEDB_CALL_C DL_ICEDB void destroy_##InterfaceName(interface_##InterfaceName* p) { ::icedb::dll::binding::destroy_interface<interface_##InterfaceName>(p); }
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(InterfaceName)
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...)
+	namespace _pimpl_interface_nm_##InterfaceName{ \
+		ICEDB_CALL_CPP PRIVATE_ICEDB struct _pimpl_interface_##InterfaceName { \
+		public: \
+			~_pimpl_interface_##InterfaceName() {} \
+			_pimpl_interface_##InterfaceName(interface_##InterfaceName* obj) {
+
+
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+				obj->status_m_##FuncName = ICEDB_DLL_FUNCTION_UNLOADED; \
+				obj->m_##FuncName = NULL; \
+				struct tfname_##FuncName { static const char* Symbol() { return #FuncName ; } }; \
+				obj->##FuncName = ::icedb::dll::binding::DoBind<interface_##InterfaceName, tfname_##FuncName, retVal, __VA_ARGS__>;
+
+
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(InterfaceName) \
+			} \
+		}; \
+	} \
+	ICEDB_CALL_C DL_ICEDB void destroy_##InterfaceName(interface_##InterfaceName* p) \
+		{ ::icedb::dll::binding::destroy_interface<interface_##InterfaceName>(p); } \
+	ICEDB_CALL_C HIDDEN_ICEDB struct _impl_interface_##InterfaceName { \
+			_pimpl_interface_nm_##InterfaceName::_pimpl_interface_##InterfaceName* p; \
+		}; \
+	ICEDB_CALL_C DL_ICEDB interface_testdll* create_testdll(ICEDB_DLL_BASE_HANDLE *base) { \
+		if (!base) ICEDB_DEBUG_RAISE_EXCEPTION(); \
+		interface_##InterfaceName* p = (interface_##InterfaceName*)ICEDB_malloc(sizeof interface_##InterfaceName ); \
+		memset(p, NULL, sizeof(interface_##InterfaceName)); \
+		p->_base = base; \
+		p->_base->_vtable->incRefCount(p->_base); \
+		p->_p = (_impl_interface_##InterfaceName*)ICEDB_malloc(sizeof _impl_interface_##InterfaceName); \
+		p->_p->p = new _pimpl_interface_nm_##InterfaceName::_pimpl_interface_##InterfaceName(p); \
+		return p; \
+	}
 
 ICEDB_END_DECL
 #endif
