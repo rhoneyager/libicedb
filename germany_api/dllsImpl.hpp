@@ -51,13 +51,13 @@ namespace icedb {
 			~_pimpl_interface_##InterfaceName() {}
 
 
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(InterfaceName, retVal, FuncName, FuncSymbolName, ...) \
 			struct Sym_##FuncName { \
 				typedef retVal (* inner_type)(__VA_ARGS__); \
 				typedef retVal (* outer_type)(interface_##InterfaceName *, __VA_ARGS__); \
 				ICEDB_DLL_FUNCTION_STATUSES status; \
 				inner_type inner; \
-				static const char* Symbol() { return #FuncName ; } \
+				static const char* Symbol() { return #FuncSymbolName ; } \
 			} sym_##FuncName; \
 			struct Access_Sym_##FuncName { \
 				static Sym_##FuncName* Access(interface_##InterfaceName *p) \

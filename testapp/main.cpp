@@ -12,7 +12,7 @@ ICEDB_DLL_INTERFACE_END
 
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(testdll);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(testdll, int, testfunc, int);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(testdll, int, testfunc, testfunc, int);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(testdll);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, testfunc, int);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(testdll);
@@ -38,9 +38,6 @@ int main(int, char**) {
 			printf("%s", icedb::error::stringify(cxt).c_str());
 		else ICEDB_DEBUG_RAISE_EXCEPTION();
 	}
-	//auto a = &(td->_p->p->sym_testfunc);
-	//auto b = td->_p->p->Access_Sym_testfunc(td);
-	//std::cout << " a " << a << " b " << b << std::endl;
 
 	int res = td->testfunc(td, 36);
 	std::cout << "Res is " << res << std::endl;
