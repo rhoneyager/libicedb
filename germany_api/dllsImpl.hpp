@@ -22,9 +22,9 @@ namespace icedb {
 
 			template<class InterfaceType, class SymbolClass, class SymbolAccessor, class ReturnType, class ...Args>
 			ReturnType DoBind(InterfaceType *p, Args... args) {
-				SymbolClass *s = SymbolAccessor(p);
+				SymbolClass *s = SymbolAccessor::Access(p);
 				if (s->status != ICEDB_DLL_FUNCTION_LOADED) {
-					s->inner = (SymbolClass::inner_type) iface->_base->_vtable->getSym(iface->_base, SymbolClass::Symbol());
+					s->inner = (SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
 					s->status = ICEDB_DLL_FUNCTION_LOADED;
 				}
 				bool iv = (typeid(ReturnType) == typeid(void));
@@ -59,9 +59,13 @@ namespace icedb {
 				inner_type inner; \
 				static const char* Symbol() { return #FuncName ; } \
 			} sym_##FuncName; \
-			static Sym_##FuncName* Access_Sym_##FuncName(interface_##InterfaceName *p) \
-			{ \
-				return &(p->_p->p->sym_##FuncName); \
+			struct Access_Sym_##FuncName { \
+				static Sym_##FuncName* Access(interface_##InterfaceName *p) \
+				{ \
+					_pimpl_interface_##InterfaceName*a = p->_p->p; \
+					Sym_##FuncName* r = &(a->sym_##FuncName); \
+					return r; \
+				} \
 			}
 
 #define ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(InterfaceName) \
