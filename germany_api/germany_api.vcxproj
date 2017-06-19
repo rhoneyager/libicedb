@@ -119,6 +119,7 @@
     <ClInclude Include="db.h" />
     <ClInclude Include="defs.h" />
     <ClInclude Include="dlls.h" />
+    <ClInclude Include="dlls.hpp" />
     <ClInclude Include="dllsImpl.h" />
     <ClInclude Include="dllsImpl.hpp" />
     <ClInclude Include="error.h" />

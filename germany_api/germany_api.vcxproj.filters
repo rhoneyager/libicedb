@@ -57,6 +57,9 @@
     <ClInclude Include="dllsImpl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dlls.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="error_context.cpp">

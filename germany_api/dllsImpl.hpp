@@ -95,5 +95,8 @@ namespace icedb {
 		return p; \
 	}
 
+
+
 ICEDB_END_DECL
+
 #endif
