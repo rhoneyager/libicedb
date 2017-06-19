@@ -57,7 +57,7 @@ namespace icedb {
 				typedef retVal (* outer_type)(interface_##InterfaceName *, __VA_ARGS__); \
 				ICEDB_DLL_FUNCTION_STATUSES status; \
 				inner_type inner; \
-				static const char* Symbol() { return #FuncSymbolName ; } \
+				static const char* Symbol() { return FuncSymbolName ; } \
 			} sym_##FuncName; \
 			struct Access_Sym_##FuncName { \
 				static Sym_##FuncName* Access(interface_##InterfaceName *p) \
