@@ -23,6 +23,7 @@ namespace icedb {
 		public:
 			virtual ~Dll_Base_Handle();
 			typedef std::shared_ptr<Dll_Base_Handle> pointer_type;
+			ICEDB_DLL_BASE_HANDLE* getBase();
 			ICEDB_error_code open();
 			ICEDB_error_code close();
 			uint16_t isOpen() const;
@@ -46,15 +47,17 @@ namespace icedb {
 	class InterfaceName { \
 		::icedb::dll::Dll_Base_Handle::pointer_type _base; \
 		InterfaceName(); \
-		std::unique_ptr<interface_##CInterfaceName, decltype(&destroy_##CInterfaceName)> _p; \
+		std::shared_ptr<interface_##CInterfaceName> _p; \
 	public: \
 		::icedb::dll::Dll_Base_Handle::pointer_type getDll(); \
 		typedef std::shared_ptr<InterfaceName> pointer_type; \
 		static pointer_type generate(::icedb::dll::Dll_Base_Handle::pointer_type); \
 		virtual ~InterfaceName();
 #define ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(InterfaceName, retVal, FuncName, ...) \
-	typedef retVal (* type_##FuncName)(__VA_ARGS__); \
-	type_##FuncName FuncName;
+	std::function<retVal(__VA_ARGS__)> FuncName;
+	//typedef retVal (* type_##FuncName)(__VA_ARGS__); \
+	//type_##FuncName FuncName;
+//	retVal FuncName(__VA_ARGS__);
 #define ICEDB_DLL_CPP_INTERFACE_END \
 	};
 

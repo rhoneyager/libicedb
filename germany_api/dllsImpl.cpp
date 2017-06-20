@@ -13,6 +13,8 @@
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename) {
 	ICEDB_DLL_BASE_HANDLE *res = (ICEDB_DLL_BASE_HANDLE*)ICEDB_malloc(sizeof ICEDB_DLL_BASE_HANDLE);
 	res->refCount = 0;
+	res->autoOpen = false;
+	res->openCount = 0;
 	res->_dlHandle = (_dlHandleType_impl*) ICEDB_malloc(sizeof(_dlHandleType_impl));
 	if (!res->_dlHandle) ICEDB_DEBUG_RAISE_EXCEPTION();
 	res->_dlHandle->h = NULL;
@@ -182,3 +184,4 @@ icedb::dll::Dll_Base_Handle::generate(ICEDB_DLL_BASE_HANDLE* h) {
 	pointer_type p(new Dll_Base_Handle(bp));
 	return p;
 }
+ICEDB_DLL_BASE_HANDLE* icedb::dll::Dll_Base_Handle::getBase() { return _base.get(); }
