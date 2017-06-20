@@ -23,7 +23,7 @@ namespace icedb {
 			template<class InterfaceType, class SymbolClass, class SymbolAccessor, class ReturnType, class ...Args>
 			ReturnType DoBind(InterfaceType *p, Args... args) {
 				SymbolClass *s = SymbolAccessor::Access(p);
-				if ((!s->status) || (s->status != p->_base->isOpen(p->_base))) {
+				if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
 					s->inner = (SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
 					if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
 					s->status = p->_base->openCount;
@@ -95,6 +95,69 @@ namespace icedb {
 		p->_p->p = new _pimpl_interface_nm_##InterfaceName::_pimpl_interface_##InterfaceName(p); \
 		return p; \
 	}
+
+
+
+
+
+
+#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_BEGIN(InterfaceName, CInterfaceName) \
+	InterfaceName::InterfaceName() : _p(nullptr, destroy_##CInterfaceName){} \
+	InterfaceName::~InterfaceName() {} \
+	::icedb::dll::Dll_Base_Handle::pointer_type InterfaceName::getDll() { return _base; } \
+	InterfaceName::pointer_type InterfaceName::generate(::icedb::dll::Dll_Base_Handle::pointer_type bp) { \
+		InterfaceName::pointer_type p(new InterfaceName); \
+		p->_base = bp; \
+		std::unique_ptr<interface_##CInterfaceName, decltype(&destroy_##CInterfaceName)> \
+			np(create_##CInterfaceName(bp.get()), destroy_##CInterfaceName); \
+		p->_p.swap(np); \
+	}
+
+#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(InterfaceName, retVal, FuncName, FuncSymbolName, ...) \
+			struct Sym_##FuncName { \
+				typedef retVal (* inner_type)(__VA_ARGS__); \
+				typedef retVal (* outer_type)(interface_##InterfaceName *, __VA_ARGS__); \
+				ICEDB_DLL_FUNCTION_STATUSES status; \
+				inner_type inner; \
+				static const char* Symbol() { return FuncSymbolName ; } \
+			} sym_##FuncName; \
+			struct Access_Sym_##FuncName { \
+				static Sym_##FuncName* Access(interface_##InterfaceName *p) \
+				{ \
+					_pimpl_interface_##InterfaceName*a = p->_p->p; \
+					Sym_##FuncName* r = &(a->sym_##FuncName); \
+					return r; \
+				} \
+			}
+
+#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(InterfaceName) \
+			_pimpl_interface_##InterfaceName(interface_##InterfaceName* obj) {
+
+#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+				sym_##FuncName.status = 0; \
+				sym_##FuncName.inner = NULL; \
+				obj->##FuncName = ::icedb::dll::binding::DoBind \
+					<interface_##InterfaceName, Sym_##FuncName, \
+					Access_Sym_##FuncName, retVal, __VA_ARGS__>;
+
+#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END(InterfaceName) \
+			} \
+		}; \
+	} \
+	ICEDB_CALL_C void destroy_##InterfaceName(interface_##InterfaceName* p) \
+		{ ::icedb::dll::binding::destroy_interface<interface_##InterfaceName>(p); } \
+	ICEDB_CALL_C interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *base) { \
+		if (!base) ICEDB_DEBUG_RAISE_EXCEPTION(); \
+		interface_##InterfaceName* p = (interface_##InterfaceName*)ICEDB_malloc(sizeof interface_##InterfaceName ); \
+		memset(p, NULL, sizeof(interface_##InterfaceName)); \
+		p->_base = base; \
+		p->_base->_vtable->incRefCount(p->_base); \
+		p->_p = (_impl_interface_##InterfaceName*)ICEDB_malloc(sizeof _impl_interface_##InterfaceName); \
+		p->_p->p = new _pimpl_interface_nm_##InterfaceName::_pimpl_interface_##InterfaceName(p); \
+		return p; \
+	}
+
+
 
 
 

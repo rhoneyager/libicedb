@@ -42,12 +42,11 @@ namespace icedb {
 }
 
 
-#define ICEDB_DLL_CPP_INTERFACE_BEGIN(InterfaceName) \
-    HIDDEN_ICEDB struct _impl_interface_##InterfaceName; \
+#define ICEDB_DLL_CPP_INTERFACE_BEGIN(InterfaceName, CInterfaceName) \
 	class InterfaceName { \
 		::icedb::dll::Dll_Base_Handle::pointer_type _base; \
 		InterfaceName(); \
-		std::unique_ptr<_impl_interface_##InterfaceName> _p; \
+		std::unique_ptr<interface_##CInterfaceName, decltype(&destroy_##CInterfaceName)> _p; \
 	public: \
 		::icedb::dll::Dll_Base_Handle::pointer_type getDll(); \
 		typedef std::shared_ptr<InterfaceName> pointer_type; \
