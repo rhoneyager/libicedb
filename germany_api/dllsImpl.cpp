@@ -13,7 +13,7 @@
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename) {
 	ICEDB_DLL_BASE_HANDLE *res = (ICEDB_DLL_BASE_HANDLE*)ICEDB_malloc(sizeof ICEDB_DLL_BASE_HANDLE);
 	res->refCount = 0;
-	res->autoOpen = false;
+	res->autoOpen = true;
 	res->openCount = 0;
 	res->_dlHandle = (_dlHandleType_impl*) ICEDB_malloc(sizeof(_dlHandleType_impl));
 	if (!res->_dlHandle) ICEDB_DEBUG_RAISE_EXCEPTION();

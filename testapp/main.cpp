@@ -45,20 +45,20 @@ int main(int, char**) {
 	*/
 	auto dllInst1 = ICEDB_DLL_BASE_HANDLE_create("testdll.dll");
 	auto td1a = create_testdll(dllInst1);
-#define ERR_VALIDATE(x) if(x) { \
+#define MUST_RETURN(x) if(x) { \
 		auto cxt = icedb::error::get_error_context_thread_local(); \
 		if (cxt) printf("%s", icedb::error::stringify(cxt).c_str()); \
 		else ICEDB_DEBUG_RAISE_EXCEPTION(); \
 	}
-	ERR_VALIDATE(td1a->_base->_vtable->open(td1a->_base));
+	//MUST_RETURN(td1a->_base->_vtable->open(td1a->_base));
 	auto td1b = create_testdll(dllInst1);
-	ERR_VALIDATE(td1b->_base->_vtable->open(td1b->_base));
+	//MUST_RETURN(td1b->_base->_vtable->open(td1b->_base));
 
 	auto dllInst2 = ::icedb::dll::Dll_Base_Handle::generate("testdll.dll");
 	auto td2a = testdllcpp::generate(dllInst2);
-	ERR_VALIDATE(td2a->getDll()->open());
+	//MUST_RETURN(td2a->getDll()->open());
 	auto td2b = testdllcpp::generate(dllInst2);
-	ERR_VALIDATE(td2b->getDll()->open());
+	//MUST_RETURN(td2b->getDll()->open());
 	
 	using namespace std;
 	td1a->setint(td1a, 3);
