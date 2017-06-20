@@ -5,6 +5,8 @@
 #include "error.h"
 #include "dllsImpl.h"
 #include <stdarg.h>
+#include <functional>
+#include <memory>
 
 ICEDB_BEGIN_DECL
 
@@ -37,6 +39,28 @@ namespace icedb {
 				}
 				return (ReturnType)s->inner(args...);
 			}
+
+			template <class CInterfaceType, class SymbolClass, class SymbolAccessor,
+				class ReturnType, class ...Args>
+				std::function<ReturnType(Args...)> BindCPP(std::weak_ptr<CInterfaceType> wp) {
+				auto res = [wp](Args... args) {
+					std::shared_ptr<CInterfaceType> p = wp.lock();
+					SymbolClass *s = SymbolAccessor::Access(p.get());
+					if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
+						s->inner = (SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
+						if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
+						s->status = p->_base->openCount;
+					}
+					bool iv = (typeid(ReturnType) == typeid(void));
+
+					if (iv) {
+						s->inner(args...);
+						return static_cast<ReturnType>(NULL);
+					}
+					return (ReturnType)s->inner(args...);
+				};
+				return res;
+			}
 		}
 	}
 }
@@ -53,7 +77,7 @@ namespace icedb {
 			~_pimpl_interface_##InterfaceName() {}
 
 
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(InterfaceName, retVal, FuncName, FuncSymbolName, ...) \
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(InterfaceName, FuncName, FuncSymbolName, retVal, ...) \
 			struct Sym_##FuncName { \
 				typedef retVal (* inner_type)(__VA_ARGS__); \
 				typedef retVal (* outer_type)(interface_##InterfaceName *, __VA_ARGS__); \
@@ -73,7 +97,7 @@ namespace icedb {
 #define ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(InterfaceName) \
 			_pimpl_interface_##InterfaceName(interface_##InterfaceName* obj) {
 
-#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, FuncName, retVal, ...) \
 				sym_##FuncName.status = 0; \
 				sym_##FuncName.inner = NULL; \
 				obj->##FuncName = ::icedb::dll::binding::DoBind \
@@ -103,7 +127,7 @@ namespace icedb {
 
 
 #define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_BEGIN(InterfaceName, CInterfaceName) \
-	InterfaceName::InterfaceName() : _p(nullptr, destroy_##CInterfaceName){} \
+	InterfaceName::InterfaceName() : _p(nullptr){} \
 	InterfaceName::~InterfaceName() {} \
 	::icedb::dll::Dll_Base_Handle::pointer_type InterfaceName::getDll() { return _base; } \
 	InterfaceName::pointer_type InterfaceName::generate(::icedb::dll::Dll_Base_Handle::pointer_type bp) { \
@@ -111,15 +135,17 @@ namespace icedb {
 		p->_base = bp; \
 		std::shared_ptr<interface_##CInterfaceName> \
 			np(create_##CInterfaceName(bp->getBase()), destroy_##CInterfaceName); \
-		p->_p.swap(np); \
+		p->_p.swap(np);
+
+#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(CInterfaceName, FuncName, ...) \
+	p->FuncName = ::icedb::dll::binding::BindCPP<interface_##CInterfaceName, \
+	_pimpl_interface_nm_##CInterfaceName::_pimpl_interface_##CInterfaceName::Sym_##FuncName, \
+	_pimpl_interface_nm_##CInterfaceName::_pimpl_interface_##CInterfaceName::Access_Sym_##FuncName, \
+		__VA_ARGS__>(p->_p);
+
+#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END \
 		return p; \
 	}
-
-#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...) \
-	//retVal InterfaceName::FuncName(__VA_ARGS__) { \
-	//}
-
-#define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END(InterfaceName, CInterfaceName) \
 
 
 

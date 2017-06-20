@@ -53,7 +53,7 @@ namespace icedb {
 		typedef std::shared_ptr<InterfaceName> pointer_type; \
 		static pointer_type generate(::icedb::dll::Dll_Base_Handle::pointer_type); \
 		virtual ~InterfaceName();
-#define ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+#define ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(InterfaceName, FuncName, retVal, ...) \
 	std::function<retVal(__VA_ARGS__)> FuncName;
 	//typedef retVal (* type_##FuncName)(__VA_ARGS__); \
 	//type_##FuncName FuncName;

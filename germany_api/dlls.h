@@ -60,7 +60,7 @@ struct ICEDB_DLL_BASE_HANDLE {
 	struct interface_##InterfaceName { \
 		ICEDB_DLL_BASE_HANDLE *_base; \
 		_impl_interface_##InterfaceName *_p;
-#define ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(InterfaceName, retVal, FuncName, ...) \
+#define ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(InterfaceName, FuncName, retVal, ...) \
 	typedef retVal (* F_TYPE_##FuncName)(interface_##InterfaceName *, __VA_ARGS__); \
 	F_TYPE_##FuncName FuncName;
 #define ICEDB_DLL_INTERFACE_END \

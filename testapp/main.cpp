@@ -8,87 +8,28 @@
 #include "../germany_api/dllsImpl.hpp"
 
 ICEDB_DLL_INTERFACE_BEGIN(testdll)
-ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, int, setint, int)
-ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, int, getint)
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, setint, int, int)
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, getint, int)
 ICEDB_DLL_INTERFACE_END
 
-
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(testdll);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(testdll, int, setint, "set", int);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(testdll, int, getint, "get");
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(testdll, setint, "set", int, int);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(testdll, getint, "get", int);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(testdll);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, setint, int);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, int, getint);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, setint, int, int);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, getint, int);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(testdll);
 
+
 ICEDB_DLL_CPP_INTERFACE_BEGIN(testdllcpp, testdll)
-ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(testdllcpp, int, setint, int)
-ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(testdllcpp, int, getint)
+ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(testdllcpp, setint, int, int)
+ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(testdllcpp, getint, int)
 ICEDB_DLL_CPP_INTERFACE_END
-/*
 
-class testdllcpp {
-	::icedb::dll::Dll_Base_Handle::pointer_type _base; 
-	testdllcpp();
-	std::unique_ptr<interface_testdll, decltype(&destroy_testdll)> _p;
-public: 
-	::icedb::dll::Dll_Base_Handle::pointer_type getDll();
-	typedef std::shared_ptr<testdllcpp> pointer_type;
-	static pointer_type generate(::icedb::dll::Dll_Base_Handle::pointer_type);
-	virtual ~testdllcpp();
-	int getint();
-	void setint(int);
-};
-*/
-
-template <class CInterfaceType, class SymbolClass, class SymbolAccessor,
-	class ReturnType, class ...Args>
-std::function<ReturnType(Args...)> BindCPP(std::weak_ptr<CInterfaceType> wp) {
-	auto res = [wp](Args... args) {
-		std::shared_ptr<CInterfaceType> p = wp.lock();
-		SymbolClass *s = SymbolAccessor::Access(p.get());
-		if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
-			s->inner = (SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
-			if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
-			s->status = p->_base->openCount;
-		}
-		bool iv = (typeid(ReturnType) == typeid(void));
-
-		if (iv) {
-			s->inner(args...);
-			return static_cast<ReturnType>(NULL);
-		}
-		return (ReturnType)s->inner(args...);
-	};
-	return res;
-}
-
-testdllcpp::testdllcpp() : _p(nullptr, destroy_testdll) {} 
-testdllcpp::~testdllcpp() {} 
-::icedb::dll::Dll_Base_Handle::pointer_type testdllcpp::getDll() { return _base; } 
-testdllcpp::pointer_type testdllcpp::generate(::icedb::dll::Dll_Base_Handle::pointer_type bp) { 
-	testdllcpp::pointer_type p(new testdllcpp); 
-	p->_base = bp; 
-	std::shared_ptr<interface_testdll> np(
-		create_testdll(bp->getBase()), destroy_testdll); 
-	p->_p.swap(np);
-	
-	p->getint = BindCPP<interface_testdll,
-		_pimpl_interface_nm_testdll::_pimpl_interface_testdll::Sym_getint,
-		_pimpl_interface_nm_testdll::_pimpl_interface_testdll::Access_Sym_getint,
-		int>(p->_p);
-	p->setint = BindCPP<interface_testdll,
-		_pimpl_interface_nm_testdll::_pimpl_interface_testdll::Sym_setint,
-		_pimpl_interface_nm_testdll::_pimpl_interface_testdll::Access_Sym_setint,
-		int, int>(p->_p);
-	
-	return p;
-}
-//*/
-//ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_BEGIN(testdllcpp, testdll)
-
-
-ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END(testdllcpp, testdll)
+ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_BEGIN(testdllcpp, testdll)
+ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, getint, int)
+ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(testdll, setint, int, int)
+ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END
 
 
 int main(int, char**) {
