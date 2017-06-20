@@ -23,9 +23,10 @@ namespace icedb {
 			template<class InterfaceType, class SymbolClass, class SymbolAccessor, class ReturnType, class ...Args>
 			ReturnType DoBind(InterfaceType *p, Args... args) {
 				SymbolClass *s = SymbolAccessor::Access(p);
-				if (s->status != ICEDB_DLL_FUNCTION_LOADED) {
+				if ((!s->status) || (s->status != p->_base->isOpen(p->_base))) {
 					s->inner = (SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
-					s->status = ICEDB_DLL_FUNCTION_LOADED;
+					if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
+					s->status = p->_base->openCount;
 				}
 				bool iv = (typeid(ReturnType) == typeid(void));
 
@@ -72,7 +73,7 @@ namespace icedb {
 			_pimpl_interface_##InterfaceName(interface_##InterfaceName* obj) {
 
 #define ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(InterfaceName, retVal, FuncName, ...) \
-				sym_##FuncName.status = ICEDB_DLL_FUNCTION_UNLOADED; \
+				sym_##FuncName.status = 0; \
 				sym_##FuncName.inner = NULL; \
 				obj->##FuncName = ::icedb::dll::binding::DoBind \
 					<interface_##InterfaceName, Sym_##FuncName, \

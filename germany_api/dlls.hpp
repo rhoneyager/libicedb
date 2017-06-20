@@ -8,24 +8,34 @@
 ICEDB_BEGIN_DECL_CPP
 
 struct ICEDB_DLL_BASE_HANDLE;
+
+#if defined _MSC_FULL_VER
+#pragma warning(push)
+#pragma warning( disable : 4251 )
+#endif
 namespace icedb {
 	namespace dll {
 		class DL_ICEDB Dll_Base_Handle {
-			const char* path;
-			uint16_t refCount;
-			std::unique_ptr<_dlHandleType_impl> _dlHandle;
+			typedef std::unique_ptr<ICEDB_DLL_BASE_HANDLE,
+				decltype(&ICEDB_DLL_BASE_HANDLE_destroy)> base_pointer_type;
+			base_pointer_type _base;
+			Dll_Base_Handle(base_pointer_type&);
 		public:
+			virtual ~Dll_Base_Handle();
 			typedef std::shared_ptr<Dll_Base_Handle> pointer_type;
 			ICEDB_error_code open();
 			ICEDB_error_code close();
-			bool isOpen() const;
+			uint16_t isOpen() const;
 			uint16_t getRefCount() const;
 			void incRefCount();
 			ICEDB_error_code decRefCount();
 			void* getSym(const char* symbol_name);
 			const char* getPath() const;
 			ICEDB_error_code setPath(const char* filename);
+			void setAutoOpen(bool);
+			bool getAutoOpen() const;
 			static pointer_type generate(const char* filename);
+			static pointer_type generate(ICEDB_DLL_BASE_HANDLE*); // Transfers control to C++ class.
 		};
 		typedef Dll_Base_Handle::pointer_type Dll_Base_Handle_pt;
 	}
@@ -49,5 +59,8 @@ namespace icedb {
 #define ICEDB_DLL_CPP_INTERFACE_END \
 	};
 
+#if defined _MSC_FULL_VER
+#pragma warning(pop)
+#endif
 ICEDB_END_DECL_CPP
 #endif

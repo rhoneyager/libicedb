@@ -4,6 +4,7 @@
 #include "error_context.h"
 #include "error.h"
 #include "util.h"
+#include "dlls.hpp"
 #include <stdarg.h>
 #include <functional>
 #include <mutex>
@@ -53,6 +54,7 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 		ICEDB_error_context_add_string2(e, "DLL-Path", p->path);
 		return ICEDB_ERRORCODES_DLLOPEN;
 	}
+	p->openCount++;
 	return ICEDB_ERRORCODES_NONE;
 #elif defined(_WIN32)
 	p->_dlHandle->h = LoadLibrary(p->path);
@@ -68,6 +70,7 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 		ICEDB_error_context_add_string2(e, "DLL-Path", p->path);
 		return ICEDB_ERRORCODES_DLLOPEN;
 	}
+	p->openCount++;
 	return ICEDB_ERRORCODES_NONE;
 #endif
 }
@@ -81,7 +84,7 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_close(ICEDB_DLL_BASE_HANDLE *p) {
 	p->_dlHandle->h = NULL;
 	return ICEDB_ERRORCODES_NONE;
 }
-bool ICEDB_DLL_BASE_HANDLE_IMPL_isOpen(ICEDB_DLL_BASE_HANDLE *p) { return (p->_dlHandle->h) ? true : false; }
+uint16_t ICEDB_DLL_BASE_HANDLE_IMPL_isOpen(ICEDB_DLL_BASE_HANDLE *p) { return (p->_dlHandle->h) ? true : false; }
 uint16_t ICEDB_DLL_BASE_HANDLE_IMPL_getRefCount(ICEDB_DLL_BASE_HANDLE *p) { return p->refCount; }
 void ICEDB_DLL_BASE_HANDLE_IMPL_incRefCount(ICEDB_DLL_BASE_HANDLE *p) { p->refCount++; }
 ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_decRefCount(ICEDB_DLL_BASE_HANDLE *p) {
@@ -91,6 +94,7 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_decRefCount(ICEDB_DLL_BASE_HANDLE *p
 	} else return ICEDB_ERRORCODES_DLL_DEC_REFS_LE_0;
 }
 void* ICEDB_DLL_BASE_HANDLE_IMPL_getSym(ICEDB_DLL_BASE_HANDLE* p, const char* symbol) {
+	if (!p->_dlHandle->h && p->autoOpen) ICEDB_DLL_BASE_HANDLE_IMPL_open(p);
 	if (!p->_dlHandle->h) {
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_NO_DLHANDLE);
 		return NULL;
@@ -127,6 +131,8 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_setPath(ICEDB_DLL_BASE_HANDLE* p, co
 	p->path = ICEDB_COMPAT_strdup_s(filename, sz);
 	return ICEDB_ERRORCODES_NONE;
 }
+void ICEDB_DLL_BASE_HANDLE_IMPL_set_autoopen(ICEDB_DLL_BASE_HANDLE* p, bool val) {p->autoOpen = val;}
+bool ICEDB_DLL_BASE_HANDLE_IMPL_get_autoopen(ICEDB_DLL_BASE_HANDLE* p) {return p->autoOpen;}
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable() {
 	ICEDB_DLL_BASE_HANDLE_vtable* res = (ICEDB_DLL_BASE_HANDLE_vtable*) ICEDB_malloc(sizeof ICEDB_DLL_BASE_HANDLE_vtable);
@@ -139,6 +145,8 @@ ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable
 	res->isOpen = ICEDB_DLL_BASE_HANDLE_IMPL_isOpen;
 	res->open = ICEDB_DLL_BASE_HANDLE_IMPL_open;
 	res->setPath = ICEDB_DLL_BASE_HANDLE_IMPL_setPath;
+	res->getAutoOpen = ICEDB_DLL_BASE_HANDLE_IMPL_get_autoopen;
+	res->setAutoOpen = ICEDB_DLL_BASE_HANDLE_IMPL_set_autoopen;
 	return res;
 }
 
@@ -146,3 +154,31 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_destroy_vtable(ICEDB_DLL_BASE_HANDLE_v
 	ICEDB_free((void*)h);
 }
 
+ICEDB_CALL_CPP DL_ICEDB icedb::dll::Dll_Base_Handle::Dll_Base_Handle(base_pointer_type& r)
+	:_base(nullptr, ICEDB_DLL_BASE_HANDLE_destroy){
+	_base.swap(r);
+}
+ICEDB_CALL_CPP DL_ICEDB icedb::dll::Dll_Base_Handle::~Dll_Base_Handle() {}
+
+ICEDB_CALL_CPP DL_ICEDB ICEDB_error_code icedb::dll::Dll_Base_Handle::open() { return _base->_vtable->open(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB ICEDB_error_code icedb::dll::Dll_Base_Handle::close() { return _base->_vtable->close(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB uint16_t icedb::dll::Dll_Base_Handle::isOpen() const { return _base->_vtable->isOpen(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB uint16_t icedb::dll::Dll_Base_Handle::getRefCount() const { return _base->_vtable->getRefCount(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB void icedb::dll::Dll_Base_Handle::incRefCount() { _base->_vtable->incRefCount(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB ICEDB_error_code icedb::dll::Dll_Base_Handle::decRefCount() { return _base->_vtable->decRefCount(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB void icedb::dll::Dll_Base_Handle::setAutoOpen(bool val) { _base->_vtable->setAutoOpen(_base.get(), val); }
+ICEDB_CALL_CPP DL_ICEDB bool icedb::dll::Dll_Base_Handle::getAutoOpen() const { return _base->_vtable->getAutoOpen(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB void* icedb::dll::Dll_Base_Handle::getSym(const char* val) { return _base->_vtable->getSym(_base.get(), val); }
+ICEDB_CALL_CPP DL_ICEDB const char* icedb::dll::Dll_Base_Handle::getPath() const { return _base->_vtable->getPath(_base.get()); }
+ICEDB_CALL_CPP DL_ICEDB ICEDB_error_code icedb::dll::Dll_Base_Handle::setPath(const char* val) { return _base->_vtable->setPath(_base.get(), val); }
+ICEDB_CALL_CPP DL_ICEDB icedb::dll::Dll_Base_Handle::pointer_type icedb::dll::Dll_Base_Handle::generate(const char* filename) {
+	base_pointer_type bp(ICEDB_DLL_BASE_HANDLE_create(filename), ICEDB_DLL_BASE_HANDLE_destroy);
+	pointer_type p( new Dll_Base_Handle(bp));
+	return p;
+}
+ICEDB_CALL_CPP DL_ICEDB icedb::dll::Dll_Base_Handle::pointer_type
+icedb::dll::Dll_Base_Handle::generate(ICEDB_DLL_BASE_HANDLE* h) {
+	base_pointer_type bp(h, ICEDB_DLL_BASE_HANDLE_destroy);
+	pointer_type p(new Dll_Base_Handle(bp));
+	return p;
+}

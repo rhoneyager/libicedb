@@ -130,6 +130,12 @@ ICEDB_BEGIN_DECL_C
 #define ICEDB_THREAD_LOCAL __thread
 #endif
 
+// Compiler interface warning suppression
+#if defined _MSC_FULL_VER
+#pragma warning(push)
+#pragma warning( disable : 4251 )
+#endif
+
 ICEDB_END_DECL_C
 
 #endif
