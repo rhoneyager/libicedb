@@ -1,4 +1,4 @@
-#include "mem.h"
+#include "../germany/mem.h"
 #include <stdlib.h>
 
 ICEDB_BEGIN_DECL_C

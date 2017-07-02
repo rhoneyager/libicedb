@@ -1,9 +1,9 @@
 #define __STDC_WANT_LIB_EXT1__ 1
-#include "util.h"
+#include "../germany/util.h"
 #include <string.h>
 #include <stdlib.h>
-#include "error_context.h"
-#include "mem.h"
+#include "../germany/error_context.h"
+#include "../germany/mem.h"
 
 ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context = NULL;
 
