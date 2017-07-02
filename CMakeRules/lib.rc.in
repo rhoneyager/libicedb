@@ -1,7 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 //#include "resource.h"
-#include "@CMAKE_SOURCE_DIR@/Ryan_Scat/resource.h"
+#include "@CMAKE_SOURCE_DIR@/resource.h"
 #include "cmake-settings.h"
 
 #define QUOTE(str) #str
