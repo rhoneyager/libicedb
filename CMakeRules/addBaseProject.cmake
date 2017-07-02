@@ -1,0 +1,51 @@
+macro(getMSVCappend)
+    if(DEFINED MSVC)
+        if (MSVC)
+                set (MSVC_APPEND ${MSVC_VERSION})
+        endif()
+    endif()
+endmacro(getMSVCappend)
+macro(addBaseProject)
+
+# Enable C++11
+# g++
+IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
+	#    SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -fPIC")
+    SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
+ENDIF()
+IF(DEFINED MSVC)
+    # MSVC parallel builds by default
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+ENDIF()
+
+# If doing a debug build, set the appropriate compiler defines
+IF("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
+    add_definitions(-D_DEBUG)
+ENDIF()
+
+    set(configappend "")
+    if (CMAKE_CL_64)
+        set(configappend "${configappend}_x64")
+    elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "64")
+        set(configappend "${configappend}_x64")
+    else()
+        set(configappend "${configappend}_x86")
+    endif()
+    if (MSVC)
+        getMSVCappend()
+        set(configappend "${configappend}_${MSVC_APPEND}")
+        add_definitions(-DCONF="$(Configuration)${configappend}")
+        set(CONF CONF)
+    elseif (MINGW)
+        set(configappend "${configappend}_mingw")
+        add_definitions(-DCONF="${CMAKE_BUILD_TYPE}${configappend}")
+        set(CONF "\"${CMAKE_BUILD_TYPE}${configappend}\"")
+    else()
+        set(configappend "${configappend}_${CMAKE_CXX_COMPILER_ID}")
+        add_definitions(-DCONF="${CMAKE_BUILD_TYPE}${configappend}")
+        set(CONF "\"${CMAKE_BUILD_TYPE}${configappend}\"")
+    endif()
+    #message("${configappend}")
+
+endmacro(addBaseProject)
+

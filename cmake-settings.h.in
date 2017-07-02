@@ -2,8 +2,8 @@
 #define germany_api_MAJOR @MAJOR@
 #define germany_api_MINOR @MINOR@
 #define germany_api_REVISION @REVISION@
-//#define germany_api_GitHash "@GITHASHVAR@"
-//#define germany_api_GitBranch "@GITREFSPECVAR@"
+#define germany_api_GitHash "@GITHASHVAR@"
+#define germany_api_GitBranch "@GITREFSPECVAR@"
 //#define COMPRESS_ZLIB @COMPRESS_ZLIB@
 //#define COMPRESS_GZIP @COMPRESS_GZIP@
 //#define COMPRESS_BZIP2 0

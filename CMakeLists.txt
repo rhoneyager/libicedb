@@ -6,11 +6,22 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
+include(addBaseProject)
+#include(addBoostUniform)
+include(adddocs)
+include(addapp)
+INCLUDE(addlib)
+include(generaterc)
+#include(PrecompiledHeader)
+include(GetGitRevisionDescription)
+
+get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
 set(MINOR 0)
 set(REVISION 1)
 set(germany_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+addBaseProject()
 
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake-settings.h.in"
