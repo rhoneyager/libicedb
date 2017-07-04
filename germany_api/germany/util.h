@@ -4,10 +4,7 @@
 #include "defs.h"
 ICEDB_BEGIN_DECL_C
 
-	/** Safe char array copy. Returns the number of characters actually written. **/
 	ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
-
-	/** Safe char array initialization and copy. Null appended at end (added to srcSz). **/
 	ICEDB_SYMBOL_SHARED char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
 
 	/** Safe file stream printf **/

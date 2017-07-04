@@ -233,6 +233,18 @@ namespace icedb {
 				mmods[name] = name;
 				return 0;
 			}
+			std::string GetModulePath(void *addr)
+			{
+				std::string out;
+				Dl_info info;
+				void *addrb = addr;
+				if (!addrb) addrb = (void*)GetModulePath;
+				if (dladdr(addrb, &info))
+				{
+					out = std::string(info.dli_fname);
+				}
+				return out;
+			}
 #endif
 		}
 		bool populateOSstrings() {
@@ -620,6 +632,69 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 	}
 	p->modules = const_cast<const char**>(nmods);
 	return p;
+}
+
+char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
+	/** \brief Find the file that contains the symbol.
+	\param ptr is the symbol. Can be any pointer.
+	\param sz is the size of the output buffer (bytes).
+	\param res is the output buffer, of size at least sz. Gets null terminated.
+	\returns res for convenience
+	**/
+	std::string modpath;
+#if defined(_WIN32)
+	BOOL success = false;
+	if (ptr)
+	{
+		DWORD flags = GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS;
+		LPCTSTR lpModuleName = (LPCTSTR)ptr;
+		HMODULE mod;
+		success = GetModuleHandleEx(flags, lpModuleName, &mod);
+		if (!success) return nullptr;
+		modpath = icedb::os_functions::win::GetModulePath(mod);
+		FreeLibrary(mod);
+	} else modpath = icedb::os_functions::win::GetModulePath(NULL);
+#elif defined(__unix__)
+	return icedb::os_functions::unix::GetModulePath(ptr);
+#endif
+	ICEDB_COMPAT_strncpy_s(res, sz, modpath.c_str(), modpath.size());
+	return res;
+}
+char* ICEDB_findIceDbDllDir(size_t sz, char* res) {
+#if defined(_WIN32)
+	std::string modpath = icedb::os_functions::win::GetModulePath(NULL);
+#elif defined(__unix__)
+	std::string modpath = icedb::os_functions::unix::GetModulePath(ptr);
+#endif
+	std::string moddir = modpath.substr(0, modpath.find_last_of("/\\"));
+	ICEDB_COMPAT_strncpy_s(res, sz, moddir.c_str(), moddir.size());
+	return res;
+}
+char* ICEDB_getAppDir(size_t sz, char* res) {
+	std::string appd;
+#if defined(_WIN32)
+	DWORD pid = (DWORD) ICEDB_getPID(); // int always fits in DWORD
+	std::string filename;
+	icedb::os_functions::win::getPathWIN32(pid, appd, filename);
+#elif defined(__unix__)
+	throw;
+#endif
+	ICEDB_COMPAT_strncpy_s(res, sz, appd.c_str(), appd.size());
+	return res;
+}
+char* ICEDB_getCWD(size_t sz, char* res) {
+	std::string cwd;
+#if defined(_WIN32)
+	DWORD sz = GetCurrentDirectory(0, NULL);
+	LPTSTR cd = new TCHAR[sz];
+	DWORD result = GetCurrentDirectory(2500, cd);
+	cwd = std::string(cd);
+	delete[] cd;
+#elif defined(__unix__)
+	throw;
+#endif
+	ICEDB_COMPAT_strncpy_s(res, sz, cwd.c_str(), cwd.size());
+	return res;
 }
 
 /**
