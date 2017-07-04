@@ -24,7 +24,7 @@ struct ICEDB_enumModulesRes {
 	const char** modules;
 };
 DL_ICEDB void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes*);
-DL_ICEDB void ICEDB_enumModules(int pid, ICEDB_enumModulesRes*);
+DL_ICEDB ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
 
 DL_ICEDB void ICEDB_libEntry(int argc, char** argv);
 DL_ICEDB void ICEDB_libExit();

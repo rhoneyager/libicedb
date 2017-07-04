@@ -32,3 +32,4 @@ configure_file (
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 ADD_SUBDIRECTORY(germany_api)
+ADD_SUBDIRECTORY(apps)

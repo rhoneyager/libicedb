@@ -571,8 +571,8 @@ void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes* p) {
 	ICEDB_free(p->modules);
 	ICEDB_free(p);
 }
-void ICEDB_enumModules(int pid, ICEDB_enumModulesRes* p) {
-	p = (ICEDB_enumModulesRes*)ICEDB_malloc(sizeof ICEDB_enumModulesRes);
+ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
+	ICEDB_enumModulesRes *p = (ICEDB_enumModulesRes*)ICEDB_malloc(sizeof ICEDB_enumModulesRes);
 	
 #if defined(_WIN32)
 	HANDLE h = NULL, snapshot = NULL;
@@ -615,9 +615,11 @@ void ICEDB_enumModules(int pid, ICEDB_enumModulesRes* p) {
 	char **nmods = (char**)ICEDB_malloc(sizeof (char**));
 	size_t i = 0;
 	for (auto &s : mmods) {
-		nmods[i] = ICEDB_COMPAT_strdup_s(s.first.c_str(), s.first.size());
+		nmods[i] = ICEDB_COMPAT_strdup_s(s.second.c_str(), s.second.size());
 		++i;
 	}
+	p->modules = const_cast<const char**>(nmods);
+	return p;
 }
 
 /**
@@ -696,11 +698,15 @@ void ICEDB_libExit() {
 namespace icedb {
 	namespace os_functions {
 
-		bool pidExists(int pid) { bool res = false; ICEDB_pidExists(pid, res); }
+		bool pidExists(int pid) { bool res = false; ICEDB_pidExists(pid, res); return res; }
 		int getPID() { return ICEDB_getPID(); }
 		int getPPID(int pid) { return ICEDB_getPPID(pid); }
 		void libEntry(int argc, char** argv) { ICEDB_libEntry(argc, argv); }
 		void waitOnExit(bool val) { ICEDB_waitOnExitSet(val); }
 		bool waitOnExit() { return ICEDB_waitOnExitGet(); }
+		const char* getUserName() { return ICEDB_getUserName(); }
+		const char* getHostName() { return ICEDB_getHostName(); }
+		const char* getAppConfigDir() { return ICEDB_getAppConfigDir(); }
+		const char* getHomeDir() { return ICEDB_getHomeDir(); }
 	}
 }
