@@ -81,6 +81,23 @@ ICEDB_BEGIN_DECL_C
 #pragma message("defs.h warning: compiler is unrecognized")
 #endif
 
+// OS definitions
+#ifdef __unix__
+#ifdef __linux__
+#define ICEDB_OS_LINUX
+#endif
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__) || defined(__APPLE__)
+#define ICEDB_OS_UNIX
+#endif
+#endif
+#ifdef _WIN32
+#define ICEDB_OS_WINDOWS
+#endif
+#if !defined(_WIN32) && !defined(SDBR_OS_UNIX) && !defined(SDBR_OS_LINUX)
+#define ICEDB_OS_UNSUPPORTED
+#endif
+
+
 // If SHARED_(libname) is defined, then the target library both 
 // exprts and imports. If not defined, then it is a static library.
 
@@ -88,8 +105,8 @@ ICEDB_BEGIN_DECL_C
 // They indicate that SHARED_EXPORT_SDBR should be used.
 // If EXPORTING_ is not defined, then SHARED_IMPORT_SDBR should be used.
 
-#if SHARED_ICEDB
-#if EXPORTING_ICEDB
+#if SHARED_germany_api
+#if EXPORTING_germany_api
 #define DL_ICEDB SHARED_EXPORT_ICEDB
 #else
 #define DL_ICEDB SHARED_IMPORT_ICEDB

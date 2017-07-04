@@ -12,6 +12,8 @@ set (base_objs
 	germany/log.h
 	germany/mem.h
 	germany/mem.hpp
+	germany/os_functions.h
+	germany/os_functions.hpp
 	germany/util.h
 	src/defs.cpp
 	src/dllsImpl.cpp
@@ -19,6 +21,7 @@ set (base_objs
 	src/error_context.cpp
 	src/errorCodes.cpp
 	src/mem.cpp
+	src/os_functions.cpp
 	src/util.cpp
 	)
 

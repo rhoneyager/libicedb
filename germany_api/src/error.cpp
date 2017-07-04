@@ -170,6 +170,32 @@ ICEDB_SYMBOL_SHARED void ICEDB_error_context_deallocate(struct ICEDB_error_conte
 	ICEDB_free(c);
 }
 
+DL_ICEDB const char* ICEDB_error_getOSname() {
+	const char* name =
+#if defined(__FreeBSD__)
+		"FreeBSD";
+#elif defined(__NetBSD__)
+		"NetBSD";
+#elif defined(__OpenBSD__)
+		"OpenBSD";
+#elif defined(__bsdi__)
+		"bsdi";
+#elif defined(__DragonFly__)
+		"DragonFly BSD";
+#elif defined (__APPLE__)
+		"Apple";
+#elif defined(__linux__)
+		"Linux";
+#elif defined(_WIN32)
+		"Windows";
+#elif defined(__unix__)
+		"Generic Unix";
+#else
+		"UNKNOWN";
+#endif
+	return name;
+}
+
 ICEDB_END_DECL_C
 
 ICEDB_BEGIN_DECL_CPP

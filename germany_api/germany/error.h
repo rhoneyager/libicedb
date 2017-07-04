@@ -17,7 +17,7 @@ ICEDB_BEGIN_DECL_C
 	error message.
 	\returns The minimum size of the character array needed to hold the message.
 	\param err is the error code in question. **/
-	ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_code_to_message_size(ICEDB_error_code err);
+	DL_ICEDB uint16_t ICEDB_error_code_to_message_size(ICEDB_error_code err);
 
 	/** Support function to turn the general error code into a human-readable message.
 	This function safely writes the error string. The buffer will always be null-terminated, either at the
@@ -30,7 +30,7 @@ ICEDB_BEGIN_DECL_C
 	\param err is the error code in question. 
 	\param buf_size is the size of the output buffer.
 	\param buf is the buffer. **/
-	ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_code_to_message(ICEDB_error_code err, size_t buf_size, char* buf);
+	DL_ICEDB uint16_t ICEDB_error_code_to_message(ICEDB_error_code err, size_t buf_size, char* buf);
 
 	/** Support function to write the error code to an output stream (C-style).
 	This is a convenience function that allows for printing the error without an intermediate string copy,
@@ -38,7 +38,7 @@ ICEDB_BEGIN_DECL_C
 	\returns The number of bytes actually written (including the NULL).
 	\param fp is the FILE pointer.
 	\param err is the error code in question. **/
-	ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_code_to_stream(ICEDB_error_code err, FILE* fp);
+	DL_ICEDB uint16_t ICEDB_error_code_to_stream(ICEDB_error_code err, FILE* fp);
 
 	/** Defines an error context. This structure contains both an error code (for fast lookups) and
 	any ancillary information to determine why / how the error occurred. The library keeps an internal buffer
@@ -48,16 +48,16 @@ ICEDB_BEGIN_DECL_C
 
 	/** Copy the last error context raised within the active thread. The resulting object should be freed once no longer needed. 
 	Returns NULL if no context exists. **/
-	ICEDB_SYMBOL_SHARED struct ICEDB_error_context* ICEDB_get_error_context_thread_local();
+	DL_ICEDB struct ICEDB_error_context* ICEDB_get_error_context_thread_local();
 
 	/** Release the error context (this is the destructor, and frees the memory) **/
-	ICEDB_SYMBOL_SHARED void ICEDB_error_context_deallocate(struct ICEDB_error_context*);
+	DL_ICEDB void ICEDB_error_context_deallocate(struct ICEDB_error_context*);
 
 	/** Get the error code from the context. Shouldn't be necessary. **/
-	ICEDB_SYMBOL_SHARED ICEDB_error_code ICEDB_error_context_to_code(const struct ICEDB_error_context*);
+	DL_ICEDB ICEDB_error_code ICEDB_error_context_to_code(const struct ICEDB_error_context*);
 
 	/** Determines the minimum buffer size for a human-readable representation of the ICEDB_error_context. **/
-	ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_message_size(const struct ICEDB_error_context*);
+	DL_ICEDB uint16_t ICEDB_error_context_to_message_size(const struct ICEDB_error_context*);
 	/** Support function to turn the general error code into a human-readable message.
 	This function safely writes the error string. The buffer will always be null-terminated, either at the
 	end of the written string, or at the end of the buffer. To query the necessary buffer size before writing,
@@ -69,7 +69,7 @@ ICEDB_BEGIN_DECL_C
 	\param err is the error context in question.
 	\param buf_size is the size of the output buffer.
 	\param buf is the buffer. **/
-	ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_message(const struct ICEDB_error_context* err, size_t buf_size, char* buf);
+	DL_ICEDB uint16_t ICEDB_error_context_to_message(const struct ICEDB_error_context* err, size_t buf_size, char* buf);
 
 	/** Support function to write the error code to an output stream (C-style).
 	This is a convenience function that allows for printing the error without an intermediate string copy,
@@ -77,10 +77,13 @@ ICEDB_BEGIN_DECL_C
 	\returns The number of bytes actually written (including the NULL).
 	\param fp is the FILE pointer.
 	\param err is the error context in question. **/
-	ICEDB_SYMBOL_SHARED uint16_t ICEDB_error_context_to_stream(const struct ICEDB_error_context* err, FILE* fp);
+	DL_ICEDB uint16_t ICEDB_error_context_to_stream(const struct ICEDB_error_context* err, FILE* fp);
 
 	/** Testing function that raises an error. **/
-	ICEDB_SYMBOL_SHARED ICEDB_error_code ICEDB_error_test();
+	DL_ICEDB ICEDB_error_code ICEDB_error_test();
+
+	/// Convenience function that returns a string describing the OS type.
+	DL_ICEDB const char* ICEDB_error_getOSname();
 
 	ICEDB_END_DECL_C
 #endif
