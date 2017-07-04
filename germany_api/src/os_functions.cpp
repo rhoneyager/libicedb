@@ -687,3 +687,20 @@ void ICEDB_libExit() {
 		std::getline(cin, ln);
 	}
 }
+
+
+
+
+
+
+namespace icedb {
+	namespace os_functions {
+
+		bool pidExists(int pid) { bool res = false; ICEDB_pidExists(pid, res); }
+		int getPID() { return ICEDB_getPID(); }
+		int getPPID(int pid) { return ICEDB_getPPID(pid); }
+		void libEntry(int argc, char** argv) { ICEDB_libEntry(argc, argv); }
+		void waitOnExit(bool val) { ICEDB_waitOnExitSet(val); }
+		bool waitOnExit() { return ICEDB_waitOnExitGet(); }
+	}
+}
