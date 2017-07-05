@@ -201,6 +201,16 @@ ICEDB_END_DECL_C
 ICEDB_BEGIN_DECL_CPP
 namespace icedb {
 	namespace error {
+		template<> ICEDB_SYMBOL_SHARED std::string stringify<std::string>(error_code_t err) {
+			std::string res;
+			stringify(err, res);
+			return res;
+		}
+		template<> ICEDB_SYMBOL_SHARED const char* stringify<const char*>(error_code_t err) {
+			return ICEDB_ERRORCODES_MAP[err];
+		}
+
+
 		ICEDB_SYMBOL_SHARED error_context_pt get_error_context_thread_local() {
 			return error_context_pt(ICEDB_get_error_context_thread_local(),&ICEDB_error_context_deallocate);
 		}
@@ -211,15 +221,6 @@ namespace icedb {
 		ICEDB_SYMBOL_SHARED void stringify(error_code_t err, const char** res) {
 			*res = ICEDB_ERRORCODES_MAP[err];
 		}
-		template<> ICEDB_SYMBOL_SHARED std::string stringify<std::string>(error_code_t err) {
-			std::string res;
-			stringify(err, res);
-			return res;
-		}
-		template<> ICEDB_SYMBOL_SHARED const char* stringify<const char*>(error_code_t err) {
-			return ICEDB_ERRORCODES_MAP[err];
-		}
-
 		ICEDB_SYMBOL_SHARED void stringify(const error_context_pt &err, std::string &res) {
 			// A few memory copies occur here. Inefficient, but errors should not occur much in properly running code.
 			uint16_t sz = ICEDB_error_context_to_message_size(err.get());

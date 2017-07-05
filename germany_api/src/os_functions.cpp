@@ -8,21 +8,22 @@
 #pragma comment(lib, "Ws2_32")
 #pragma comment(lib, "Advapi32")
 #pragma comment(lib, "Shell32")
-#elif defined(__unix__)
+// __unix__ is not picking up __APPLE__
+#elif defined(__unix__) || defined(__APPLE__)
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/user.h>
 #include <sys/sysctl.h>
 #include <pwd.h>
 #include <dlfcn.h>
-#include <link.h>
+//#include <link.h> // not on mac
 #include <dirent.h>
 #endif
 #include <mutex>
 #include <thread>
 #include <ctime>
 #include <iostream>
-#include <cstdio>
+#include <stdio.h>
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
@@ -218,20 +219,22 @@ namespace icedb {
 		}
 		namespace unix {
 #ifdef __unix__
+			/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
+			int moduleCallback(dl_phdr_info *info, size_t sz, void* data)
+			{
+				std::string name(info->dlpi_name);
+				if (!name.size()) return 0;
+				vars::mmods[name] = name;
+				return 0;
+			}
+#endif
+#if defined(__unix__) || defined(__APPLE__)
 			bool dirExists(const char *p) {
 				DIR *d = NULL;
 				d = opendir(p);
 				bool res = (d) ? true : false;
 				if (d) closedir(d);
 				return res;
-			}
-			/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
-			int moduleCallback(dl_phdr_info *info, size_t sz, void* data)
-			{
-				std::string name(info->dlpi_name);
-				if (!name.size()) return 0;
-				mmods[name] = name;
-				return 0;
 			}
 			std::string GetModulePath(void *addr)
 			{
@@ -433,8 +436,8 @@ bool ICEDB_pidExists(int pid, bool &res)
 	sysctlnametomib("kern.proc.pid", mib, &len);
 	mib[3] = pid;
 	len = sizeof(kp);
-	int res = sysctl(mib, 4, &kp, &len, NULL, 0);
-	if (res == -1) {
+	int sres = sysctl(mib, 4, &kp, &len, NULL, 0);
+	if (sres == -1) {
 		// Either the pid does not exist, or some other error
 		if (errno == ENOENT) {
 			res = false; return true;
@@ -444,13 +447,13 @@ bool ICEDB_pidExists(int pid, bool &res)
 		ICEDB_error_context_add_string2(err, "OS_id", osname);
 		const int buflen = 200;
 		char strerrbuf[buflen] = "\0";
-		snprintf(strerrbuf, "%d", errno);
+		snprintf(strerrbuf, buflen, "%d", errno);
 		ICEDB_error_context_add_string2(err, "errno", strerrbuf);
 
 		// strerror_r will always yield a null-terminated string.
 		//int ebufres = strerror_r(err, strerrbuf, buflen);
 	}
-	else if ((res == 0) && (len > 0)) res = true;
+	else if ((sres == 0) && (len > 0)) res = true;
 	return true;
 #endif
 	auto err = ICEDB_error_context_create(ICEDB_ERRORCODES_UNIMPLEMENTED);
@@ -586,7 +589,7 @@ void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes* p) {
 	ICEDB_free(p);
 }
 ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
-	ICEDB_enumModulesRes *p = (ICEDB_enumModulesRes*)ICEDB_malloc(sizeof ICEDB_enumModulesRes);
+	ICEDB_enumModulesRes *p = (ICEDB_enumModulesRes*)ICEDB_malloc(sizeof (ICEDB_enumModulesRes));
 	
 #if defined(_WIN32)
 	HANDLE h = NULL, snapshot = NULL;
@@ -600,7 +603,7 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 		do {
 			std::string modName = icedb::os_functions::win::convertStr(mod->szModule);
 			std::string modPath = icedb::os_functions::win::convertStr(mod->szExePath);
-			mmods[modName] = modPath;
+			vars::mmods[modName] = modPath;
 		} while (Module32Next(snapshot, mod.get()));
 
 		goto done;
@@ -665,8 +668,8 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 char* ICEDB_getLibDir(size_t sz, char* res) {
 #if defined(_WIN32)
 	std::string modpath = icedb::os_functions::win::GetModulePath(NULL);
-#elif defined(__unix__)
-	std::string modpath = icedb::os_functions::unix::GetModulePath(ptr);
+#elif defined(__unix__) || defined(__APPLE__)
+	std::string modpath = icedb::os_functions::unix::GetModulePath((void*)ICEDB_getLibDir);
 #endif
 	std::string moddir = modpath.substr(0, modpath.find_last_of("/\\"));
 	ICEDB_COMPAT_strncpy_s(res, sz, moddir.c_str(), moddir.size());

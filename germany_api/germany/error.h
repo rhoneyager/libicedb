@@ -5,7 +5,7 @@
 #include "errorCodes.h"
 #include <stdio.h>
 #include <stdint.h>
-#include <intsafe.h>
+//#include <intsafe.h>
 
 ICEDB_BEGIN_DECL_C
 

@@ -9,7 +9,7 @@ ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREA
 
 ICEDB_SYMBOL_PRIVATE struct ICEDB_error_context* ICEDB_error_context_create_impl(int code, const char* file, int line, const char* fsig)
 {
-	ICEDB_error_context* res = (ICEDB_error_context*) ICEDB_malloc(sizeof ICEDB_error_context);
+	ICEDB_error_context* res = (ICEDB_error_context*) ICEDB_malloc(sizeof (ICEDB_error_context));
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	res->code = code;
 	res->message_size_alloced = (uint16_t) (sizeof(char)*(1 + ICEDB_COMPAT_strnlen_s(ICEDB_ERRORCODES_MAP[code],UINT16_MAX-1)));
@@ -101,7 +101,7 @@ ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string2(struct ICEDB_error_con
 ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_widen(struct ICEDB_error_context *c, uint16_t numNewSpaces)
 {
 	ICEDB_error_context_var_val* newvals = (ICEDB_error_context_var_val*)ICEDB_malloc(
-		(numNewSpaces + c->max_num_var_fields) * (sizeof ICEDB_error_context));
+		(numNewSpaces + c->max_num_var_fields) * (sizeof (ICEDB_error_context)));
 
 	for (uint16_t i = 0; i < numNewSpaces; ++i) {
 		newvals[i + c->max_num_var_fields].val = NULL;

@@ -1,5 +1,6 @@
 #include "../germany/defs.h"
 #include <stdio.h>
+#include <stdlib.h>
 #ifdef _WIN32
 #include <Windows.h>
 #endif

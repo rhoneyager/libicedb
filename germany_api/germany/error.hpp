@@ -21,8 +21,10 @@ namespace icedb {
 		ICEDB_SYMBOL_SHARED void stringify(error_code_t err, std::string &);
 		ICEDB_SYMBOL_SHARED void stringify(error_code_t err, char* const* );
 		template <class StringType> StringType stringify(error_code_t err) { return StringType(); }
-		extern template ICEDB_SYMBOL_SHARED std::string stringify<std::string>(error_code_t err);
-		extern template ICEDB_SYMBOL_SHARED const char* stringify<const char*>(error_code_t err);
+		template<> std::string stringify(error_code_t err);
+		//extern template std::string stringify<std::string>(error_code_t err);
+		template<> const char* stringify(error_code_t err);
+		//extern template const char* stringify<const char*>(error_code_t err);
 
 		/** Defines an error context. This structure contains both an error code (for fast lookups) and
 		any ancillary information to determine why / how the error occurred. The library keeps an internal buffer

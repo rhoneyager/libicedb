@@ -11,7 +11,7 @@
 #include <typeinfo>
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename) {
-	ICEDB_DLL_BASE_HANDLE *res = (ICEDB_DLL_BASE_HANDLE*)ICEDB_malloc(sizeof ICEDB_DLL_BASE_HANDLE);
+	ICEDB_DLL_BASE_HANDLE *res = (ICEDB_DLL_BASE_HANDLE*)ICEDB_malloc(sizeof (ICEDB_DLL_BASE_HANDLE));
 	res->refCount = 0;
 	res->autoOpen = true;
 	res->openCount = 0;
@@ -74,6 +74,9 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 	}
 	p->openCount++;
 	return ICEDB_ERRORCODES_NONE;
+#else
+	ICEDB_DEBUG_RAISE_EXCEPTION();
+	return ICEDB_ERRORCODES_NONE;
 #endif
 }
 ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_close(ICEDB_DLL_BASE_HANDLE *p) {
@@ -109,20 +112,17 @@ void* ICEDB_DLL_BASE_HANDLE_IMPL_getSym(ICEDB_DLL_BASE_HANDLE* p, const char* sy
 #endif
 	if (!sym)
 	{
-#ifdef _WIN32
-		DWORD errcode = GetLastError();
-#endif
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_NO_DLSYMBOL);
 		const int errStrSz = 250;
 		char ErrString[errStrSz] = "";
+#ifdef _WIN32
+		DWORD errcode = GetLastError();
 		snprintf(ErrString, errStrSz, "%ul", errcode);
+		ICEDB_error_context_add_string2(e, "Win-Error-Code", ErrString);
+#endif
 
 		ICEDB_error_context_add_string2(e, "Symbol-Name", symbol);
 		ICEDB_error_context_add_string2(e, "DLL-path", p->path);
-#ifdef _WIN32
-			ICEDB_error_context_add_string2(e, "Win-Error-Code", ErrString);
-#endif
-			;
 	}
 	return (void*)sym;
 }
@@ -137,7 +137,7 @@ void ICEDB_DLL_BASE_HANDLE_IMPL_set_autoopen(ICEDB_DLL_BASE_HANDLE* p, bool val)
 bool ICEDB_DLL_BASE_HANDLE_IMPL_get_autoopen(ICEDB_DLL_BASE_HANDLE* p) {return p->autoOpen;}
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable() {
-	ICEDB_DLL_BASE_HANDLE_vtable* res = (ICEDB_DLL_BASE_HANDLE_vtable*) ICEDB_malloc(sizeof ICEDB_DLL_BASE_HANDLE_vtable);
+	ICEDB_DLL_BASE_HANDLE_vtable* res = (ICEDB_DLL_BASE_HANDLE_vtable*) ICEDB_malloc(sizeof (ICEDB_DLL_BASE_HANDLE_vtable));
 	res->close = ICEDB_DLL_BASE_HANDLE_IMPL_close;
 	res->decRefCount = ICEDB_DLL_BASE_HANDLE_IMPL_decRefCount;
 	res->getPath = ICEDB_DLL_BASE_HANDLE_IMPL_getPath;

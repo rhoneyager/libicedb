@@ -27,7 +27,7 @@ namespace icedb {
 			ReturnType DoBind(InterfaceType *p, Args... args) {
 				SymbolClass *s = SymbolAccessor::Access(p);
 				if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
-					s->inner = (SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
+					s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
 					if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
 					s->status = p->_base->openCount;
 				}
@@ -47,7 +47,7 @@ namespace icedb {
 					std::shared_ptr<CInterfaceType> p = wp.lock();
 					SymbolClass *s = SymbolAccessor::Access(p.get());
 					if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
-						s->inner = (SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
+						s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
 						if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
 						s->status = p->_base->openCount;
 					}
