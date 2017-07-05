@@ -1,11 +1,11 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.1)
 project(germany C CXX)
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/CMakeRules"
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-
+set(CMAKE_CXX_STANDARD 11)
 include(addBaseProject)
 #include(addBoostUniform)
 include(adddocs)

@@ -7,10 +7,8 @@ macro(getMSVCappend)
 endmacro(getMSVCappend)
 macro(addBaseProject)
 
-# Enable C++11
 # g++
 IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-	#    SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -fPIC")
     SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
 ENDIF()
 IF(DEFINED MSVC)
