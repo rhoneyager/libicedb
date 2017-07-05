@@ -629,6 +629,19 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 	if (!moduleCallbackBuffer.size()) {
 		dl_iterate_phdr(icedb::os_functions::unix::moduleCallback, NULL);
 	}
+#elif defined(__APPLE__)
+	uint32_t count = _dyld_image_count();
+	for (uint32_t i=0; i<count; ++i) {
+		std::string modName(_dyld_get_image_name(i));
+		char cmodPath[2048];
+		char *ccmodPath = realpath(modName.c_str(), NULL);
+		if (ccmodPath != NULL) {
+			strncpy(cmodPath,ccmodPath,2048);
+			free(ccmodPath);
+		}
+		std::string modPath(ccmodPath);
+		icedb::os_functions::vars::mmods[modPath] = modPath;
+	}
 #else
 #endif
 	// Convert the map to the resultant structure.
