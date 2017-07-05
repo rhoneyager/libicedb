@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 		<< "Home dir: " << getHomeDir() << endl
 		<< "App config dir: " << getAppConfigDir() << endl;
 	const int sz = 500;
-	char bAppDir[sz], bCWD[sz], bLibDir[sz];
+	char bAppDir[sz] = "", bCWD[sz] = "", bLibDir[sz] = "";
 	ICEDB_getAppDir(sz, bAppDir);
 	ICEDB_getCWD(sz, bCWD);
 	ICEDB_getLibDir(sz, bLibDir);
@@ -20,7 +20,6 @@ int main(int argc, char** argv) {
 		<< "CWD: " << bCWD << endl
 		<< "Lib dir: " << bLibDir << endl
 		<< "Loaded modules:" << endl;
-
 	std::shared_ptr<ICEDB_enumModulesRes> r
 	(ICEDB_enumModules(getPID()), ICEDB_free_enumModulesRes);
 	if (r) {

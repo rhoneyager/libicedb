@@ -45,7 +45,7 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_HANDLE_destroy(ICEDB_DLL_BASE_HANDLE* 
 }
 
 ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
-#if defined(__unix__) // Indicates that DLSYM is provided (unix, linux, mac, etc. (sometimes even windows))
+#if defined(__unix__) || defined(__APPLE__) // Indicates that DLSYM is provided (unix, linux, mac, etc. (sometimes even windows))
 	//Check that file exists here
 	p->_dlHandle->h = dlopen(p->path, RTLD_LAZY);
 	const char* cerror = dlerror(); // This is thread safe.
@@ -81,8 +81,8 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 }
 ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_close(ICEDB_DLL_BASE_HANDLE *p) {
 	if (!p->_dlHandle->h) return ICEDB_ERRORCODES_NO_DLHANDLE;
-#if defined(__unix__)
-	dlclose(p->dlHandle);
+#if defined(__unix__) || defined(__APPLE__)
+	dlclose(p->_dlHandle);
 #elif defined(_WIN32)
 	FreeLibrary(p->_dlHandle->h);
 #endif
@@ -105,7 +105,7 @@ void* ICEDB_DLL_BASE_HANDLE_IMPL_getSym(ICEDB_DLL_BASE_HANDLE* p, const char* sy
 		return NULL;
 	}
 	void* sym = nullptr;
-#if defined(__unix__)
+#if defined(__unix__) || defined(__APPLE__)
 	sym = dlsym(p->_dlHandle->h, symbol);
 #elif defined(_WIN32)
 	sym = GetProcAddress(p->_dlHandle->h, symbol);

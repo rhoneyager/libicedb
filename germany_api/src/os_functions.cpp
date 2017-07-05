@@ -15,7 +15,9 @@
 #include <sys/sysctl.h>
 #include <pwd.h>
 #include <dlfcn.h>
-//#include <link.h> // not on mac
+#ifdef __unix__
+#include <link.h> // not on mac
+#endif
 #include <dirent.h>
 #endif
 #ifdef __APPLE__
@@ -220,7 +222,7 @@ namespace icedb {
 #endif
 		}
 		namespace unix {
-#ifdef __unix__
+#if defined(__linux__) || defined(__unix__)
 			/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
 			int moduleCallback(dl_phdr_info *info, size_t sz, void* data)
 			{
@@ -238,6 +240,8 @@ namespace icedb {
 				if (d) closedir(d);
 				return res;
 			}
+#endif
+#if defined(__APPLE__) || defined(__linux__) || defined(__unix__)
 			std::string GetModulePath(void *addr)
 			{
 				std::string out;
@@ -624,8 +628,14 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 
 	if (snapshot && snapshot != INVALID_HANDLE_VALUE) CloseHandle(snapshot);
 	if (h && h != INVALID_HANDLE_VALUE) CloseHandle(h);
-#elif defined(__unix__)
-	if (pid != getPID()) return;
+#elif defined(__linux__) || defined(__unix__)
+	if (pid != icedb::os_functions::getPID()) {
+		auto ctxerr = ICEDB_error_context_create(ICEDB_ERRORCODES_OS);
+		const char* cosname = ICEDB_error_getOSname();
+		ICEDB_error_context_add_string2(ctxerr, "OS_id", cosname);
+		ICEDB_error_context_add_string2(ctxerr, "Description", "This function only works for the pid of the main process.");
+		return NULL;
+	}
 	if (!moduleCallbackBuffer.size()) {
 		dl_iterate_phdr(icedb::os_functions::unix::moduleCallback, NULL);
 	}
@@ -677,7 +687,7 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 		FreeLibrary(mod);
 	} else modpath = icedb::os_functions::win::GetModulePath(NULL);
 #elif defined(__unix__)
-	return icedb::os_functions::unix::GetModulePath(ptr);
+	modpath = icedb::os_functions::unix::GetModulePath(ptr);
 #endif
 	ICEDB_COMPAT_strncpy_s(res, sz, modpath.c_str(), modpath.size());
 	return res;
