@@ -1,1 +1,3 @@
+ADD_SUBDIRECTORY(dll-load)
+ADD_SUBDIRECTORY(error-throw)
 ADD_SUBDIRECTORY(os-functions)

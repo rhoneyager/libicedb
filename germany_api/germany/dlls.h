@@ -56,13 +56,15 @@ struct ICEDB_DLL_BASE_HANDLE {
 	struct interface_##InterfaceName; \
 	ICEDB_CALL_C DL_ICEDB interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *); \
 	ICEDB_CALL_C DL_ICEDB void destroy_##InterfaceName(interface_##InterfaceName*); \
-    HIDDEN_ICEDB struct _impl_interface_##InterfaceName; \
+     struct HIDDEN_ICEDB _impl_interface_##InterfaceName; \
 	struct interface_##InterfaceName { \
 		ICEDB_DLL_BASE_HANDLE *_base; \
 		_impl_interface_##InterfaceName *_p;
 #define ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(InterfaceName, FuncName, retVal, ...) \
-	typedef retVal (* F_TYPE_##FuncName)(interface_##InterfaceName *, __VA_ARGS__); \
-	F_TYPE_##FuncName FuncName;
+	typedef retVal (* F_TYPE_##FuncName)(interface_##InterfaceName *, ##__VA_ARGS__); \
+	F_TYPE_##FuncName FuncName; \
+	typedef bool (* MKBIND_TYPE_##FuncName)(interface_##InterfaceName *); \
+	MKBIND_TYPE_##FuncName Bind_##FuncName;
 #define ICEDB_DLL_INTERFACE_END \
 	};
 

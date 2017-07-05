@@ -5,6 +5,7 @@
 #include "../germany/error.h"
 #include "../germany/util.h"
 #include "../germany/dlls.hpp"
+#include "../germany/os_functions.h"
 #include <stdarg.h>
 #include <functional>
 #include <mutex>
@@ -54,6 +55,15 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_DLLOPEN);
 		ICEDB_error_context_add_string2(e, "dlopen-Error-Code", cerror);
 		ICEDB_error_context_add_string2(e, "DLL-Path", p->path);
+		// Add some dir info.
+		const int sz = 500;
+		char bAppDir[sz] = "", bCWD[sz] = "", bLibDir[sz] = "";
+		ICEDB_getAppDir(sz, bAppDir);
+		ICEDB_getCWD(sz, bCWD);
+		ICEDB_getLibDir(sz, bLibDir);
+		ICEDB_error_context_add_string2(e, "App Dir", bAppDir);
+		ICEDB_error_context_add_string2(e, "CWD", bCWD);
+		ICEDB_error_context_add_string2(e, "Lib Dir", bLibDir);
 		return ICEDB_ERRORCODES_DLLOPEN;
 	}
 	p->openCount++;
