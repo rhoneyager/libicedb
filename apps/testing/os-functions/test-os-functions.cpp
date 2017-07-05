@@ -10,7 +10,15 @@ int main(int argc, char** argv) {
 	cout << "User name: " << getUserName() << endl
 		<< "Host name: " << getHostName() << endl
 		<< "Home dir: " << getHomeDir() << endl
-		<< "App config dir: " << getAppConfigDir() << endl
+		<< "App config dir: " << getAppConfigDir() << endl;
+	const int sz = 500;
+	char bAppDir[sz], bCWD[sz], bLibDir[sz];
+	ICEDB_getAppDir(sz, bAppDir);
+	ICEDB_getCWD(sz, bCWD);
+	ICEDB_getLibDir(sz, bLibDir);
+	cout << "App dir: " << bAppDir << endl
+		<< "CWD: " << bCWD << endl
+		<< "Lib dir: " << bLibDir << endl
 		<< "Loaded modules:" << endl;
 
 	std::shared_ptr<ICEDB_enumModulesRes> r

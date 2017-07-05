@@ -577,8 +577,10 @@ const char* ICEDB_getHomeDir() {
 void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes* p) {
 	if (!p) return;
 	if (p->sz) {
-		for (int i = 0; i < p->sz; ++i)
+		for (int i = 0; i < p->sz; ++i) {
 			ICEDB_free((void*)p->modules[i]);
+			p->modules[i] = nullptr;
+		}
 	}
 	ICEDB_free(p->modules);
 	ICEDB_free(p);
@@ -624,7 +626,7 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 #endif
 	// Convert the map to the resultant structure.
 	p->sz = icedb::os_functions::vars::mmods.size();
-	char **nmods = (char**)ICEDB_malloc(sizeof (char**));
+	char **nmods = (char**)ICEDB_malloc(p->sz*sizeof (char**));
 	size_t i = 0;
 	for (auto &s : mmods) {
 		nmods[i] = ICEDB_COMPAT_strdup_s(s.second.c_str(), s.second.size());
@@ -660,7 +662,7 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 	ICEDB_COMPAT_strncpy_s(res, sz, modpath.c_str(), modpath.size());
 	return res;
 }
-char* ICEDB_findIceDbDllDir(size_t sz, char* res) {
+char* ICEDB_getLibDir(size_t sz, char* res) {
 #if defined(_WIN32)
 	std::string modpath = icedb::os_functions::win::GetModulePath(NULL);
 #elif defined(__unix__)
@@ -674,15 +676,16 @@ char* ICEDB_getAppDir(size_t sz, char* res) {
 	std::string appd;
 #if defined(_WIN32)
 	DWORD pid = (DWORD) ICEDB_getPID(); // int always fits in DWORD
-	std::string filename;
-	icedb::os_functions::win::getPathWIN32(pid, appd, filename);
-#elif defined(__unix__)
-	throw;
+	std::string filename, totalPath;
+	icedb::os_functions::win::getPathWIN32(pid, totalPath, filename);
+	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+#else
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 #endif
 	ICEDB_COMPAT_strncpy_s(res, sz, appd.c_str(), appd.size());
 	return res;
 }
-char* ICEDB_getCWD(size_t sz, char* res) {
+char* ICEDB_getCWD(size_t ssz, char* res) {
 	std::string cwd;
 #if defined(_WIN32)
 	DWORD sz = GetCurrentDirectory(0, NULL);
@@ -690,10 +693,10 @@ char* ICEDB_getCWD(size_t sz, char* res) {
 	DWORD result = GetCurrentDirectory(2500, cd);
 	cwd = std::string(cd);
 	delete[] cd;
-#elif defined(__unix__)
-	throw;
+#else
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 #endif
-	ICEDB_COMPAT_strncpy_s(res, sz, cwd.c_str(), cwd.size());
+	ICEDB_COMPAT_strncpy_s(res, ssz, cwd.c_str(), cwd.size());
 	return res;
 }
 
@@ -750,7 +753,7 @@ void ICEDB_libEntry(int, char**) {
 void ICEDB_libExit() {
 	using namespace std;
 	if (_consoleTerminated) return;
-	if (doWaitOnExit)
+	if (ICEDB_waitOnExitGet())
 	{
 		cerr << endl << "Program terminated. Press return to exit." << endl;
 		//std::getchar();

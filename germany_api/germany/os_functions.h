@@ -26,7 +26,7 @@ struct ICEDB_enumModulesRes {
 DL_ICEDB void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes*);
 DL_ICEDB ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
 DL_ICEDB char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res);
-DL_ICEDB char* ICEDB_findIceDbDllDir(size_t sz, char* res);
+DL_ICEDB char* ICEDB_getLibDir(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getAppDir(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getCWD(size_t sz, char* res);
 
