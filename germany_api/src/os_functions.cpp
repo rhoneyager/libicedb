@@ -8,7 +8,6 @@
 #pragma comment(lib, "Ws2_32")
 #pragma comment(lib, "Advapi32")
 #pragma comment(lib, "Shell32")
-// __unix__ is not picking up __APPLE__
 #elif defined(__unix__) || defined(__APPLE__)
 #include <unistd.h>
 #include <sys/types.h>
@@ -18,6 +17,9 @@
 #include <dlfcn.h>
 //#include <link.h> // not on mac
 #include <dirent.h>
+#endif
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
 #endif
 #include <mutex>
 #include <thread>
@@ -684,6 +686,36 @@ char* ICEDB_getAppDir(size_t sz, char* res) {
 	std::string filename, totalPath;
 	icedb::os_functions::win::getPathWIN32(pid, totalPath, filename);
 	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+#elif defined(__APPLE__)
+	char exePath[PATH_MAX];
+	uint32_t len = sizeof(exePath);
+	if (_NSGetExecutablePath(exePath, &len) != 0) {
+		exePath[0] = '\0'; // buffer too small (!)
+	} else {
+		// resolve symlinks, ., .. if possible
+		char *canonicalPath = realpath(exePath, NULL);
+		if (canonicalPath != NULL) {
+			strncpy(exePath,canonicalPath,len);
+			free(canonicalPath);
+		}
+	}
+	std::string totalPath(exePath);
+	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+#elif defined(__linux__)
+	char exePath[PATH_MAX];
+	ssize_t len = ::readlink("/proc/self/exe", exePath, sizeof(exePath));
+	if (len == -1 || len == sizeof(exePath)) len = 0;
+	exePath[len] = '\0';
+	std::string totalPath(exePath);
+	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+#elif defined(__unix__)
+	char exePath[2048];
+	int mib[4];  mib[0] = CTL_KERN;  mib[1] = KERN_PROC;  mib[2] = KERN_PROC_PATHNAME;  mib[3] = -1;
+	size_t len = sizeof(exePath);
+	if (sysctl(mib, 4, exePath, &len, NULL, 0) != 0)
+	exePath[0] = '\0';
+	std::string totalPath(exePath);
+	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
 #else
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 #endif
@@ -699,7 +731,9 @@ char* ICEDB_getCWD(size_t ssz, char* res) {
 	cwd = std::string(cd);
 	delete[] cd;
 #else
-	ICEDB_DEBUG_RAISE_EXCEPTION();
+	char ccwd[4096];
+	getcwd(ccwd,4096);
+	cwd = std::string(ccwd);
 #endif
 	ICEDB_COMPAT_strncpy_s(res, ssz, cwd.c_str(), cwd.size());
 	return res;
