@@ -15,6 +15,9 @@ set (base_objs
 	germany/os_functions.h
 	germany/os_functions.hpp
 	germany/util.h
+	germany/versioning.hpp
+	germany/versioningForwards.hpp
+	germany/versioningForwards.h
 	src/defs.cpp
 	src/dllsImpl.cpp
 	src/error.cpp
@@ -23,6 +26,7 @@ set (base_objs
 	src/mem.cpp
 	src/os_functions.cpp
 	src/util.cpp
+	src/versioning.cpp
 	)
 
 generaterc("germany_api" "dll"

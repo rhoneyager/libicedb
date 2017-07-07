@@ -29,7 +29,11 @@ namespace icedb {
 		DL_ICEDB const char* getAppConfigDir();
 		/// \see ICEDB_getHomeDir
 		DL_ICEDB const char* getHomeDir();
-
+		DL_ICEDB const char* getLibDir();
+		DL_ICEDB const char* getLibPath();
+		DL_ICEDB const char* getAppDir();
+		DL_ICEDB const char* getAppPath();
+		DL_ICEDB const char* getCWD();
 	}
 }
 ICEDB_END_DECL_CPP

@@ -47,7 +47,8 @@ namespace icedb {
 		namespace vars {
 			std::mutex m_sys_names;
 			std::string hostname, username,
-				homeDir, appConfigDir, moduleCallbackBuffer;
+				homeDir, appConfigDir, moduleCallbackBuffer,
+				libDir, libPath, appDir, appPath, CWD;
 			bool _consoleTerminated = false;
 			// First element is name, second is path. Gets locked with m_sys_names.
 			std::vector<std::pair<std::string, std::string> > loadedModulesList;
@@ -611,7 +612,7 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 		do {
 			std::string modName = icedb::os_functions::win::convertStr(mod->szModule);
 			std::string modPath = icedb::os_functions::win::convertStr(mod->szExePath);
-			vars::mmods[modName] = modPath;
+			icedb::os_functions::vars::mmods[modName] = modPath;
 		} while (Module32Next(snapshot, mod.get()));
 
 		goto done;
@@ -692,61 +693,68 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 	ICEDB_COMPAT_strncpy_s(res, sz, modpath.c_str(), modpath.size());
 	return res;
 }
-char* ICEDB_getLibDir(size_t sz, char* res) {
+void ICEDB_getLibDirI() {
 #if defined(_WIN32)
-	std::string modpath = icedb::os_functions::win::GetModulePath(NULL);
+	libPath = icedb::os_functions::win::GetModulePath(NULL);
 #elif defined(__unix__) || defined(__APPLE__)
-	std::string modpath = icedb::os_functions::unix::GetModulePath((void*)ICEDB_getLibDir);
+	libPath = icedb::os_functions::unix::GetModulePath((void*)ICEDB_getLibDirI);
 #endif
-	std::string moddir = modpath.substr(0, modpath.find_last_of("/\\"));
-	ICEDB_COMPAT_strncpy_s(res, sz, moddir.c_str(), moddir.size());
+	libDir = libPath.substr(0, libPath.find_last_of("/\\"));
+}
+char* ICEDB_getLibDir(size_t sz, char* res) {
+	ICEDB_getLibDirI();
+	ICEDB_COMPAT_strncpy_s(res, sz, libDir.c_str(), libDir.size());
 	return res;
 }
-char* ICEDB_getAppDir(size_t sz, char* res) {
-	std::string appd;
+void ICEDB_getAppDirI() {
+	std::string &appd = appDir;
 #if defined(_WIN32)
-	DWORD pid = (DWORD) ICEDB_getPID(); // int always fits in DWORD
-	std::string filename, totalPath;
-	icedb::os_functions::win::getPathWIN32(pid, totalPath, filename);
-	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+	DWORD pid = (DWORD)ICEDB_getPID(); // int always fits in DWORD
+	std::string filename;
+	icedb::os_functions::win::getPathWIN32(pid, appPath, filename);
+	appd = appPath.substr(0, appPath.find_last_of("/\\"));
 #elif defined(__APPLE__)
 	char exePath[PATH_MAX];
 	uint32_t len = sizeof(exePath);
 	if (_NSGetExecutablePath(exePath, &len) != 0) {
 		exePath[0] = '\0'; // buffer too small (!)
-	} else {
+	}
+	else {
 		// resolve symlinks, ., .. if possible
 		char *canonicalPath = realpath(exePath, NULL);
 		if (canonicalPath != NULL) {
-			strncpy(exePath,canonicalPath,len);
+			strncpy(exePath, canonicalPath, len);
 			free(canonicalPath);
 		}
 	}
-	std::string totalPath(exePath);
-	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+	appPath = std::string(exePath);
+	appd = totalPath.substr(0, appPath.find_last_of("/\\"));
 #elif defined(__linux__)
 	char exePath[PATH_MAX];
 	ssize_t len = ::readlink("/proc/self/exe", exePath, sizeof(exePath));
 	if (len == -1 || len == sizeof(exePath)) len = 0;
 	exePath[len] = '\0';
-	std::string totalPath(exePath);
-	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+	appPath = std::string(exePath);
+	appd = appPath.substr(0, appPath.find_last_of("/\\"));
 #elif defined(__unix__)
 	char exePath[2048];
 	int mib[4];  mib[0] = CTL_KERN;  mib[1] = KERN_PROC;  mib[2] = KERN_PROC_PATHNAME;  mib[3] = -1;
 	size_t len = sizeof(exePath);
 	if (sysctl(mib, 4, exePath, &len, NULL, 0) != 0)
-	exePath[0] = '\0';
-	std::string totalPath(exePath);
-	appd = totalPath.substr(0, totalPath.find_last_of("/\\"));
+		exePath[0] = '\0';
+	appPath = std::string(exePath);
+	appd = appPath.substr(0, appPath.find_last_of("/\\"));
 #else
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 #endif
-	ICEDB_COMPAT_strncpy_s(res, sz, appd.c_str(), appd.size());
+}
+char* ICEDB_getAppDir(size_t sz, char* res) {
+	ICEDB_getAppDirI();
+	ICEDB_COMPAT_strncpy_s(res, sz, appDir.c_str(), appDir.size());
 	return res;
 }
-char* ICEDB_getCWD(size_t ssz, char* res) {
-	std::string cwd;
+void ICEDB_getCWDI() {
+	std::string &cwd = CWD;
 #if defined(_WIN32)
 	DWORD sz = GetCurrentDirectory(0, NULL);
 	LPTSTR cd = new TCHAR[sz];
@@ -755,10 +763,13 @@ char* ICEDB_getCWD(size_t ssz, char* res) {
 	delete[] cd;
 #else
 	char ccwd[4096];
-	getcwd(ccwd,4096);
+	getcwd(ccwd, 4096);
 	cwd = std::string(ccwd);
 #endif
-	ICEDB_COMPAT_strncpy_s(res, ssz, cwd.c_str(), cwd.size());
+}
+char* ICEDB_getCWD(size_t ssz, char* res) {
+	ICEDB_getCWDI();
+	ICEDB_COMPAT_strncpy_s(res, ssz, CWD.c_str(), CWD.size());
 	return res;
 }
 
@@ -848,5 +859,10 @@ namespace icedb {
 		const char* getHostName() { return ICEDB_getHostName(); }
 		const char* getAppConfigDir() { return ICEDB_getAppConfigDir(); }
 		const char* getHomeDir() { return ICEDB_getHomeDir(); }
+		const char* getLibDir() { ICEDB_getLibDirI(); return libDir.c_str(); }
+		const char* getAppDir() { ICEDB_getAppDirI(); return appDir.c_str(); }
+		const char* getLibPath() { ICEDB_getLibDirI(); return libPath.c_str(); }
+		const char* getAppPath() { ICEDB_getAppDirI(); return appPath.c_str(); }
+		const char* getCWD() { ICEDB_getCWDI(); return CWD.c_str(); }
 	}
 }
