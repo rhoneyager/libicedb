@@ -3,13 +3,10 @@
 #define ICEDB_H_DLLS
 #include "defs.h"
 #include "error.h"
+#include "mem.h"
 ICEDB_BEGIN_DECL
 
 typedef uint16_t ICEDB_DLL_FUNCTION_STATUSES;
-/*enum ICEDB_DLL_FUNCTION_STATUSES {
-	ICEDB_DLL_FUNCTION_UNLOADED, // Must always be zero
-	ICEDB_DLL_FUNCTION_LOADED
-};*/
 
 struct _dlHandleType_impl;
 

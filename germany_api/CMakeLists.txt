@@ -16,6 +16,7 @@ set (base_objs
 	germany/MurmurHash3.h
 	germany/os_functions.h
 	germany/os_functions.hpp
+	germany/plugins.h
 	germany/util.h
 	germany/versioning.hpp
 	germany/versioningForwards.hpp
@@ -29,6 +30,7 @@ set (base_objs
 	src/mem.cpp
 	src/MurmurHash3.cpp
 	src/os_functions.cpp
+	src/plugins.cpp
 	src/util.cpp
 	src/versioning.cpp
 	)

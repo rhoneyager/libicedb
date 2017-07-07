@@ -16,6 +16,7 @@ namespace icedb {
 #define tryStr(x) if (std::strncmp(a-> x, b-> x, versionInfo::charmax ) != 0) return res;
 #define tryNumB(x) if ((a->vn[versionInfo:: x] != b->vn[versionInfo:: x]) && a->vn[versionInfo:: x]) return res;
 			// First filter the incompatible stuff
+			tryNum(V_VERSIONINFO);
 			tryStr(vassembly);
 			tryNum(V_MAJOR);
 			tryNum(V_MINOR);

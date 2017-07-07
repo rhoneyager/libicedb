@@ -24,6 +24,7 @@ namespace icedb {
 	namespace versioning {
 		struct versionInfo {
 			enum nums {
+				V_VERSIONINFO,
 				V_MAJOR, V_MINOR, V_REVISION, V_SVNREVISION,
 				V_MSCVER,
 				V_GNUC_MAJ, V_GNUC_MIN, V_GNUC_PATCH,
@@ -60,6 +61,7 @@ namespace icedb {
 		{
 			for (size_t i = 0; i < versionInfo::V_MAX_INTS; ++i) out.vn[i] = 0;
 			for (size_t i = 0; i < versionInfo::V_MAX_BOOLS; ++i) out.vb[i] = false;
+			out.vn[versionInfo::V_VERSIONINFO] = 1; // Change this if the structure is modified. Differences are ALWAYS incompatible.
 			out.vsdate[0] = '\0'; out.vssource[0] = '\0'; out.vsuuid[0] = '\0';
 			out.vboost[0] = '\0'; out.vassembly[0] = '\0';
 			strncpy_s(out.vdate, versionInfo::charmax, __DATE__, versionInfo::charmax);
