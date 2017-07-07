@@ -9,9 +9,11 @@ set (base_objs
 	germany/error_context.h
 	germany/errorCodes.h
 	germany/errorCodes.hpp
+	germany/hash.h
 	germany/log.h
 	germany/mem.h
 	germany/mem.hpp
+	germany/MurmurHash3.h
 	germany/os_functions.h
 	germany/os_functions.hpp
 	germany/util.h
@@ -23,7 +25,9 @@ set (base_objs
 	src/error.cpp
 	src/error_context.cpp
 	src/errorCodes.cpp
+	src/hash.cpp
 	src/mem.cpp
+	src/MurmurHash3.cpp
 	src/os_functions.cpp
 	src/util.cpp
 	src/versioning.cpp
