@@ -706,6 +706,10 @@ char* ICEDB_getLibDir(size_t sz, char* res) {
 	ICEDB_COMPAT_strncpy_s(res, sz, libDir.c_str(), libDir.size());
 	return res;
 }
+const char* ICEDB_getLibDirC() {
+	ICEDB_getLibDirI();
+	return libDir.c_str();
+}
 void ICEDB_getAppDirI() {
 	std::string &appd = appDir;
 #if defined(_WIN32)
@@ -753,6 +757,10 @@ char* ICEDB_getAppDir(size_t sz, char* res) {
 	ICEDB_COMPAT_strncpy_s(res, sz, appDir.c_str(), appDir.size());
 	return res;
 }
+const char* ICEDB_getAppDirC() {
+	ICEDB_getAppDirI();
+	return appDir.c_str();
+}
 void ICEDB_getCWDI() {
 	std::string &cwd = CWD;
 #if defined(_WIN32)
@@ -771,6 +779,10 @@ char* ICEDB_getCWD(size_t ssz, char* res) {
 	ICEDB_getCWDI();
 	ICEDB_COMPAT_strncpy_s(res, ssz, CWD.c_str(), CWD.size());
 	return res;
+}
+const char* ICEDB_getCWDC() {
+	ICEDB_getCWDI();
+	return CWD.c_str();
 }
 
 /**
