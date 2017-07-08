@@ -72,7 +72,10 @@ namespace icedb {
 		static pointer_type generate(::icedb::dll::Dll_Base_Handle::pointer_type); \
 		virtual ~InterfaceName();
 #define ICEDB_DLL_CPP_INTERFACE_DECLARE_FUNCTION(InterfaceName, FuncName, retVal, ...) \
-	std::function<retVal(__VA_ARGS__)> FuncName;
+	std::function<retVal(__VA_ARGS__)> FuncName; \
+	std::function<bool()> Bind_##FuncName;
+	//typedef bool (* MKBIND_TYPE_##FuncName)(interface_##InterfaceName *); \
+	//MKBIND_TYPE_##FuncName Bind_##FuncName;
 	//typedef retVal (* type_##FuncName)(__VA_ARGS__); \
 	//type_##FuncName FuncName;
 //	retVal FuncName(__VA_ARGS__);

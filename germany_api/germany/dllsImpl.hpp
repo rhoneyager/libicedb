@@ -45,6 +45,22 @@ namespace icedb {
 				return static_cast<ReturnType>(s->inner(args...));
 			}
 
+			template <class CInterfaceType, class SymbolClass, class SymbolAccessor>
+				std::function<bool()> CanBindCPP(std::weak_ptr<CInterfaceType> wp) {
+				auto res = [wp]() {
+					std::shared_ptr<CInterfaceType> p = wp.lock();
+					SymbolClass *s = SymbolAccessor::Access(p.get());
+					if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
+						std::string sym = SymbolClass::Symbol();
+						s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, sym.c_str());
+						if (!s->inner) return false;
+						s->status = p->_base->openCount;
+					}
+					return true;
+				};
+				return res;
+			}
+
 			template <class CInterfaceType, class SymbolClass, class SymbolAccessor,
 				class ReturnType, class ...Args>
 				std::function<ReturnType(Args...)> BindCPP(std::weak_ptr<CInterfaceType> wp) {
@@ -52,16 +68,11 @@ namespace icedb {
 					std::shared_ptr<CInterfaceType> p = wp.lock();
 					SymbolClass *s = SymbolAccessor::Access(p.get());
 					if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
-						s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
+						std::string sym = SymbolClass::Symbol();
+						s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, sym.c_str());
 						if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
 						s->status = p->_base->openCount;
 					}
-					//bool iv = (typeid(ReturnType) == typeid(void));
-
-					//if (iv) {
-					//	s->inner(args...);
-					//	return static_cast<ReturnType>(NULL);
-					//}
 					return (ReturnType)s->inner(args...);
 				};
 				return res;
@@ -153,7 +164,12 @@ namespace icedb {
 	p->FuncName = ::icedb::dll::binding::BindCPP<interface_##CInterfaceName, \
 	_pimpl_interface_nm_##CInterfaceName::_pimpl_interface_##CInterfaceName::Sym_##FuncName, \
 	_pimpl_interface_nm_##CInterfaceName::_pimpl_interface_##CInterfaceName::Access_Sym_##FuncName, \
-		__VA_ARGS__>(p->_p);
+		__VA_ARGS__>(p->_p); \
+	p->Bind_##FuncName = ::icedb::dll::binding::CanBindCPP \
+		<interface_##CInterfaceName, \
+		_pimpl_interface_nm_##CInterfaceName::_pimpl_interface_##CInterfaceName::Sym_##FuncName, \
+		_pimpl_interface_nm_##CInterfaceName::_pimpl_interface_##CInterfaceName::Access_Sym_##FuncName \
+		>(p->_p);
 
 #define ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END \
 		return p; \

@@ -3,9 +3,13 @@
 #include <string>
 #include "../../germany_api/germany/os_functions.h"
 #include "../../germany_api/germany/units.hpp"
+#include "../../germany_api/germany/dlls.hpp"
 int main(int argc, char** argv) {
 	using namespace std;
 	ICEDB_libEntry(argc, argv);
+	std::string pDir(ICEDB_getPluginDirC());
+	std::string testP = pDir + "/units-simple.dll";
+	ICEDB_load_plugin(testP.c_str());
 
 	cout << "Enter input value: ";
 	double ival = 0;

@@ -9,9 +9,9 @@
 
 ICEDB_BEGIN_DECL_C
 struct ICEDB_UNIT_CONVERTER {
-	//interface_units* converter;
 	icedb::units::iface::unitscpp::pointer_type converter;
-	ICEDB_UNIT_CONVERTER() : converter(nullptr) {}
+	ICEDB_unit_converter_s* cimpl;
+	ICEDB_UNIT_CONVERTER() : converter(nullptr), cimpl(nullptr) {}
 };
 
 ICEDB_UNIT_CONVERTER_p ICEDB_create_unit_converter(const char* type, const char* inUnits, const char* outUnits) {
@@ -19,31 +19,50 @@ ICEDB_UNIT_CONVERTER_p ICEDB_create_unit_converter(const char* type, const char*
 	//ICEDB_UNIT_CONVERTER_p res = (ICEDB_UNIT_CONVERTER_p) ICEDB_malloc(sizeof(ICEDB_UNIT_CONVERTER));
 	res->converter = nullptr;
 	std::vector<std::string> dlls = icedb::dll::query_interface("units");
-
 	for (const auto &f : dlls) {
 		auto hnd = icedb::dll::Dll_Base_Handle::generate(f.c_str());
 		auto iface = icedb::units::iface::unitscpp::generate(hnd);
+		if (!iface->Bind_canConvert) continue;
+		if (!iface->Bind_freeConverter) continue;
+		if (!iface->Bind_makeConverter) continue;
 		if (iface->canConvert(type, inUnits, outUnits)) {
 			res->converter = iface;
+			res->cimpl = iface->makeConverter(type, inUnits, outUnits);
 			break;
 		}
 	}
-	if (!res->converter) {
-		ICEDB_destroy_unit_converter(res);
+	if (!res->converter || !res->cimpl) {
+		if (res->cimpl) {
+			res->converter->freeConverter(res->cimpl);
+			res->cimpl = nullptr;
+		}
+		if (res->converter) {
+			ICEDB_destroy_unit_converter(res);
+			res = nullptr;
+		}
 		return nullptr;
 	}
 	return res;
 }
 void ICEDB_destroy_unit_converter(ICEDB_UNIT_CONVERTER_p p) {
 	if (p) {
+		if (p->cimpl) {
+			p->converter->freeConverter(p->cimpl);
+			p->cimpl = nullptr;
+		}
 		p->converter = nullptr;
 		delete p;
 	}
 }
 double ICEDB_unit_convert(ICEDB_UNIT_CONVERTER_p p, double in) {
-	return p->converter->convert(in);
+	return p->cimpl->convert(p->cimpl, in);
+	//return p->converter->convert(in);
 }
 ICEDB_END_DECL_C
+
+
+
+
 
 ICEDB_BEGIN_DECL_CPP
 
@@ -53,6 +72,7 @@ namespace icedb {
 		converter::~converter() {}
 		bool converter::isValid() const {
 			if (!p) return false;
+			if (!p->cimpl) return false;
 			if (!p->converter) return false;
 			return true;
 		}
@@ -68,7 +88,9 @@ namespace icedb {
 		double converter::convert(double val) const {
 			if (!p) ICEDB_DEBUG_RAISE_EXCEPTION();
 			if (!p->converter) ICEDB_DEBUG_RAISE_EXCEPTION();
-			return p->converter->convert(val);
+			if (!p->cimpl) ICEDB_DEBUG_RAISE_EXCEPTION();
+			return p->cimpl->convert(p->cimpl, val);
+			//return p->converter->convert(val);
 		}
 	}
 }
@@ -78,10 +100,12 @@ ICEDB_END_DECL_CPP
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(units);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, canConvert, "canConvert", bool, const char*, const char*, const char*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, convert, "convert", double, double);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, makeConverter, "makeConverter", ICEDB_unit_converter_s*, const char*, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, freeConverter, "freeConverter", void, ICEDB_unit_converter_s*);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(units);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, canConvert, bool, const char*, const char*, const char*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, convert, double, double);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, makeConverter, ICEDB_unit_converter_s*, const char*, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, freeConverter, void, ICEDB_unit_converter_s*);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(units);
 
 
@@ -89,9 +113,10 @@ namespace icedb {
 	namespace units {
 		namespace iface {
 			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_BEGIN(unitscpp, units)
-				ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, canConvert, bool, const char*, const char*, const char*)
-				ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, convert, double, double)
-				ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END
+			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, canConvert, bool, const char*, const char*, const char*)
+			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, makeConverter, ICEDB_unit_converter_s*, const char*, const char*, const char*)
+			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, freeConverter, void, ICEDB_unit_converter_s*)
+			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END
 		}
 	}
 }

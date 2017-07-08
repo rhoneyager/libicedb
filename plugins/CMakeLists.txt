@@ -1,1 +1,2 @@
 ADD_SUBDIRECTORY(testdll)
+ADD_SUBDIRECTORY(units_simple)
