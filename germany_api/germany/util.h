@@ -4,8 +4,8 @@
 #include "defs.h"
 ICEDB_BEGIN_DECL_C
 
-	ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
-	ICEDB_SYMBOL_SHARED char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
+DL_ICEDB size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
+DL_ICEDB char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
 
 	/** Safe file stream printf **/
 #ifdef ICEDB_DEFS_COMPILER_HAS_FPRINTF_S

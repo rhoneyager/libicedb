@@ -19,7 +19,7 @@ namespace icedb {
 	namespace dll {
 		namespace impl {
 			std::map<std::string, ICEDB_DLL_BASE_HANDLE*> pluginHandles;
-			std::map<std::string, std::set<std::string> > topicMaps;
+			std::map<std::string, std::multimap<int, std::string> > topicMaps;
 		}
 	}
 }
@@ -179,38 +179,40 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_destroy_vtable(ICEDB_DLL_BASE_HANDLE_v
 	ICEDB_free((void*)h);
 }
 
-ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, const char* path) {
+ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, int priority, const char* path) {
 	std::string sTopic(topic);
 	std::string sPath(path);
 	using namespace icedb::dll::impl;
 	if (!topicMaps.count(sTopic)) {
-		topicMaps[sTopic] = std::set<std::string>();
+		topicMaps[sTopic] = std::multimap<int,std::string>();
 	}
-	std::set<std::string> &tMap = topicMaps[sTopic];
-	tMap.emplace(sPath);
+	std::multimap<int, std::string> &tMap = topicMaps[sTopic];
+	tMap.emplace(std::pair<int,std::string>(priority,sPath));
 }
-ICEDB_CALL_C DL_ICEDB void ICEDB_unregister_interface(const char* topic, const char* path) {
+ICEDB_CALL_C DL_ICEDB void ICEDB_unregister_interface(const char* topic, int priority, const char* path) {
 	std::string sTopic(topic);
 	std::string sPath(path);
 	using namespace icedb::dll::impl;
 	if (!topicMaps.count(sTopic)) {
-		topicMaps[sTopic] = std::set<std::string>();
+		topicMaps[sTopic] = std::multimap<int, std::string>();
 	}
-	std::set<std::string> &tMap = topicMaps[sTopic];
-	if (tMap.count(sPath)) tMap.erase(sPath);
+	std::multimap<int, std::string> &tMap = topicMaps[sTopic];
+	std::pair<int, std::string> p(priority, sPath);
+	auto it = tMap.find(priority);
+	if (it != tMap.end()) tMap.erase(it);
 }
 ICEDB_CALL_C DL_ICEDB ICEDB_query_interface_res_t ICEDB_query_interface(const char* topic) {
 	std::string sTopic(topic);
 	using namespace icedb::dll::impl;
 	if (!topicMaps.count(sTopic)) {
-		topicMaps[sTopic] = std::set<std::string>();
+		topicMaps[sTopic] = std::multimap<int, std::string>();
 	}
-	std::set<std::string> &tMap = topicMaps[sTopic];
+	std::multimap<int, std::string> &tMap = topicMaps[sTopic];
 	// Returning a null-terminated array of pointers to const char*s.
 	char** res = (char**) ICEDB_malloc(sizeof(char*) * (tMap.size() + 1));
 	int i = 0;
 	for (auto it = tMap.begin(); it != tMap.end(); ++it) {
-		char* s = ICEDB_COMPAT_strdup_s(it->c_str(), it->size());
+		char* s = ICEDB_COMPAT_strdup_s(it->second.c_str(), it->second.size());
 		res[i] = s;
 		++i;
 	}

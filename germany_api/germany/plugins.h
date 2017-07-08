@@ -6,7 +6,7 @@
 #include "versioningForwards.h"
 #include "versioning.hpp"
 
-typedef void(*ICEDB_register_interface_f)(const char*, const char*);
+typedef void(*ICEDB_register_interface_f)(const char*, int, const char*);
 typedef char*(*ICEDB_get_module_f)(void*, size_t, char*);
 
 ICEDB_DLL_INTERFACE_BEGIN(icedb_plugin_base)

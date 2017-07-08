@@ -23,13 +23,13 @@ extern "C" {
 	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod) {
 		const size_t sz = 2048;
 		char buf[sz] = "";
-		fReg("testdll", fMod((void*)Register, sz, buf));
+		fReg("testdll", 0, fMod((void*)Register, sz, buf));
 		return true;
 	}
 
 	SHARED_EXPORT_ICEDB void Unregister(ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod) {
 		const size_t sz = 2048;
 		char buf[sz] = "";
-		fUnReg("testdll", fMod((void*)Unregister, sz, buf));
+		fUnReg("testdll", 0, fMod((void*)Unregister, sz, buf));
 	}
 }

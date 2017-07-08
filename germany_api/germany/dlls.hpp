@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <functional>
 #include "defs.h"
 #include "dlls.h"
 

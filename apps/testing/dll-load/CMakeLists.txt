@@ -12,6 +12,7 @@ ENDIF()
 
 add_executable(germany_api_test_dll-load ${srcs})
 target_link_libraries(germany_api_test_dll-load germany_api)
+#testdll
 addapp(germany_api_test_dll-load Testing)
 storebin(germany_api_test_dll-load)
 

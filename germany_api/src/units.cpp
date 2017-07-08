@@ -1,0 +1,97 @@
+#include "../germany/units.hpp"
+#include "../germany/mem.h"
+#include "../germany/dlls.h"
+#include "../germany/dlls.hpp"
+#include "../germany/unitsInterface.hpp"
+#include "../germany/dllsImpl.hpp"
+#include <vector>
+#include <string>
+
+ICEDB_BEGIN_DECL_C
+struct ICEDB_UNIT_CONVERTER {
+	//interface_units* converter;
+	icedb::units::iface::unitscpp::pointer_type converter;
+	ICEDB_UNIT_CONVERTER() : converter(nullptr) {}
+};
+
+ICEDB_UNIT_CONVERTER_p ICEDB_create_unit_converter(const char* type, const char* inUnits, const char* outUnits) {
+	ICEDB_UNIT_CONVERTER_p res = new ICEDB_UNIT_CONVERTER;
+	//ICEDB_UNIT_CONVERTER_p res = (ICEDB_UNIT_CONVERTER_p) ICEDB_malloc(sizeof(ICEDB_UNIT_CONVERTER));
+	res->converter = nullptr;
+	std::vector<std::string> dlls = icedb::dll::query_interface("units");
+
+	for (const auto &f : dlls) {
+		auto hnd = icedb::dll::Dll_Base_Handle::generate(f.c_str());
+		auto iface = icedb::units::iface::unitscpp::generate(hnd);
+		if (iface->canConvert(type, inUnits, outUnits)) {
+			res->converter = iface;
+			break;
+		}
+	}
+	if (!res->converter) {
+		ICEDB_destroy_unit_converter(res);
+		return nullptr;
+	}
+	return res;
+}
+void ICEDB_destroy_unit_converter(ICEDB_UNIT_CONVERTER_p p) {
+	if (p) {
+		p->converter = nullptr;
+		delete p;
+	}
+}
+double ICEDB_unit_convert(ICEDB_UNIT_CONVERTER_p p, double in) {
+	return p->converter->convert(in);
+}
+ICEDB_END_DECL_C
+
+ICEDB_BEGIN_DECL_CPP
+
+namespace icedb {
+	namespace units {
+		converter::converter() {}
+		converter::~converter() {}
+		bool converter::isValid() const {
+			if (!p) return false;
+			if (!p->converter) return false;
+			return true;
+		}
+		converter::converter_p converter::generate(
+			const char* type, const char* iunits, const char* ounits) {
+			converter::converter_p res(new converter);
+			res->p = std::shared_ptr<ICEDB_UNIT_CONVERTER>(
+				ICEDB_create_unit_converter("", iunits, ounits),
+				ICEDB_destroy_unit_converter);
+			if (res->p) return res;
+			return nullptr;
+		}
+		double converter::convert(double val) const {
+			if (!p) ICEDB_DEBUG_RAISE_EXCEPTION();
+			if (!p->converter) ICEDB_DEBUG_RAISE_EXCEPTION();
+			return p->converter->convert(val);
+		}
+	}
+}
+
+ICEDB_END_DECL_CPP
+
+
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(units);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, canConvert, "canConvert", bool, const char*, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, convert, "convert", double, double);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(units);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, canConvert, bool, const char*, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, convert, double, double);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(units);
+
+
+namespace icedb {
+	namespace units {
+		namespace iface {
+			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_BEGIN(unitscpp, units)
+				ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, canConvert, bool, const char*, const char*, const char*)
+				ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, convert, double, double)
+				ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END
+		}
+	}
+}
