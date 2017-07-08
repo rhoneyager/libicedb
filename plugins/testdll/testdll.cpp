@@ -19,12 +19,12 @@ extern "C" {
 	}
 
 
-	typedef void(*ICEDB_register_interface_f)(const char*, const char*);
-	typedef char*(*ICEDB_get_module_f)(void*, size_t, char*);
-	SHARED_EXPORT_ICEDB void Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod) {
+	
+	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod) {
 		const size_t sz = 2048;
 		char buf[sz] = "";
 		fReg("testdll", fMod((void*)Register, sz, buf));
+		return true;
 	}
 
 	SHARED_EXPORT_ICEDB void Unregister(ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod) {

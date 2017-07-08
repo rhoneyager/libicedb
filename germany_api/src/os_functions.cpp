@@ -48,7 +48,8 @@ namespace icedb {
 			std::mutex m_sys_names;
 			std::string hostname, username,
 				homeDir, appConfigDir, moduleCallbackBuffer,
-				libDir, libPath, appDir, appPath, CWD;
+				libDir, libPath, appDir, appPath, CWD,
+				pluginDir;
 			bool _consoleTerminated = false;
 			// First element is name, second is path. Gets locked with m_sys_names.
 			std::vector<std::pair<std::string, std::string> > loadedModulesList;
@@ -803,6 +804,19 @@ const char* ICEDB_getAppPathC() {
 	ICEDB_getAppDirI(); 
 	return appPath.c_str(); }
 
+void ICEDB_getPluginDirI() {
+	ICEDB_getLibDirI();
+	pluginDir = libDir + "/icedb-plugins";
+}
+char* ICEDB_getPluginDir(size_t sz, char* res) {
+	ICEDB_getPluginDirI();
+	ICEDB_COMPAT_strncpy_s(res, sz, pluginDir.c_str(), pluginDir.size());
+	return res;
+}
+const char* ICEDB_getPluginDirC() {
+	ICEDB_getPluginDirI();
+	return pluginDir.c_str();
+}
 
 /**
 * \brief Entry function that gets called when a debugged application first loads
@@ -892,6 +906,7 @@ namespace icedb {
 		const char* getHomeDir() { return ICEDB_getHomeDir(); }
 		const char* getLibDir() { ICEDB_getLibDirI(); return libDir.c_str(); }
 		const char* getAppDir() { ICEDB_getAppDirI(); return appDir.c_str(); }
+		const char* getPluginDir() { ICEDB_getPluginDirI(); return pluginDir.c_str(); }
 		const char* getLibPath() { ICEDB_getLibDirI(); return libPath.c_str(); }
 		const char* getAppPath() { ICEDB_getAppDirI(); return appPath.c_str(); }
 		const char* getCWD() { ICEDB_getCWDI(); return CWD.c_str(); }

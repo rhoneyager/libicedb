@@ -6,10 +6,23 @@
 #include "../germany/util.h"
 #include "../germany/dlls.hpp"
 #include "../germany/os_functions.h"
+#include "../germany/plugins.h"
+#include "../germany/versioning.hpp"
 #include <stdarg.h>
 #include <functional>
 #include <mutex>
 #include <typeinfo>
+#include <map>
+#include <set>
+
+namespace icedb {
+	namespace dll {
+		namespace impl {
+			std::map<std::string, ICEDB_DLL_BASE_HANDLE*> pluginHandles;
+			std::map<std::string, std::set<std::string> > topicMaps;
+		}
+	}
+}
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename) {
 	ICEDB_DLL_BASE_HANDLE *res = (ICEDB_DLL_BASE_HANDLE*)ICEDB_malloc(sizeof (ICEDB_DLL_BASE_HANDLE));
@@ -165,6 +178,102 @@ ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable
 ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_destroy_vtable(ICEDB_DLL_BASE_HANDLE_vtable* h) {
 	ICEDB_free((void*)h);
 }
+
+ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, const char* path) {
+	std::string sTopic(topic);
+	std::string sPath(path);
+	using namespace icedb::dll::impl;
+	if (!topicMaps.count(sTopic)) {
+		topicMaps[sTopic] = std::set<std::string>();
+	}
+	std::set<std::string> &tMap = topicMaps[sTopic];
+	tMap.emplace(sPath);
+}
+ICEDB_CALL_C DL_ICEDB void ICEDB_unregister_interface(const char* topic, const char* path) {
+	std::string sTopic(topic);
+	std::string sPath(path);
+	using namespace icedb::dll::impl;
+	if (!topicMaps.count(sTopic)) {
+		topicMaps[sTopic] = std::set<std::string>();
+	}
+	std::set<std::string> &tMap = topicMaps[sTopic];
+	if (tMap.count(sPath)) tMap.erase(sPath);
+}
+ICEDB_CALL_C DL_ICEDB ICEDB_query_interface_res_t ICEDB_query_interface(const char* topic) {
+	std::string sTopic(topic);
+	using namespace icedb::dll::impl;
+	if (!topicMaps.count(sTopic)) {
+		topicMaps[sTopic] = std::set<std::string>();
+	}
+	std::set<std::string> &tMap = topicMaps[sTopic];
+	// Returning a null-terminated array of pointers to const char*s.
+	char** res = (char**) ICEDB_malloc(sizeof(char*) * (tMap.size() + 1));
+	int i = 0;
+	for (auto it = tMap.begin(); it != tMap.end(); ++it) {
+		char* s = ICEDB_COMPAT_strdup_s(it->c_str(), it->size());
+		res[i] = s;
+		++i;
+	}
+	res[i] = nullptr;
+	return res;
+}
+ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface_free(ICEDB_query_interface_res_t p) {
+	// Free a null-terminated list
+	int i = 0;
+	while (p[i]) {
+		ICEDB_free(p[i]);
+		++i;
+	}
+	ICEDB_free(p);
+}
+
+ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* dlpath) {
+	if (icedb::dll::impl::pluginHandles.count(std::string(dlpath))) return true;
+
+	ICEDB_DLL_BASE_HANDLE* dllInst = ICEDB_DLL_BASE_HANDLE_create(dlpath);
+	auto td = create_icedb_plugin_base(dllInst);
+	if((td->_base->_vtable->open(td->_base))) return false;
+
+	icedb::versioning::versionInfo_p libver;
+	// Try to bind the functions. If failure, unload the dll.
+	if (!td->Bind_GetVerInfo(td)) goto failed;
+	if (!td->Bind_Register(td)) goto failed;
+	if (!td->Bind_Unregister(td)) goto failed;
+
+	auto pver = td->GetVerInfo(td);
+	libver = icedb::versioning::getLibVersionInfo();
+	ICEDB_ver_match compat_level = icedb::versioning::compareVersions(pver->p, libver);
+	if (compat_level == ICEDB_VER_INCOMPATIBLE) goto failed;
+
+	bool res = td->Register(td, ICEDB_register_interface, ICEDB_findModuleByFunc);
+	if (!res) goto failed;
+	destroy_icedb_plugin_base(td);
+	icedb::dll::impl::pluginHandles[std::string(dlpath)] = dllInst;
+	return true;
+failed:
+	td->_base->_vtable->close(td->_base);
+	destroy_icedb_plugin_base(td);
+	ICEDB_DLL_BASE_HANDLE_destroy(dllInst);
+	// Return an error code indicating that the load was unsuccessful
+	ICEDB_error_context *cxt = ICEDB_error_context_create(ICEDB_ERRORCODES_BAD_PLUGIN);
+	ICEDB_error_context_add_string2(cxt, "dlpath", dlpath);
+	return false;
+}
+ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const char* dlpath) {
+	if (!icedb::dll::impl::pluginHandles.count(std::string(dlpath))) return true;
+	ICEDB_DLL_BASE_HANDLE* dllInst = icedb::dll::impl::pluginHandles.at(std::string(dlpath));
+	auto td = create_icedb_plugin_base(dllInst);
+	td->Unregister(td, ICEDB_unregister_interface, ICEDB_findModuleByFunc);
+	destroy_icedb_plugin_base(td);
+	icedb::dll::impl::pluginHandles.erase(std::string(dlpath));
+	ICEDB_DLL_BASE_HANDLE_destroy(dllInst);
+	return true;
+}
+
+
+
+
+
 
 ICEDB_CALL_CPP DL_ICEDB icedb::dll::Dll_Base_Handle::Dll_Base_Handle(base_pointer_type& r)
 	:_base(nullptr, ICEDB_DLL_BASE_HANDLE_destroy){

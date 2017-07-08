@@ -33,6 +33,7 @@ namespace icedb {
 		DL_ICEDB const char* getLibPath();
 		DL_ICEDB const char* getAppDir();
 		DL_ICEDB const char* getAppPath();
+		DL_ICEDB const char* getPluginDir();
 		DL_ICEDB const char* getCWD();
 	}
 }

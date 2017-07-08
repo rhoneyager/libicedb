@@ -53,17 +53,19 @@ struct ICEDB_DLL_BASE_HANDLE {
 
 ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, const char* path);
 ICEDB_CALL_C DL_ICEDB void ICEDB_unregister_interface(const char* topic, const char* path);
-ICEDB_CALL_C DL_ICEDB size_t ICEDB_query_interface_size(const char* topic);
-ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface(const char* topic, size_t sz, const char** paths);
+typedef char** ICEDB_query_interface_res_t;
+ICEDB_CALL_C DL_ICEDB ICEDB_query_interface_res_t ICEDB_query_interface(const char* topic);
+ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface_free(ICEDB_query_interface_res_t);
 
-ICEDB_CALL_C DL_ICEDB void ICEDB_load_plugin(const char* path);
-ICEDB_CALL_C DL_ICEDB void ICEDB_unload_plugin(const char* path);
+
+ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* path);
+ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const char* path);
 
 
 #define ICEDB_DLL_INTERFACE_BEGIN(InterfaceName) \
 	struct interface_##InterfaceName; \
-	ICEDB_CALL_C DL_ICEDB interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *); \
-	ICEDB_CALL_C DL_ICEDB void destroy_##InterfaceName(interface_##InterfaceName*); \
+	ICEDB_CALL_C interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *); \
+	ICEDB_CALL_C void destroy_##InterfaceName(interface_##InterfaceName*); \
      struct HIDDEN_ICEDB _impl_interface_##InterfaceName; \
 	struct interface_##InterfaceName { \
 		ICEDB_DLL_BASE_HANDLE *_base; \

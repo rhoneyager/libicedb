@@ -2,6 +2,8 @@
 #ifndef ICEDB_HPP_DLLS
 #define ICEDB_HPP_DLLS
 #include <memory>
+#include <vector>
+#include <string>
 #include "defs.h"
 #include "dlls.h"
 
@@ -15,6 +17,21 @@ struct ICEDB_DLL_BASE_HANDLE;
 #endif
 namespace icedb {
 	namespace dll {
+		//DL_ICEDB ICEDB_query_interface_res_t query_interface(const char* topic);
+		inline std::vector<std::string> query_interface(const char* topic) {
+			ICEDB_query_interface_res_t dlls = ICEDB_query_interface(topic);
+			std::vector<std::string> res;
+			{
+				int i = 0;
+				while (dlls[i]) {
+					res.push_back(std::string(dlls[i]));
+					++i;
+				}
+			}
+			ICEDB_query_interface_free(dlls);
+			return res;
+		}
+
 		class DL_ICEDB Dll_Base_Handle {
 			typedef std::unique_ptr<ICEDB_DLL_BASE_HANDLE,
 				decltype(&ICEDB_DLL_BASE_HANDLE_destroy)> base_pointer_type;

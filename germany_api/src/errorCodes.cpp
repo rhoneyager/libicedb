@@ -10,5 +10,6 @@ ICEDB_SYMBOL_PRIVATE const char* ICEDB_ERRORCODES_MAP[ICEDB_ERRORCODES_TOTAL] =
 	"Destroying the DLL handle, but references still exist!\n",
 	"Trying to decrement dll reference count below zero.\n",
 	"OS-specific general error.\n",
-	"Unimplemented function of function path.\n"
+	"Unimplemented function of function path.\n",
+	"Either not a plugin or an incompatible version.\n"
 };

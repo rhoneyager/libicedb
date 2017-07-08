@@ -28,18 +28,30 @@ DL_ICEDB ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
 DL_ICEDB char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res);
 DL_ICEDB char* ICEDB_getLibDir(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getAppDir(size_t sz, char* res);
+DL_ICEDB char* ICEDB_getPluginDir(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getLibPath(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getAppPath(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getCWD(size_t sz, char* res);
 
 DL_ICEDB const char* ICEDB_getLibDirC();
 DL_ICEDB const char* ICEDB_getAppDirC();
+DL_ICEDB const char* ICEDB_getPluginDirC();
 DL_ICEDB const char* ICEDB_getLibPathC();
 DL_ICEDB const char* ICEDB_getAppPathC();
 DL_ICEDB const char* ICEDB_getCWDC();
 
 DL_ICEDB void ICEDB_libEntry(int argc, char** argv);
 DL_ICEDB void ICEDB_libExit();
+
+// Filesystem functions
+// Does path exist?
+// Resolve symlink
+// Get type of path
+// List contents of folder (recursion optional)
+// Create hard link
+// Copy file
+// Remove file
+// Move file
 
 ICEDB_END_DECL_C
 
