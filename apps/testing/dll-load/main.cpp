@@ -1,11 +1,13 @@
 #include <iostream>
 #include <functional>
+#include <vector>
 #include "../../../germany_api/germany/error.hpp"
 #include "../../../germany_api/germany/error.h"
 #include "../../../germany_api/germany/error_context.h"
 #include "../../../germany_api/germany/mem.h"
 #include "../../../germany_api/germany/dlls.hpp"
 #include "../../../germany_api/germany/dllsImpl.hpp"
+#include "../../../germany_api/germany/os_functions.hpp"
 
 ICEDB_DLL_INTERFACE_BEGIN(testdll)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, setint, int, int)
@@ -33,11 +35,18 @@ ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END
 
 
 int main(int argc, char** argv) {
-	if (argc != 2) {
-		printf("Usage: %s (testdll path)\n",argv[0]);
+	ICEDB_libEntry(argc, argv);
+
+	size_t libsz = ICEDB_query_interface_size("testdll");
+	std::vector<const char*> paths(libsz, nullptr);
+	ICEDB_query_interface("testdll", libsz, paths.data());
+
+	if (paths.size() == 0) {
+		printf("Cannot find an appropriate plugin");
 		return 1;
-	}
-	const char* dlpath = argv[1];
+	} else printf("Using dll %s.\n", paths[0]);
+
+	const char* dlpath = paths[0];
 	auto dllInst1 = ICEDB_DLL_BASE_HANDLE_create(dlpath);
 	auto td1a = create_testdll(dllInst1);
 #define MUST_RETURN(x) if(x) { \

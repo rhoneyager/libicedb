@@ -12,4 +12,5 @@ ENDIF()
 
 add_executable(germany_api_test_os-functions ${srcs})
 target_link_libraries(germany_api_test_os-functions germany_api)
+addapp(germany_api_test_os-functions Testing)
 storebin(germany_api_test_os-functions)

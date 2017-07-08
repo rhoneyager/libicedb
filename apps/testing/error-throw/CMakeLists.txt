@@ -12,4 +12,5 @@ ENDIF()
 
 add_executable(germany_api_test_error-throw ${srcs})
 target_link_libraries(germany_api_test_error-throw germany_api)
+addapp(germany_api_test_error-throw Testing)
 storebin(germany_api_test_error-throw)

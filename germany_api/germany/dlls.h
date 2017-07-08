@@ -49,6 +49,17 @@ struct ICEDB_DLL_BASE_HANDLE {
 	ICEDB_DLL_BASE_HANDLE_vtable *_vtable;
 };
 
+// DLL Registry functions
+
+ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, const char* path);
+ICEDB_CALL_C DL_ICEDB void ICEDB_unregister_interface(const char* topic, const char* path);
+ICEDB_CALL_C DL_ICEDB size_t ICEDB_query_interface_size(const char* topic);
+ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface(const char* topic, size_t sz, const char** paths);
+
+ICEDB_CALL_C DL_ICEDB void ICEDB_load_plugin(const char* path);
+ICEDB_CALL_C DL_ICEDB void ICEDB_unload_plugin(const char* path);
+
+
 #define ICEDB_DLL_INTERFACE_BEGIN(InterfaceName) \
 	struct interface_##InterfaceName; \
 	ICEDB_CALL_C DL_ICEDB interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *); \

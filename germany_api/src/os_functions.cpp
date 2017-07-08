@@ -693,6 +693,7 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 	ICEDB_COMPAT_strncpy_s(res, sz, modpath.c_str(), modpath.size());
 	return res;
 }
+
 void ICEDB_getLibDirI() {
 #if defined(_WIN32)
 	libPath = icedb::os_functions::win::GetModulePath(NULL);
@@ -784,6 +785,24 @@ const char* ICEDB_getCWDC() {
 	ICEDB_getCWDI();
 	return CWD.c_str();
 }
+
+char* ICEDB_getLibPath(size_t sz, char* res) {
+	ICEDB_getLibDirI();
+	ICEDB_COMPAT_strncpy_s(res, sz, libPath.c_str(), libPath.size());
+	return res;
+}
+const char* ICEDB_getLibPathC() {
+	ICEDB_getLibDirI();
+	return libPath.c_str(); }
+char* ICEDB_getAppPath(size_t sz, char* res) {
+	ICEDB_getAppDirI();
+	ICEDB_COMPAT_strncpy_s(res, sz, appPath.c_str(), appPath.size());
+	return res;
+}
+const char* ICEDB_getAppPathC() {
+	ICEDB_getAppDirI(); 
+	return appPath.c_str(); }
+
 
 /**
 * \brief Entry function that gets called when a debugged application first loads
