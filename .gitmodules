@@ -1,3 +1,9 @@
 [submodule "related/eigen"]
 	path = related/eigen
 	url = https://fuchsia.googlesource.com/third_party/eigen
+[submodule "related/zlib"]
+	path = related/zlib
+	url = https://fuchsia.googlesource.com/third_party/zlib
+[submodule "related/bzip2"]
+	path = related/bzip2
+	url = https://fuchsia.googlesource.com/third_party/bzip2
