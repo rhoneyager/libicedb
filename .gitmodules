@@ -10,9 +10,6 @@
 [submodule "related/netcdf-c"]
 	path = related/netcdf-c
 	url = https://github.com/Unidata/netcdf-c.git
-[submodule "related/hdf5"]
-	path = related/hdf5
-	url = https://github.com/live-clones/hdf5.git
 [submodule "related/UDUNITS-2"]
 	path = related/UDUNITS-2
 	url = https://github.com/Unidata/UDUNITS-2.git
