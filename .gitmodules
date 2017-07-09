@@ -7,3 +7,9 @@
 [submodule "related/bzip2"]
 	path = related/bzip2
 	url = https://fuchsia.googlesource.com/third_party/bzip2
+[submodule "related/netcdf-c"]
+	path = related/netcdf-c
+	url = https://github.com/Unidata/netcdf-c.git
+[submodule "related/hdf5"]
+	path = related/hdf5
+	url = https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git
