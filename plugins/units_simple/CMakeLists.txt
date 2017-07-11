@@ -12,5 +12,5 @@ ENDIF()
 
 add_library(units-simple SHARED ${tsrcs})
 #target_link_libraries(testdll germany_api)
-addplugin(units-simple Testing icedb)
+addplugin(units-simple Units icedb)
 storeplugin(units-simple icedb)
