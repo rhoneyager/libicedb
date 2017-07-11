@@ -14,10 +14,10 @@ typedef ICEDB_error_code(*ICEDB_L0_DDSCAT_SHAPE_resize_f)(ICEDB_L0_DDSCAT_SHAPE_
 typedef size_t(*ICEDB_L0_DDSCAT_SHAPE_size_f)(ICEDB_L0_DDSCAT_SHAPE_p);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_setDescription_f)(ICEDB_L0_DDSCAT_SHAPE_p, const char*);
 typedef const char*(*ICEDB_L0_DDSCAT_SHAPE_getDescription_f)(ICEDB_L0_DDSCAT_SHAPE_p);
-typedef void(*ICEDB_L0_DDSCAT_SHAPE_setA1_f)(ICEDB_L0_DDSCAT_SHAPE_p, double, double, double);
-typedef void(*ICEDB_L0_DDSCAT_SHAPE_setA2_f)(ICEDB_L0_DDSCAT_SHAPE_p, double, double, double);
-typedef void(*ICEDB_L0_DDSCAT_SHAPE_setX0_f)(ICEDB_L0_DDSCAT_SHAPE_p, double, double, double);
-typedef void(*ICEDB_L0_DDSCAT_SHAPE_setD0_f)(ICEDB_L0_DDSCAT_SHAPE_p, double, double, double);
+typedef void(*ICEDB_L0_DDSCAT_SHAPE_setA1_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
+typedef void(*ICEDB_L0_DDSCAT_SHAPE_setA2_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
+typedef void(*ICEDB_L0_DDSCAT_SHAPE_setX0_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
+typedef void(*ICEDB_L0_DDSCAT_SHAPE_setD0_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_getA1_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_getA2_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_getX0_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
@@ -42,11 +42,11 @@ struct ICEDB_L0_DDSCAT_SHAPE_vtable {
 };
 
 struct ICEDB_L0_DDSCAT_SHAPE {
-	struct ICEDB_L0_DDSCAT_SHAPE_vtable _vptrs;
+	struct ICEDB_L0_DDSCAT_SHAPE_vtable *_vptrs;
 	const char* description;
 	double a1[3], a2[3], x0[3], d0[3];
 	size_t numPoints;
-	double *ptArray;
+	int *ptArray;
 };
 
 DL_ICEDB ICEDB_L0_DDSCAT_SHAPE_p ICEDB_L0_DDSCAT_SHAPE_generate();
