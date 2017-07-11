@@ -83,7 +83,7 @@ namespace icedb {
 
 #define ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(InterfaceName) \
 	namespace _pimpl_interface_nm_##InterfaceName{ \
-		struct _pimpl_interface_##InterfaceName; }; \
+		struct _pimpl_interface_##InterfaceName; } \
 	ICEDB_CALL_C struct HIDDEN_ICEDB _impl_interface_##InterfaceName { \
 			_pimpl_interface_nm_##InterfaceName::_pimpl_interface_##InterfaceName* p; \
 		}; \
@@ -108,7 +108,7 @@ namespace icedb {
 					Sym_##FuncName* r = &(a->sym_##FuncName); \
 					return r; \
 				} \
-			}
+			};
 
 #define ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(InterfaceName) \
 			_pimpl_interface_##InterfaceName(interface_##InterfaceName* obj) {

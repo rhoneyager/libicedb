@@ -4,6 +4,7 @@
 #include "../defs.h"
 #include "../error/error.h"
 #include "../misc/mem.h"
+#include "linking.h"
 ICEDB_BEGIN_DECL
 
 typedef uint16_t ICEDB_DLL_FUNCTION_STATUSES;
@@ -39,6 +40,7 @@ struct ICEDB_DLL_BASE_HANDLE_vtable {
 };
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename);
+ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create_from_lib();
 ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_HANDLE_destroy(ICEDB_DLL_BASE_HANDLE*);
 struct ICEDB_DLL_BASE_HANDLE {
 	_dlHandleType_impl *_dlHandle;
@@ -62,21 +64,6 @@ ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* path);
 ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const char* path);
 
 
-#define ICEDB_DLL_INTERFACE_BEGIN(InterfaceName) \
-	struct interface_##InterfaceName; \
-	ICEDB_CALL_C interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *); \
-	ICEDB_CALL_C void destroy_##InterfaceName(interface_##InterfaceName*); \
-     struct HIDDEN_ICEDB _impl_interface_##InterfaceName; \
-	struct interface_##InterfaceName { \
-		ICEDB_DLL_BASE_HANDLE *_base; \
-		_impl_interface_##InterfaceName *_p;
-#define ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(InterfaceName, FuncName, retVal, ...) \
-	typedef retVal (* F_TYPE_##FuncName)(interface_##InterfaceName *, ##__VA_ARGS__); \
-	F_TYPE_##FuncName FuncName; \
-	typedef bool (* MKBIND_TYPE_##FuncName)(interface_##InterfaceName *); \
-	MKBIND_TYPE_##FuncName Bind_##FuncName;
-#define ICEDB_DLL_INTERFACE_END \
-	};
 
 ICEDB_END_DECL
 #endif

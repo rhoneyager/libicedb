@@ -2,6 +2,7 @@
 #ifndef ICEDB_H_OS_FUNCTIONS
 #define ICEDB_H_OS_FUNCTIONS
 #include "../defs.h"
+#include "../dlls/linking.h"
 #include <stdio.h>
 
 ICEDB_BEGIN_DECL_C
@@ -54,5 +55,22 @@ DL_ICEDB void ICEDB_libExit();
 // Move file
 
 ICEDB_END_DECL_C
+
+/*
+ICEDB_DLL_INTERFACE_BEGIN(ICEDB_core_os_functions)
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_os_functions, strncpy_s, size_t, char *, size_t, const char*, size_t)
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_os_functions, strdup_s, char*, const char *, size_t)
+ICEDB_DLL_INTERFACE_END
+
+#define ICEDB_core_util_impl \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(ICEDB_core_os_functions); \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_core_os_functions, strncpy_s, "ICEDB_COMPAT_strncpy_s", size_t, char *, size_t, const char*, size_t); \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_core_os_functions, strdup_s, "ICEDB_COMPAT_strdup_s", size_t, char *, size_t); \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(ICEDB_core_os_functions); \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_core_os_functions, strncpy_s, size_t, char *, size_t, const char*, size_t); \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_core_os_functions, strdup_s, char*, const char *, size_t); \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(ICEDB_core_os_functions);
+*/
+
 
 #endif

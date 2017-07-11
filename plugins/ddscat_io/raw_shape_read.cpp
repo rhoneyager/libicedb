@@ -3,7 +3,7 @@
 #include "../../germany_api/germany/level_0/ddscat/shape.h"
 
 // From https://tinodidriksen.com/uploads/code/cpp/speed-string-to-int.cpp
-int naiveAtoI(const char *p) {
+inline int naiveAtoI(const char *p) {
 	int x = 0;
 	bool neg = false;
 	if (*p == '-') {

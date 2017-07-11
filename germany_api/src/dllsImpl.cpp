@@ -37,6 +37,12 @@ ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const 
 	res->_vtable->setPath(res, filename);
 	return res;
 }
+
+ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create_from_lib() {
+	ICEDB_DLL_BASE_HANDLE* res = ICEDB_DLL_BASE_HANDLE_create(ICEDB_getLibPathC());
+	return res;
+}
+
 ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_HANDLE_destroy(ICEDB_DLL_BASE_HANDLE* h) {
 	if (h->refCount) {
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_DLL_BASE_REFS_EXIST);
