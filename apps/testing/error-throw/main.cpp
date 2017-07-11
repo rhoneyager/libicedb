@@ -1,8 +1,8 @@
 #include <iostream>
 #include <functional>
-#include "../../../germany_api/germany/error.hpp"
-#include "../../../germany_api/germany/error.h"
-#include "../../../germany_api/germany/error_context.h"
+#include "../../../germany_api/germany/error/error.hpp"
+#include "../../../germany_api/germany/error/error.h"
+#include "../../../germany_api/germany/error/error_context.h"
 
 int main(int, char**) {
 	ICEDB_error_code code = ICEDB_error_test();

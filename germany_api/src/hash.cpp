@@ -1,6 +1,6 @@
 #include "../germany/defs.h"
-#include "../germany/hash.h"
-#include "../germany/MurmurHash3.h"
+#include "../germany/misc/hash.h"
+#include "../germany/misc/MurmurHash3.h"
 #include <sstream>
 #include <string>
 

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_H_MEM
 #define ICEDB_H_MEM
-#include "defs.h"
+#include "../defs.h"
 ICEDB_BEGIN_DECL_C
 
 	/** Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted. **/

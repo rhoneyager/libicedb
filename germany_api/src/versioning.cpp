@@ -1,5 +1,5 @@
-#include "../germany/versioning.hpp"
-#include "../germany/util.h"
+#include "../germany/versioning/versioning.hpp"
+#include "../germany/misc/util.h"
 #include <sstream>
 namespace icedb {
 	namespace versioning {

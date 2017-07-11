@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_HPP_OS_FUNCTIONS
 #define ICEDB_HPP_OS_FUNCTIONS
-#include "defs.h"
+#include "../defs.h"
 #include <iostream>
 
 ICEDB_BEGIN_DECL_CPP

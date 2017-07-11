@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_HPP_VERSIONING
 #define ICEDB_HPP_VERSIONING
-#include "defs.h"
+#include "../defs.h"
 #include <iostream>
 #include <map>
 #include <memory>

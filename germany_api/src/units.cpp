@@ -1,9 +1,9 @@
-#include "../germany/units.hpp"
-#include "../germany/mem.h"
-#include "../germany/dlls.h"
-#include "../germany/dlls.hpp"
-#include "../germany/unitsInterface.hpp"
-#include "../germany/dllsImpl.hpp"
+#include "../germany/units/units.hpp"
+#include "../germany/misc/mem.h"
+#include "../germany/dlls/dlls.h"
+#include "../germany/dlls/dlls.hpp"
+#include "../germany/units/unitsInterface.hpp"
+#include "../germany/dlls/dllsImpl.hpp"
 #include <vector>
 #include <string>
 

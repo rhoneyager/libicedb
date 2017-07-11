@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_HPP_UNITS
 #define ICEDB_HPP_UNITS
-#include "defs.h"
+#include "../defs.h"
 #include "units.h"
 #include <memory>
 ICEDB_BEGIN_DECL_CPP

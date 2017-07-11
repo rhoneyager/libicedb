@@ -1,9 +1,9 @@
 #pragma once
 #ifndef ICEDB_HPP_ERROR
 #define ICEDB_HPP_ERROR
-#include "defs.h"
-#include "errorCodes.h"
-#include "error.h"
+#include "../defs.h"
+#include "../error/errorCodes.h"
+#include "../error/error.h"
 #include <string>
 #include <iostream>
 #include <memory>

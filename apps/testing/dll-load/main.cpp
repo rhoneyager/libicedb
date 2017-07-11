@@ -1,15 +1,15 @@
 #include <iostream>
 #include <functional>
 #include <vector>
-#include "../../../germany_api/germany/error.hpp"
-#include "../../../germany_api/germany/error.h"
-#include "../../../germany_api/germany/error_context.h"
-#include "../../../germany_api/germany/mem.h"
-#include "../../../germany_api/germany/dlls.h"
-#include "../../../germany_api/germany/dlls.hpp"
-#include "../../../germany_api/germany/dllsImpl.hpp"
-#include "../../../germany_api/germany/os_functions.hpp"
-#include "../../../germany_api/germany/os_functions.h"
+#include "../../../germany_api/germany/error/error.hpp"
+#include "../../../germany_api/germany/error/error.h"
+#include "../../../germany_api/germany/error/error_context.h"
+#include "../../../germany_api/germany/misc/mem.h"
+#include "../../../germany_api/germany/dlls/dlls.h"
+#include "../../../germany_api/germany/dlls/dlls.hpp"
+#include "../../../germany_api/germany/dlls/dllsImpl.hpp"
+#include "../../../germany_api/germany/misc/os_functions.hpp"
+#include "../../../germany_api/germany/misc/os_functions.h"
 
 ICEDB_DLL_INTERFACE_BEGIN(testdll)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, setint, int, int)

@@ -1,9 +1,9 @@
 #define __STDC_WANT_LIB_EXT1__ 1
-#include "../germany/error.h"
-#include "../germany/error_context.h"
-#include "../germany/error.hpp"
-#include "../germany/util.h"
-#include "../germany/mem.h"
+#include "../germany/error/error.h"
+#include "../germany/error/error_context.h"
+#include "../germany/error/error.hpp"
+#include "../germany/misc/util.h"
+#include "../germany/misc/mem.h"
 #include <stdio.h>
 #include <string.h>
 #include <vector>

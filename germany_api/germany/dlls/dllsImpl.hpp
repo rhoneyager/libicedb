@@ -1,8 +1,8 @@
 #pragma once
 #ifndef ICEDB_HPP_DLLS_IMPL
 #define ICEDB_HPP_DLLS_IMPL
-#include "defs.h"
-#include "error.h"
+#include "../defs.h"
+#include "../error/error.h"
 #include "dllsImpl.h"
 #include <stdarg.h>
 #include <functional>

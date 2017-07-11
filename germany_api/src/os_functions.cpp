@@ -35,12 +35,12 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "../germany/error.h"
-#include "../germany/error_context.h"
-#include "../germany/os_functions.h"
-#include "../germany/os_functions.hpp"
-#include "../germany/mem.h"
-#include "../germany/util.h"
+#include "../germany/error/error.h"
+#include "../germany/error/error_context.h"
+#include "../germany/misc/os_functions.h"
+#include "../germany/misc/os_functions.hpp"
+#include "../germany/misc/mem.h"
+#include "../germany/misc/util.h"
 
 namespace icedb {
 	namespace os_functions {

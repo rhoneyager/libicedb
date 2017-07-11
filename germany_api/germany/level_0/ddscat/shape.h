@@ -2,8 +2,8 @@
 #ifndef ICEDB_H_L0_DDSCAT_SHAPE
 #define ICEDB_H_L0_DDSCAT_SHAPE
 #include "../../defs.h"
-#include "../../error.h"
-#include "../../io.h"
+#include "../../error/error.h"
+#include "../../misc/io.h"
 
 struct ICEDB_L0_DDSCAT_SHAPE;
 typedef ICEDB_L0_DDSCAT_SHAPE* ICEDB_L0_DDSCAT_SHAPE_p;

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_H_UTIL
 #define ICEDB_H_UTIL
-#include "defs.h"
+#include "../defs.h"
 ICEDB_BEGIN_DECL_C
 
 DL_ICEDB size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);

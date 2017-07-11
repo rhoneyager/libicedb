@@ -1,9 +1,9 @@
 #pragma once
 #ifndef ICEDB_H_DLLS
 #define ICEDB_H_DLLS
-#include "defs.h"
-#include "error.h"
-#include "mem.h"
+#include "../defs.h"
+#include "../error/error.h"
+#include "../misc/mem.h"
 ICEDB_BEGIN_DECL
 
 typedef uint16_t ICEDB_DLL_FUNCTION_STATUSES;

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_H_VERSIONING_FORWARDS
 #define ICEDB_H_VERSIONING_FORWARDS
-#include "defs.h"
+#include "../defs.h"
 ICEDB_BEGIN_DECL_C
 
 enum ICEDB_ver_match {

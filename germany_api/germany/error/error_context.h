@@ -2,7 +2,7 @@
 #ifndef ICEDB_H_ERROR_CONTEXT
 #define ICEDB_H_ERROR_CONTEXT
 #include "defs.h"
-#include "error.h"
+#include "../error/error.h"
 ICEDB_BEGIN_DECL_C
 
 	/** This private header lists the symbols for manipulating error contexts. **/

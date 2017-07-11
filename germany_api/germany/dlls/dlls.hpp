@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include "defs.h"
-#include "dlls.h"
+#include "../defs.h"
+#include "../dlls/dlls.h"
 
 ICEDB_BEGIN_DECL_CPP
 

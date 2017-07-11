@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_H_UNITS
 #define ICEDB_H_UNITS
-#include "defs.h"
+#include "../defs.h"
 ICEDB_BEGIN_DECL_C
 
 struct ICEDB_UNIT_CONVERTER;

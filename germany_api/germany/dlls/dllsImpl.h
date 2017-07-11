@@ -1,9 +1,9 @@
 #pragma once
 #ifndef ICEDB_H_DLLS_IMPL
 #define ICEDB_H_DLLS_IMPL
-#include "defs.h"
-#include "error.h"
-#include "dlls.h"
+#include "../defs.h"
+#include "../error/error.h"
+#include "../dlls/dlls.h"
 #include <stdarg.h>
 
 #ifdef _WIN32

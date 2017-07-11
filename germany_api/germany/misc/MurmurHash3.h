@@ -4,7 +4,7 @@
 
 #ifndef _MURMURHASH3_H_
 #define _MURMURHASH3_H_
-#include "defs.h"
+#include "../defs.h"
 
 ICEDB_BEGIN_DECL_C
 

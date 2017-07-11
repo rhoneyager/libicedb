@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_H_DB
 #define ICEDB_H_DB
-#include "defs.h"
+#include "../defs.h"
 ICEDB_BEGIN_DECL
 
 

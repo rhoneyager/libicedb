@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_HPP_VERSIONING_FORWARDS
 #define ICEDB_HPP_VERSIONING_FORWARDS
-#include "defs.h"
+#include "../defs.h"
 #include "versioningForwards.h"
 #include <memory>
 ICEDB_BEGIN_DECL_CPP

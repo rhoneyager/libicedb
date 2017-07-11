@@ -1,9 +1,9 @@
 #include <iostream>
 #include <memory>
-#include "../../../germany_api/germany/os_functions.hpp"
-#include "../../../germany_api/germany/os_functions.h"
-#include "../../../germany_api/germany/versioningForwards.h"
-#include "../../../germany_api/germany/versioning.hpp"
+#include "../../../germany_api/germany/misc/os_functions.hpp"
+#include "../../../germany_api/germany/misc/os_functions.h"
+#include "../../../germany_api/germany/versioning/versioningForwards.h"
+#include "../../../germany_api/germany/versioning/versioning.hpp"
 
 int main(int argc, char** argv) {
 	using namespace icedb::os_functions;

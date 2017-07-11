@@ -2,7 +2,7 @@
 #ifndef ICEDB_H_ERRORCODES
 #define ICEDB_H_ERRORCODES
 
-#include "defs.h"
+#include "../defs.h"
 
 ICEDB_BEGIN_DECL
 

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_HPP_MEM
 #define ICEDB_HPP_MEM
-#include "defs.h"
+#include "../defs.h"
 ICEDB_BEGIN_DECL
 
 namespace icedb {

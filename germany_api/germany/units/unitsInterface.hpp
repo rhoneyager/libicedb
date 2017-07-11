@@ -1,8 +1,8 @@
 #pragma once
 #ifndef ICEDB_H_UNITSINTERFACE
 #define ICEDB_H_UNITSINTERFACE
-#include "defs.h"
-#include "dlls.hpp"
+#include "../defs.h"
+#include "../dlls/dlls.hpp"
 ICEDB_BEGIN_DECL
 
 extern "C" struct ICEDB_unit_converter_s;
