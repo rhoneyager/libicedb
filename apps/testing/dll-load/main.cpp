@@ -40,7 +40,10 @@ int main(int argc, char** argv) {
 	ICEDB_libEntry(argc, argv);
 
 	std::string pDir(ICEDB_getPluginDirC());
-	std::string testP = pDir + "/testdll.dll";
+	const size_t mangledNameSz = 200;
+	char mangledName[mangledNameSz] = "";
+	ICEDB_dll_name_mangle_simple("testdll", (char**) &mangledName, mangledNameSz);
+	std::string testP = pDir + "/" + std::string(mangledName);
 	ICEDB_load_plugin(testP.c_str());
 
 	std::vector<std::string> paths = icedb::dll::query_interface("testdll");

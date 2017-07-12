@@ -14,6 +14,27 @@
 #include <typeinfo>
 #include <map>
 #include <set>
+#include <string>
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
+
+#ifdef UNICODE
+typedef wchar_t* CharArrayStr_t;
+CharArrayStr_t convertCharArrayStr(const char* charArray)
+{
+	wchar_t* wString = new wchar_t[16384];
+	MultiByteToWideChar(CP_ACP, 0, charArray, -1, wString, 16384);
+	return wString;
+}
+#else
+typedef char_t* CharArrayStr_t;
+CharArrayStr_t convertCharArrayStr(const char* charArray)
+{
+	return charArray;
+}
+#endif
+
 
 namespace icedb {
 	namespace dll {
@@ -88,7 +109,9 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 	p->openCount++;
 	return ICEDB_ERRORCODES_NONE;
 #elif defined(_WIN32)
-	p->_dlHandle->h = LoadLibrary(p->path);
+	CharArrayStr_t ppath = convertCharArrayStr(p->path);
+	p->_dlHandle->h = LoadLibrary(ppath);
+	delete ppath;
 	// Could not open the dll for some reason
 	if (p->_dlHandle->h == NULL)
 	{
@@ -233,6 +256,23 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface_free(ICEDB_query_interface_res_
 		++i;
 	}
 	ICEDB_free(p);
+}
+
+ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, char** out, size_t maxsz) {
+	std::string res;
+	if (!libname || !out) ICEDB_DEBUG_RAISE_EXCEPTION();
+#if defined(_WIN32)
+	// X.dll
+	res = std::string(libname);
+	res.append(".dll");
+#elif defined(__APPLE__)
+	// libX.dylib
+	res = "lib" + std::string(libname) + ".dylib";
+#else
+	// libX.so
+	res = "lib" + std::string(libname) + ".so";
+#endif
+	ICEDB_COMPAT_strncpy_s(*out, maxsz, res.c_str(), res.size() + 1);
 }
 
 ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* dlpath) {
