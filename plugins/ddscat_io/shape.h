@@ -1,9 +1,9 @@
 #pragma once
 #ifndef ICEDB_H_L0_DDSCAT_SHAPE
 #define ICEDB_H_L0_DDSCAT_SHAPE
-#include "../../defs.h"
-#include "../../error/error.h"
-#include "../../misc/io.h"
+#include "../../germany_api/germany/defs.h"
+#include "../../germany_api/germany/error/error.h"
+#include "../../germany_api/germany/misc/io.h"
 
 struct ICEDB_L0_DDSCAT_SHAPE;
 typedef ICEDB_L0_DDSCAT_SHAPE* ICEDB_L0_DDSCAT_SHAPE_p;
@@ -14,6 +14,7 @@ typedef ICEDB_error_code(*ICEDB_L0_DDSCAT_SHAPE_resize_f)(ICEDB_L0_DDSCAT_SHAPE_
 typedef size_t(*ICEDB_L0_DDSCAT_SHAPE_size_f)(ICEDB_L0_DDSCAT_SHAPE_p);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_setDescription_f)(ICEDB_L0_DDSCAT_SHAPE_p, const char*);
 typedef const char*(*ICEDB_L0_DDSCAT_SHAPE_getDescription_f)(ICEDB_L0_DDSCAT_SHAPE_p);
+typedef size_t(*ICEDB_L0_DDSCAT_SHAPE_getDescriptionSize_f)(ICEDB_L0_DDSCAT_SHAPE_p);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_setA1_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_setA2_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
 typedef void(*ICEDB_L0_DDSCAT_SHAPE_setX0_f)(ICEDB_L0_DDSCAT_SHAPE_p, double*);
@@ -31,6 +32,7 @@ struct ICEDB_L0_DDSCAT_SHAPE_vtable {
 	ICEDB_L0_DDSCAT_SHAPE_size_f size;
 	ICEDB_L0_DDSCAT_SHAPE_setDescription_f setDescription;
 	ICEDB_L0_DDSCAT_SHAPE_getDescription_f getDescription;
+	ICEDB_L0_DDSCAT_SHAPE_getDescriptionSize_f getDescriptionSize;
 	ICEDB_L0_DDSCAT_SHAPE_setA1_f setA1;
 	ICEDB_L0_DDSCAT_SHAPE_setA2_f setA2;
 	ICEDB_L0_DDSCAT_SHAPE_setX0_f setX0;

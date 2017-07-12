@@ -1,6 +1,6 @@
 #include "../../germany_api/germany/defs.h"
 #include "plugin_ddscat.hpp"
-#include "../../germany_api/germany/level_0/ddscat/shape.h"
+#include "shape.h"
 
 // From https://tinodidriksen.com/uploads/code/cpp/speed-string-to-int.cpp
 inline int naiveAtoI(const char *p) {
