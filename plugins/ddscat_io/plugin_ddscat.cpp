@@ -16,6 +16,9 @@ namespace icedb {
 	}
 }
 
+
+
+
 extern "C" {
 
 	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE* h) {

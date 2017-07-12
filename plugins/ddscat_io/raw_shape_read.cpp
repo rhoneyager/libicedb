@@ -103,7 +103,6 @@ void readShapeDat(ICEDB_L0_DDSCAT_SHAPE_p ptr, const char* data, size_t dataSz) 
 
 	const char* p = data + headerEnd;
 	const char* pmax = data + dataSz;
-	int i = 0;
 	while (i< mx) {
 		int x = 0;
 		// Advance to the next number

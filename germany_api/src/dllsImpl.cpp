@@ -28,7 +28,7 @@ CharArrayStr_t convertCharArrayStr(const char* charArray)
 	return wString;
 }
 #else
-typedef char_t* CharArrayStr_t;
+typedef const char* CharArrayStr_t;
 CharArrayStr_t convertCharArrayStr(const char* charArray)
 {
 	return charArray;
@@ -41,6 +41,15 @@ namespace icedb {
 		namespace impl {
 			std::map<std::string, ICEDB_DLL_BASE_HANDLE*> pluginHandles;
 			std::map<std::string, std::multimap<int, std::string> > topicMaps;
+
+			ICEDB_DLL_BASE_HANDLE* libInst;
+
+			void _init() {
+				static bool inited = false;
+				if (inited) return;
+				inited = true;
+				libInst = ICEDB_DLL_BASE_HANDLE_create(ICEDB_getLibPathC());
+			}
 		}
 	}
 }
@@ -293,7 +302,8 @@ ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* dlpath) {
 	ICEDB_ver_match compat_level = icedb::versioning::compareVersions(pver->p, libver);
 	if (compat_level == ICEDB_VER_INCOMPATIBLE) goto failed;
 
-	bool res = td->Register(td, ICEDB_register_interface, ICEDB_findModuleByFunc);
+	icedb::dll::impl::_init();
+	bool res = td->Register(td, ICEDB_register_interface, ICEDB_findModuleByFunc, icedb::dll::impl::libInst);
 	if (!res) goto failed;
 	destroy_icedb_plugin_base(td);
 	icedb::dll::impl::pluginHandles[std::string(dlpath)] = dllInst;

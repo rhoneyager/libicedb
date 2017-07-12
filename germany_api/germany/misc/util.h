@@ -40,7 +40,7 @@ ICEDB_DLL_INTERFACE_END
 #define ICEDB_core_util_impl \
 	ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(ICEDB_core_util); \
 	ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_core_util, strncpy_s, "ICEDB_COMPAT_strncpy_s", size_t, char *, size_t, const char*, size_t); \
-	ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_core_util, strdup_s, "ICEDB_COMPAT_strdup_s", size_t, char *, size_t); \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_core_util, strdup_s, "ICEDB_COMPAT_strdup_s", char*, const char *, size_t); \
 	ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(ICEDB_core_util); \
 	ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_core_util, strncpy_s, size_t, char *, size_t, const char*, size_t); \
 	ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_core_util, strdup_s, char*, const char *, size_t); \

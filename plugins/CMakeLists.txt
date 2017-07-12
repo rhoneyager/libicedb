@@ -1,2 +1,3 @@
+ADD_SUBDIRECTORY(ddscat_io)
 ADD_SUBDIRECTORY(testdll)
 ADD_SUBDIRECTORY(units_simple)

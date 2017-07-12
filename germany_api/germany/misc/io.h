@@ -1,9 +1,9 @@
 #pragma once
 #ifndef ICEDB_H_IO
 #define ICEDB_H_IO
-#include "../../defs.h"
-#include "../../error/error.h"
-#include "../../dlls/plugins.h"
+#include "../defs.h"
+#include "../error/error.h"
+#include "../dlls/plugins.h"
 
 /// An opaque pointer that indicates a file that is open for reading or writing.
 /// Different providers can handle different file formats.
