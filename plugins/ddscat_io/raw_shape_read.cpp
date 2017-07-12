@@ -32,10 +32,12 @@ void readShapeHeader(ICEDB_L0_DDSCAT_SHAPE_p p, const char* data, size_t dataSz,
 		pstart = pend;
 		// Using memchr for safety. Accepts a max length argument.
 		pend = (const char*) memchr((void*)pend, '\n', dataSz);
-		if (!pend) ICEDB_DEBUG_RAISE_EXCEPTION();
+		if (!pend) icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		pend++; // Get rid of the newline
 				//pend = in.find_first_of("\n", pend+1);
-		if (pend > data+dataSz) ICEDB_DEBUG_RAISE_EXCEPTION();
+		if (pend > data+dataSz) icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		string lin(pstart, pend - pstart - 1);
 		if (*(lin.rbegin()) == '\r') lin.pop_back();
 
@@ -87,11 +89,13 @@ void readShapeHeader(ICEDB_L0_DDSCAT_SHAPE_p p, const char* data, size_t dataSz,
 
 	headerEnd = (pend - data) / sizeof(char);
 }
+
 // Function to read a shape.dat or target.out file.
 // Already assumes that the file has been loaded into a char array.
 // Will avoid buffered and formatted operations because these are rather slow.
-void readShapeDat(ICEDB_L0_DDSCAT_SHAPE_p ptr, const char* data, size_t dataSz) {
-	if (!ptr || !data) ICEDB_DEBUG_RAISE_EXCEPTION();
+extern "C" SHARED_EXPORT_ICEDB void readShapeDat(ICEDB_L0_DDSCAT_SHAPE_p ptr, const char* data, size_t dataSz) {
+	if (!ptr || !data) icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+		__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 	// First seven lines are the header.
 	size_t headerEnd = 0;
 	readShapeHeader(ptr, data, dataSz, headerEnd);
@@ -106,7 +110,9 @@ void readShapeDat(ICEDB_L0_DDSCAT_SHAPE_p ptr, const char* data, size_t dataSz) 
 	while (i< mx) {
 		int x = 0;
 		// Advance to the next number
-		while (*p < '0' && *p > '9') { if (*p == '\0' || p >= pmax) ICEDB_DEBUG_RAISE_EXCEPTION(); ++p; }
+		while (*p < '0' && *p > '9') { if (*p == '\0' || p >= pmax) 
+			icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);; ++p; }
 		while (*p >= '0' && *p <= '9') {
 			x = (x * 10) + (*p - '0');
 			++p;

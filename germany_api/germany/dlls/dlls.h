@@ -24,6 +24,7 @@ typedef ICEDB_error_code(*ICEDB_DLL_decRefCount_f)(ICEDB_DLL_BASE_HANDLE*);
 typedef void*(*ICEDB_DLL_getSym_f)(ICEDB_DLL_BASE_HANDLE*, const char* symbol_name);
 typedef const char*(*ICEDB_DLL_getPath_f)(ICEDB_DLL_BASE_HANDLE*);
 typedef ICEDB_error_code(*ICEDB_DLL_setPath_f)(ICEDB_DLL_BASE_HANDLE*, const char* filename);
+typedef void(*ICEDB_DLL_RAISE_EXCEPTION_HANDLER_f)(ICEDB_DLL_BASE_HANDLE*, const char*, int, const char*);
 
 struct ICEDB_DLL_BASE_HANDLE_vtable {
 	ICEDB_DLL_open_dll_f open;
@@ -37,6 +38,7 @@ struct ICEDB_DLL_BASE_HANDLE_vtable {
 	ICEDB_DLL_setPath_f setPath;
 	ICEDB_DLL_set_autoopen_f setAutoOpen;
 	ICEDB_DLL_get_autoopen_f getAutoOpen;
+	ICEDB_DLL_RAISE_EXCEPTION_HANDLER_f _raiseExcept;
 };
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename);

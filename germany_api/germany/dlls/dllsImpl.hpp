@@ -5,6 +5,7 @@
 #include "../error/error.h"
 #include "dllsImpl.h"
 #include <stdarg.h>
+#include <cstdlib>
 #include <functional>
 #include <memory>
 
@@ -18,9 +19,9 @@ namespace icedb {
 			void destroy_interface(InterfaceType* p) {
 				if (!p) return; // Shared_ptr with deleters, on accident
 				delete p->_p->p;
-				ICEDB_free(p->_p);
+				free(p->_p);
 				p->_base->_vtable->decRefCount(p->_base);
-				ICEDB_free(p);
+				free(p);
 			}
 
 			template<class InterfaceType, class SymbolClass, class SymbolAccessor>
@@ -39,7 +40,8 @@ namespace icedb {
 				SymbolClass *s = SymbolAccessor::Access(p);
 				if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
 					s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
-					if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
+					if (!s->inner) p->_base->_vtable->_raiseExcept(p->_base,
+						__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 					s->status = p->_base->openCount;
 				}
 				return static_cast<ReturnType>(s->inner(args...));
@@ -70,7 +72,8 @@ namespace icedb {
 					if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
 						std::string sym = SymbolClass::Symbol();
 						s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, sym.c_str());
-						if (!s->inner) ICEDB_DEBUG_RAISE_EXCEPTION();
+						if (!s->inner) p->_base->_vtable->_raiseExcept(p->_base,
+							__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 						s->status = p->_base->openCount;
 					}
 					return (ReturnType)s->inner(args...);
@@ -134,12 +137,12 @@ namespace icedb {
 	ICEDB_CALL_C void destroy_##InterfaceName(interface_##InterfaceName* p) \
 		{ ::icedb::dll::binding::destroy_interface<interface_##InterfaceName>(p); } \
 	ICEDB_CALL_C interface_##InterfaceName* create_##InterfaceName(ICEDB_DLL_BASE_HANDLE *base) { \
-		if (!base) ICEDB_DEBUG_RAISE_EXCEPTION(); \
-		interface_##InterfaceName* p = (interface_##InterfaceName*)ICEDB_malloc(sizeof(interface_##InterfaceName ) ); \
+		if (!base) return nullptr; \
+		interface_##InterfaceName* p = (interface_##InterfaceName*)malloc(sizeof(interface_##InterfaceName ) ); \
 		memset(p, 0, sizeof(interface_##InterfaceName)); \
 		p->_base = base; \
 		p->_base->_vtable->incRefCount(p->_base); \
-		p->_p = (_impl_interface_##InterfaceName*)ICEDB_malloc(sizeof(_impl_interface_##InterfaceName)); \
+		p->_p = (_impl_interface_##InterfaceName*)malloc(sizeof(_impl_interface_##InterfaceName)); \
 		p->_p->p = new _pimpl_interface_nm_##InterfaceName::_pimpl_interface_##InterfaceName(p); \
 		return p; \
 	}

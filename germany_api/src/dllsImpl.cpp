@@ -196,6 +196,9 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_setPath(ICEDB_DLL_BASE_HANDLE* p, co
 }
 void ICEDB_DLL_BASE_HANDLE_IMPL_set_autoopen(ICEDB_DLL_BASE_HANDLE* p, bool val) {p->autoOpen = val;}
 bool ICEDB_DLL_BASE_HANDLE_IMPL_get_autoopen(ICEDB_DLL_BASE_HANDLE* p) {return p->autoOpen;}
+void ICEDB_DLL_BASE_HANDLE_IMPL_RAISE_EXCEPTION(ICEDB_DLL_BASE_HANDLE*, const char* filename, int line, const char* sym) {
+	ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER(filename, line, sym);
+}
 
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable() {
 	ICEDB_DLL_BASE_HANDLE_vtable* res = (ICEDB_DLL_BASE_HANDLE_vtable*) ICEDB_malloc(sizeof (ICEDB_DLL_BASE_HANDLE_vtable));
@@ -210,6 +213,7 @@ ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE_vtable* ICEDB_DLL_BASE_create_vtable
 	res->setPath = ICEDB_DLL_BASE_HANDLE_IMPL_setPath;
 	res->getAutoOpen = ICEDB_DLL_BASE_HANDLE_IMPL_get_autoopen;
 	res->setAutoOpen = ICEDB_DLL_BASE_HANDLE_IMPL_set_autoopen;
+	res->_raiseExcept = ICEDB_DLL_BASE_HANDLE_IMPL_RAISE_EXCEPTION;
 	return res;
 }
 
