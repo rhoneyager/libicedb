@@ -64,7 +64,8 @@ generaterc("libicedb" "dll"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
 
-set(srcs ${base_objs} ${dlls_objs} ${error_objs} ${misc_objs} ${units_objs}
+set(srcs ${base_objs} ${dlls_objs} ${error_objs} ${fs_objs}
+	${misc_objs} ${units_objs}
 	${versioning_objs})
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
@@ -73,6 +74,7 @@ ENDIF()
 source_group("Base" FILES ${base_objs})
 source_group("DLLs" FILES ${dlls_objs})
 source_group("Error" FILES ${error_objs})
+source_group("Filesystem" FILES ${fs_objs})
 source_group("Misc" FILES ${misc_objs})
 source_group("Units" FILES ${units_objs})
 source_group("Versioning" FILES ${versioning_objs})
