@@ -286,6 +286,7 @@ ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, c
 	res = "lib" + std::string(libname) + ".so";
 #endif
 	ICEDB_COMPAT_strncpy_s(*out, maxsz, res.c_str(), res.size() + 1);
+	return (maxsz > res.size()+1) ? maxsz : res.size() + 1;
 }
 
 ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* dlpath) {

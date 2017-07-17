@@ -2,6 +2,7 @@
 #ifndef ICEDB_H_DLLS_LINKING
 #define ICEDB_H_DLLS_LINKING
 #include "../defs.h"
+#include <stdint.h>
 ICEDB_BEGIN_DECL
 
 typedef uint16_t ICEDB_DLL_FUNCTION_STATUSES;

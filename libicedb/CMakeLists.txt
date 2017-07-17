@@ -9,6 +9,11 @@ set (dlls_objs
 	src/dllsImpl.cpp
 	src/plugins.cpp
 	)
+set (fs_objs
+	icedb/fs/fs.h
+	icedb/fs/fs_backend.hpp
+	icedb/fs/fs_dll_impl.hpp
+	src/fs.cpp)
 set (error_objs
 	icedb/error/error.h
 	icedb/error/error.hpp
@@ -39,6 +44,7 @@ set (units_objs
 	icedb/units/units.h
 	icedb/units/units.hpp
 	icedb/units/unitsInterface.hpp
+	icedb/units/unitsInterfaceImpl.hpp
 	src/units.cpp
 	)
 set (versioning_objs
