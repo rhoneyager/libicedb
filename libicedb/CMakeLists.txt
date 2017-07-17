@@ -1,0 +1,82 @@
+
+set (dlls_objs
+	icedb/dlls/dlls.h
+	icedb/dlls/dlls.hpp
+	icedb/dlls/dllsImpl.h
+	icedb/dlls/dllsImpl.hpp
+	icedb/dlls/linking.h
+	icedb/dlls/plugins.h
+	src/dllsImpl.cpp
+	src/plugins.cpp
+	)
+set (error_objs
+	icedb/error/error.h
+	icedb/error/error.hpp
+	icedb/error/error_context.h
+	icedb/error/errorCodes.h
+	icedb/error/errorCodes.hpp
+	src/error.cpp
+	src/error_context.cpp
+	src/errorCodes.cpp
+	)
+set (misc_objs
+	icedb/misc/hash.h
+	icedb/misc/io.h
+	icedb/misc/log.h
+	icedb/misc/mem.h
+	icedb/misc/mem.hpp
+	icedb/misc/MurmurHash3.h
+	icedb/misc/os_functions.h
+	icedb/misc/os_functions.hpp
+	icedb/misc/util.h
+	src/hash.cpp
+	src/mem.cpp
+	src/MurmurHash3.cpp
+	src/os_functions.cpp
+	src/util.cpp
+	)
+set (units_objs
+	icedb/units/units.h
+	icedb/units/units.hpp
+	icedb/units/unitsInterface.hpp
+	src/units.cpp
+	)
+set (versioning_objs
+	icedb/versioning/versioning.hpp
+	icedb/versioning/versioningForwards.hpp
+	icedb/versioning/versioningForwards.h
+	src/versioning.cpp
+	)
+set (base_objs
+	icedb/defs.h
+	src/defs.cpp
+	)
+
+generaterc("libicedb" "dll"
+	"libicedb"
+	"Scattering utility library"
+	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
+	 )
+
+set(srcs ${base_objs} ${dlls_objs} ${error_objs} ${misc_objs} ${units_objs}
+	${versioning_objs})
+IF (WIN32 AND NOT CYGWIN)
+SET(srcs ${srcs} 
+	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
+ENDIF()
+source_group("Base" FILES ${base_objs})
+source_group("DLLs" FILES ${dlls_objs})
+source_group("Error" FILES ${error_objs})
+source_group("Misc" FILES ${misc_objs})
+source_group("Units" FILES ${units_objs})
+source_group("Versioning" FILES ${versioning_objs})
+
+add_library(libicedb SHARED ${srcs})
+addlib(libicedb SHARED)
+if(WIN32 AND NOT CYGWIN)
+elseif(APPLE OR LINUX)
+	target_link_libraries(libicedb dl)
+endif()
+storebin(libicedb)
+#target_link_libraries(libicedb ${liblist})
+#

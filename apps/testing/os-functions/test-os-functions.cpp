@@ -1,9 +1,9 @@
 #include <iostream>
 #include <memory>
-#include "../../../germany_api/germany/misc/os_functions.hpp"
-#include "../../../germany_api/germany/misc/os_functions.h"
-#include "../../../germany_api/germany/versioning/versioningForwards.h"
-#include "../../../germany_api/germany/versioning/versioning.hpp"
+#include "../../../libicedb/icedb/misc/os_functions.hpp"
+#include "../../../libicedb/icedb/misc/os_functions.h"
+#include "../../../libicedb/icedb/versioning/versioningForwards.h"
+#include "../../../libicedb/icedb/versioning/versioning.hpp"
 
 int main(int argc, char** argv) {
 	using namespace icedb::os_functions;

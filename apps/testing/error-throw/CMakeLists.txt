@@ -1,5 +1,5 @@
-generaterc("germany_api_test_error-throw" "exe"
-	"germany_api"
+generaterc("libicedb_test_error-throw" "exe"
+	"libicedb"
 	"Scattering utility library"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
@@ -10,7 +10,7 @@ SET(srcs ${srcs}
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
 ENDIF()
 
-add_executable(germany_api_test_error-throw ${srcs})
-target_link_libraries(germany_api_test_error-throw germany_api)
-addapp(germany_api_test_error-throw Testing)
-storebin(germany_api_test_error-throw)
+add_executable(libicedb_test_error-throw ${srcs})
+target_link_libraries(libicedb_test_error-throw libicedb)
+addapp(libicedb_test_error-throw Testing)
+storebin(libicedb_test_error-throw)

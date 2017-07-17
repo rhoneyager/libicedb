@@ -1,6 +1,6 @@
 #pragma once
-#include "../../germany_api/germany/dlls/plugins.h"
-#include "../../germany_api/germany/dlls/dllsImpl.hpp"
+#include "../../libicedb/icedb/dlls/plugins.h"
+#include "../../libicedb/icedb/dlls/dllsImpl.hpp"
 
 namespace icedb {
 	namespace plugins {

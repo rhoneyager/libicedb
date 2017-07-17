@@ -1,6 +1,6 @@
 #define __STDC_WANT_LIB_EXT1__ 1
-#include "../germany/misc/util.h"
-#include "../germany/misc/mem.h"
+#include "../icedb/misc/util.h"
+#include "../icedb/misc/mem.h"
 #include <string.h>
 
 ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(

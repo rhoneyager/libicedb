@@ -1,7 +1,7 @@
-#include "../../germany_api/germany/defs.h"
-#include "../../germany_api/germany/misc/os_functions.h"
-#include "../../germany_api/germany/dlls/plugins.h"
-#include "../../germany_api/germany/units/unitsInterface.hpp"
+#include "../../libicedb/icedb/defs.h"
+#include "../../libicedb/icedb/misc/os_functions.h"
+#include "../../libicedb/icedb/dlls/plugins.h"
+#include "../../libicedb/icedb/units/unitsInterface.hpp"
 
 ICEDB_DLL_PLUGINS_COMMON(units-simple);
 

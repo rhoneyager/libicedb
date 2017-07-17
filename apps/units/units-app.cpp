@@ -1,9 +1,9 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "../../germany_api/germany/misc/os_functions.h"
-#include "../../germany_api/germany/units/units.hpp"
-#include "../../germany_api/germany/dlls/dlls.hpp"
+#include "../../libicedb/icedb/misc/os_functions.h"
+#include "../../libicedb/icedb/units/units.hpp"
+#include "../../libicedb/icedb/dlls/dlls.hpp"
 int main(int argc, char** argv) {
 	using namespace std;
 	ICEDB_libEntry(argc, argv);

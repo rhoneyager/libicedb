@@ -1,5 +1,5 @@
 generaterc("units-simple" "dll"
-	"germany_api"
+	"libicedb"
 	"Simple units implementation"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
@@ -11,6 +11,6 @@ ENDIF()
 
 
 add_library(units-simple SHARED ${tsrcs})
-#target_link_libraries(testdll germany_api)
+#target_link_libraries(testdll libicedb)
 addplugin(units-simple Units icedb)
 storeplugin(units-simple icedb)

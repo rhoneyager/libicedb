@@ -1,6 +1,6 @@
-#include "../germany/defs.h"
-#include "../germany/dlls/plugins.h"
-#include "../germany/dlls/dllsImpl.hpp"
+#include "../icedb/defs.h"
+#include "../icedb/dlls/plugins.h"
+#include "../icedb/dlls/dllsImpl.hpp"
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(icedb_plugin_base);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(icedb_plugin_base, GetVerInfo, "GetVerInfo", ICEDB_VersionInfo_p);

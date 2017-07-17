@@ -1,5 +1,5 @@
 generaterc("ddscat_io" "dll"
-	"germany_api"
+	"libicedb"
 	"Implementation of the ddscat i/o functions"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
@@ -17,6 +17,6 @@ ENDIF()
 
 
 add_library(ddscat_io SHARED ${tsrcs})
-#target_link_libraries(ddscat_io germany_api)
+#target_link_libraries(ddscat_io libicedb)
 addplugin(ddscat_io io icedb)
 storeplugin(ddscat_io icedb)

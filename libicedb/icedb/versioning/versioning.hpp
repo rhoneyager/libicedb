@@ -66,12 +66,12 @@ namespace icedb {
 			out.vboost[0] = '\0'; out.vassembly[0] = '\0';
 			strncpy_s(out.vdate, versionInfo::charmax, __DATE__, versionInfo::charmax);
 			strncpy_s(out.vtime, versionInfo::charmax, __TIME__, versionInfo::charmax);
-			strncpy_s(out.vgithash, versionInfo::charmax, germany_api_GitHash, versionInfo::charmax);
-			strncpy_s(out.vgitbranch, versionInfo::charmax, germany_api_GitBranch, versionInfo::charmax);
+			strncpy_s(out.vgithash, versionInfo::charmax, libicedb_GitHash, versionInfo::charmax);
+			strncpy_s(out.vgitbranch, versionInfo::charmax, libicedb_GitBranch, versionInfo::charmax);
 
-			out.vn[versionInfo::V_MAJOR] = germany_api_MAJOR;
-			out.vn[versionInfo::V_MINOR] = germany_api_MINOR;
-			out.vn[versionInfo::V_REVISION] = germany_api_REVISION;
+			out.vn[versionInfo::V_MAJOR] = libicedb_MAJOR;
+			out.vn[versionInfo::V_MINOR] = libicedb_MINOR;
+			out.vn[versionInfo::V_REVISION] = libicedb_REVISION;
 
 			out.vb[versionInfo::V_HAS_BZIP2] = COMPRESS_BZIP2;
 			out.vb[versionInfo::V_HAS_GZIP] = COMPRESS_GZIP;

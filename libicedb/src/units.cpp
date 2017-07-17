@@ -1,9 +1,10 @@
-#include "../germany/units/units.hpp"
-#include "../germany/misc/mem.h"
-#include "../germany/dlls/dlls.h"
-#include "../germany/dlls/dlls.hpp"
-#include "../germany/units/unitsInterface.hpp"
-#include "../germany/dlls/dllsImpl.hpp"
+#include "../icedb/units/units.hpp"
+#include "../icedb/misc/mem.h"
+#include "../icedb/dlls/dlls.h"
+#include "../icedb/dlls/dlls.hpp"
+#include "../icedb/units/unitsInterface.hpp"
+#include "../icedb/dlls/dllsImpl.hpp"
+#include "../icedb/units/unitsInterfaceImpl.hpp"
 #include <vector>
 #include <string>
 
@@ -97,26 +98,3 @@ namespace icedb {
 
 ICEDB_END_DECL_CPP
 
-
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(units);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, canConvert, "canConvert", bool, const char*, const char*, const char*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, makeConverter, "makeConverter", ICEDB_unit_converter_s*, const char*, const char*, const char*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, freeConverter, "freeConverter", void, ICEDB_unit_converter_s*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(units);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, canConvert, bool, const char*, const char*, const char*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, makeConverter, ICEDB_unit_converter_s*, const char*, const char*, const char*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(units, freeConverter, void, ICEDB_unit_converter_s*);
-ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(units);
-
-
-namespace icedb {
-	namespace units {
-		namespace iface {
-			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_BEGIN(unitscpp, units)
-			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, canConvert, bool, const char*, const char*, const char*)
-			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, makeConverter, ICEDB_unit_converter_s*, const char*, const char*, const char*)
-			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_FUNCTION(units, freeConverter, void, ICEDB_unit_converter_s*)
-			ICEDB_DLL_CPP_INTERFACE_IMPLEMENTATION_END
-		}
-	}
-}

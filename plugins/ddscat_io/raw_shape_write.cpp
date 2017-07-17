@@ -1,8 +1,8 @@
-#include "../../germany_api/germany/defs.h"
+#include "../../libicedb/icedb/defs.h"
 #include "plugin_ddscat.hpp"
 #include "shape.h"
-#include "../../germany_api/germany/dlls/linking.h"
-#include "../../germany_api/germany/misc/util.h"
+#include "../../libicedb/icedb/dlls/linking.h"
+#include "../../libicedb/icedb/misc/util.h"
 #include <vector>
 #include <memory>
 #include <cstring>

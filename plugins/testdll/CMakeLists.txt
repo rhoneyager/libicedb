@@ -1,5 +1,5 @@
 generaterc("plugin-testdll" "dll"
-	"germany_api"
+	"libicedb"
 	"Test dll"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
@@ -11,6 +11,6 @@ ENDIF()
 
 
 add_library(testdll SHARED ${tsrcs})
-#target_link_libraries(testdll germany_api)
+#target_link_libraries(testdll libicedb)
 addplugin(testdll Testing icedb)
 storeplugin(testdll icedb)

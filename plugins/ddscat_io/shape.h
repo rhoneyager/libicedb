@@ -1,9 +1,9 @@
 #pragma once
 #ifndef ICEDB_H_L0_DDSCAT_SHAPE
 #define ICEDB_H_L0_DDSCAT_SHAPE
-#include "../../germany_api/germany/defs.h"
-#include "../../germany_api/germany/error/error.h"
-#include "../../germany_api/germany/misc/io.h"
+#include "../../libicedb/icedb/defs.h"
+#include "../../libicedb/icedb/error/error.h"
+#include "../../libicedb/icedb/misc/io.h"
 
 struct ICEDB_L0_DDSCAT_SHAPE;
 typedef ICEDB_L0_DDSCAT_SHAPE* ICEDB_L0_DDSCAT_SHAPE_p;

@@ -1,8 +1,8 @@
 #include "plugin_ddscat.hpp"
-#include "../../germany_api/germany/defs.h"
-#include "../../germany_api/germany/misc/os_functions.h"
-#include "../../germany_api/germany/misc/mem.h"
-#include "../../germany_api/germany/misc/util.h"
+#include "../../libicedb/icedb/defs.h"
+#include "../../libicedb/icedb/misc/os_functions.h"
+#include "../../libicedb/icedb/misc/mem.h"
+#include "../../libicedb/icedb/misc/util.h"
 
 ICEDB_DLL_PLUGINS_COMMON(level_0_ddscat_io);
 ICEDB_core_mem_impl;
