@@ -1,8 +1,10 @@
 #pragma once
-#ifndef ICEDB_H_HANDLE
-#define ICEDB_H_HANDLE
+#ifndef ICEDB_H_FS_HANDLE
+#define ICEDB_H_FS_HANDLE
 #include "../defs.h"
 #include "../error/error.h"
+
+ICEDB_BEGIN_DECL_C
 
 // Filesystem handles are opaque types. They are implemented using several different backends - 
 // for folders, for compressed archives, for netcdf and hdf5 files, et cetera.
@@ -13,7 +15,6 @@
 // may provide such facilities.
 struct ICEDB_FS_HANDLE;
 typedef ICEDB_FS_HANDLE* ICEDB_FS_HANDLE_p;
-struct ICEDB_FS_HANDLE_INNER; // Used internally for plugins.
 
 enum ICEDB_file_open_flags {
 	ICEDB_flags_none = 0,
@@ -33,6 +34,8 @@ enum ICEDB_attr_types {
 	ICEDB_attr_type_uint16,
 	ICEDB_attr_type_int32,
 	ICEDB_attr_type_uint32,
+	ICEDB_attr_type_int64,
+	ICEDB_attr_type_uint64,
 	ICEDB_attr_type_c_str,
 	ICEDB_attr_type_float,
 	ICEDB_attr_type_double,
@@ -49,7 +52,8 @@ DL_ICEDB void ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const char* src, const c
 DL_ICEDB void ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p, const char* path);
 DL_ICEDB bool ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
 DL_ICEDB bool ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
-DL_ICEDB const char* ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p, const char* path);
+DL_ICEDB size_t ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p, 
+	const char* path, size_t szout, char** out);
 
 struct ICEDB_FS_PATH_CONTENTS {
 	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
@@ -60,8 +64,8 @@ struct ICEDB_FS_PATH_CONTENTS {
 	int idx; /* id */
 };
 
-DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const char* path);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS **res);
+DL_ICEDB bool ICEDB_file_handle_path_exists(struct ICEDB_FS_HANDLE_p, const char* path);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(struct ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS **res);
 // Iterate / enumerate all one-level child objects
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(struct ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS **res);
 DL_ICEDB void ICEDB_file_handle_rewind(struct ICEDB_FS_HANDLE_p);
@@ -92,7 +96,5 @@ DL_ICEDB void ICEDB_file_handle_attr_remove(struct ICEDB_FS_HANDLE_p, const char
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_attr_insert(struct ICEDB_FS_HANDLE_p, const char* name,
 	const char* data, size_t sz, ICEDB_attr_types type);
 
-
-// The interface functions for the handle dll interfaces are in a separate header file.
-
+ICEDB_END_DECL_C
 #endif
