@@ -64,11 +64,11 @@ struct ICEDB_FS_PATH_CONTENTS {
 	int idx; /* id */
 };
 
-DL_ICEDB bool ICEDB_file_handle_path_exists(struct ICEDB_FS_HANDLE_p, const char* path);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(struct ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS **res);
+DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const char* path);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS **res);
 // Iterate / enumerate all one-level child objects
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(struct ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS **res);
-DL_ICEDB void ICEDB_file_handle_rewind(struct ICEDB_FS_HANDLE_p);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS **res);
+DL_ICEDB void ICEDB_file_handle_rewind(ICEDB_FS_HANDLE_p);
 
 // There are a few special subpaths / extended attributes (xattrs) / alternate data streams that may exist
 // depending on the path type and underlying file system. Attributes exist in hdf5 and netcdf files, too.
@@ -90,10 +90,10 @@ struct ICEDB_FS_ATTR_CONTENTS {
 	int idx;
 	ICEDB_attr_types a_type;
 };
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjattrs(struct ICEDB_FS_HANDLE_p, ICEDB_FS_ATTR_CONTENTS **res);
-DL_ICEDB void ICEDB_file_handle_attr_rewind(struct ICEDB_FS_HANDLE_p);
-DL_ICEDB void ICEDB_file_handle_attr_remove(struct ICEDB_FS_HANDLE_p, const char* name);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_attr_insert(struct ICEDB_FS_HANDLE_p, const char* name,
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjattrs(ICEDB_FS_HANDLE_p, ICEDB_FS_ATTR_CONTENTS **res);
+DL_ICEDB void ICEDB_file_handle_attr_rewind(ICEDB_FS_HANDLE_p);
+DL_ICEDB void ICEDB_file_handle_attr_remove(ICEDB_FS_HANDLE_p, const char* name);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_attr_insert(ICEDB_FS_HANDLE_p, const char* name,
 	const char* data, size_t sz, ICEDB_attr_types type);
 
 ICEDB_END_DECL_C

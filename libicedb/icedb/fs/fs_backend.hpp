@@ -5,7 +5,7 @@
 #include "fs.h"
 #include "../dlls/linking.h"
 #include <memory>
-#include <cstding>
+#include <cstdint>
 
 namespace icedb {
 	namespace fs {

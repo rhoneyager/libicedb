@@ -98,7 +98,7 @@ ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 	attr_remove, void, ICEDB_FS_HANDLE_p, const char*);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
-	attr_insert, void, ICEDB_FS_HANDLE_p, const char*, const char* data, size_t, ICEDB_attr_types);
+	attr_insert, void, ICEDB_FS_HANDLE_p, const char*, const char*, size_t, ICEDB_attr_types);
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_END(ICEDB_fs_plugin)
 
