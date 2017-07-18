@@ -7,6 +7,7 @@
 #include "../dlls/linking.h"
 #include <memory>
 #include <cstdint>
+#include <functional>
 
 
 ICEDB_BEGIN_DECL_C
@@ -36,6 +37,7 @@ struct ICEDB_FS_HANDLE {
 	std::shared_ptr<interface_ICEDB_fs_plugin> i;
 	std::shared_ptr<ICEDB_DLL_BASE_HANDLE> d;
 	ICEDB_fs_plugin_capabilities c;
+	std::function<void(ICEDB_handle_inner*)> h_dest;
 };
 
 
@@ -46,10 +48,10 @@ ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	can_open_path, bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	open_path, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
-ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	can_open_stream, bool, const char*, const char*, ICEDB_file_open_flags);
-ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	open_stream, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
+//ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+//	can_open_stream, bool, const char*, const char*, ICEDB_file_open_flags);
+//ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+//	open_stream, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
 
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	get_open_flags, ICEDB_file_open_flags, ICEDB_FS_HANDLE_p);

@@ -46,8 +46,8 @@ enum ICEDB_attr_types {
 DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_create(
 	const char* path, const char* ftype, ICEDB_file_open_flags flags);
 DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p);
-DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_open_sub(
-	ICEDB_FS_HANDLE_p base, const char* path, const char* ftype, ICEDB_file_open_flags);
+//DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_open_sub(
+//	ICEDB_FS_HANDLE_p base, const char* path, const char* ftype, ICEDB_file_open_flags);
 
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const char* src, const char* dest);

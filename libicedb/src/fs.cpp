@@ -17,6 +17,7 @@ namespace icedb {
 				if (!p->h) ICEDB_DEBUG_RAISE_EXCEPTION();
 				if (!p->i) ICEDB_DEBUG_RAISE_EXCEPTION();
 				if (!p->d) ICEDB_DEBUG_RAISE_EXCEPTION();
+				if (!p->h_dest) ICEDB_DEBUG_RAISE_EXCEPTION();
 			}
 			bool has_valid_fs_interface(interface_ICEDB_fs_plugin *i) {
 				if (!i) ICEDB_DEBUG_RAISE_EXCEPTION();
@@ -25,7 +26,6 @@ namespace icedb {
 				if (!i->Bind_attr_remove(i)) return false;
 				if (!i->Bind_attr_rewind(i)) return false;
 				if (!i->Bind_can_open_path(i)) return false;
-				if (!i->Bind_can_open_stream(i)) return false;
 				if (!i->Bind_copy(i)) return false;
 				if (!i->Bind_create_hard_link(i)) return false;
 				if (!i->Bind_create_sym_link(i)) return false;
@@ -34,7 +34,6 @@ namespace icedb {
 				if (!i->Bind_get_open_flags(i)) return false;
 				if (!i->Bind_move(i)) return false;
 				if (!i->Bind_open_path(i)) return false;
-				if (!i->Bind_open_stream(i)) return false;
 				if (!i->Bind_path_exists(i)) return false;
 				if (!i->Bind_path_info(i)) return false;
 				if (!i->Bind_readobjattrs(i)) return false;
@@ -52,8 +51,9 @@ using namespace icedb::fs::impl;
 
 void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p p) {
 	verify_pointer_fs_p(p);
+	p->h = nullptr; // h's destructor depends on h_dest's existence
+	p->h_dest = nullptr;
 	p->i = nullptr;
-	p->h = nullptr;
 	p->d = nullptr;
 	delete p;
 }
@@ -66,6 +66,7 @@ ICEDB_FS_HANDLE_p ICEDB_file_handle_create
 		res->i = nullptr;
 		res->d = nullptr;
 		res->h = nullptr;
+		res->h_dest = nullptr;
 
 		std::vector<std::string> dlls = icedb::dll::query_interface("fs");
 		for (const auto &f : dlls) {
@@ -79,11 +80,10 @@ ICEDB_FS_HANDLE_p ICEDB_file_handle_create
 					iface->get_capabilities(iface.get(), &(res->c));
 					res->i = iface;
 					res->d = dhnd;
+					//res->h_d = 
+					res->h_dest = std::bind(iface->destroy, iface.get(), std::placeholders::_1);
 					res->h = icedb::fs::hnd_t(
-						iface->open_path(iface.get(), path, ftype, flags),
-						std::bind<void(interface_ICEDB_fs_plugin*)>
-						(iface->destroy, iface.get(), std::placeholders::_1)
-					);
+						iface->open_path(iface.get(), path, ftype, flags), res->h_dest);
 					break;
 				}
 			}
@@ -99,11 +99,6 @@ ICEDB_FS_HANDLE_p ICEDB_file_handle_create
 		return res;
 	}
 }
-/*
-ICEDB_FS_HANDLE_p ICEDB_file_handle_open_sub(ICEDB_FS_HANDLE_p base, const char* path, const char* ftype, ICEDB_file_open_flags) {
-
-}
-*/
 ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p p, const char* src, const char* dest) {
 	verify_pointer_fs_p(p);
 	if (!src || !dest) ICEDB_DEBUG_RAISE_EXCEPTION();
