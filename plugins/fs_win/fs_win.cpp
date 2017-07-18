@@ -55,7 +55,7 @@ extern "C" {
 	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE* h) {
 		const size_t sz = 2048;
 		char buf[sz] = "";
-		fReg("fs", -1, fMod((void*)Register, sz, buf));
+		fReg("fs", 1000, fMod((void*)Register, sz, buf));
 		hnd = h;
 		return true;
 	}
@@ -63,6 +63,6 @@ extern "C" {
 	SHARED_EXPORT_ICEDB void Unregister(ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod) {
 		const size_t sz = 2048;
 		char buf[sz] = "";
-		fUnReg("fs", -1, fMod((void*)Unregister, sz, buf));
+		fUnReg("fs", 1000, fMod((void*)Unregister, sz, buf));
 	}
 }
