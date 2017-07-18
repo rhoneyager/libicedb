@@ -10,19 +10,22 @@
 // These files must always reflect each other.
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(ICEDB_fs_plugin)
+
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
+	get_capabilities, "fs_get_capabilities", void, ICEDB_fs_plugin_capabilities*);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 	can_open_path, "fs_can_open_path", bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
-	open_path, "fs_open_path", ICEDB_FS_HANDLE_p, const char*, const char*, ICEDB_file_open_flags);
+	open_path, "fs_open_path", ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 	can_open_stream, "fs_can_open_stream", bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
-	open_stream, "fs_open_stream", ICEDB_FS_HANDLE_p, const char*, const char*, ICEDB_file_open_flags);
+	open_stream, "fs_open_stream", ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 	get_open_flags, "fs_get_open_flags", ICEDB_file_open_flags, ICEDB_FS_HANDLE_p);
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
-	destroy, "fs_destroy", void, ICEDB_FS_HANDLE_p);
+	destroy, "fs_destroy", void, ICEDB_handle_inner*);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 	move, "fs_move", ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, const char*);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
@@ -59,17 +62,19 @@ ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(ICEDB_fs_plugin)
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
+	get_capabilities, void, ICEDB_fs_plugin_capabilities*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 	can_open_path, bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
-	open_path, ICEDB_FS_HANDLE_p, const char*, const char*, ICEDB_file_open_flags);
+	open_path, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 	can_open_stream, bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
-	open_stream, ICEDB_FS_HANDLE_p, const char*, const char*, ICEDB_file_open_flags);
+	open_stream, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 	get_open_flags, ICEDB_file_open_flags, ICEDB_FS_HANDLE_p);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
-	destroy, void, ICEDB_FS_HANDLE_p);
+	destroy, void, ICEDB_handle_inner*);
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 	move, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, const char*);
