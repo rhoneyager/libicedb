@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 	std::string pDir(ICEDB_getPluginDirC());
 	const size_t mangledNameSz = 200;
 	char mangledName[mangledNameSz] = "";
-	ICEDB_dll_name_mangle_simple("units-simple", (char**)&mangledName, mangledNameSz);
+	ICEDB_dll_name_mangle_simple("units-simple", mangledName, mangledNameSz);
 	std::string testP = pDir + "/" + std::string(mangledName);
 	ICEDB_load_plugin(testP.c_str());
 

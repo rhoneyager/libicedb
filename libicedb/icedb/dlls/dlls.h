@@ -61,7 +61,7 @@ typedef char** ICEDB_query_interface_res_t;
 ICEDB_CALL_C DL_ICEDB ICEDB_query_interface_res_t ICEDB_query_interface(const char* topic);
 ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface_free(ICEDB_query_interface_res_t);
 
-ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, char** res, size_t maxsz);
+ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, char* res, size_t maxsz);
 ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* path);
 ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const char* path);
 

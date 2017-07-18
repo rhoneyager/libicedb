@@ -39,6 +39,7 @@
 #include "../icedb/error/error_context.h"
 #include "../icedb/misc/os_functions.h"
 #include "../icedb/misc/os_functions.hpp"
+#include "../icedb/dlls/dlls.h"
 #include "../icedb/misc/mem.h"
 #include "../icedb/misc/util.h"
 
@@ -867,6 +868,22 @@ void ICEDB_libEntry(int, char**) {
 	// Set appexit
 	atexit(ICEDB_libExit);
 	// Static registration of i/o objects
+
+	// Load the appropriate filesystem plugin
+	std::string pDir(ICEDB_getPluginDirC());
+	const size_t mangledNameSz = 200;
+	char mangledName[mangledNameSz] = "";
+#if defined(_WIN32)
+	ICEDB_dll_name_mangle_simple("fs-win", mangledName, mangledNameSz);
+#else
+	ICEDB_dll_name_mangle_simple("fs-posix", mangledName, mangledNameSz);
+#endif
+	std::string testP = pDir + "/" + std::string(mangledName);
+	ICEDB_load_plugin(testP.c_str());
+
+
+	// Query the filesystem to load the remaining plugins
+
 }
 void ICEDB_libExit() {
 	using namespace std;

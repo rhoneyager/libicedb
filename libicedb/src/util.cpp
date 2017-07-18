@@ -15,6 +15,7 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(
 	first null character or until srcSz. Note that null termination comes later.
 	\param srcSz is the max size of the source buffer. 
 	**/
+	if (!dest || !src)ICEDB_DEBUG_RAISE_EXCEPTION();
 #if ICEDB_USING_SECURE_STRINGS
 	strncpy_s(dest, destSz, src, srcSz);
 #else
@@ -32,6 +33,7 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(
 ICEDB_SYMBOL_SHARED char * ICEDB_COMPAT_strdup_s(const char * src, size_t srcSz)
 {
 	/** \brief Safe char array initialization and copy. Null appended at end (added to srcSz). **/
+	if (!src) ICEDB_DEBUG_RAISE_EXCEPTION();
 	char* res = (char*)ICEDB_malloc(sizeof(char)*(srcSz+1));
 	ICEDB_COMPAT_strncpy_s(res, srcSz+1, src, srcSz+1);
 	return res;

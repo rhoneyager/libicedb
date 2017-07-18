@@ -11,7 +11,7 @@ SET(srcs ${srcs}
 ENDIF()
 
 add_executable(units-app ${srcs})
-target_link_libraries(units-app germany_api)
+target_link_libraries(units-app libicedb)
 addapp(units-app Misc)
 storebin(units-app)
 

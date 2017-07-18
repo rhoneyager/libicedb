@@ -3,7 +3,7 @@
 #include "../../libicedb/icedb/dlls/plugins.h"
 #include "../../libicedb/icedb/units/unitsInterface.hpp"
 
-ICEDB_DLL_PLUGINS_COMMON(units-simple);
+ICEDB_DLL_PLUGINS_COMMON(units_simple);
 
 struct simpleUnits {
 	static bool canConvert(const std::string &in, const std::string &out) {

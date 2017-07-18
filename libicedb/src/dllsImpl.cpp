@@ -31,7 +31,8 @@ CharArrayStr_t convertCharArrayStr(const char* charArray)
 typedef const char* CharArrayStr_t;
 CharArrayStr_t convertCharArrayStr(const char* charArray)
 {
-	return charArray;
+	return ICEDB_COMPAT_strdup_s(charArray, strlen(charArray));
+	charArray;
 }
 #endif
 
@@ -271,7 +272,7 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface_free(ICEDB_query_interface_res_
 	ICEDB_free(p);
 }
 
-ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, char** out, size_t maxsz) {
+ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, char* out, size_t maxsz) {
 	std::string res;
 	if (!libname || !out) ICEDB_DEBUG_RAISE_EXCEPTION();
 #if defined(_WIN32)
@@ -285,7 +286,7 @@ ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, c
 	// libX.so
 	res = "lib" + std::string(libname) + ".so";
 #endif
-	ICEDB_COMPAT_strncpy_s(*out, maxsz, res.c_str(), res.size() + 1);
+	ICEDB_COMPAT_strncpy_s(out, maxsz, res.c_str(), res.size() + 1);
 	return (maxsz > res.size()+1) ? maxsz : res.size() + 1;
 }
 
