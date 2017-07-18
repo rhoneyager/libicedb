@@ -14,6 +14,15 @@ ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(ICEDB_fs_plugin)
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 	get_capabilities, "fs_get_capabilities", void, ICEDB_fs_plugin_capabilities*);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
+	set_property, "fs_set_property", void, ICEDB_handle_inner*, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
+	get_property, "fs_get_property", const char*, ICEDB_handle_inner*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
+	set_global_property, "fs_set_global_property", void, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
+	get_global_property, "fs_get_global_property", const char*, const char*);
+
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 	can_open_path, "fs_can_open_path", bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(ICEDB_fs_plugin,
 	open_path, "fs_open_path", ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
@@ -63,6 +72,15 @@ ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(ICEDB_fs_plugin)
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 	get_capabilities, void, ICEDB_fs_plugin_capabilities*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
+	set_property, void, ICEDB_handle_inner*, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
+	get_property, const char*, ICEDB_handle_inner*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
+	set_global_property, void, const char*, const char*);
+ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
+	get_global_property, const char*, const char*);
+
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,
 	can_open_path, bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_FUNCTION(ICEDB_fs_plugin,

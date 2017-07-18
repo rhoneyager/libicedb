@@ -22,6 +22,10 @@ namespace icedb {
 			bool has_valid_fs_interface(interface_ICEDB_fs_plugin *i) {
 				if (!i) ICEDB_DEBUG_RAISE_EXCEPTION();
 				if (!i->Bind_get_capabilities(i)) return false;
+				if (!i->Bind_get_global_property(i)) return false;
+				if (!i->Bind_set_global_property(i)) return false;
+				if (!i->Bind_get_property(i)) return false;
+				if (!i->Bind_set_property(i)) return false;
 				if (!i->Bind_attr_insert(i)) return false;
 				if (!i->Bind_attr_remove(i)) return false;
 				if (!i->Bind_attr_rewind(i)) return false;

@@ -35,7 +35,7 @@ extern "C" {
 		caps.can_delete = true;
 		caps.can_hard_link = true;
 		caps.can_move = true;
-		caps.can_soft_link = true;
+		caps.can_soft_link = false;
 		caps.fs_has_cyclic_links = true;
 		caps.has_external_links = true;
 		caps.has_folders = true;
@@ -45,7 +45,7 @@ extern "C" {
 		*p = caps;
 	}
 
-	SHARED_EXPORT_ICEDB void destroy(ICEDB_handle_inner* p) {
+	SHARED_EXPORT_ICEDB void fs_destroy(ICEDB_handle_inner* p) {
 		if (!isValidHandle(p)) 
 			hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);

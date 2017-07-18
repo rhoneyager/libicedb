@@ -18,8 +18,11 @@ namespace icedb {
 			extern const uint64_t pluginMagic;
 			// The name of the plugin matters when handles are opened. They act as reserved types.
 			extern const char* pluginName;
+			extern ICEDB_fs_plugin_capabilities caps;
+			extern ICEDB_DLL_BASE_HANDLE* hnd;
 		}
 	}
 }
 
+extern "C" bool isValidHandle(ICEDB_handle_inner* p);
 #endif

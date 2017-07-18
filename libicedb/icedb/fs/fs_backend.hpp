@@ -45,6 +45,15 @@ ICEDB_DLL_INTERFACE_BEGIN(ICEDB_fs_plugin)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	get_capabilities, void, ICEDB_fs_plugin_capabilities*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+	set_global_property, void, const char*, const char*);
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+	get_global_property, const char*, const char*);
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+	set_property, void, ICEDB_handle_inner*, const char*, const char*);
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+	get_property, const char*, ICEDB_handle_inner*, const char*);
+
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	can_open_path, bool, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	open_path, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
