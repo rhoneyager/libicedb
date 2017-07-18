@@ -47,13 +47,13 @@ DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_create(const char* path, const char
 DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p);
 DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_open_sub(ICEDB_FS_HANDLE_p base, const char* path, const char* ftype, ICEDB_file_open_flags);
 
-DL_ICEDB void ICEDB_file_handle_move(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
-DL_ICEDB void ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
-DL_ICEDB void ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p, const char* path);
-DL_ICEDB bool ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
-DL_ICEDB bool ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
-DL_ICEDB size_t ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p, 
-	const char* path, size_t szout, char** out);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p, const char* path);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p,
+	const char* path, size_t out_max_sz, size_t* szout, char** out);
 
 struct ICEDB_FS_PATH_CONTENTS {
 	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
@@ -68,7 +68,7 @@ DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const char* path)
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS **res);
 // Iterate / enumerate all one-level child objects
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS **res);
-DL_ICEDB void ICEDB_file_handle_rewind(ICEDB_FS_HANDLE_p);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_rewind(ICEDB_FS_HANDLE_p);
 
 // There are a few special subpaths / extended attributes (xattrs) / alternate data streams that may exist
 // depending on the path type and underlying file system. Attributes exist in hdf5 and netcdf files, too.
@@ -91,8 +91,8 @@ struct ICEDB_FS_ATTR_CONTENTS {
 	ICEDB_attr_types a_type;
 };
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjattrs(ICEDB_FS_HANDLE_p, ICEDB_FS_ATTR_CONTENTS **res);
-DL_ICEDB void ICEDB_file_handle_attr_rewind(ICEDB_FS_HANDLE_p);
-DL_ICEDB void ICEDB_file_handle_attr_remove(ICEDB_FS_HANDLE_p, const char* name);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_attr_rewind(ICEDB_FS_HANDLE_p);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_attr_remove(ICEDB_FS_HANDLE_p, const char* name);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_attr_insert(ICEDB_FS_HANDLE_p, const char* name,
 	const char* data, size_t sz, ICEDB_attr_types type);
 
