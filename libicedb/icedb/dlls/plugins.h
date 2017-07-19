@@ -9,6 +9,13 @@
 typedef void(*ICEDB_register_interface_f)(const char*, int, const char*);
 typedef char*(*ICEDB_get_module_f)(void*, size_t, char*);
 
+//ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* path);
+//ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const char* path);
+
+//ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename);
+//ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create_from_lib();
+//ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_HANDLE_destroy(ICEDB_DLL_BASE_HANDLE*);
+
 ICEDB_DLL_INTERFACE_BEGIN(icedb_plugin_base)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(icedb_plugin_base, GetVerInfo, ICEDB_VersionInfo_p)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(icedb_plugin_base, Register, bool, ICEDB_register_interface_f, ICEDB_get_module_f, ICEDB_DLL_BASE_HANDLE*)

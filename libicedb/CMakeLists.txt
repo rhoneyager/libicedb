@@ -4,6 +4,8 @@ set (dlls_objs
 	icedb/dlls/dlls.hpp
 	icedb/dlls/dllsImpl.h
 	icedb/dlls/dllsImpl.hpp
+	icedb/dlls/dllsInterfaceImpl.hpp
+	icedb/dlls/dllsInterface.hpp
 	icedb/dlls/linking.h
 	icedb/dlls/plugins.h
 	src/dllsImpl.cpp

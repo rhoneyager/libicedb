@@ -120,7 +120,8 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 	return ICEDB_ERRORCODES_NONE;
 #elif defined(_WIN32)
 	CharArrayStr_t ppath = convertCharArrayStr(p->path);
-	p->_dlHandle->h = LoadLibrary(ppath);
+	//p->_dlHandle->h = LoadLibrary(ppath);
+	p->_dlHandle->h = LoadLibraryEx(ppath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 	delete ppath;
 	// Could not open the dll for some reason
 	if (p->_dlHandle->h == NULL)
@@ -132,6 +133,10 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_open(ICEDB_DLL_BASE_HANDLE *p) {
 		snprintf(winErrString, errStrSz, "%u", err);
 		ICEDB_error_context_add_string2(e, "Win-Error-Code", winErrString);
 		ICEDB_error_context_add_string2(e, "DLL-Path", p->path);
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, err,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
+
+		ICEDB_error_context_add_string2(e, "Win-Error-String", winErrString);
 		return ICEDB_ERRORCODES_DLLOPEN;
 	}
 	p->openCount++;

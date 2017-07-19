@@ -39,7 +39,8 @@ namespace icedb {
 			ReturnType DoBind(InterfaceType *p, Args... args) {
 				SymbolClass *s = SymbolAccessor::Access(p);
 				if ((!s->status) || (s->status != p->_base->_vtable->isOpen(p->_base))) {
-					s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, SymbolClass::Symbol());
+					const char* symName = SymbolClass::Symbol();
+					s->inner = (typename SymbolClass::inner_type) p->_base->_vtable->getSym(p->_base, symName);
 					if (!s->inner) p->_base->_vtable->_raiseExcept(p->_base,
 						__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 					s->status = p->_base->openCount;
@@ -112,6 +113,9 @@ namespace icedb {
 					return r; \
 				} \
 			};
+
+#define ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION_B(InterfaceName, FuncName, retVal, ...) \
+	ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(InterfaceName, FuncName, #FuncName, retVal, ##__VA_ARGS__)
 
 #define ICEDB_DLL_INTERFACE_IMPLEMENTATION_CONSTRUCTOR(InterfaceName) \
 			_pimpl_interface_##InterfaceName(interface_##InterfaceName* obj) {
