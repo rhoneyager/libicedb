@@ -48,7 +48,7 @@ extern "C" {
 		caps.can_delete = true;
 		caps.can_hard_link = true;
 		caps.can_move = true;
-		caps.can_soft_link = false;
+		caps.can_soft_link = false; // If enabled, code elsewhere in plugin needs to change.
 		caps.fs_has_cyclic_links = true;
 		caps.has_external_links = true;
 		caps.has_folders = true;

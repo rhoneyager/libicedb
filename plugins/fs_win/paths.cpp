@@ -76,6 +76,13 @@ extern "C" {
 		const size_t valid_pri = 10;
 
 		if (!fs_path_exists(nullptr, p)) return 0;
+		ICEDB_FS_PATH_CONTENTS finfo;
+		fs_path_info(nullptr, p, &finfo);
+
+		// This plugin currently does not resolve symbolic links.]
+		// If file type is a file or a directory, then return valid_pri.
+		if (finfo.p_type == ICEDB_path_types::ICEDB_type_folder) return valid_pri;
+		if (finfo.p_type == ICEDB_path_types::ICEDB_type_normal_file) return valid_pri;
 
 		return 0;
 	}
