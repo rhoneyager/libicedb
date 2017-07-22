@@ -66,6 +66,7 @@ extern "C" {
 			data->p_type = ICEDB_path_types::ICEDB_type_nonexistant;
 			strncpy_s(data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 		}
+		return 0;
 	}
 
 	SHARED_EXPORT_ICEDB size_t fs_can_open_path(const wchar_t* p, const char* t, ICEDB_file_open_flags flags) {

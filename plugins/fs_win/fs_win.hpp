@@ -49,6 +49,7 @@ extern "C" {
 	SHARED_EXPORT_ICEDB void Unregister(ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod);
 
 	SHARED_EXPORT_ICEDB bool fs_path_exists(ICEDB_FS_HANDLE_p, const wchar_t* path);
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_path_info(ICEDB_FS_HANDLE_p p, const wchar_t* path, ICEDB_FS_PATH_CONTENTS* data);
 }
 
 #endif
