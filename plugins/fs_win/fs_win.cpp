@@ -58,6 +58,13 @@ extern "C" {
 		*p = caps;
 	}
 
+	SHARED_EXPORT_ICEDB	ICEDB_file_open_flags fs_get_open_flags(ICEDB_FS_HANDLE_p p) {
+		if (!isValidHandle(p))
+			hnd->_vtable->_raiseExcept(hnd,
+				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return p->open_flags;
+	}
+
 	SHARED_EXPORT_ICEDB void fs_destroy(ICEDB_FS_HANDLE_p p) {
 		if (!isValidHandle(p)) 
 			hnd->_vtable->_raiseExcept(hnd,

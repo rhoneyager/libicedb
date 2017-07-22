@@ -69,6 +69,35 @@ extern "C" {
 		return 0;
 	}
 
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_copy(ICEDB_FS_HANDLE_p p,
+		const wchar_t* from, const wchar_t* to, bool overwrite) {
+		std::wstring effpathFrom = makeEffPath(p, from);
+		std::wstring effpathTo = makeEffPath(p, to);
+
+		ICEDB_error_code res = NULL;
+		bool opres = CopyFileW(effpathFrom.data(), effpathTo.data(), !overwrite);
+		if (!opres) {
+			size_t err = GetLastError();
+			// TODO: Add dll support for the error subsystem!
+		}
+		return res;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_move(ICEDB_FS_HANDLE_p p,
+		const wchar_t* from, const wchar_t* to, bool overwrite) {
+	}
+	
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
+
+	}
+	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+		create_hard_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
+	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+		create_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
+	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
+		follow_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p,
+		const wchar_t*, size_t, size_t*, wchar_t**);
+
 	SHARED_EXPORT_ICEDB size_t fs_can_open_path(const wchar_t* p, const char* t, ICEDB_file_open_flags flags) {
 		// Can open directories and any file.
 		// Overall priority is quite low, as more specialized plugins are more useful here. Still,

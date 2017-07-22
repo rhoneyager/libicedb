@@ -19,7 +19,11 @@ set (fs_objs
 set (error_objs
 	icedb/error/error.h
 	icedb/error/error.hpp
+	icedb/error/errorInterface.hpp
+	icedb/error/errorInterfaceImpl.hpp
 	icedb/error/error_context.h
+	icedb/error/error_contextInterface.hpp
+	icedb/error/error_contextInterfaceImpl.hpp
 	icedb/error/errorCodes.h
 	icedb/error/errorCodes.hpp
 	src/error.cpp

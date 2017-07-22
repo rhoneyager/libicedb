@@ -38,6 +38,7 @@ struct ICEDB_FS_HANDLE {
 	std::shared_ptr<ICEDB_DLL_BASE_HANDLE> d;
 	ICEDB_fs_plugin_capabilities c;
 	std::function<void(ICEDB_handle_inner*)> h_dest;
+	ICEDB_file_open_flags open_flags;
 };
 
 
