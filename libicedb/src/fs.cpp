@@ -63,7 +63,7 @@ void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p p) {
 }
 
 ICEDB_FS_HANDLE_p ICEDB_file_handle_create
-(const char* path, const char* ftype, ICEDB_file_open_flags flags) {
+(const wchar_t* path, const char* ftype, ICEDB_file_open_flags flags) {
 	{
 		ICEDB_FS_HANDLE_p res = new ICEDB_FS_HANDLE;
 		res->magic = icedb::fs::impl::magic;
@@ -103,45 +103,45 @@ ICEDB_FS_HANDLE_p ICEDB_file_handle_create
 		return res;
 	}
 }
-ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p p, const char* src, const char* dest) {
+ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p p, const wchar_t* src, const wchar_t* dest) {
 	verify_pointer_fs_p(p);
 	if (!src || !dest) ICEDB_DEBUG_RAISE_EXCEPTION();
 	if (p->c.can_move == false) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->move(p->i.get(), p, src, dest);
 }
-ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p p, const char* src, const char* dest) {
+ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p p, const wchar_t* src, const wchar_t* dest) {
 	verify_pointer_fs_p(p);
 	if (!src || !dest) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->copy(p->i.get(), p, src, dest);
 }
-ICEDB_error_code ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p p, const char* path) {
+ICEDB_error_code ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
 	verify_pointer_fs_p(p);
 	if (!path) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->unlink(p->i.get(), p, path);
 }
-ICEDB_error_code ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p p, const char* src, const char* dest) {
+ICEDB_error_code ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p p, const wchar_t* src, const wchar_t* dest) {
 	verify_pointer_fs_p(p);
 	if (!src || !dest) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->create_hard_link(p->i.get(), p, src, dest);
 }
-ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p p, const char* src, const char* dest) {
+ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p p, const wchar_t* src, const wchar_t* dest) {
 	verify_pointer_fs_p(p);
 	if (!src || !dest) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->create_sym_link(p->i.get(), p, src, dest);
 }
 ICEDB_error_code ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p p,
-	const char* path, size_t out_mx_sz, size_t *szout, char** out) {
+	const wchar_t* path, size_t out_mx_sz, size_t *szout, wchar_t** out) {
 	verify_pointer_fs_p(p);
 	if (!path || !out) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->follow_sym_link(p->i.get(), p, path, out_mx_sz, szout, out);
 }
 
-bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p p, const char* path) {
+bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
 	verify_pointer_fs_p(p);
 	if (!path) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->path_exists(p->i.get(), p, path);
 }
-ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p p, const char* path, ICEDB_FS_PATH_CONTENTS **res) {
+ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p p, const wchar_t* path, ICEDB_FS_PATH_CONTENTS **res) {
 	verify_pointer_fs_p(p);
 	if (!path || !res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->path_info(p->i.get(), p, path, res);

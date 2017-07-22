@@ -47,44 +47,40 @@ ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	set_global_property, void, const char*, const char*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	get_global_property, const char*, const char*);
+	get_global_property, size_t, const char*, size_t, char**, size_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	set_property, void, ICEDB_handle_inner*, const char*, const char*);
+	set_property, void, ICEDB_FS_HANDLE_p, const char*, const char*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	get_property, const char*, ICEDB_handle_inner*, const char*);
+	get_property, size_t, ICEDB_FS_HANDLE_p, const char*, size_t, char**, size_t*);
 
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	can_open_path, bool, const char*, const char*, ICEDB_file_open_flags);
+	can_open_path, size_t, const wchar_t*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	open_path, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
-//ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-//	can_open_stream, bool, const char*, const char*, ICEDB_file_open_flags);
-//ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-//	open_stream, ICEDB_handle_inner*, const char*, const char*, ICEDB_file_open_flags);
+	open_path, ICEDB_FS_HANDLE_p, const wchar_t*, const char*, ICEDB_file_open_flags);
 
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	get_open_flags, ICEDB_file_open_flags, ICEDB_FS_HANDLE_p);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	destroy, void, ICEDB_handle_inner*);
+	destroy, void, ICEDB_FS_HANDLE_p);
 
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	move, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, const char*);
+	move, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	copy, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, const char*);
+	copy, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	unlink, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*);
+	unlink, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	create_hard_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, const char*);
+	create_hard_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	create_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, const char*);
+	create_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	follow_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, 
-	const char*, size_t, size_t*, char**);
+	const wchar_t*, size_t, size_t*, wchar_t**);
 
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	path_exists, bool, ICEDB_FS_HANDLE_p, const char*);
+	path_exists, bool, ICEDB_FS_HANDLE_p, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	path_info, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, ICEDB_FS_PATH_CONTENTS**);
+	path_info, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, ICEDB_FS_PATH_CONTENTS*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	readobjs, ICEDB_error_code, ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS**);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,

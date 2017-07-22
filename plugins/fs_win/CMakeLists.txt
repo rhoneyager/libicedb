@@ -5,7 +5,7 @@ generaterc("fs-win" "dll"
 	"Windows filesystem plugin"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
-	 set (tsrcs fs_win.cpp fs_win.hpp)
+	 set (tsrcs fs_win.cpp fs_win.hpp paths.cpp)
 IF (WIN32 AND NOT CYGWIN)
 SET(tsrcs ${tsrcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
