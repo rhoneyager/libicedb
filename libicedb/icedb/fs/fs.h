@@ -25,6 +25,7 @@ enum ICEDB_file_open_flags {
 };
 enum ICEDB_path_types {
 	ICEDB_type_nonexistant,
+	ICEDB_type_unknown,
 	ICEDB_type_normal_file,
 	ICEDB_type_folder,
 	ICEDB_type_symlink
@@ -57,12 +58,13 @@ DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, c
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p,
 	const wchar_t* path, size_t out_max_sz, size_t* szout, wchar_t** out);
 
+#define ICEDB_FS_PATH_CONTENTS_PATH_MAX 32767
 struct ICEDB_FS_PATH_CONTENTS {
 	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
-	wchar_t p_name[65536]; /* path name */
-	char p_obj_type[256]; /* Descriptive type of object - hdf5 file, shape, compressed archive, ... */
+	wchar_t p_name[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* path name */
+	char p_obj_type[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* Descriptive type of object - hdf5 file, shape, compressed archive, ... */
 	ICEDB_FS_HANDLE_p base_handle; /* Pointer to base container */
-	wchar_t base_path[65536];
+	wchar_t base_path[ICEDB_FS_PATH_CONTENTS_PATH_MAX];
 	int idx; /* id */
 };
 

@@ -1,9 +1,11 @@
+#define __STDC_WANT_LIB_EXT1__
 #include "../../libicedb/icedb/defs.h"
 #include "../../libicedb/icedb/fs/fs.h"
 #include "../../libicedb/icedb/misc/os_functions.h"
 #include "../../libicedb/icedb/dlls/plugins.h"
 #include "../../libicedb/icedb/misc/util.h"
 #include <string>
+#include <cwchar>
 #include "fs_win.hpp"
 #include <windows.h>
 #include "Shlwapi.h"
@@ -39,12 +41,31 @@ extern "C" {
 		std::wstring effpath = makeEffPath(p, path);
 		if (!data) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		
 		data->base_handle = p;
-		data->base_path = p->h->cwd;
+		wcsncpy_s(data->base_path, p->h->cwd.data(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 		data->idx = -1;
-		data->p_name = effpath;
-		data->p_type;
-		data->p_obj_type;
+		if (path)
+			wcsncpy_s(data->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, path, ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+		else wcsncpy_s(data->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, L"", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+
+		data->p_type = ICEDB_path_types::ICEDB_type_unknown;
+		if (fs_path_exists(p, path)) {
+			DWORD winatts = GetFileAttributesW(effpath.data());
+			if (FILE_ATTRIBUTE_DIRECTORY & winatts) {
+				data->p_type = ICEDB_path_types::ICEDB_type_folder;
+				strncpy_s(data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+			} else if (FILE_ATTRIBUTE_REPARSE_POINT & winatts) {
+				data->p_type = ICEDB_path_types::ICEDB_type_symlink;
+				strncpy_s(data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "symlink", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+			}else {
+				data->p_type = ICEDB_path_types::ICEDB_type_normal_file;
+				strncpy_s(data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "file", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+			}
+		} else {
+			data->p_type = ICEDB_path_types::ICEDB_type_nonexistant;
+			strncpy_s(data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+		}
 	}
 
 	SHARED_EXPORT_ICEDB size_t fs_can_open_path(const wchar_t* p, const char* t, ICEDB_file_open_flags flags) {
