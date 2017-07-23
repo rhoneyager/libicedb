@@ -3,11 +3,13 @@
 #include "../../libicedb/icedb/misc/os_functions.h"
 #include "../../libicedb/icedb/dlls/plugins.h"
 #include "../../libicedb/icedb/misc/util.h"
+#include "../../libicedb/icedb/misc/utilInterfaceImpl.hpp"
+#include "../../libicedb/icedb/misc/memInterfaceImpl.hpp"
+#include "../../libicedb/icedb/error/error_contextInterfaceImpl.hpp"
+#include "../../libicedb/icedb/error/errorInterfaceImpl.hpp"
 #include "fs_win.hpp"
 
 ICEDB_DLL_PLUGINS_COMMON(fs_win);
-ICEDB_core_mem_impl;
-ICEDB_core_util_impl;
 
 namespace icedb {
 	namespace plugins {
@@ -19,6 +21,8 @@ namespace icedb {
 			std::map<std::string, std::string> libprops;
 			std::shared_ptr<interface_ICEDB_core_util> i_util;
 			std::shared_ptr<interface_ICEDB_core_mem> i_mem;
+			std::shared_ptr<interface_ICEDB_core_error> i_error;
+			std::shared_ptr<interface_ICEDB_core_error> i_error;
 		}
 	}
 }
