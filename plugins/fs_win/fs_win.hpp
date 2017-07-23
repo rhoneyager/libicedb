@@ -25,9 +25,10 @@ namespace icedb {
 			extern ICEDB_fs_plugin_capabilities caps;
 			extern ICEDB_DLL_BASE_HANDLE* hnd;
 			extern std::map<std::string, std::string> libprops;
-			std::shared_ptr<interface_ICEDB_core_util> i_util;
-			std::shared_ptr<interface_ICEDB_core_mem> i_mem;
-
+			extern std::shared_ptr<interface_ICEDB_core_util> i_util;
+			extern std::shared_ptr<interface_ICEDB_core_mem> i_mem;
+			extern std::shared_ptr<interface_ICEDB_core_error> i_error;
+			extern std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
 		}
 	}
 }
@@ -37,7 +38,7 @@ extern "C" {
 	SHARED_EXPORT_ICEDB bool isValidHandle(ICEDB_FS_HANDLE_p p);
 	SHARED_EXPORT_ICEDB bool isValidHandleInner(ICEDB_handle_inner* p);
 	SHARED_EXPORT_ICEDB void fs_get_capabilities(ICEDB_fs_plugin_capabilities* p);
-	SHARED_EXPORT_ICEDB void fs_destroy(ICEDB_handle_inner* p);
+	SHARED_EXPORT_ICEDB void fs_destroy(ICEDB_FS_HANDLE_p p);
 	SHARED_EXPORT_ICEDB void fs_set_property(
 		ICEDB_FS_HANDLE_p p, const char* key, const char* val);
 	SHARED_EXPORT_ICEDB void fs_set_global_property(const char* key, const char* val);

@@ -22,7 +22,7 @@ namespace icedb {
 			std::shared_ptr<interface_ICEDB_core_util> i_util;
 			std::shared_ptr<interface_ICEDB_core_mem> i_mem;
 			std::shared_ptr<interface_ICEDB_core_error> i_error;
-			std::shared_ptr<interface_ICEDB_core_error> i_error;
+			std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
 		}
 	}
 }
@@ -136,6 +136,8 @@ extern "C" {
 
 		i_util = std::shared_ptr<interface_ICEDB_core_util>(create_ICEDB_core_util(h), destroy_ICEDB_core_util);
 		i_mem = std::shared_ptr<interface_ICEDB_core_mem>(create_ICEDB_core_mem(h), destroy_ICEDB_core_mem);
+		i_error = std::shared_ptr<interface_ICEDB_core_error>(create_ICEDB_core_error(h), destroy_ICEDB_core_error);
+		i_error_context = std::shared_ptr<interface_ICEDB_core_error_context>(create_ICEDB_core_error_context(h), destroy_ICEDB_core_error_context);
 		return true;
 	}
 
@@ -145,5 +147,7 @@ extern "C" {
 		fUnReg("fs", 1000, fMod((void*)Unregister, sz, buf));
 		i_util = nullptr;
 		i_mem = nullptr;
+		i_error = nullptr;
+		i_error_context = nullptr;
 	}
 }

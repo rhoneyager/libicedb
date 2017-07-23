@@ -18,7 +18,6 @@ ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_error, error_context_to_message,
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_error, error_context_to_stream, uint16_t, const ICEDB_error_context*, FILE*)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_error, error_test, ICEDB_error_code)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_error, error_getOSname, const char*)
-
 ICEDB_DLL_INTERFACE_END
 
 ICEDB_END_DECL
