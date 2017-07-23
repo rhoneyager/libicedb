@@ -51,7 +51,7 @@ DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p);
 //	ICEDB_FS_HANDLE_p base, const char* path, const char* ftype, ICEDB_file_open_flags);
 
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest, bool overwrite);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p, const wchar_t* path);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest);

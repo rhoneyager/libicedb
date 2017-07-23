@@ -1,8 +1,12 @@
-#define __STDC_WANT_LIB_EXT1__
 #include "../../libicedb/icedb/defs.h"
 #include "../../libicedb/icedb/fs/fs.h"
 #include "../../libicedb/icedb/misc/os_functions.h"
 #include "../../libicedb/icedb/dlls/plugins.h"
+#include "../../libicedb/icedb/error/error_context.h"
+#include "../../libicedb/icedb/error/error_contextInterface.hpp"
+#include "../../libicedb/icedb/error/error.h"
+#include "../../libicedb/icedb/error/errorInterface.hpp"
+#include "../../libicedb/icedb/error/errorCodes.h"
 #include "../../libicedb/icedb/misc/util.h"
 #include <string>
 #include <cwchar>
@@ -11,23 +15,24 @@
 #include "Shlwapi.h"
 
 using namespace icedb::plugins::fs_win;
-extern "C" {
-	std::wstring makeEffPath(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
-		std::wstring effpath;
-		if (p) {
-			if (!isValidHandle(p))
-				hnd->_vtable->_raiseExcept(hnd,
-					__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-			effpath = p->h->cwd;
-			effpath.append(L"\\");
-		}
-		if (path)
-			effpath.append(path);
-		if (!effpath.length())
+std::wstring makeEffPath(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
+	std::wstring effpath;
+	if (p) {
+		if (!isValidHandle(p))
 			hnd->_vtable->_raiseExcept(hnd,
 				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-		return effpath;
+		effpath = p->h->cwd;
+		effpath.append(L"\\");
 	}
+	if (path)
+		effpath.append(path);
+	if (!effpath.length())
+		hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+	return effpath;
+}
+extern "C" {
+	
 	SHARED_EXPORT_ICEDB bool fs_path_exists(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
 		// The base filesystem plugins do not require the path handle. If it is not specified, then
 		// just assube that the base directory is specified in path. If it is specified, then 
@@ -74,22 +79,69 @@ extern "C" {
 		std::wstring effpathFrom = makeEffPath(p, from);
 		std::wstring effpathTo = makeEffPath(p, to);
 
-		ICEDB_error_code res = NULL;
 		bool opres = CopyFileW(effpathFrom.data(), effpathTo.data(), !overwrite);
 		if (!opres) {
-			size_t err = GetLastError();
-			// TODO: Add dll support for the error subsystem!
+			DWORD winerrnum = GetLastError();
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			const int errStrSz = 250;
+			char winErrString[errStrSz] = "";
+			snprintf(winErrString, errStrSz, "%u", winerrnum);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
+			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
+
+			return ICEDB_ERRORCODES_OS;
 		}
-		return res;
+		return ICEDB_ERRORCODES_NONE;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_move(ICEDB_FS_HANDLE_p p,
 		const wchar_t* from, const wchar_t* to, bool overwrite) {
+		std::wstring effpathFrom = makeEffPath(p, from);
+		std::wstring effpathTo = makeEffPath(p, to);
+		DWORD flags = (overwrite) ? MOVEFILE_REPLACE_EXISTING : 0;
+
+		bool opres = MoveFileExW(effpathFrom.data(), effpathTo.data(), flags);
+		if (!opres) {
+			DWORD winerrnum = GetLastError();
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			const int errStrSz = 250;
+			char winErrString[errStrSz] = "";
+			snprintf(winErrString, errStrSz, "%u", winerrnum);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
+			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
+
+			return ICEDB_ERRORCODES_OS;
+		}
+		return ICEDB_ERRORCODES_NONE;
 	}
 	
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
+		std::wstring effpathFrom = makeEffPath(p, path);
+		bool opres = DeleteFileW(effpathFrom.data());
+		if (!opres) {
+			DWORD winerrnum = GetLastError();
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			const int errStrSz = 250;
+			char winErrString[errStrSz] = "";
+			snprintf(winErrString, errStrSz, "%u", winerrnum);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
+			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
 
+			return ICEDB_ERRORCODES_OS;
+		}
+		return ICEDB_ERRORCODES_NONE;
 	}
+
+	/*
 	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 		create_hard_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
 	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
@@ -97,6 +149,7 @@ extern "C" {
 	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 		follow_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p,
 		const wchar_t*, size_t, size_t*, wchar_t**);
+	*/
 
 	SHARED_EXPORT_ICEDB size_t fs_can_open_path(const wchar_t* p, const char* t, ICEDB_file_open_flags flags) {
 		// Can open directories and any file.

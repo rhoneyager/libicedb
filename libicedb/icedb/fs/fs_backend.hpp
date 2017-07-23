@@ -67,7 +67,7 @@ ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	move, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	copy, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
+	copy, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*, bool);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	unlink, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,

@@ -58,6 +58,13 @@ extern "C" {
 		const wchar_t* p, const char* t, ICEDB_file_open_flags flags);
 	SHARED_EXPORT_ICEDB	ICEDB_file_open_flags fs_get_open_flags(ICEDB_FS_HANDLE_p p);
 
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_copy(ICEDB_FS_HANDLE_p p,
+		const wchar_t* from, const wchar_t* to, bool overwrite);
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_move(ICEDB_FS_HANDLE_p p,
+		const wchar_t* from, const wchar_t* to, bool overwrite);
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path);
+
+
 }
 
 #endif
