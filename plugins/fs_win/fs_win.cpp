@@ -7,6 +7,7 @@
 #include "../../libicedb/icedb/misc/memInterfaceImpl.hpp"
 #include "../../libicedb/icedb/error/error_contextInterfaceImpl.hpp"
 #include "../../libicedb/icedb/error/errorInterfaceImpl.hpp"
+#include <windows.h>
 #include "fs_win.hpp"
 
 ICEDB_DLL_PLUGINS_COMMON(fs_win);
@@ -14,6 +15,19 @@ ICEDB_DLL_PLUGINS_COMMON(fs_win);
 namespace icedb {
 	namespace plugins {
 		namespace fs_win {
+			void GenerateWinOSerror(DWORD winerrnum) {
+				if (!winerrnum) winerrnum = GetLastError();
+				ICEDB_error_context* err = i_error_context->error_context_create_impl(
+					i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+				const int errStrSz = 250;
+				char winErrString[errStrSz] = "";
+				snprintf(winErrString, errStrSz, "%u", winerrnum);
+				i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
+				FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
+					MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
+				i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
+			}
+
 			ICEDB_DLL_BASE_HANDLE* hnd;
 			const uint64_t pluginMagic = 74920938403;
 			const char* pluginName = "fs_win";

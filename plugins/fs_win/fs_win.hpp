@@ -6,6 +6,7 @@
 #include <map>
 #include "../../libicedb/icedb/fs/fs.h"
 #include "../../libicedb/icedb/fs/fs_backend.hpp"
+#include <Windows.h>
 // This struct is deliberately redefined in each plugin.
 // The first field, however, is always a magic uint64_t, that indicates that the
 // passed handle is appropriate for this plugin.
@@ -29,11 +30,11 @@ namespace icedb {
 			extern std::shared_ptr<interface_ICEDB_core_mem> i_mem;
 			extern std::shared_ptr<interface_ICEDB_core_error> i_error;
 			extern std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
+			void GenerateWinOSerror(DWORD winerr = 0);
 		}
 	}
 }
 
-void GenerateWinOSerror(DWORD winerr = 0);
 extern "C" {
 	bool isValidHandle(ICEDB_FS_HANDLE_p p);
 	bool isValidHandleInner(ICEDB_handle_inner* p);
@@ -64,7 +65,9 @@ extern "C" {
 		const wchar_t* from, const wchar_t* to, bool overwrite);
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path);
 
-
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjs(ICEDB_FS_HANDLE_p p,
+		const wchar_t* from, ICEDB_FS_PATH_CONTENTS*** res);
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS** pc);
 }
 
 #endif

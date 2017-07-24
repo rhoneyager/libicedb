@@ -10,6 +10,8 @@
 #include "../../libicedb/icedb/misc/util.h"
 #include <string>
 #include <cwchar>
+#include <map>
+#include <list>
 #include <set>
 #include "fs_win.hpp"
 #include <windows.h>
@@ -18,34 +20,114 @@
 #pragma comment(lib, "Shlwapi")
 
 using namespace icedb::plugins::fs_win;
-std::wstring makeEffPath(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
-	std::wstring effpath;
-	if (p) {
-		if (!isValidHandle(p))
-			hnd->_vtable->_raiseExcept(hnd,
-				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-		effpath = p->h->cwd;
-		effpath.append(L"\\");
+namespace icedb {
+	namespace plugins {
+		namespace fs_win {
+			std::wstring makeEffPath(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
+				std::wstring effpath;
+				if (p) {
+					if (!isValidHandle(p))
+						hnd->_vtable->_raiseExcept(hnd,
+							__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+					effpath = p->h->cwd;
+					effpath.append(L"\\");
+				}
+				if (path)
+					effpath.append(path);
+				if (!effpath.length())
+					hnd->_vtable->_raiseExcept(hnd,
+						__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+				return effpath;
+			}
+
+			namespace dirpaths {
+				const size_t numObjsInPage = 400;
+				class c_dirpathspage {
+				private:
+					ICEDB_FS_PATH_CONTENTS objs[numObjsInPage];
+					size_t numUsed;
+					size_t cur;
+					std::vector<bool> used;
+				public:
+					c_dirpathspage() : numUsed(0), cur(0) { used.resize(numObjsInPage, false); }
+					~c_dirpathspage() {}
+					size_t getNumFree() const { return numObjsInPage - numUsed; }
+					inline bool empty() const { return (numUsed == 0) ? true : false; }
+					inline bool full() const { return (numUsed == numObjsInPage) ? true : false; }
+					inline bool isObjOwner(ICEDB_FS_PATH_CONTENTS *p) const {
+						if ((p >= objs) && (p < objs + numObjsInPage)) return true;
+						return false;
+					}
+					void findNextCur() {
+						if (numUsed >= numObjsInPage) return;
+						while (used[cur]) {
+							cur++;
+							if (cur >= numObjsInPage) cur = 0;
+						}
+					}
+					ICEDB_FS_PATH_CONTENTS* pop() {
+						if (!getNumFree()) return nullptr;
+						ICEDB_FS_PATH_CONTENTS* res = objs + cur;
+						used[cur] = true;
+						numUsed++;
+						findNextCur();
+						return res;
+					}
+					void release(ICEDB_FS_PATH_CONTENTS* p) {
+						size_t cur = (p - objs) / sizeof(ICEDB_FS_PATH_CONTENTS);
+						used[cur] = false;
+						numUsed--;
+						findNextCur();
+					}
+				};
+				class c_dirpaths {
+				private:
+					std::list<c_dirpathspage> pages;
+					void compact() {
+						pages.remove_if([](c_dirpathspage &p) {
+							return p.empty();
+						});
+					}
+					void addPage() {
+						pages.push_back(c_dirpathspage());
+						rt = pages.rbegin();
+					}
+					std::list<c_dirpathspage>::reverse_iterator rt;
+					size_t releaseCounter;
+				public:
+					c_dirpaths() : releaseCounter(0) {}
+					~c_dirpaths() {}
+					ICEDB_FS_PATH_CONTENTS* pop() {
+						if (!pages.size()) addPage();
+						if (pages.rbegin()->full()) addPage();
+						return pages.rbegin()->pop();
+					}
+					void release(ICEDB_FS_PATH_CONTENTS* p) {
+						if (rt != pages.rend()) {
+							if (rt->isObjOwner(p)) {
+								rt->release(p);
+								return;
+							}
+						}
+						for (rt = pages.rbegin(); rt != pages.rend(); ++rt) {
+							if (rt->isObjOwner(p)) {
+								rt->release(p);
+								break;
+							}
+						}
+						releaseCounter++;
+						if (releaseCounter > 10 * numObjsInPage) {
+							compact();
+							releaseCounter = 0;
+						}
+					}
+				} obj_c_dirpaths;
+				std::map<ICEDB_FS_PATH_CONTENTS*, std::shared_ptr<std::vector<ICEDB_FS_PATH_CONTENTS*> > > returned_paths;
+			}
+		}
 	}
-	if (path)
-		effpath.append(path);
-	if (!effpath.length())
-		hnd->_vtable->_raiseExcept(hnd,
-			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-	return effpath;
 }
-void GenerateWinOSerror(DWORD winerrnum) {
-	if (!winerrnum) winerrnum = GetLastError();
-	ICEDB_error_context* err = i_error_context->error_context_create_impl(
-		i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-	const int errStrSz = 250;
-	char winErrString[errStrSz] = "";
-	snprintf(winErrString, errStrSz, "%u", winerrnum);
-	i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
-	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
-	i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
-}
+
 extern "C" {
 	
 	SHARED_EXPORT_ICEDB bool fs_path_exists(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
@@ -195,8 +277,8 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjs(ICEDB_FS_HANDLE_p p,
-		const wchar_t* from, ICEDB_FS_PATH_CONTENTS** res) {
-		if (!p) hnd->_vtable->_raiseExcept(hnd,
+		const wchar_t* from, ICEDB_FS_PATH_CONTENTS*** res) {
+		if (!p || !res) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		std::wstring effpath = makeEffPath(p, from);
 		if (!PathFileExistsW(effpath.data())) {
@@ -228,31 +310,31 @@ extern "C" {
 			return ICEDB_ERRORCODES_OS;
 		}
 
-		//std::set<ICEDB_FS_PATH_CONTENTS> children;
+		std::shared_ptr<std::vector<ICEDB_FS_PATH_CONTENTS*> > children(new std::vector<ICEDB_FS_PATH_CONTENTS*>);
+		children->reserve(1000);
 		do
 		{
-			// Allocate a bunch of these, and put them in a vector.
-			// The vector gets staticly allocated - it persists. We create a structure of the right size and
-			// then copy the pointers over. Also need to update the deallocation function to release
-			// the allocated vector.
-			ICEDB_FS_PATH_CONTENTS child;
-			child.base_handle;
-			child.base_path;
-			child.idx = 0;
-			child.p_name;
-			child.p_obj_type;
-			child.p_type;
-			child.next = nullptr;
-			//struct ICEDB_FS_PATH_CONTENTS {
-			//	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
-			//	wchar_t p_name[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* path name */
-			//	char p_obj_type[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* Descriptive type of object - hdf5 file, shape, compressed archive, ... */
-			//	ICEDB_FS_HANDLE_p base_handle; /* Pointer to base container */
-			//	wchar_t base_path[ICEDB_FS_PATH_CONTENTS_PATH_MAX];
-			//	int idx; /* id */
-			//};
-			//children.emplace(std::wstring(ffd.cFileName));
-			//if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			ICEDB_FS_PATH_CONTENTS *child = dirpaths::obj_c_dirpaths.pop();
+			child->base_handle = p;
+			StrCpyNW(child->base_path, p->h->cwd.c_str(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+			child->idx = 0;
+			StrCpyNW(child->p_name, ffd.cFileName, ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+			
+			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				child->p_type = ICEDB_path_types::ICEDB_type_folder;
+				errno_t e = strncpy_s(child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", 7);
+				if (e) { GenerateWinOSerror(); return ICEDB_ERRORCODES_OS; }
+			} else if (ffd.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
+				child->p_type = ICEDB_path_types::ICEDB_type_symlink;
+				errno_t e = strncpy_s(child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "symlink", 8);
+				if (e) { GenerateWinOSerror(); return ICEDB_ERRORCODES_OS; }
+			} else {
+				child->p_type = ICEDB_path_types::ICEDB_type_normal_file;
+				errno_t e = strncpy_s(child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "file", 5);
+				if (e) { GenerateWinOSerror(); return ICEDB_ERRORCODES_OS; }
+			}
+			//child->next = nullptr;
+			children->push_back(child);
 		} while (FindNextFileW(hFind, &ffd) != 0);
 		DWORD winerrnum = GetLastError();
 		if (winerrnum != ERROR_NO_MORE_FILES)
@@ -264,7 +346,17 @@ extern "C" {
 			GenerateWinOSerror();
 			return ICEDB_ERRORCODES_OS;
 		}
-		return dwError;
+
+		// Assemble and store a vector that points to the appropriate file paths. Modify the pointers into a linked list.
+		if (children->size()) {
+			//children
+			dirpaths::returned_paths[children->at(0)] = children;
+			*res = children->data();
+		} else {
+			*res = nullptr;
+		}
+
+		return ICEDB_ERRORCODES_NONE;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS** pc) {
@@ -272,13 +364,16 @@ extern "C" {
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		if (!pc) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-		ICEDB_FS_PATH_CONTENTS *it = *pc;
-		while (it) {
-			ICEDB_FS_PATH_CONTENTS *ot = it;
-			++it;
-			delete ot;
+
+		if (dirpaths::returned_paths[*pc]) {
+			auto v = dirpaths::returned_paths[*pc];
+			for (auto &i : *v) dirpaths::obj_c_dirpaths.release(i);
+			dirpaths::returned_paths.erase(*pc);
+		} else {
+			hnd->_vtable->_raiseExcept(hnd,
+				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		}
-		delete pc;
+		return ICEDB_ERRORCODES_NONE;
 	}
 
 
