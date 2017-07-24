@@ -35,8 +35,8 @@ namespace icedb {
 
 
 extern "C" {
-	SHARED_EXPORT_ICEDB bool isValidHandle(ICEDB_FS_HANDLE_p p);
-	SHARED_EXPORT_ICEDB bool isValidHandleInner(ICEDB_handle_inner* p);
+	bool isValidHandle(ICEDB_FS_HANDLE_p p);
+	bool isValidHandleInner(ICEDB_handle_inner* p);
 	SHARED_EXPORT_ICEDB void fs_get_capabilities(ICEDB_fs_plugin_capabilities* p);
 	SHARED_EXPORT_ICEDB void fs_destroy(ICEDB_FS_HANDLE_p p);
 	SHARED_EXPORT_ICEDB void fs_set_property(

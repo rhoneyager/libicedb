@@ -12,7 +12,9 @@
 #include <cwchar>
 #include "fs_win.hpp"
 #include <windows.h>
-#include "Shlwapi.h"
+#include <Shlwapi.h>
+
+#pragma comment(lib, "Shlwapi")
 
 using namespace icedb::plugins::fs_win;
 std::wstring makeEffPath(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
@@ -141,15 +143,94 @@ extern "C" {
 		return ICEDB_ERRORCODES_NONE;
 	}
 
-	/*
-	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-		create_hard_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
-	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-		create_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p, const wchar_t*, const wchar_t*);
-	ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-		follow_sym_link, ICEDB_error_code, ICEDB_FS_HANDLE_p,
-		const wchar_t*, size_t, size_t*, wchar_t**);
-	*/
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_create_sym_link(ICEDB_FS_HANDLE_p,
+		const wchar_t*, const wchar_t*) {
+		// Always throws, since symlinks are not supported on this fs.
+		hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return ICEDB_ERRORCODES_OS;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_follow_sym_link(ICEDB_FS_HANDLE_p,
+		const wchar_t*, size_t, size_t*, wchar_t**) {
+		// Always throws, since symlinks are not supported on this fs.
+		hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return ICEDB_ERRORCODES_OS;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_create_hard_link(ICEDB_FS_HANDLE_p p,
+		const wchar_t* from, const wchar_t* to) {
+		std::wstring effpathFrom = makeEffPath(p, from);
+		std::wstring effpathTo = makeEffPath(p, to);
+
+		bool opres = CreateHardLinkW(effpathTo.data(), effpathFrom.data(), NULL);
+		if (!opres) {
+			DWORD winerrnum = GetLastError();
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			const int errStrSz = 250;
+			char winErrString[errStrSz] = "";
+			snprintf(winErrString, errStrSz, "%u", winerrnum);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
+			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
+			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
+
+			return ICEDB_ERRORCODES_OS;
+		}
+		return ICEDB_ERRORCODES_NONE;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjattrs(ICEDB_FS_HANDLE_p, ICEDB_FS_ATTR_CONTENTS**) {
+		// Always throws, since attributes are not supported on this plugin.
+		hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return ICEDB_ERRORCODES_OS;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_free_objattrs(ICEDB_FS_HANDLE_p) {
+		// Always throws, since attributes are not supported on this plugin.
+		hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return ICEDB_ERRORCODES_OS;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_attr_remove(ICEDB_FS_HANDLE_p, const char*) {
+		// Always throws, since attributes are not supported on this plugin.
+		hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return ICEDB_ERRORCODES_OS;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_attr_insert(ICEDB_FS_HANDLE_p, 
+		const char*, const char*, size_t, ICEDB_attr_types) {
+		// Always throws, since attributes are not supported on this plugin.
+		hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return ICEDB_ERRORCODES_OS;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjs(ICEDB_FS_HANDLE_p p,
+		const wchar_t* from, ICEDB_FS_PATH_CONTENTS** res) {
+		if (!p) hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS** pc) {
+		if (!isValidHandle(p))hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		if (!pc) hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		ICEDB_FS_PATH_CONTENTS *it = *pc;
+		while (it) {
+			ICEDB_FS_PATH_CONTENTS *ot = it;
+			++it;
+			delete ot;
+		}
+		delete pc;
+	}
+
 
 	SHARED_EXPORT_ICEDB size_t fs_can_open_path(const wchar_t* p, const char* t, ICEDB_file_open_flags flags) {
 		// Can open directories and any file.

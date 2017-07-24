@@ -31,12 +31,12 @@ ICEDB_handle_inner::ICEDB_handle_inner() : magic(pluginMagic) {}
 
 extern "C" {
 	
-	SHARED_EXPORT_ICEDB bool isValidHandleInner(ICEDB_handle_inner* p) {
+	bool isValidHandleInner(ICEDB_handle_inner* p) {
 		if (!p) return false;
 		if (p->magic != pluginMagic) return false;
 		return true;
 	}
-	SHARED_EXPORT_ICEDB bool isValidHandle(ICEDB_FS_HANDLE_p p) {
+	bool isValidHandle(ICEDB_FS_HANDLE_p p) {
 		if (!p) return false;
 		if (p->magic != pluginMagic) return false;
 		if (!p->d) return false;
@@ -56,7 +56,7 @@ extern "C" {
 		caps.fs_has_cyclic_links = true;
 		caps.has_external_links = true;
 		caps.has_folders = true;
-		caps.has_xattrs = true;
+		caps.has_xattrs = false; // If enabled, change code elsewhere
 		if (!p) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		*p = caps;

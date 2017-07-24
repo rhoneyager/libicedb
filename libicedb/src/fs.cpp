@@ -28,7 +28,7 @@ namespace icedb {
 				if (!i->Bind_set_property(i)) return false;
 				if (!i->Bind_attr_insert(i)) return false;
 				if (!i->Bind_attr_remove(i)) return false;
-				if (!i->Bind_attr_rewind(i)) return false;
+				if (!i->Bind_free_objattrs(i)) return false;
 				if (!i->Bind_can_open_path(i)) return false;
 				if (!i->Bind_copy(i)) return false;
 				if (!i->Bind_create_hard_link(i)) return false;
@@ -42,7 +42,7 @@ namespace icedb {
 				if (!i->Bind_path_info(i)) return false;
 				if (!i->Bind_readobjattrs(i)) return false;
 				if (!i->Bind_readobjs(i)) return false;
-				if (!i->Bind_rewind(i)) return false;
+				if (!i->Bind_free_objs(i)) return false;
 				if (!i->Bind_unlink(i)) return false;
 				return true;
 			}
@@ -109,10 +109,10 @@ ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p p, const wchar_t* src,
 	if (p->c.can_move == false) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->move(p->i.get(), p, src, dest);
 }
-ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p p, const wchar_t* src, const wchar_t* dest) {
+ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p p, const wchar_t* src, const wchar_t* dest, bool overwrite) {
 	verify_pointer_fs_p(p);
 	if (!src || !dest) ICEDB_DEBUG_RAISE_EXCEPTION();
-	return p->i->copy(p->i.get(), p, src, dest);
+	return p->i->copy(p->i.get(), p, src, dest, overwrite);
 }
 ICEDB_error_code ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
 	verify_pointer_fs_p(p);
@@ -141,7 +141,7 @@ bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
 	if (!path) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->path_exists(p->i.get(), p, path);
 }
-ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p p, const wchar_t* path, ICEDB_FS_PATH_CONTENTS **res) {
+ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p p, const wchar_t* path, ICEDB_FS_PATH_CONTENTS *res) {
 	verify_pointer_fs_p(p);
 	if (!path || !res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->path_info(p->i.get(), p, path, res);
@@ -152,9 +152,9 @@ ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_C
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->readobjs(p->i.get(), p, res);
 }
-ICEDB_error_code ICEDB_file_handle_rewind(ICEDB_FS_HANDLE_p p) {
+ICEDB_error_code ICEDB_file_handle_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS **res) {
 	verify_pointer_fs_p(p);
-	return p->i->rewind(p->i.get(), p);
+	return p->i->free_objs(p->i.get(), p, res);
 }
 
 ICEDB_error_code ICEDB_file_handle_readobjattrs(ICEDB_FS_HANDLE_p p, ICEDB_FS_ATTR_CONTENTS **res) {
@@ -162,9 +162,9 @@ ICEDB_error_code ICEDB_file_handle_readobjattrs(ICEDB_FS_HANDLE_p p, ICEDB_FS_AT
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->readobjattrs(p->i.get(), p, res);
 }
-ICEDB_error_code ICEDB_file_handle_attr_rewind(ICEDB_FS_HANDLE_p p) {
+ICEDB_error_code ICEDB_file_handle_attr_free_objattrs(ICEDB_FS_HANDLE_p p, ICEDB_FS_ATTR_CONTENTS **res) {
 	verify_pointer_fs_p(p);
-	return p->i->attr_rewind(p->i.get(), p);
+	return p->i->free_objattrs(p->i.get(), p, res);
 }
 ICEDB_error_code ICEDB_file_handle_attr_remove(ICEDB_FS_HANDLE_p p, const char* name) {
 	verify_pointer_fs_p(p);
