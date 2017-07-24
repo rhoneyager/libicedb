@@ -33,7 +33,7 @@ namespace icedb {
 	}
 }
 
-
+void GenerateWinOSerror(DWORD winerr = 0);
 extern "C" {
 	bool isValidHandle(ICEDB_FS_HANDLE_p p);
 	bool isValidHandleInner(ICEDB_handle_inner* p);

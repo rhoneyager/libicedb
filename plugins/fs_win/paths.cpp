@@ -10,6 +10,7 @@
 #include "../../libicedb/icedb/misc/util.h"
 #include <string>
 #include <cwchar>
+#include <set>
 #include "fs_win.hpp"
 #include <windows.h>
 #include <Shlwapi.h>
@@ -32,6 +33,18 @@ std::wstring makeEffPath(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
 		hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 	return effpath;
+}
+void GenerateWinOSerror(DWORD winerrnum) {
+	if (!winerrnum) winerrnum = GetLastError();
+	ICEDB_error_context* err = i_error_context->error_context_create_impl(
+		i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+	const int errStrSz = 250;
+	char winErrString[errStrSz] = "";
+	snprintf(winErrString, errStrSz, "%u", winerrnum);
+	i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
+	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
+	i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
 }
 extern "C" {
 	
@@ -83,17 +96,7 @@ extern "C" {
 
 		bool opres = CopyFileW(effpathFrom.data(), effpathTo.data(), !overwrite);
 		if (!opres) {
-			DWORD winerrnum = GetLastError();
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
-				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-			const int errStrSz = 250;
-			char winErrString[errStrSz] = "";
-			snprintf(winErrString, errStrSz, "%u", winerrnum);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
-			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
-
+			GenerateWinOSerror();
 			return ICEDB_ERRORCODES_OS;
 		}
 		return ICEDB_ERRORCODES_NONE;
@@ -107,17 +110,7 @@ extern "C" {
 
 		bool opres = MoveFileExW(effpathFrom.data(), effpathTo.data(), flags);
 		if (!opres) {
-			DWORD winerrnum = GetLastError();
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
-				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-			const int errStrSz = 250;
-			char winErrString[errStrSz] = "";
-			snprintf(winErrString, errStrSz, "%u", winerrnum);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
-			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
-
+			GenerateWinOSerror();
 			return ICEDB_ERRORCODES_OS;
 		}
 		return ICEDB_ERRORCODES_NONE;
@@ -127,17 +120,7 @@ extern "C" {
 		std::wstring effpathFrom = makeEffPath(p, path);
 		bool opres = DeleteFileW(effpathFrom.data());
 		if (!opres) {
-			DWORD winerrnum = GetLastError();
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
-				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-			const int errStrSz = 250;
-			char winErrString[errStrSz] = "";
-			snprintf(winErrString, errStrSz, "%u", winerrnum);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
-			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
-
+			GenerateWinOSerror();
 			return ICEDB_ERRORCODES_OS;
 		}
 		return ICEDB_ERRORCODES_NONE;
@@ -215,6 +198,73 @@ extern "C" {
 		const wchar_t* from, ICEDB_FS_PATH_CONTENTS** res) {
 		if (!p) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		std::wstring effpath = makeEffPath(p, from);
+		if (!PathFileExistsW(effpath.data())) {
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_NONEXISTENT_PATH, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+
+			{
+				size_t origsize = wcslen(effpath.data()) + 1;
+
+				const size_t newsize = origsize * 4;
+				size_t convertedChars = 0;
+				std::unique_ptr<char[]> nstring(new char[newsize]);
+				wcstombs_s(&convertedChars, nstring.get(), origsize, effpath.data(), _TRUNCATE);
+				// Destination string was always null-terminated!
+				std::string res(nstring.get());
+				i_error_context->error_context_add_string2(i_error_context.get(), err, "Path", res.c_str());
+			}
+
+			return ICEDB_ERRORCODES_NONEXISTENT_PATH;
+		}
+		DWORD winatts = GetFileAttributesW(effpath.data());
+		if (FILE_ATTRIBUTE_DIRECTORY & winatts)
+			effpath.append(L"\\*");
+		WIN32_FIND_DATAW ffd;
+		HANDLE hFind = FindFirstFileW(effpath.data(), &ffd);
+		if (INVALID_HANDLE_VALUE == hFind)
+		{
+			GenerateWinOSerror();
+			return ICEDB_ERRORCODES_OS;
+		}
+
+		//std::set<ICEDB_FS_PATH_CONTENTS> children;
+		do
+		{
+			// Allocate a bunch of these, and put them in a vector.
+			// The vector gets staticly allocated - it persists. We create a structure of the right size and
+			// then copy the pointers over. Also need to update the deallocation function to release
+			// the allocated vector.
+			ICEDB_FS_PATH_CONTENTS child;
+			child.base_handle;
+			child.base_path;
+			child.idx = 0;
+			child.p_name;
+			child.p_obj_type;
+			child.p_type;
+			child.next = nullptr;
+			//struct ICEDB_FS_PATH_CONTENTS {
+			//	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
+			//	wchar_t p_name[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* path name */
+			//	char p_obj_type[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* Descriptive type of object - hdf5 file, shape, compressed archive, ... */
+			//	ICEDB_FS_HANDLE_p base_handle; /* Pointer to base container */
+			//	wchar_t base_path[ICEDB_FS_PATH_CONTENTS_PATH_MAX];
+			//	int idx; /* id */
+			//};
+			//children.emplace(std::wstring(ffd.cFileName));
+			//if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		} while (FindNextFileW(hFind, &ffd) != 0);
+		DWORD winerrnum = GetLastError();
+		if (winerrnum != ERROR_NO_MORE_FILES)
+		{
+			GenerateWinOSerror(winerrnum);
+			return ICEDB_ERRORCODES_OS;
+		}
+		if (!FindClose(hFind)) {
+			GenerateWinOSerror();
+			return ICEDB_ERRORCODES_OS;
+		}
+		return dwError;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS** pc) {

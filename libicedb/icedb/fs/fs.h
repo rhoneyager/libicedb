@@ -66,6 +66,7 @@ struct ICEDB_FS_PATH_CONTENTS {
 	ICEDB_FS_HANDLE_p base_handle; /* Pointer to base container */
 	wchar_t base_path[ICEDB_FS_PATH_CONTENTS_PATH_MAX];
 	int idx; /* id */
+	ICEDB_FS_PATH_CONTENTS* next; /* next element in list */
 };
 
 DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const wchar_t* path);
