@@ -39,8 +39,8 @@ namespace icedb {
 		/** Get the error code from the context. Shouldn't be necessary. **/
 		ICEDB_SYMBOL_SHARED error_code_t error_context_to_code(const error_context_pt&);
 
-		ICEDB_SYMBOL_SHARED void stringify(const error_context_pt &err, std::string &);
-		ICEDB_SYMBOL_SHARED std::string stringify(const error_context_pt &err);
+		ICEDB_SYMBOL_SHARED void stringify(const error_context_pt &err, std::wstring &);
+		ICEDB_SYMBOL_SHARED std::wstring stringify(const error_context_pt &err);
 
 	}
 }

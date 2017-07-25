@@ -3,7 +3,7 @@
 #define ICEDB_H_ERRORCODES
 
 #include "../defs.h"
-
+#include <wchar.h>
 ICEDB_BEGIN_DECL
 
 	enum ICEDB_ERRORCODES {
@@ -22,7 +22,7 @@ ICEDB_BEGIN_DECL
 		ICEDB_ERRORCODES_TOTAL // Not really an error, but used for counting
 	};
 
-	extern ICEDB_SYMBOL_PRIVATE const char* ICEDB_ERRORCODES_MAP[ICEDB_ERRORCODES_TOTAL];
+	extern ICEDB_SYMBOL_PRIVATE const wchar_t* ICEDB_ERRORCODES_MAP[ICEDB_ERRORCODES_TOTAL];
 
 ICEDB_END_DECL
 
