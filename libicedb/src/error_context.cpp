@@ -7,7 +7,7 @@
 
 ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context = NULL;
 
-ICEDB_SYMBOL_PRIVATE struct ICEDB_error_context* ICEDB_error_context_create_impl(int code, const char* file, int line, const char* fsig)
+ICEDB_SYMBOL_PRIVATE struct ICEDB_error_context* ICEDB_error_context_create_impl(int code, const wchar_t* file, int line, const char* fsig)
 {
 	ICEDB_error_context* res = (ICEDB_error_context*) ICEDB_malloc(sizeof (ICEDB_error_context));
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
@@ -52,7 +52,7 @@ ICEDB_SYMBOL_PRIVATE struct ICEDB_error_context* ICEDB_error_context_copy(const 
 	return res;
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append(struct ICEDB_error_context *c, uint16_t sz, const char * data)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append(struct ICEDB_error_context *c, size_t sz, const wchar_t * data)
 {
 	if (data[sz] != '\0' && data[sz + 1] == '\0') sz++; // Null character check
 	const uint16_t min_alloc_size_inc = 256;
@@ -74,13 +74,13 @@ ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append(struct ICEDB_error_context 
 		(c->message_size_alloced < UINT16_MAX-1) ? c->message_size_alloced : UINT16_MAX-1)+1; // -1,+1 because message_size includes the null character.
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append_str(struct ICEDB_error_context *c, const char * data)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_append_str(struct ICEDB_error_context *c, const wchar_t * data)
 {
 	uint16_t sz = (uint16_t) strnlen(data, UINT16_MAX);
 	ICEDB_error_context_append(c, sz+1, data);
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string(struct ICEDB_error_context *c, uint16_t var_sz, const char * var_name, uint16_t val_sz, const char * var_val)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string(struct ICEDB_error_context *c, size_t var_sz, const wchar_t * var_name, size_t val_sz, const wchar_t * var_val)
 {
 	if (c->num_var_fields == c->max_num_var_fields)
 		ICEDB_error_context_widen(c, 30);
@@ -89,7 +89,7 @@ ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string(struct ICEDB_error_cont
 	c->num_var_fields++;
 }
 
-ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string2(struct ICEDB_error_context *c, const char * var_name, const char * var_val)
+ICEDB_SYMBOL_PRIVATE void ICEDB_error_context_add_string2(struct ICEDB_error_context *c, const wchar_t * var_name, const wchar_t * var_val)
 {
 #if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
 	ICEDB_error_context_add_string(c, (uint16_t)strnlen_s(var_name, UINT16_MAX), var_name, (uint16_t)strnlen_s(var_val, UINT16_MAX), var_val);

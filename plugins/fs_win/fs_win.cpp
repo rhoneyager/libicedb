@@ -29,6 +29,7 @@ namespace icedb {
 			}
 
 			ICEDB_DLL_BASE_HANDLE* hnd;
+			std::shared_ptr<ICEDB_DLL_BASE_HANDLE> hndSelf;
 			const uint64_t pluginMagic = 74920938403;
 			const char* pluginName = "fs_win";
 			ICEDB_fs_plugin_capabilities caps;
@@ -37,6 +38,8 @@ namespace icedb {
 			std::shared_ptr<interface_ICEDB_core_mem> i_mem;
 			std::shared_ptr<interface_ICEDB_core_error> i_error;
 			std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
+			std::shared_ptr<interface_ICEDB_fs_plugin> i_fs_self;
+			std::wstring wsSelfName;
 		}
 	}
 }
@@ -55,7 +58,7 @@ extern "C" {
 		if (p->magic != pluginMagic) return false;
 		if (!p->d) return false;
 		if (!p->h) return false;
-		if (!p->h_dest) return false;
+		//if (!p->h_dest) return false;
 		if (!p->i) return false;
 		if (!isValidHandleInner(p->h.get())) return false;
 		return true;
@@ -64,10 +67,10 @@ extern "C" {
 	ICEDB_FS_HANDLE_p makeHandle() {
 		ICEDB_FS_HANDLE_p p(new ICEDB_FS_HANDLE);
 		p->magic = pluginMagic;
-		p->d;
-		p->h_dest;
-		p->h;
-		p->i;
+		p->d = hndSelf;
+		//p->h_dest;
+		p->h = std::shared_ptr<ICEDB_handle_inner>(new ICEDB_handle_inner);
+		p->i = i_fs_self;
 		return p;
 	}
 
@@ -98,7 +101,7 @@ extern "C" {
 			hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		p->h = nullptr;
-		p->h_dest = nullptr;
+		//p->h_dest = nullptr;
 		p->i = nullptr;
 		p->d = nullptr;
 		p->magic = 0;
@@ -153,10 +156,16 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE* h) {
-		const size_t sz = 2048;
-		char buf[sz] = "";
-		fReg("fs", 1000, fMod((void*)Register, sz, buf));
+		wchar_t cSelf[ICEDB_FS_PATH_CONTENTS_PATH_MAX] = L"";
+		fMod((void*)Register, ICEDB_FS_PATH_CONTENTS_PATH_MAX, cSelf);
+		wsSelfName = std::wstring(cSelf);
+		fReg("fs", 1000, cSelf); // 1000 is a really low priority
+
 		hnd = h;
+
+		// Need to import ICEDB_DLL_BASE_HANDLE_create and ICEDB_DLL_BASE_HANDLE_destroy
+		hndSelf = std::shared_ptr<ICEDB_DLL_BASE_HANDLE>(ICEDB_DLL_BASE_HANDLE_create(cSelf), ICEDB_DLL_BASE_HANDLE_destroy);
+		i_fs_self = std::shared_ptr<interface_ICEDB_fs_plugin>(create_ICEDB_fs_plugin(hndSelf.get()), destroy_ICEDB_fs_plugin);
 
 		i_util = std::shared_ptr<interface_ICEDB_core_util>(create_ICEDB_core_util(h), destroy_ICEDB_core_util);
 		i_mem = std::shared_ptr<interface_ICEDB_core_mem>(create_ICEDB_core_mem(h), destroy_ICEDB_core_mem);
@@ -166,12 +175,12 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB void Unregister(ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod) {
-		const size_t sz = 2048;
-		char buf[sz] = "";
-		fUnReg("fs", 1000, fMod((void*)Unregister, sz, buf));
+		fUnReg("fs", 1000, wsSelfName.c_str());
 		i_util = nullptr;
 		i_mem = nullptr;
 		i_error = nullptr;
 		i_error_context = nullptr;
+		i_fs_self = nullptr;
+		hndSelf = nullptr;
 	}
 }
