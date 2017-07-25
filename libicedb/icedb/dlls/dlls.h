@@ -22,8 +22,8 @@ typedef uint16_t(*ICEDB_DLL_getRefCount_f)(ICEDB_DLL_BASE_HANDLE*);
 typedef void(*ICEDB_DLL_incRefCount_f)(ICEDB_DLL_BASE_HANDLE*);
 typedef ICEDB_error_code(*ICEDB_DLL_decRefCount_f)(ICEDB_DLL_BASE_HANDLE*);
 typedef void*(*ICEDB_DLL_getSym_f)(ICEDB_DLL_BASE_HANDLE*, const char* symbol_name);
-typedef const wchar_t*(*ICEDB_DLL_getPath_f)(ICEDB_DLL_BASE_HANDLE*);
-typedef ICEDB_error_code(*ICEDB_DLL_setPath_f)(ICEDB_DLL_BASE_HANDLE*, const wchar_t* filename);
+typedef const char*(*ICEDB_DLL_getPath_f)(ICEDB_DLL_BASE_HANDLE*);
+typedef ICEDB_error_code(*ICEDB_DLL_setPath_f)(ICEDB_DLL_BASE_HANDLE*, const char* filename);
 typedef void(*ICEDB_DLL_RAISE_EXCEPTION_HANDLER_f)(ICEDB_DLL_BASE_HANDLE*, const char*, int, const char*);
 
 struct ICEDB_DLL_BASE_HANDLE_vtable {
@@ -41,7 +41,7 @@ struct ICEDB_DLL_BASE_HANDLE_vtable {
 	ICEDB_DLL_RAISE_EXCEPTION_HANDLER_f _raiseExcept;
 };
 
-ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const wchar_t* filename);
+ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename);
 ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create_from_lib();
 ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_HANDLE_destroy(ICEDB_DLL_BASE_HANDLE*);
 struct ICEDB_DLL_BASE_HANDLE {
@@ -49,21 +49,21 @@ struct ICEDB_DLL_BASE_HANDLE {
 	uint16_t refCount;
 	bool autoOpen;
 	uint16_t openCount;
-	const wchar_t* path;
+	const char* path;
 	ICEDB_DLL_BASE_HANDLE_vtable *_vtable;
 };
 
 // DLL Registry functions
 
-ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, int priority, const wchar_t* path);
-ICEDB_CALL_C DL_ICEDB void ICEDB_unregister_interface(const char* topic, int priority, const wchar_t* path);
+ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, int priority, const char* path);
+ICEDB_CALL_C DL_ICEDB void ICEDB_unregister_interface(const char* topic, int priority, const char* path);
 typedef char** ICEDB_query_interface_res_t;
 ICEDB_CALL_C DL_ICEDB ICEDB_query_interface_res_t ICEDB_query_interface(const char* topic);
 ICEDB_CALL_C DL_ICEDB void ICEDB_query_interface_free(ICEDB_query_interface_res_t);
 
-ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const wchar_t* libname, char* res, size_t maxsz);
-ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const wchar_t* path);
-ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const wchar_t* path);
+ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, char* res, size_t maxsz);
+ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* path);
+ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const char* path);
 
 
 

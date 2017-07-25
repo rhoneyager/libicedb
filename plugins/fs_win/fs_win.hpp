@@ -13,7 +13,7 @@
 struct ICEDB_handle_inner {
 	ICEDB_handle_inner();
 	uint64_t magic;
-	std::wstring cwd;
+	std::string cwd;
 	std::map<std::string, std::string> props;
 };
 
@@ -53,23 +53,23 @@ extern "C" {
 	SHARED_EXPORT_ICEDB void Unregister(
 		ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod);
 
-	SHARED_EXPORT_ICEDB bool fs_path_exists(ICEDB_FS_HANDLE_p, const wchar_t* path);
+	SHARED_EXPORT_ICEDB bool fs_path_exists(ICEDB_FS_HANDLE_p, const char* path);
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_path_info(
-		ICEDB_FS_HANDLE_p p, const wchar_t* path, ICEDB_FS_PATH_CONTENTS* data);
+		ICEDB_FS_HANDLE_p p, const char* path, ICEDB_FS_PATH_CONTENTS* data);
 	SHARED_EXPORT_ICEDB size_t fs_can_open_path(
-		ICEDB_FS_HANDLE_p, const wchar_t* p, const char* t, ICEDB_file_open_flags flags);
+		ICEDB_FS_HANDLE_p, const char* p, const char* t, ICEDB_file_open_flags flags);
 	SHARED_EXPORT_ICEDB	ICEDB_file_open_flags fs_get_open_flags(ICEDB_FS_HANDLE_p p);
 	SHARED_EXPORT_ICEDB ICEDB_FS_HANDLE_p fs_open_path(
-		ICEDB_FS_HANDLE_p p, const wchar_t* path, const char* typ, ICEDB_file_open_flags flags);
+		ICEDB_FS_HANDLE_p p, const char* path, const char* typ, ICEDB_file_open_flags flags);
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_copy(ICEDB_FS_HANDLE_p p,
-		const wchar_t* from, const wchar_t* to, bool overwrite);
+		const char* from, const char* to, bool overwrite);
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_move(ICEDB_FS_HANDLE_p p,
-		const wchar_t* from, const wchar_t* to, bool overwrite);
-	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path);
+		const char* from, const char* to, bool overwrite);
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const char* path);
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjs(ICEDB_FS_HANDLE_p p,
-		const wchar_t* from, ICEDB_FS_PATH_CONTENTS*** res);
+		const char* from, ICEDB_FS_PATH_CONTENTS*** res);
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS** pc);
 }
 

@@ -45,7 +45,7 @@ enum ICEDB_attr_types {
 };
 
 DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_create( // rename function
-	const wchar_t* path, const char* ftype, ICEDB_file_open_flags flags);
+	const char* path, const char* ftype, ICEDB_file_open_flags flags);
 // Add can_open_path
 // Add get_open_flags
 DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p); // fix
@@ -55,29 +55,29 @@ DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p); // fix
 // Implement shape reads and writes
 // Create the vtk plugin
 
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest, bool overwrite);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p, const wchar_t* path);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, const wchar_t* src, const wchar_t* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const char* src, const char* dest, bool overwrite);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_unlink(ICEDB_FS_HANDLE_p, const char* path);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_hard_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p,
-	const wchar_t* path, size_t out_max_sz, size_t* szout, wchar_t** out);
+	const char* path, size_t out_max_sz, size_t* szout, char** out);
 
 #define ICEDB_FS_PATH_CONTENTS_PATH_MAX 32767
 struct ICEDB_FS_PATH_CONTENTS {
 	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
-	wchar_t p_name[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* path name */
+	char p_name[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* path name */
 	char p_obj_type[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* Descriptive type of object - hdf5 file, shape, compressed archive, ... */
 	ICEDB_FS_HANDLE_p base_handle; /* Pointer to base container */
-	wchar_t base_path[ICEDB_FS_PATH_CONTENTS_PATH_MAX];
+	char base_path[ICEDB_FS_PATH_CONTENTS_PATH_MAX];
 	int idx; /* id */
 	//ICEDB_FS_PATH_CONTENTS* next; /* next element in list */
 };
 
-DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const wchar_t* path);
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p, const wchar_t* path, ICEDB_FS_PATH_CONTENTS *res);
+DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const char* path);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS *res);
 // Iterate / enumerate all one-level child objects
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS **res);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS ***res);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_free_objs(ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS **);
 
 // There are a few special subpaths / extended attributes (xattrs) / alternate data streams that may exist

@@ -15,9 +15,6 @@ ICEDB_BEGIN_DECL_C
 DL_ICEDB size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
 DL_ICEDB char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
 
-DL_ICEDB size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
-DL_ICEDB char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
-
 DL_ICEDB size_t ICEDB_COMPAT_wcsncpy_s(wchar_t *dest, size_t destSz, const wchar_t* src, size_t srcSz);
 DL_ICEDB wchar_t* ICEDB_COMPAT_wcsdup_s(const wchar_t* src, size_t srcSz);
 

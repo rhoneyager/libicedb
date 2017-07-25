@@ -10,7 +10,7 @@
 ICEDB_BEGIN_DECL_C
 
 	/** Defines an error condition. This is an integer. Zero (0) indicates that there is no error. **/
-	typedef size_t ICEDB_error_code;
+	typedef int ICEDB_error_code;
 
 	/** Support function to turn the general error code into a human-readable message.
 	This function allows you to determine the size of the output buffer necessary to write the entire
@@ -30,7 +30,7 @@ ICEDB_BEGIN_DECL_C
 	\param err is the error code in question. 
 	\param buf_size is the size of the output buffer.
 	\param buf is the buffer. **/
-	DL_ICEDB size_t ICEDB_error_code_to_message(ICEDB_error_code err, size_t buf_size, wchar_t* buf);
+	DL_ICEDB size_t ICEDB_error_code_to_message(ICEDB_error_code err, size_t buf_size, char* buf);
 
 	/** Support function to write the error code to an output stream (C-style).
 	This is a convenience function that allows for printing the error without an intermediate string copy,
@@ -69,7 +69,7 @@ ICEDB_BEGIN_DECL_C
 	\param err is the error context in question.
 	\param buf_size is the size of the output buffer.
 	\param buf is the buffer. **/
-	DL_ICEDB size_t ICEDB_error_context_to_message(const struct ICEDB_error_context* err, size_t buf_size, wchar_t* buf);
+	DL_ICEDB size_t ICEDB_error_context_to_message(const struct ICEDB_error_context* err, size_t buf_size, char* buf);
 
 	/** Support function to write the error code to an output stream (C-style).
 	This is a convenience function that allows for printing the error without an intermediate string copy,
@@ -83,7 +83,7 @@ ICEDB_BEGIN_DECL_C
 	DL_ICEDB ICEDB_error_code ICEDB_error_test();
 
 	/// Convenience function that returns a string describing the OS type.
-	DL_ICEDB const wchar_t* ICEDB_error_getOSname();
+	DL_ICEDB const char* ICEDB_error_getOSname();
 
 	ICEDB_END_DECL_C
 #endif

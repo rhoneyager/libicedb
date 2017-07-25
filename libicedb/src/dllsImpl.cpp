@@ -55,7 +55,7 @@ namespace icedb {
 	}
 }
 
-ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const wchar_t* filename) {
+ICEDB_CALL_C DL_ICEDB ICEDB_DLL_BASE_HANDLE* ICEDB_DLL_BASE_HANDLE_create(const char* filename) {
 	ICEDB_DLL_BASE_HANDLE *res = (ICEDB_DLL_BASE_HANDLE*)ICEDB_malloc(sizeof (ICEDB_DLL_BASE_HANDLE));
 	res->refCount = 0;
 	res->autoOpen = true;

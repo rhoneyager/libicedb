@@ -6,8 +6,8 @@
 #include "../versioning/versioningForwards.h"
 #include "../versioning/versioning.hpp"
 
-typedef void(*ICEDB_register_interface_f)(const char*, int, const wchar_t*);
-typedef wchar_t*(*ICEDB_get_module_f)(void*, size_t, wchar_t*);
+typedef void(*ICEDB_register_interface_f)(const char*, int, const char*);
+typedef char*(*ICEDB_get_module_f)(void*, size_t, char*);
 
 //ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* path);
 //ICEDB_CALL_C DL_ICEDB bool ICEDB_unload_plugin(const char* path);

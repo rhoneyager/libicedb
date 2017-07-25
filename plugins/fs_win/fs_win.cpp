@@ -39,7 +39,7 @@ namespace icedb {
 			std::shared_ptr<interface_ICEDB_core_error> i_error;
 			std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
 			std::shared_ptr<interface_ICEDB_fs_plugin> i_fs_self;
-			std::wstring wsSelfName;
+			std::string sSelfName;
 		}
 	}
 }
@@ -156,9 +156,9 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE* h) {
-		wchar_t cSelf[ICEDB_FS_PATH_CONTENTS_PATH_MAX] = L"";
+		char cSelf[ICEDB_FS_PATH_CONTENTS_PATH_MAX] = "";
 		fMod((void*)Register, ICEDB_FS_PATH_CONTENTS_PATH_MAX, cSelf);
-		wsSelfName = std::wstring(cSelf);
+		sSelfName = std::string(cSelf);
 		fReg("fs", 1000, cSelf); // 1000 is a really low priority
 
 		hnd = h;
@@ -175,7 +175,7 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB void Unregister(ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod) {
-		fUnReg("fs", 1000, wsSelfName.c_str());
+		fUnReg("fs", 1000, sSelfName.c_str());
 		i_util = nullptr;
 		i_mem = nullptr;
 		i_error = nullptr;
