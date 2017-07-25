@@ -18,6 +18,7 @@ ICEDB_BEGIN_DECL
 		ICEDB_ERRORCODES_UNIMPLEMENTED, // Unimplemented function path
 		ICEDB_ERRORCODES_BAD_PLUGIN, // Either not a plugin or an incompatible version
 		ICEDB_ERRORCODES_NONEXISTENT_PATH, // The path does not exist
+		ICEDB_ERRORCODES_READONLY, // The path is read only. No modifications allowed.
 		ICEDB_ERRORCODES_TOTAL // Not really an error, but used for counting
 	};
 

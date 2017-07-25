@@ -12,5 +12,6 @@ ICEDB_SYMBOL_PRIVATE const char* ICEDB_ERRORCODES_MAP[ICEDB_ERRORCODES_TOTAL] =
 	"OS-specific general error.\n",
 	"Unimplemented function of function path.\n",
 	"Either not a plugin or an incompatible version.\n",
-	"The path does not exist.\n"
+	"The path does not exist.\n",
+	"The path is read only. No modifications allowed.\n"
 };

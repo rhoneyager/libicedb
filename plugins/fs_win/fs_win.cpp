@@ -61,6 +61,16 @@ extern "C" {
 		return true;
 	}
 
+	ICEDB_FS_HANDLE_p makeHandle() {
+		ICEDB_FS_HANDLE_p p(new ICEDB_FS_HANDLE);
+		p->magic = pluginMagic;
+		p->d;
+		p->h_dest;
+		p->h;
+		p->i;
+		return p;
+	}
+
 	SHARED_EXPORT_ICEDB void fs_get_capabilities(ICEDB_fs_plugin_capabilities* p) {
 		caps.can_copy = true;
 		caps.can_delete = true;

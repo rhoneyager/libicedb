@@ -38,6 +38,7 @@ namespace icedb {
 extern "C" {
 	bool isValidHandle(ICEDB_FS_HANDLE_p p);
 	bool isValidHandleInner(ICEDB_handle_inner* p);
+	ICEDB_FS_HANDLE_p makeHandle();
 	SHARED_EXPORT_ICEDB void fs_get_capabilities(ICEDB_fs_plugin_capabilities* p);
 	SHARED_EXPORT_ICEDB void fs_destroy(ICEDB_FS_HANDLE_p p);
 	SHARED_EXPORT_ICEDB void fs_set_property(
@@ -56,8 +57,10 @@ extern "C" {
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_path_info(
 		ICEDB_FS_HANDLE_p p, const wchar_t* path, ICEDB_FS_PATH_CONTENTS* data);
 	SHARED_EXPORT_ICEDB size_t fs_can_open_path(
-		const wchar_t* p, const char* t, ICEDB_file_open_flags flags);
+		ICEDB_FS_HANDLE_p, const wchar_t* p, const char* t, ICEDB_file_open_flags flags);
 	SHARED_EXPORT_ICEDB	ICEDB_file_open_flags fs_get_open_flags(ICEDB_FS_HANDLE_p p);
+	SHARED_EXPORT_ICEDB ICEDB_FS_HANDLE_p fs_open_path(
+		ICEDB_FS_HANDLE_p p, const wchar_t* path, const char* typ, ICEDB_file_open_flags flags);
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_copy(ICEDB_FS_HANDLE_p p,
 		const wchar_t* from, const wchar_t* to, bool overwrite);

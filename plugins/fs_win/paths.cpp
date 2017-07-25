@@ -174,6 +174,11 @@ extern "C" {
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_copy(ICEDB_FS_HANDLE_p p,
 		const wchar_t* from, const wchar_t* to, bool overwrite) {
 		std::wstring effpathFrom = makeEffPath(p, from);
+		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			return ICEDB_ERRORCODES_READONLY;
+		}
 		std::wstring effpathTo = makeEffPath(p, to);
 
 		bool opres = CopyFileW(effpathFrom.data(), effpathTo.data(), !overwrite);
@@ -187,6 +192,11 @@ extern "C" {
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_move(ICEDB_FS_HANDLE_p p,
 		const wchar_t* from, const wchar_t* to, bool overwrite) {
 		std::wstring effpathFrom = makeEffPath(p, from);
+		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			return ICEDB_ERRORCODES_READONLY;
+		}
 		std::wstring effpathTo = makeEffPath(p, to);
 		DWORD flags = (overwrite) ? MOVEFILE_REPLACE_EXISTING : 0;
 
@@ -200,6 +210,11 @@ extern "C" {
 	
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const wchar_t* path) {
 		std::wstring effpathFrom = makeEffPath(p, path);
+		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			return ICEDB_ERRORCODES_READONLY;
+		}
 		bool opres = DeleteFileW(effpathFrom.data());
 		if (!opres) {
 			GenerateWinOSerror();
@@ -377,7 +392,7 @@ extern "C" {
 	}
 
 
-	SHARED_EXPORT_ICEDB size_t fs_can_open_path(const wchar_t* p, const char* t, ICEDB_file_open_flags flags) {
+	SHARED_EXPORT_ICEDB size_t fs_can_open_path(ICEDB_FS_HANDLE_p, const wchar_t* p, const char* t, ICEDB_file_open_flags flags) {
 		// Can open directories and any file.
 		// Overall priority is quite low, as more specialized plugins are more useful here. Still,
 		// this can be used for viewing directory contents and querying file metadata / attributes.
@@ -393,5 +408,54 @@ extern "C" {
 		if (finfo.p_type == ICEDB_path_types::ICEDB_type_normal_file) return valid_pri;
 
 		return 0;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_FS_HANDLE_p fs_open_path(
+		ICEDB_FS_HANDLE_p p, const wchar_t* path, const char* typ, ICEDB_file_open_flags flags) {
+		// Does the path exist? Consult flags.
+		// Implicitly checks that p is a valid handle of the same plugin, if it is defined.
+		bool exists = fs_path_exists(p, path);
+		std::wstring spath;
+		if (!exists && ((flags & ICEDB_file_open_flags::ICEDB_flags_create) || (flags & ICEDB_file_open_flags::ICEDB_flags_truncate))) {
+			// Check if this is a folder or a file by looking at the last character of the path.
+			bool isFld = false;
+			if (spath.crbegin() != spath.crend()) {
+				wchar_t c = *(spath.crbegin());
+				if (c == '\\' || c == '/') isFld = true;
+			}
+			std::string styp = (typ) ? std::string(typ) : "";
+			if (styp == "folder") isFld = true;
+			// We can create folders. No knowledge of how to create files.
+			if (!isFld) {
+				ICEDB_error_context* err = i_error_context->error_context_create_impl(
+					i_error_context.get(), ICEDB_ERRORCODES_UNIMPLEMENTED, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+				return nullptr;
+			} else {
+				std::wstring effpath = makeEffPath(p, path);
+				bool res = CreateDirectoryW(effpath.c_str(), NULL);
+				if (!res) GenerateWinOSerror();
+				// Create the handle to the new folder.
+				ICEDB_FS_HANDLE_p h = makeHandle();
+				h->open_flags = flags;
+				h->h->cwd = effpath;
+				return h;
+			}
+		} else if (exists && (flags & ICEDB_file_open_flags::ICEDB_flags_truncate)) {
+			// Not supported. No desire yet to truncate a folder.
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context.get(), ICEDB_ERRORCODES_UNIMPLEMENTED, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			return nullptr;
+		} else if (exists && (
+			(flags & ICEDB_file_open_flags::ICEDB_flags_rw) || (flags & ICEDB_file_open_flags::ICEDB_flags_none)
+			|| (flags & ICEDB_file_open_flags::ICEDB_flags_readonly))) {
+			std::wstring effpath = makeEffPath(p, path);
+			// Create the handle to the new folder.
+			ICEDB_FS_HANDLE_p h = makeHandle();
+			h->open_flags = flags;
+			h->h->cwd = effpath;
+			return h;
+		}
+
+		return nullptr;
 	}
 }
