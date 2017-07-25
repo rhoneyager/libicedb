@@ -40,6 +40,8 @@ set (misc_objs
 	icedb/misc/os_functions.h
 	icedb/misc/os_functions.hpp
 	icedb/misc/util.h
+	icedb/misc/utilInterface.h
+	icedb/misc/utilInterfaceImpl.hpp
 	src/hash.cpp
 	src/mem.cpp
 	src/MurmurHash3.cpp
