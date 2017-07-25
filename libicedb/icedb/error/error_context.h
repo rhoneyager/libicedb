@@ -33,17 +33,35 @@ ICEDB_BEGIN_DECL_C
 	DL_ICEDB struct ICEDB_error_context* ICEDB_error_context_copy(const struct ICEDB_error_context*);
 
 	/** Append extra information to the error context. **/
-	DL_ICEDB void ICEDB_error_context_append(struct ICEDB_error_context*, size_t sz, const wchar_t* data);
-	DL_ICEDB void ICEDB_error_context_append_str(struct ICEDB_error_context*, const wchar_t* data);
+	DL_ICEDB void ICEDB_error_context_appendA(struct ICEDB_error_context*, size_t sz, const char* data);
+	DL_ICEDB void ICEDB_error_context_append_strA(struct ICEDB_error_context*, const char* data);
+	DL_ICEDB void ICEDB_error_context_appendW(struct ICEDB_error_context*, size_t sz, const wchar_t* data);
+	DL_ICEDB void ICEDB_error_context_append_strW(struct ICEDB_error_context*, const wchar_t* data);
 
 	/** Add a string to the error context. **/
-	DL_ICEDB void ICEDB_error_context_add_string(struct ICEDB_error_context*,
+	DL_ICEDB void ICEDB_error_context_add_stringA(struct ICEDB_error_context*,
+		size_t var_sz, const char* var_name, size_t val_sz, const char* var_val);
+	DL_ICEDB void ICEDB_error_context_add_string2A(struct ICEDB_error_context*,
+		const char* var_name, const char* var_val);
+	DL_ICEDB void ICEDB_error_context_add_stringW(struct ICEDB_error_context*,
 		size_t var_sz, const wchar_t* var_name, size_t val_sz, const wchar_t* var_val);
-	DL_ICEDB void ICEDB_error_context_add_string2(struct ICEDB_error_context*,
+	DL_ICEDB void ICEDB_error_context_add_string2W(struct ICEDB_error_context*,
 		const wchar_t* var_name, const wchar_t* var_val);
 
 	/** Widen the error_context var_vals array (safely and non-destructively) **/
 	DL_ICEDB void ICEDB_error_context_widen(struct ICEDB_error_context*, size_t numNewSpaces);
+
+#ifdef UNICODE
+#define ICEDB_error_context_append ICEDB_error_context_appendW
+#define ICEDB_error_context_append_str ICEDB_error_context_append_strW
+#define ICEDB_error_context_add_string ICEDB_error_context_add_stringW
+#define ICEDB_error_context_add_string2 ICEDB_error_context_add_string2W
+#else
+#define ICEDB_error_context_append ICEDB_error_context_appendA
+#define ICEDB_error_context_append_str ICEDB_error_context_append_strA
+#define ICEDB_error_context_add_string ICEDB_error_context_add_stringA
+#define ICEDB_error_context_add_string2 ICEDB_error_context_add_string2A
+#endif
 
 ICEDB_END_DECL_C
 #endif

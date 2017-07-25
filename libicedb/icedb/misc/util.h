@@ -4,7 +4,16 @@
 #include "../defs.h"
 #include "../dlls/linking.h"
 #include <string.h>
+
+#if defined(__cplusplus) || defined(c_plusplus)
+#else
+#include <uchar.h>
+#endif
+
 ICEDB_BEGIN_DECL_C
+
+DL_ICEDB size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
+DL_ICEDB char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
 
 DL_ICEDB size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
 DL_ICEDB char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
