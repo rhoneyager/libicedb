@@ -24,7 +24,7 @@ namespace icedb {
 			// The name of the plugin matters when handles are opened. They act as reserved types.
 			extern const char* pluginName;
 			extern ICEDB_fs_plugin_capabilities caps;
-			extern ICEDB_DLL_BASE_HANDLE* hnd;
+			extern ICEDB_DLL_BASE_HANDLE *hnd, *hndSelf;
 			extern std::map<std::string, std::string> libprops;
 			extern std::shared_ptr<interface_ICEDB_core_util> i_util;
 			extern std::shared_ptr<interface_ICEDB_core_mem> i_mem;
@@ -49,7 +49,8 @@ extern "C" {
 	SHARED_EXPORT_ICEDB size_t fs_get_global_property(
 		const char* key, size_t mxsz, char** val, size_t *sz);
 	SHARED_EXPORT_ICEDB bool Register(
-		ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE* h);
+		ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, 
+		ICEDB_DLL_BASE_HANDLE* hDll, ICEDB_DLL_BASE_HANDLE* hSelf);
 	SHARED_EXPORT_ICEDB void Unregister(
 		ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod);
 

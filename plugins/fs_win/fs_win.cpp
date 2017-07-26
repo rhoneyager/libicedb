@@ -28,8 +28,7 @@ namespace icedb {
 				i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
 			}
 
-			ICEDB_DLL_BASE_HANDLE* hnd;
-			std::shared_ptr<ICEDB_DLL_BASE_HANDLE> hndSelf;
+			ICEDB_DLL_BASE_HANDLE* hnd, *hndSelf;
 			const uint64_t pluginMagic = 74920938403;
 			const char* pluginName = "fs_win";
 			ICEDB_fs_plugin_capabilities caps;
@@ -155,22 +154,21 @@ extern "C" {
 		}
 	}
 
-	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE* h) {
+	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, 
+		ICEDB_DLL_BASE_HANDLE* hDll, ICEDB_DLL_BASE_HANDLE* hSelf) {
 		char cSelf[ICEDB_FS_PATH_CONTENTS_PATH_MAX] = "";
 		fMod((void*)Register, ICEDB_FS_PATH_CONTENTS_PATH_MAX, cSelf);
 		sSelfName = std::string(cSelf);
 		fReg("fs", 1000, cSelf); // 1000 is a really low priority
 
-		hnd = h;
+		hnd = hDll;
+		hndSelf = hSelf;
+		i_fs_self = std::shared_ptr<interface_ICEDB_fs_plugin>(create_ICEDB_fs_plugin(hSelf), destroy_ICEDB_fs_plugin);
 
-		// Need to import ICEDB_DLL_BASE_HANDLE_create and ICEDB_DLL_BASE_HANDLE_destroy
-		hndSelf = std::shared_ptr<ICEDB_DLL_BASE_HANDLE>(ICEDB_DLL_BASE_HANDLE_create(cSelf), ICEDB_DLL_BASE_HANDLE_destroy);
-		i_fs_self = std::shared_ptr<interface_ICEDB_fs_plugin>(create_ICEDB_fs_plugin(hndSelf.get()), destroy_ICEDB_fs_plugin);
-
-		i_util = std::shared_ptr<interface_ICEDB_core_util>(create_ICEDB_core_util(h), destroy_ICEDB_core_util);
-		i_mem = std::shared_ptr<interface_ICEDB_core_mem>(create_ICEDB_core_mem(h), destroy_ICEDB_core_mem);
-		i_error = std::shared_ptr<interface_ICEDB_core_error>(create_ICEDB_core_error(h), destroy_ICEDB_core_error);
-		i_error_context = std::shared_ptr<interface_ICEDB_core_error_context>(create_ICEDB_core_error_context(h), destroy_ICEDB_core_error_context);
+		i_util = std::shared_ptr<interface_ICEDB_core_util>(create_ICEDB_core_util(hDll), destroy_ICEDB_core_util);
+		i_mem = std::shared_ptr<interface_ICEDB_core_mem>(create_ICEDB_core_mem(hDll), destroy_ICEDB_core_mem);
+		i_error = std::shared_ptr<interface_ICEDB_core_error>(create_ICEDB_core_error(hDll), destroy_ICEDB_core_error);
+		i_error_context = std::shared_ptr<interface_ICEDB_core_error_context>(create_ICEDB_core_error_context(hDll), destroy_ICEDB_core_error_context);
 		return true;
 	}
 

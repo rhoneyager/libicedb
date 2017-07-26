@@ -56,7 +56,7 @@ using namespace icedb::fs::impl;
 void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p p) {
 	verify_pointer_fs_p(p);
 	p->h = nullptr; // h's destructor depends on h_dest's existence
-	p->h_dest = nullptr;
+	//p->h_dest = nullptr;
 	p->i = nullptr;
 	p->d = nullptr;
 	delete p;
@@ -65,11 +65,7 @@ void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p p) {
 ICEDB_FS_HANDLE_p ICEDB_file_handle_create
 (const char* path, const char* ftype, ICEDB_file_open_flags flags) {
 	{
-		ICEDB_FS_HANDLE_p res = new ICEDB_FS_HANDLE;
-		res->magic = icedb::fs::impl::magic;
-		res->i = nullptr;
-		res->d = nullptr;
-		res->h = nullptr;
+		ICEDB_FS_HANDLE_p res = nullptr;
 		//res->h_dest = nullptr;
 
 		std::vector<std::string> dlls = icedb::dll::query_interface("fs");
@@ -81,13 +77,7 @@ ICEDB_FS_HANDLE_p ICEDB_file_handle_create
 					create_ICEDB_fs_plugin(dhnd.get()), destroy_ICEDB_fs_plugin);
 				if (!icedb::fs::impl::has_valid_fs_interface(iface.get())) continue;
 				if (iface->can_open_path(iface.get(), nullptr, path, ftype, flags)) {
-					iface->get_capabilities(iface.get(), &(res->c));
-					res->i = iface;
-					res->d = dhnd;
-					//res->h_d = 
-					//res->h_dest = std::bind(iface->destroy, iface.get(), std::placeholders::_1);
-					res->h = icedb::fs::hnd_t(
-						iface->open_path(iface.get(), nullptr, path, ftype, flags), res->h_dest);
+					res = iface->open_path(iface.get(), nullptr, path, ftype, flags);
 					break;
 				}
 			}

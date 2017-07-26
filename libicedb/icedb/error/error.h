@@ -57,7 +57,7 @@ ICEDB_BEGIN_DECL_C
 	DL_ICEDB ICEDB_error_code ICEDB_error_context_to_code(const struct ICEDB_error_context*);
 
 	/** Determines the minimum buffer size for a human-readable representation of the ICEDB_error_context. **/
-	DL_ICEDB uint16_t ICEDB_error_context_to_message_size(const struct ICEDB_error_context*);
+	DL_ICEDB size_t ICEDB_error_context_to_message_size(const struct ICEDB_error_context*);
 	/** Support function to turn the general error code into a human-readable message.
 	This function safely writes the error string. The buffer will always be null-terminated, either at the
 	end of the written string, or at the end of the buffer. To query the necessary buffer size before writing,

@@ -19,14 +19,14 @@ ICEDB_SYMBOL_SHARED ICEDB_error_code ICEDB_error_context_to_code(const struct IC
 ICEDB_SYMBOL_SHARED size_t ICEDB_error_context_to_message_size(const struct ICEDB_error_context* err) {
 	if (!err) ICEDB_DEBUG_RAISE_EXCEPTION();
 	size_t total = 1;
-	size_t buf_size = SIZE_MAX - 1;
-	char buf[SIZE_MAX];
+	const size_t buf_size = 1000;
+	char buf[buf_size];
 	if (err->message_text) {
 		total += ICEDB_COMPAT_strncpy_s(buf, buf_size, err->message_text, err->message_size); // Reports the number of characters copied. Note lack of count of null.
 	}
 	// Write the error variables
-	const wchar_t* sep = L"\t%s\t=\t%s\n";
-	const size_t seplen = wcslen(sep);
+	const char* sep = "\t%s\t=\t%s\n";
+	const size_t seplen = strlen(sep);
 
 #ifdef ICEDB_USING_SECURE_STRINGS
 	if (err->num_var_fields)
@@ -55,7 +55,7 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_error_context_to_message_size(const struct ICED
 	return size_t(total);
 }
 
-ICEDB_SYMBOL_SHARED size_t ICEDB_error_context_to_message(const struct ICEDB_error_context * err, size_t buf_size, wchar_t * buf)
+ICEDB_SYMBOL_SHARED size_t ICEDB_error_context_to_message(const struct ICEDB_error_context * err, size_t buf_size, char * buf)
 {
 	if (!err) ICEDB_DEBUG_RAISE_EXCEPTION();
 	if (!buf) ICEDB_DEBUG_RAISE_EXCEPTION();
@@ -64,8 +64,8 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_error_context_to_message(const struct ICEDB_err
 		total = ICEDB_COMPAT_strncpy_s(buf, buf_size, err->message_text, err->message_size); // Reports the number of characters copied. Note lack of count of null.
 	}
 	// Write the error variables
-	const wchar_t* sep = L"\t%s\t=\t%s\n";
-	const size_t seplen = wcslen(sep);
+	const char* sep = "\t%s\t=\t%s\n";
+	const size_t seplen = strlen(sep);
 	
 #ifdef ICEDB_USING_SECURE_STRINGS
 	if (err->num_var_fields)
@@ -119,7 +119,7 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_error_context_to_stream(const struct ICEDB_erro
 ICEDB_SYMBOL_SHARED ICEDB_error_code ICEDB_error_test()
 {
 	ICEDB_error_context *cxt = ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
-	ICEDB_error_context_append_str(cxt, L"This is a test.\n");
+	ICEDB_error_context_append_str(cxt, "This is a test.\n");
 	return ICEDB_ERRORCODES_TODO;
 }
 
@@ -127,18 +127,18 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_error_code_to_message_size(ICEDB_error_code err
 {
 	if (err >= ICEDB_ERRORCODES_TOTAL) ICEDB_DEBUG_RAISE_EXCEPTION();
 	size_t res = (size_t)ICEDB_COMPAT_strnlen_s(ICEDB_ERRORCODES_MAP[err],
-		SIZE_MAX - 1) + 1; // -1,+1 because message_size includes the null character.
+		1000) + 1; // -1,+1 because message_size includes the null character.
 	return res;
 }
 
-ICEDB_SYMBOL_SHARED size_t ICEDB_error_code_to_message(ICEDB_error_code err, size_t buf_size, wchar_t * buf)
+ICEDB_SYMBOL_SHARED size_t ICEDB_error_code_to_message(ICEDB_error_code err, size_t buf_size, char * buf)
 {
 	if (!buf) ICEDB_DEBUG_RAISE_EXCEPTION();
 	if (err >= ICEDB_ERRORCODES_TOTAL) ICEDB_DEBUG_RAISE_EXCEPTION();
 	uint16_t cnt = (uint16_t)ICEDB_COMPAT_strnlen_s(ICEDB_ERRORCODES_MAP[err],
 		SIZE_MAX - 1) + 1; // -1,+1 because message_size includes the null character.
 	size_t res = ICEDB_COMPAT_strncpy_s(buf, buf_size, ICEDB_ERRORCODES_MAP[err], cnt);
-	return uint16_t((res>SIZE_MAX) ? SIZE_MAX : res);
+	return size_t((res>SIZE_MAX) ? SIZE_MAX : res);
 }
 
 ICEDB_SYMBOL_SHARED size_t ICEDB_error_code_to_stream(ICEDB_error_code err, FILE * fp)
@@ -169,28 +169,28 @@ ICEDB_SYMBOL_SHARED void ICEDB_error_context_deallocate(struct ICEDB_error_conte
 	ICEDB_free(c);
 }
 
-DL_ICEDB const wchar_t* ICEDB_error_getOSname() {
-	const wchar_t* name =
+DL_ICEDB const char* ICEDB_error_getOSname() {
+	const char* name =
 #if defined(__FreeBSD__)
-		L"FreeBSD";
+		"FreeBSD";
 #elif defined(__NetBSD__)
-		L"NetBSD";
+		"NetBSD";
 #elif defined(__OpenBSD__)
-		L"OpenBSD";
+		"OpenBSD";
 #elif defined(__bsdi__)
-		L"bsdi";
+		"bsdi";
 #elif defined(__DragonFly__)
-		L"DragonFly BSD";
+		"DragonFly BSD";
 #elif defined (__APPLE__)
-		L"Apple";
+		"Apple";
 #elif defined(__linux__)
-		L"Linux";
+		"Linux";
 #elif defined(_WIN32)
-		L"Windows";
+		"Windows";
 #elif defined(__unix__)
-		L"Generic Unix";
+		"Generic Unix";
 #else
-		L"UNKNOWN";
+		"UNKNOWN";
 #endif
 	return name;
 }
@@ -200,12 +200,12 @@ ICEDB_END_DECL_C
 ICEDB_BEGIN_DECL_CPP
 namespace icedb {
 	namespace error {
-		template<> ICEDB_SYMBOL_SHARED std::wstring stringify<std::wstring>(error_code_t err) {
+		template<> ICEDB_SYMBOL_SHARED std::string stringify<std::string>(error_code_t err) {
 			std::string res;
 			stringify(err, res);
 			return res;
 		}
-		template<> ICEDB_SYMBOL_SHARED const wchar_t* stringify<const wchar_t*>(error_code_t err) {
+		template<> ICEDB_SYMBOL_SHARED const char* stringify<const char*>(error_code_t err) {
 			return ICEDB_ERRORCODES_MAP[err];
 		}
 
@@ -214,22 +214,22 @@ namespace icedb {
 			return error_context_pt(ICEDB_get_error_context_thread_local(),&ICEDB_error_context_deallocate);
 		}
 
-		ICEDB_SYMBOL_SHARED void stringify(error_code_t err, std::wstring &res) {
-			res = std::wstring(ICEDB_ERRORCODES_MAP[err]);
+		ICEDB_SYMBOL_SHARED void stringify(error_code_t err, std::string &res) {
+			res = std::string(ICEDB_ERRORCODES_MAP[err]);
 		}
-		ICEDB_SYMBOL_SHARED void stringify(error_code_t err, const wchar_t** res) {
+		ICEDB_SYMBOL_SHARED void stringify(error_code_t err, const char** res) {
 			*res = ICEDB_ERRORCODES_MAP[err];
 		}
-		ICEDB_SYMBOL_SHARED void stringify(const error_context_pt &err, std::wstring &res) {
+		ICEDB_SYMBOL_SHARED void stringify(const error_context_pt &err, std::string &res) {
 			// A few memory copies occur here. Inefficient, but errors should not occur much in properly running code.
-			uint16_t sz = ICEDB_error_context_to_message_size(err.get());
+			size_t sz = ICEDB_error_context_to_message_size(err.get());
 			//std::unique_ptr<char[]> buf(new char[sz]);
-			std::vector<wchar_t> buf(sz);
+			std::vector<char> buf(sz);
 			ICEDB_error_context_to_message(err.get(), sz, buf.data());
-			res = std::wstring(buf.data());
+			res = std::string(buf.data());
 		}
-		ICEDB_SYMBOL_SHARED std::wstring stringify(const error_context_pt &err) {
-			std::wstring res;
+		ICEDB_SYMBOL_SHARED std::string stringify(const error_context_pt &err) {
+			std::string res;
 			stringify(err, res);
 			return res;
 		}
