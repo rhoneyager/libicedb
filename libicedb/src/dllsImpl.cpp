@@ -181,9 +181,9 @@ void* ICEDB_DLL_BASE_HANDLE_IMPL_getSym(ICEDB_DLL_BASE_HANDLE* p, const char* sy
 	if (!sym)
 	{
 		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_NO_DLSYMBOL);
+#ifdef _WIN32
 		const int errStrSz = 250;
 		char ErrString[errStrSz] = "";
-#ifdef _WIN32
 		DWORD errcode = GetLastError();
 		snprintf(ErrString, errStrSz, "%ul", errcode);
 		ICEDB_error_context_add_string2(e, "Win-Error-Code", ErrString);

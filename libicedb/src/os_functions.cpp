@@ -362,7 +362,8 @@ namespace icedb {
 				if (ps) homeDir = std::string(ps->pw_dir);
 #endif
 			}
-			
+			if (!homeDir.size()) goto funcErrorOS;
+				
 			// App config dir
 			if ((envres = getenv("XDG_CONFIG_HOME"))) appConfigDir = std::string(envres);
 			else {
