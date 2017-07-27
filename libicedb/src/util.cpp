@@ -2,6 +2,7 @@
 #include "../icedb/misc/util.h"
 #include "../icedb/misc/mem.h"
 #include <string.h>
+#include <wchar.h>
 
 ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(
 	char * dest, size_t destSz,

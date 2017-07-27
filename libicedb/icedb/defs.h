@@ -122,8 +122,16 @@ ICEDB_BEGIN_DECL_C
 #ifdef _MSC_FULL_VER
 #define ICEDB_DEBUG_FSIG __FUNCSIG__
 #endif
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
+#if defined(__PRETTY_FUNCTION__)
 #define ICEDB_DEBUG_FSIG __PRETTY_FUNCTION__
+#elif defined(__func__)
+#define ICEDB_DEBUG_FSIG __func__
+#elif defined(__FUNCTION__)
+#define ICEDB_DEBUG_FSIG __FUNCTION__
+#else
+#define ICEDB_DEBUG_FSIG ""
+#endif
 #endif
 #define ICEDB_WIDEN2(x) L ## x
 #define ICEDB_WIDEN(x) ICEDB_WIDEN2(x)

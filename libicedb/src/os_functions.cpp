@@ -735,7 +735,7 @@ void ICEDB_getAppDirI() {
 		}
 	}
 	appPath = std::string(exePath);
-	appd = totalPath.substr(0, appPath.find_last_of("/\\"));
+	appd = appPath.substr(0, appPath.find_last_of("/\\"));
 #elif defined(__linux__)
 	char exePath[PATH_MAX];
 	ssize_t len = ::readlink("/proc/self/exe", exePath, sizeof(exePath));

@@ -2,11 +2,12 @@
 #include "../../libicedb/icedb/defs.h"
 #include "../../libicedb/icedb/misc/os_functions.h"
 #include "../../libicedb/icedb/misc/mem.h"
+//#include "../../libicedb/icedb/misc/memInterfaceImpl.hpp"
 #include "../../libicedb/icedb/misc/util.h"
+#include "../../libicedb/icedb/misc/utilInterfaceImpl.hpp"
 
 ICEDB_DLL_PLUGINS_COMMON(level_0_ddscat_io);
-ICEDB_core_mem_impl;
-ICEDB_core_util_impl;
+ICEDB_core_mem_impl
 
 namespace icedb {
 	namespace plugins {

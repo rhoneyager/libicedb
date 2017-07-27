@@ -11,7 +11,7 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t* f
 #if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
 	fwprintf_s(stderr, L"Exception raised in file %s, line %d, function %s.\n", file, line, fsig);
 #else
-	fwprintf(stderr, "Exception raised in file %s, line %d, function %s.\n", file, line, fsig);
+	fwprintf(stderr, L"Exception raised in file %s, line %d, function %s.\n", file, line, fsig);
 #endif
 	
 #ifdef _WIN32

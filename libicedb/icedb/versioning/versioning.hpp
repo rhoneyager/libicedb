@@ -22,6 +22,34 @@ struct ICEDB_VersionInfo {
 
 namespace icedb {
 	namespace versioning {
+ 		inline size_t inline_strncpy_s(
+			char * dest, size_t destSz,
+			const char * src, size_t srcSz)
+		{
+			/** \brief Safe char array copy.
+			\returns the number of characters actually written.
+			\param dest is the pointer to the destination. Always null terminated.
+			\param destSz is the size of the destination buller, including the trailing null character.
+			\param src is the pointer to the source. Characters from src are copied either until the
+			first null character or until srcSz. Note that null termination comes later.
+			\param srcSz is the max size of the source buffer. 
+			**/
+			if (!dest || !src) ICEDB_DEBUG_RAISE_EXCEPTION();
+		#if ICEDB_USING_SECURE_STRINGS
+			strncpy_s(dest, destSz, src, srcSz);
+		#else
+			if (srcSz <= destSz) {
+				strncpy(dest, src, srcSz);
+			} else {
+				strncpy(dest, src, destSz);
+			}
+		#endif
+			dest[destSz - 1] = 0;
+			for (size_t i = 0; i < destSz; ++i) if (dest[i] == '\0') return i;
+			return 0; // Should never be reached
+		}
+
+
 		struct versionInfo {
 			enum nums {
 				V_VERSIONINFO,
@@ -64,10 +92,10 @@ namespace icedb {
 			out.vn[versionInfo::V_VERSIONINFO] = 1; // Change this if the structure is modified. Differences are ALWAYS incompatible.
 			out.vsdate[0] = '\0'; out.vssource[0] = '\0'; out.vsuuid[0] = '\0';
 			out.vboost[0] = '\0'; out.vassembly[0] = '\0';
-			strncpy_s(out.vdate, versionInfo::charmax, __DATE__, versionInfo::charmax);
-			strncpy_s(out.vtime, versionInfo::charmax, __TIME__, versionInfo::charmax);
-			strncpy_s(out.vgithash, versionInfo::charmax, libicedb_GitHash, versionInfo::charmax);
-			strncpy_s(out.vgitbranch, versionInfo::charmax, libicedb_GitBranch, versionInfo::charmax);
+			inline_strncpy_s(out.vdate, versionInfo::charmax, __DATE__, versionInfo::charmax);
+			inline_strncpy_s(out.vtime, versionInfo::charmax, __TIME__, versionInfo::charmax);
+			inline_strncpy_s(out.vgithash, versionInfo::charmax, libicedb_GitHash, versionInfo::charmax);
+			inline_strncpy_s(out.vgitbranch, versionInfo::charmax, libicedb_GitBranch, versionInfo::charmax);
 
 			out.vn[versionInfo::V_MAJOR] = libicedb_MAJOR;
 			out.vn[versionInfo::V_MINOR] = libicedb_MINOR;
@@ -111,7 +139,7 @@ namespace icedb {
 			out.vn[versionInfo::V_MSCVER] = _MSC_FULL_VER;
 #endif
 #ifdef BOOST_LIB_VERSION
-			strncpy_s(out.vboost, versionInfo::charmax, BOOST_LIB_VERSION, versionInfo::charmax);
+			inline_strncpy_s(out.vboost, versionInfo::charmax, BOOST_LIB_VERSION, versionInfo::charmax);
 #endif
 #ifdef _DEBUG
 			out.vb[versionInfo::V_DEBUG] = true;

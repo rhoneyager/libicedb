@@ -3,6 +3,7 @@
 #include "shape.h"
 #include "../../libicedb/icedb/dlls/linking.h"
 #include "../../libicedb/icedb/misc/util.h"
+#include "../../libicedb/icedb/misc/utilInterface.h"
 #include <vector>
 #include <memory>
 #include <cstring>

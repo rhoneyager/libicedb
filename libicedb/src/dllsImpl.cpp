@@ -17,6 +17,8 @@
 #include <string>
 #if defined(_WIN32)
 #include <Windows.h>
+#else
+#include <dlfcn.h>
 #endif
 
 #ifdef UNICODE
@@ -32,7 +34,6 @@ typedef const char* CharArrayStr_t;
 CharArrayStr_t convertCharArrayStr(const char* charArray)
 {
 	return ICEDB_COMPAT_strdup_s(charArray, strlen(charArray));
-	charArray;
 }
 #endif
 
@@ -297,9 +298,13 @@ ICEDB_CALL_C DL_ICEDB size_t ICEDB_dll_name_mangle_simple(const char* libname, c
 
 ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* dlpath) {
 	if (icedb::dll::impl::pluginHandles.count(std::string(dlpath))) return true;
+	bool res = false;
+	ICEDB_ver_match compat_level;
+	ICEDB_VersionInfo_p pver = nullptr;
 
 	ICEDB_DLL_BASE_HANDLE* dllInst = ICEDB_DLL_BASE_HANDLE_create(dlpath);
 	auto td = create_icedb_plugin_base(dllInst);
+	
 	if((td->_base->_vtable->open(td->_base))) return false;
 
 	icedb::versioning::versionInfo_p libver;
@@ -308,13 +313,13 @@ ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* dlpath) {
 	if (!td->Bind_Register(td)) goto failed;
 	if (!td->Bind_Unregister(td)) goto failed;
 
-	auto pver = td->GetVerInfo(td);
+	pver = td->GetVerInfo(td);
 	libver = icedb::versioning::getLibVersionInfo();
-	ICEDB_ver_match compat_level = icedb::versioning::compareVersions(pver->p, libver);
+	compat_level = icedb::versioning::compareVersions(pver->p, libver);
 	if (compat_level == ICEDB_VER_INCOMPATIBLE) goto failed;
 
 	icedb::dll::impl::_init();
-	bool res = td->Register(td, ICEDB_register_interface, ICEDB_findModuleByFunc, icedb::dll::impl::libInst);
+	res = td->Register(td, ICEDB_register_interface, ICEDB_findModuleByFunc, icedb::dll::impl::libInst);
 	if (!res) goto failed;
 	destroy_icedb_plugin_base(td);
 	icedb::dll::impl::pluginHandles[std::string(dlpath)] = dllInst;
