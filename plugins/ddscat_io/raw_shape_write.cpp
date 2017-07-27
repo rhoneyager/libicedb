@@ -4,6 +4,7 @@
 #include "../../libicedb/icedb/dlls/linking.h"
 #include "../../libicedb/icedb/misc/util.h"
 #include "../../libicedb/icedb/misc/utilInterface.h"
+#include "../../libicedb/icedb/misc/memInterface.h"
 #include <vector>
 #include <memory>
 #include <cstring>

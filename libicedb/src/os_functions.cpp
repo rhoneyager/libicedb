@@ -255,6 +255,9 @@ namespace icedb {
 				{
 					out = std::string(info.dli_fname);
 				}
+                if (!out.size()) {
+                    ICEDB_DEBUG_RAISE_EXCEPTION();
+                }
 				return out;
 			}
 #endif
@@ -690,8 +693,10 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 		modpath = icedb::os_functions::win::GetModulePath(mod);
 		FreeLibrary(mod);
 	} else modpath = icedb::os_functions::win::GetModulePath(NULL);
-#elif defined(__unix__)
+#elif defined(__unix__) || defined(__APPLE__)
 	modpath = icedb::os_functions::unix::GetModulePath(ptr);
+#else
+    ICEDB_DEBUG_RAISE_EXCEPTION();
 #endif
 	ICEDB_COMPAT_strncpy_s(res, sz, modpath.c_str(), modpath.size());
 	return res;

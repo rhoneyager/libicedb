@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cwchar>
-#ifdef _WIN32
+#if defined(_WIN32)
 #include <Windows.h>
+#else
+#include <signal.h>
 #endif
 
 ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t* file, int line, const wchar_t* fsig)
@@ -17,6 +19,7 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t* f
 #ifdef _WIN32
 	DebugBreak();
 #else
+    raise(SIGTRAP);
 	exit(999);
 #endif
 }
@@ -31,6 +34,7 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A(const char* file,
 #ifdef _WIN32
 	DebugBreak();
 #else
+    raise(SIGTRAP);
 	exit(999);
 #endif
 }

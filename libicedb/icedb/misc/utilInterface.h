@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ICEDB_H_UTILINTERFACEIMPL
-#define ICEDB_H_UTILINTERFACEIMPL
+#ifndef ICEDB_H_UTILINTERFACE
+#define ICEDB_H_UTILINTERFACE
 #include "../defs.h"
 #include "../dlls/linking.h"
 #include "util.h"

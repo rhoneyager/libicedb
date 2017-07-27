@@ -55,7 +55,7 @@ void readShapeHeader(ICEDB_L0_DDSCAT_SHAPE_p p, const char* data, size_t dataSz,
 			posa = lin.find_first_not_of(" \t\n", posb);
 			// Find first space after this position
 			posb = lin.find_first_of(" \t\n", posa);
-			size_t len = posb - posa;
+			//size_t len = posb - posa;
 			np = (size_t) naiveAtoI(&(lin.data()[posa]));
 			p->_vptrs->resize(p, np);
 		}
@@ -75,7 +75,7 @@ void readShapeHeader(ICEDB_L0_DDSCAT_SHAPE_p p, const char* data, size_t dataSz,
 				posa = lin.find_first_not_of(" \t\n,", posb);
 				// Find first space after this position
 				posb = lin.find_first_of(" \t\n,", posa);
-				size_t len = posb - posa;
+				//size_t len = posb - posa;
 				v[j] = atof(&(lin.data()[posa]));
 			}
 			if (i == 2) p->_vptrs->setA1(p, v);

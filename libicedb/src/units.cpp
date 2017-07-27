@@ -81,7 +81,7 @@ namespace icedb {
 			const char* type, const char* iunits, const char* ounits) {
 			converter::converter_p res(new converter);
 			res->p = std::shared_ptr<ICEDB_UNIT_CONVERTER>(
-				ICEDB_create_unit_converter("", iunits, ounits),
+				ICEDB_create_unit_converter(type, iunits, ounits),
 				ICEDB_destroy_unit_converter);
 			if (res->p) return res;
 			return nullptr;

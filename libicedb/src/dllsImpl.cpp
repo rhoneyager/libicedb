@@ -230,7 +230,9 @@ ICEDB_CALL_C DL_ICEDB void ICEDB_DLL_BASE_destroy_vtable(ICEDB_DLL_BASE_HANDLE_v
 
 ICEDB_CALL_C DL_ICEDB void ICEDB_register_interface(const char* topic, int priority, const char* path) {
 	std::string sTopic(topic);
+    if (!path) ICEDB_DEBUG_RAISE_EXCEPTION();
 	std::string sPath(path);
+    if (!sPath.length()) ICEDB_DEBUG_RAISE_EXCEPTION();
 	using namespace icedb::dll::impl;
 	if (!topicMaps.count(sTopic)) {
 		topicMaps[sTopic] = std::multimap<int,std::string>();

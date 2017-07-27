@@ -32,7 +32,9 @@ int main(int argc, char** argv) {
 		cerr << "Cannot establish converter\n";
 		return 1;
 	}
-	cout << cnv->convert(ival) << endl;
+	double val = 0;
+	val = cnv->convert(ival);
+	cout << val << endl;
 
 	return 0;
 }

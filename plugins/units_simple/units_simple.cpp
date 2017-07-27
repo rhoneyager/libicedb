@@ -2,8 +2,14 @@
 #include "../../libicedb/icedb/misc/os_functions.h"
 #include "../../libicedb/icedb/dlls/plugins.h"
 #include "../../libicedb/icedb/units/unitsInterface.hpp"
+#include "../../libicedb/icedb/misc/memInterfaceImpl.hpp"
+#include "../../libicedb/icedb/misc/utilInterfaceImpl.hpp"
 
 ICEDB_DLL_PLUGINS_COMMON(units_simple);
+
+ICEDB_DLL_BASE_HANDLE* hndDll, *hndSelf;
+std::shared_ptr<interface_ICEDB_core_util> i_util;
+std::shared_ptr<interface_ICEDB_core_mem> i_mem;
 
 struct simpleUnits {
 	static bool canConvert(const std::string &in, const std::string &out) {
@@ -194,13 +200,19 @@ extern "C" {
 		res->convert = convert;
 		auto p = simpleUnits::constructConverterP(std::string(inUnits), std::string(outUnits));
 		res->_p = static_cast<void*>(p);
+        //static const char* simpleUnitsName = "simple";
+        //res->ctype = simpleUnitsName;
+		res->ctype = i_util->strdup_s(i_util.get(), "simple", 7);
 		return res;
 	}
 	SHARED_EXPORT_ICEDB void freeConverter(ICEDB_unit_converter_p p) {
+        if (!p) return;
         if (!p->ctype) return;
         std::string stype(p->ctype);
         if (stype != "" && stype != "simple") return; // TODO: throw invalid converter
-        
+		i_mem->free(i_mem.get(), (void*) p->ctype);
+		p->ctype = nullptr;
+        //delete p->ctype;
         if (p->_p) {
             simpleUnits *s = static_cast<simpleUnits*>(p->_p);
             //if (!s) // todo: throw            //simpleUnits*
@@ -211,10 +223,16 @@ extern "C" {
 	}
 	
 
-	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE*) {
+	SHARED_EXPORT_ICEDB bool Register(ICEDB_register_interface_f fReg, ICEDB_get_module_f fMod, ICEDB_DLL_BASE_HANDLE* hDll, ICEDB_DLL_BASE_HANDLE* hSelf) {
 		const size_t sz = 2048;
 		char buf[sz] = "";
-		fReg("units", -1, fMod((void*)Register, sz, buf));
+		hndDll = hDll;
+		hndSelf = hSelf;
+		i_util = std::shared_ptr<interface_ICEDB_core_util>(create_ICEDB_core_util(hDll), destroy_ICEDB_core_util);
+		i_mem = std::shared_ptr<interface_ICEDB_core_mem>(create_ICEDB_core_mem(hDll), destroy_ICEDB_core_mem);
+
+		fMod((void*)Register, sz, buf);
+		fReg("units", -1, buf);
 		return true;
 	}
 
@@ -222,5 +240,9 @@ extern "C" {
 		const size_t sz = 2048;
 		char buf[sz] = "";
 		fUnReg("units", -1, fMod((void*)Unregister, sz, buf));
+		i_util = nullptr;
+		i_mem = nullptr;
+		hndSelf = nullptr;
+
 	}
 }
