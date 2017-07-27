@@ -169,7 +169,7 @@ ICEDB_error_code ICEDB_DLL_BASE_HANDLE_IMPL_decRefCount(ICEDB_DLL_BASE_HANDLE *p
 void* ICEDB_DLL_BASE_HANDLE_IMPL_getSym(ICEDB_DLL_BASE_HANDLE* p, const char* symbol) {
 	if (!p->_dlHandle->h && p->autoOpen) ICEDB_DLL_BASE_HANDLE_IMPL_open(p);
 	if (!p->_dlHandle->h) {
-		ICEDB_error_context* e = ICEDB_error_context_create(ICEDB_ERRORCODES_NO_DLHANDLE);
+		ICEDB_error_context_create(ICEDB_ERRORCODES_NO_DLHANDLE);
 		return NULL;
 	}
 	void* sym = nullptr;

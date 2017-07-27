@@ -438,7 +438,7 @@ bool ICEDB_pidExists(int pid, bool &res)
 #elif defined(__FreeBSD__) || defined (__APPLE__)
 	// Works for both freebsd and mac os
 	res = false;
-	int i, mib[4];
+	int mib[4];
 	size_t len;
 	struct kinfo_proc kp;
 

@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <functional>
 #include <memory>
+#include <string>
 
 ICEDB_BEGIN_DECL
 

@@ -179,18 +179,34 @@ extern "C" {
 	}
 	SHARED_EXPORT_ICEDB bool canConvert(const char* type, const char* inUnits, const char* outUnits) {
 		std::string sType(type), sIn(inUnits), sOut(outUnits);
-		if (sType == "") return simpleUnits::canConvert(sIn, sOut);
+        if (sType == "") return simpleUnits::canConvert(sIn, sOut);
+        if (sType == "simple") return simpleUnits::canConvert(sIn, sOut);
 		return false;
 	}
 	SHARED_EXPORT_ICEDB ICEDB_unit_converter_s* makeConverter(const char* type, const char* inUnits, const char* outUnits) {
+        if (type) {
+            std::string stype(type);
+            if (stype != "simple" && stype != "") {
+                return nullptr;
+            }
+        }
 		ICEDB_unit_converter_s *res = new ICEDB_unit_converter_s;
 		res->convert = convert;
 		auto p = simpleUnits::constructConverterP(std::string(inUnits), std::string(outUnits));
 		res->_p = static_cast<void*>(p);
 		return res;
 	}
-	SHARED_EXPORT_ICEDB void freeConverter(ICEDB_unit_converter_s* p) {
-		if (p->_p) delete p->_p;
+	SHARED_EXPORT_ICEDB void freeConverter(ICEDB_unit_converter_p p) {
+        if (!p->ctype) return;
+        std::string stype(p->ctype);
+        if (stype != "" && stype != "simple") return; // TODO: throw invalid converter
+        
+        if (p->_p) {
+            simpleUnits *s = static_cast<simpleUnits*>(p->_p);
+            //if (!s) // todo: throw            //simpleUnits*
+            delete s;
+            p->_p = nullptr;
+        }
 		if (p) delete p;
 	}
 	

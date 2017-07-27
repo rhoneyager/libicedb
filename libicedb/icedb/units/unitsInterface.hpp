@@ -10,6 +10,7 @@ typedef double(*ICEDB_unit_Converter_f)(ICEDB_unit_converter_s*, double);
 extern "C" struct ICEDB_unit_converter_s {
 	ICEDB_unit_Converter_f convert;
 	void* _p;
+	char* ctype;
 };
 typedef ICEDB_unit_converter_s* ICEDB_unit_converter_p;
 

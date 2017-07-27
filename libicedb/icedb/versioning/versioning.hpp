@@ -34,7 +34,7 @@ namespace icedb {
 			first null character or until srcSz. Note that null termination comes later.
 			\param srcSz is the max size of the source buffer. 
 			**/
-			if (!dest || !src) ICEDB_DEBUG_RAISE_EXCEPTION();
+			if (!dest || !src) return 0;
 		#if ICEDB_USING_SECURE_STRINGS
 			strncpy_s(dest, destSz, src, srcSz);
 		#else
