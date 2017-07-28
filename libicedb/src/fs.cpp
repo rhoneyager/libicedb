@@ -13,7 +13,7 @@ namespace icedb {
 			const int64_t magic = 234987234973820484;
 			void verify_pointer_fs_p(ICEDB_FS_HANDLE_p p) {
 				if (!p) ICEDB_DEBUG_RAISE_EXCEPTION();
-				if (p->magic != icedb::fs::impl::magic)ICEDB_DEBUG_RAISE_EXCEPTION();
+				//if (p->magic != icedb::fs::impl::magic)ICEDB_DEBUG_RAISE_EXCEPTION();
 				if (!p->h) ICEDB_DEBUG_RAISE_EXCEPTION();
 				if (!p->i) ICEDB_DEBUG_RAISE_EXCEPTION();
 				if (!p->d) ICEDB_DEBUG_RAISE_EXCEPTION();

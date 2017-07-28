@@ -45,13 +45,18 @@ namespace icedb {
 				const size_t numObjsInPage = 400;
 				class c_dirpathspage {
 				private:
-					ICEDB_FS_PATH_CONTENTS objs[numObjsInPage];
+					ICEDB_FS_PATH_CONTENTS* objs;
 					size_t numUsed;
 					size_t cur;
 					std::vector<bool> used;
 				public:
-					c_dirpathspage() : numUsed(0), cur(0) { used.resize(numObjsInPage, false); }
-					~c_dirpathspage() {}
+					c_dirpathspage() : numUsed(0), cur(0) { 
+						used.resize(numObjsInPage, false);
+						objs = new ICEDB_FS_PATH_CONTENTS[numObjsInPage];
+					}
+					~c_dirpathspage() {
+						delete[] objs;
+					}
 					size_t getNumFree() const { return numObjsInPage - numUsed; }
 					inline bool empty() const { return (numUsed == 0) ? true : false; }
 					inline bool full() const { return (numUsed == numObjsInPage) ? true : false; }
@@ -90,13 +95,14 @@ namespace icedb {
 						});
 					}
 					void addPage() {
-						pages.push_back(c_dirpathspage());
+						c_dirpathspage c;
+						pages.push_back(std::move(c));
 						rt = pages.rbegin();
 					}
 					std::list<c_dirpathspage>::reverse_iterator rt;
 					size_t releaseCounter;
 				public:
-					c_dirpaths() : releaseCounter(0) {}
+					c_dirpaths() : releaseCounter(0), rt(std::list<c_dirpathspage>::reverse_iterator()) {}
 					~c_dirpaths() {}
 					ICEDB_FS_PATH_CONTENTS* pop() {
 						if (!pages.size()) addPage();
@@ -146,7 +152,10 @@ extern "C" {
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		
 		data->base_handle = p;
-		i_util->strncpy_s(i_util.get(), data->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.data(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+		if (p)
+			i_util->strncpy_s(i_util.get(), data->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.data(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+		else
+			i_util->strncpy_s(i_util.get(), data->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "", 2);
 		data->idx = -1;
 		if (path)
 			i_util->strncpy_s(i_util.get(), data->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, path, ICEDB_FS_PATH_CONTENTS_PATH_MAX);

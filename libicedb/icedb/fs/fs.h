@@ -63,6 +63,8 @@ DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, c
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p,
 	const char* path, size_t out_max_sz, size_t* szout, char** out);
 
+// TODO: Change to allocate on the heap, not the stack!!!!!
+// TODO: Add constructor and destructor functions!!!!!
 #define ICEDB_FS_PATH_CONTENTS_PATH_MAX 32767
 struct ICEDB_FS_PATH_CONTENTS {
 	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
