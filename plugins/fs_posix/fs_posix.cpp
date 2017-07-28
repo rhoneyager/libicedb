@@ -9,7 +9,7 @@
 #include "../../libicedb/icedb/error/errorInterfaceImpl.hpp"
 #include "fs_posix.hpp"
 
-ICEDB_DLL_PLUGINS_COMMON(fs_win);
+ICEDB_DLL_PLUGINS_COMMON(fs_posix);
 
 namespace icedb {
 	namespace plugins {
@@ -60,7 +60,7 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB void fs_get_capabilities(ICEDB_fs_plugin_capabilities* p) {
-		caps.can_copy = true;
+		caps.can_copy = false;
 		caps.can_delete = true;
 		caps.can_hard_link = true;
 		caps.can_move = true;

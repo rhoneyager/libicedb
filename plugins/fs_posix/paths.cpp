@@ -9,11 +9,15 @@
 #include "../../libicedb/icedb/error/errorCodes.h"
 #include "../../libicedb/icedb/misc/util.h"
 #include "../../libicedb/icedb/misc/utilInterface.h"
+#include <cstdio>
 #include <string>
 #include <cwchar>
 #include <map>
 #include <list>
 #include <set>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "fs_posix.hpp"
 
 using namespace icedb::plugins::fs_posix;
@@ -27,10 +31,16 @@ namespace icedb {
 						hnd->_vtable->_raiseExcept(hnd,
 							__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 					effpath = p->h->cwd;
-					effpath.append("\\");
+					effpath.append("/");
 				}
-				if (path)
-					effpath.append(path);
+				if (path) {
+					std::string sPath(path);
+					if (sPath.size()) {
+						if (sPath.at(0) == '/')
+							effpath = sPath;
+						else effpath.append(sPath);
+					}
+				}
 				if (!effpath.length())
 					hnd->_vtable->_raiseExcept(hnd,
 						__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
@@ -132,8 +142,10 @@ extern "C" {
 		// just assube that the base directory is specified in path. If it is specified, then 
 		// prepend p's base directory to path.
 		std::string effpath = makeEffPath(p, path);
-		bool res = PathFileExistsA(effpath.data());
-		return res;
+		struct stat sb;
+		
+		if (stat(effpath.c_str(), &sb) == 0) return true;
+		return false;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_path_info(ICEDB_FS_HANDLE_p p, const char* path, ICEDB_FS_PATH_CONTENTS* data) {
@@ -149,17 +161,21 @@ extern "C" {
 		else i_util->strncpy_s(i_util.get(), data->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 
 		data->p_type = ICEDB_path_types::ICEDB_type_unknown;
-		if (fs_path_exists(p, path)) {
-			DWORD winatts = GetFileAttributesA(effpath.data());
-			if (FILE_ATTRIBUTE_DIRECTORY & winatts) {
+		if (fs_path_exists(p, effpath.c_str())) {
+			struct stat sb;
+			stat(effpath.c_str(), &sb);
+			if (S_ISDIR(sb.st_mode))
 				data->p_type = ICEDB_path_types::ICEDB_type_folder;
 				i_util->strncpy_s(i_util.get(), data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
-			} else if (FILE_ATTRIBUTE_REPARSE_POINT & winatts) {
+			} else if (S_ISLNK(sb.st_mode)) {
 				data->p_type = ICEDB_path_types::ICEDB_type_symlink;
 				i_util->strncpy_s(i_util.get(), data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "symlink", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
-			}else {
+			} else if (S_ISREG(sb.st_mode)) {
 				data->p_type = ICEDB_path_types::ICEDB_type_normal_file;
 				i_util->strncpy_s(i_util.get(), data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "file", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+			} else {
+				data->p_type = ICEDB_path_types::ICEDB_type_unknown;
+				i_util->strncpy_s(i_util.get(), data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 			}
 		} else {
 			data->p_type = ICEDB_path_types::ICEDB_type_nonexistant;
@@ -169,21 +185,11 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_copy(ICEDB_FS_HANDLE_p p,
-		const char* from, const char* to, bool overwrite) {
-		std::string effpathFrom = makeEffPath(p, from);
-		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
-				i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-			return ICEDB_ERRORCODES_READONLY;
-		}
-		std::string effpathTo = makeEffPath(p, to);
-
-		bool opres = CopyFileA(effpathFrom.data(), effpathTo.data(), !overwrite);
-		if (!opres) {
-			GenerateWinOSerror();
-			return ICEDB_ERRORCODES_OS;
-		}
-		return ICEDB_ERRORCODES_NONE;
+		const char* , const char* , bool ) {
+		// Always throws, since copying is not yet implemented on this fs.
+		hnd->_vtable->_raiseExcept(hnd,
+								   __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		return ICEDB_ERRORCODES_OS;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_move(ICEDB_FS_HANDLE_p p,
@@ -195,11 +201,10 @@ extern "C" {
 			return ICEDB_ERRORCODES_READONLY;
 		}
 		std::string effpathTo = makeEffPath(p, to);
-		DWORD flags = (overwrite) ? MOVEFILE_REPLACE_EXISTING : 0;
-
-		bool opres = MoveFileExA(effpathFrom.data(), effpathTo.data(), flags);
+		
+		int opres = rename(effpathFrom.c_str(), effpathTo.c_str());
 		if (!opres) {
-			GenerateWinOSerror();
+			GeneratePosixOSerror(opres);
 			return ICEDB_ERRORCODES_OS;
 		}
 		return ICEDB_ERRORCODES_NONE;
