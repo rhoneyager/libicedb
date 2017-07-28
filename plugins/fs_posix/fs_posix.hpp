@@ -19,6 +19,7 @@ struct ICEDB_handle_inner {
 namespace icedb {
 	namespace plugins {
 		namespace fs_posix {
+			void GeneratePosixError(int err = 0);
 			extern const uint64_t pluginMagic;
 			// The name of the plugin matters when handles are opened. They act as reserved types.
 			extern const char* pluginName;

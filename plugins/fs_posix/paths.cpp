@@ -18,12 +18,65 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <dirent.h>
 #include "fs_posix.hpp"
 
 using namespace icedb::plugins::fs_posix;
 namespace icedb {
 	namespace plugins {
 		namespace fs_posix {
+			void GeneratePosixError(int err) {
+				if (!err) // TODO: Pull the error from the OS
+					hnd->_vtable->_raiseExcept(hnd,
+					__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+				ICEDB_error_context* e = i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+				const int errStrSz = 250;
+				char ErrString[errStrSz] = "";
+				snprintf(ErrString, errStrSz, "%u", err);
+				i_error_context->error_context_add_string2(i_error_context.get(), e, "Error-Code", ErrString);
+				const int mxErrors = 19;
+				const char* knownErrors[mxErrors] = {
+					"EACCES - Permission denied",
+					"EBUSY - file or directory in use",
+					"EDQUOT - Quota error",
+					"EFAULT - Memory fault",
+					"EINVAL - Invalid input to function",
+					"EISDIR - Invalid input - mixing file paths with directory paths",
+					"ELOOP - Too many symbolic links",
+					"EMLINK - Max number of links reached",
+					"ENAMETOOLONG = path name is too long",
+					"ENOENT - a necessary path does not exist",
+					"ENOMEM - insufficient kernel memory",
+					"ENOSPC - device is out of space",
+					"ENOTDIR - a component used as a directory is not actually a directory",
+					"ENOTEMPTY - directory is not empty",
+					"EEXIST - path already exists",
+					"EPERM - Permission error",
+					"EROFS - Read-only filesystem",
+					"EXDEV - paths are not mounted on the same filesystem. Faults with rename and hard links",
+					"Undescribed error"};
+				int r = mxErrors-1;
+				if (err == EACCES) r = 0;
+				if (err == EBUSY) r = 1;
+				if (err == EDQUOT) r = 2;
+				if (err == EFAULT) r = 3;
+				if (err == EINVAL) r = 4;
+				if (err == EISDIR) r = 5;
+				if (err == ELOOP) r = 6;
+				if (err == EMLINK) r = 7;
+				if (err == ENAMETOOLONG) r = 8;
+				if (err == ENOENT) r = 9;
+				if (err == ENOMEM) r = 10;
+				if (err == ENOSPC) r = 11;
+				if (err == ENOTDIR) r = 12;
+				if (err == ENOTEMPTY) r = 13;
+				if (err == EEXIST) r = 14;
+				if (err == EPERM) r = 15;
+				if (err == EROFS) r = 16;
+				if (err == EXDEV) r = 17;
+				i_error_context->error_context_add_string2(i_error_context.get(), e, "Error-Reason", knownErrors[r]);
+			}
 			std::string makeEffPath(ICEDB_FS_HANDLE_p p, const char* path) {
 				std::string effpath;
 				if (p) {
@@ -181,14 +234,14 @@ extern "C" {
 			data->p_type = ICEDB_path_types::ICEDB_type_nonexistant;
 			i_util->strncpy_s(i_util.get(), data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 		}
-		return 0;
+		return ICEDB_ERRORCODES_NONE;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_copy(ICEDB_FS_HANDLE_p p,
 		const char* , const char* , bool ) {
 		// Always throws, since copying is not yet implemented on this fs.
 		hnd->_vtable->_raiseExcept(hnd,
-								   __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		return ICEDB_ERRORCODES_OS;
 	}
 
@@ -202,63 +255,87 @@ extern "C" {
 		}
 		std::string effpathTo = makeEffPath(p, to);
 		
+		// TODO: Copy and delete if across filesystems
 		int opres = rename(effpathFrom.c_str(), effpathTo.c_str());
 		if (!opres) {
-			GeneratePosixOSerror(opres);
+			GeneratePosixError(opres);
 			return ICEDB_ERRORCODES_OS;
 		}
 		return ICEDB_ERRORCODES_NONE;
 	}
 	
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const char* path) {
-		std::string effpathFrom = makeEffPath(p, path);
+		std::string effpath = makeEffPath(p, path);
 		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
 			ICEDB_error_context* err = i_error_context->error_context_create_impl(
 				i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			return ICEDB_ERRORCODES_READONLY;
 		}
-		bool opres = DeleteFileA(effpathFrom.data());
+		// Get type: file or directory
+		struct stat sb;
+		if (stat(effpath.c_str(), &sb) != 0) {
+			// Path does not exist
+			GeneratePosixError(ENOENT);
+			return ICEDB_ERRORCODES_OS;
+		}
+		if (S_ISDIR(sb.st_mode)) {
+			int err = rmdir(effpath.c_str());
+			if (err) {
+				GeneratePosixError(err);
+				return ICEDB_ERRORCODES_OS;
+			}
+		} else {
+			int err = unlink(effpath.c_str());
+			if (err) {
+				GeneratePosixError(err);
+				return ICEDB_ERRORCODES_OS;
+			}
+		}
+		return ICEDB_ERRORCODES_NONE;
+	}
+
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_create_sym_link(ICEDB_FS_HANDLE_p p,
+		const char* from, const char* to) {
+		std::string effpathFrom = makeEffPath(p, from);
+		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			return ICEDB_ERRORCODES_READONLY;
+		}
+		std::string effpathTo = makeEffPath(p, to);
+		
+		// TODO: Copy and delete if across filesystems
+		int opres = symlink(effpathFrom.c_str(), effpathTo.c_str());
 		if (!opres) {
-			GenerateWinOSerror();
+			GeneratePosixError(opres);
 			return ICEDB_ERRORCODES_OS;
 		}
 		return ICEDB_ERRORCODES_NONE;
 	}
 
-	SHARED_EXPORT_ICEDB ICEDB_error_code fs_create_sym_link(ICEDB_FS_HANDLE_p,
-		const char*, const char*) {
-		// Always throws, since symlinks are not supported on this fs.
-		hnd->_vtable->_raiseExcept(hnd,
-			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-		return ICEDB_ERRORCODES_OS;
-	}
-
-	SHARED_EXPORT_ICEDB ICEDB_error_code fs_follow_sym_link(ICEDB_FS_HANDLE_p,
-		const char*, size_t, size_t*, char**) {
-		// Always throws, since symlinks are not supported on this fs.
-		hnd->_vtable->_raiseExcept(hnd,
-			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-		return ICEDB_ERRORCODES_OS;
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_follow_sym_link(ICEDB_FS_HANDLE_p p,
+		const char* from, size_t mxSz, size_t* actSz, char** buf) {
+		std::string effpathFrom = makeEffPath(p, from);
+		ssize_t res = readlink(effpathFrom.c_str(), *buf, mxSz);
+		if (res == -1) {
+			GeneratePosixError(res);
+			return ICEDB_ERRORCODES_OS;
+		}
+		actSz[0] = (size_t) res;
+		return ICEDB_ERRORCODES_NONE;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_create_hard_link(ICEDB_FS_HANDLE_p p,
 		const char* from, const char* to) {
 		std::string effpathFrom = makeEffPath(p, from);
+		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			return ICEDB_ERRORCODES_READONLY;
+		}
 		std::string effpathTo = makeEffPath(p, to);
-
-		bool opres = CreateHardLinkA(effpathTo.data(), effpathFrom.data(), NULL);
+		
+		int opres = link(effpathFrom.c_str(), effpathTo.c_str());
 		if (!opres) {
-			DWORD winerrnum = GetLastError();
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
-				i_error_context.get(), ICEDB_ERRORCODES_OS, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-			const int errStrSz = 250;
-			char winErrString[errStrSz] = "";
-			snprintf(winErrString, errStrSz, "%u", winerrnum);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-Code", winErrString);
-			FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, winerrnum,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), winErrString, errStrSz, NULL);
-			i_error_context->error_context_add_string2(i_error_context.get(), err, "Win-Error-String", winErrString);
-
+			GeneratePosixError(opres);
 			return ICEDB_ERRORCODES_OS;
 		}
 		return ICEDB_ERRORCODES_NONE;
@@ -298,13 +375,28 @@ extern "C" {
 		if (!p || !res) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		std::string effpath = makeEffPath(p, from);
-		if (!PathFileExistsA(effpath.data())) {
+		if (!fs_path_exists(nullptr,effpath.data())) {
 			ICEDB_error_context* err = i_error_context->error_context_create_impl(
 				i_error_context.get(), ICEDB_ERRORCODES_NONEXISTENT_PATH, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			i_error_context->error_context_add_string2(i_error_context.get(), err, "Path", effpath.c_str());
 
 			return ICEDB_ERRORCODES_NONEXISTENT_PATH;
 		}
+		
+		// Examine path. If it is a directory, then list its children.
+		
+		DIR *dp;
+		struct dirent *ep;
+		dp = opendir (effpath.c_str());
+		if (dp != NULL)
+		{
+			while ((ep = readdir (dp))) {
+				//ep->d_name
+			}
+				//puts (ep->d_name);
+			(void) closedir (dp);
+		}
+		
 		DWORD winatts = GetFileAttributesA(effpath.data());
 		if (FILE_ATTRIBUTE_DIRECTORY & winatts)
 			effpath.append("\\*");
