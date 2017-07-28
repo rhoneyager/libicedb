@@ -6,6 +6,9 @@
 #include <map>
 #include "../../libicedb/icedb/fs/fs.h"
 #include "../../libicedb/icedb/fs/fs_backend.hpp"
+
+#include "../../libicedb/icedb/misc/utilInterface.h"
+#include "../../libicedb/icedb/misc/memInterface.h"
 // This struct is deliberately redefined in each plugin.
 // The first field, however, is always a magic uint64_t, that indicates that the
 // passed handle is appropriate for this plugin.

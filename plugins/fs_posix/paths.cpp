@@ -217,7 +217,7 @@ extern "C" {
 		if (fs_path_exists(p, effpath.c_str())) {
 			struct stat sb;
 			stat(effpath.c_str(), &sb);
-			if (S_ISDIR(sb.st_mode))
+			if (S_ISDIR(sb.st_mode)) {
 				data->p_type = ICEDB_path_types::ICEDB_type_folder;
 				i_util->strncpy_s(i_util.get(), data->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 			} else if (S_ISLNK(sb.st_mode)) {
@@ -249,7 +249,7 @@ extern "C" {
 		const char* from, const char* to, bool overwrite) {
 		std::string effpathFrom = makeEffPath(p, from);
 		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+			i_error_context->error_context_create_impl(
 				i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			return ICEDB_ERRORCODES_READONLY;
 		}
@@ -267,7 +267,7 @@ extern "C" {
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const char* path) {
 		std::string effpath = makeEffPath(p, path);
 		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+			i_error_context->error_context_create_impl(
 				i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			return ICEDB_ERRORCODES_READONLY;
 		}
@@ -298,7 +298,7 @@ extern "C" {
 		const char* from, const char* to) {
 		std::string effpathFrom = makeEffPath(p, from);
 		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			return ICEDB_ERRORCODES_READONLY;
 		}
 		std::string effpathTo = makeEffPath(p, to);
@@ -328,7 +328,7 @@ extern "C" {
 		const char* from, const char* to) {
 		std::string effpathFrom = makeEffPath(p, from);
 		if (p->open_flags & ICEDB_file_open_flags::ICEDB_flags_readonly) {
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+			i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_READONLY, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			return ICEDB_ERRORCODES_READONLY;
 		}
 		std::string effpathTo = makeEffPath(p, to);
@@ -375,76 +375,65 @@ extern "C" {
 		if (!p || !res) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		std::string effpath = makeEffPath(p, from);
-		if (!fs_path_exists(nullptr,effpath.data())) {
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
-				i_error_context.get(), ICEDB_ERRORCODES_NONEXISTENT_PATH, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		
+		std::vector<std::string> toList;
+		toList.reserve(1000);
+		// Examine path. If it is a directory, then list its children.
+		if (fs_path_exists(p, effpath.c_str())) {
+			struct stat sb;
+			stat(effpath.c_str(), &sb);
+			if (S_ISDIR(sb.st_mode)) {
+				DIR *dp;
+				struct dirent *ep;
+				dp = opendir (effpath.c_str());
+				if (dp != NULL)
+				{
+					while ((ep = readdir (dp))) {
+						//ep->d_name
+						toList.push_back(std::string(ep->d_name));
+					}
+					(void) closedir (dp);
+				}
+			} else {
+				toList.push_back(std::string(effpath));
+			}
+		} else {
+			ICEDB_error_context* err = i_error_context->error_context_create_impl(i_error_context.get(), ICEDB_ERRORCODES_NONEXISTENT_PATH, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			i_error_context->error_context_add_string2(i_error_context.get(), err, "Path", effpath.c_str());
-
+			
 			return ICEDB_ERRORCODES_NONEXISTENT_PATH;
 		}
-		
-		// Examine path. If it is a directory, then list its children.
-		
-		DIR *dp;
-		struct dirent *ep;
-		dp = opendir (effpath.c_str());
-		if (dp != NULL)
-		{
-			while ((ep = readdir (dp))) {
-				//ep->d_name
-			}
-				//puts (ep->d_name);
-			(void) closedir (dp);
-		}
-		
-		DWORD winatts = GetFileAttributesA(effpath.data());
-		if (FILE_ATTRIBUTE_DIRECTORY & winatts)
-			effpath.append("\\*");
-		WIN32_FIND_DATAA ffd;
-		HANDLE hFind = FindFirstFileA(effpath.data(), &ffd);
-		if (INVALID_HANDLE_VALUE == hFind)
-		{
-			GenerateWinOSerror();
-			return ICEDB_ERRORCODES_OS;
-		}
+
 
 		std::shared_ptr<std::vector<ICEDB_FS_PATH_CONTENTS*> > children(new std::vector<ICEDB_FS_PATH_CONTENTS*>);
-		children->reserve(1000);
-		do
-		{
+		children->reserve(toList.size());
+		for (const auto &f : toList) {
 			ICEDB_FS_PATH_CONTENTS *child = dirpaths::obj_c_dirpaths.pop();
 			child->base_handle = p;
 			i_util->strncpy_s(i_util.get(), child->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.c_str(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 			child->idx = 0;
-			i_util->strncpy_s(i_util.get(), child->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, ffd.cFileName, 260);
-
-			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			i_util->strncpy_s(i_util.get(), child->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, f.c_str(), 260);
+			struct stat sb;
+			stat(f.c_str(), &sb);
+			if (S_ISDIR(sb.st_mode)) {
 				child->p_type = ICEDB_path_types::ICEDB_type_folder;
-				errno_t e = strncpy_s(child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", 7);
-				if (e) { GenerateWinOSerror(); return ICEDB_ERRORCODES_OS; }
-			} else if (ffd.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
-				child->p_type = ICEDB_path_types::ICEDB_type_symlink;
-				errno_t e = strncpy_s(child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "symlink", 8);
-				if (e) { GenerateWinOSerror(); return ICEDB_ERRORCODES_OS; }
+				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", 7);
+				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
+			} else if (S_ISLNK(sb.st_mode)) {
+				child->p_type = ICEDB_path_types::ICEDB_type_folder;
+				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "symlink", 7);
+				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
+			} else if (S_ISREG(sb.st_mode)) {
+				child->p_type = ICEDB_path_types::ICEDB_type_folder;
+				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "file", 7);
+				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
 			} else {
-				child->p_type = ICEDB_path_types::ICEDB_type_normal_file;
-				errno_t e = strncpy_s(child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "file", 5);
-				if (e) { GenerateWinOSerror(); return ICEDB_ERRORCODES_OS; }
+				child->p_type = ICEDB_path_types::ICEDB_type_unknown;
+				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "unknown", 7);
+				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
 			}
-			//child->next = nullptr;
 			children->push_back(child);
-		} while (FindNextFileA(hFind, &ffd) != 0);
-		DWORD winerrnum = GetLastError();
-		if (winerrnum != ERROR_NO_MORE_FILES)
-		{
-			GenerateWinOSerror(winerrnum);
-			return ICEDB_ERRORCODES_OS;
 		}
-		if (!FindClose(hFind)) {
-			GenerateWinOSerror();
-			return ICEDB_ERRORCODES_OS;
-		}
-
 		// Assemble and store a vector that points to the appropriate file paths. Modify the pointers into a linked list.
 		if (children->size()) {
 			//children
@@ -510,13 +499,13 @@ extern "C" {
 			if (styp == "folder") isFld = true;
 			// We can create folders. No knowledge of how to create files.
 			if (!isFld) {
-				ICEDB_error_context* err = i_error_context->error_context_create_impl(
+				i_error_context->error_context_create_impl(
 					i_error_context.get(), ICEDB_ERRORCODES_UNIMPLEMENTED, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 				return nullptr;
 			} else {
 				std::string effpath = makeEffPath(p, path);
-				bool res = CreateDirectoryA(effpath.c_str(), NULL);
-				if (!res) GenerateWinOSerror();
+				int res = mkdir(effpath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+				if (res) GeneratePosixError(res);
 				// Create the handle to the new folder.
 				ICEDB_FS_HANDLE_p h = makeHandle();
 				h->open_flags = flags;
@@ -525,7 +514,7 @@ extern "C" {
 			}
 		} else if (exists && (flags & ICEDB_file_open_flags::ICEDB_flags_truncate)) {
 			// Not supported. No desire yet to truncate a folder.
-			ICEDB_error_context* err = i_error_context->error_context_create_impl(
+			i_error_context->error_context_create_impl(
 				i_error_context.get(), ICEDB_ERRORCODES_UNIMPLEMENTED, __FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			return nullptr;
 		} else if (exists && (
