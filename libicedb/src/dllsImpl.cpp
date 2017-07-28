@@ -321,7 +321,7 @@ ICEDB_CALL_C DL_ICEDB bool ICEDB_load_plugin(const char* dlpath) {
 	if (compat_level == ICEDB_VER_INCOMPATIBLE) goto failed;
 
 	icedb::dll::impl::_init();
-	res = td->Register(td, ICEDB_register_interface, ICEDB_findModuleByFunc, icedb::dll::impl::libInst);
+	res = td->Register(td, ICEDB_register_interface, ICEDB_findModuleByFunc, icedb::dll::impl::libInst, dllInst);
 	if (!res) goto failed;
 	destroy_icedb_plugin_base(td);
 	icedb::dll::impl::pluginHandles[std::string(dlpath)] = dllInst;
