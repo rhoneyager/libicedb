@@ -46,6 +46,7 @@ enum ICEDB_attr_types {
 
 DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_create( // rename function
 	const char* path, const char* ftype, ICEDB_file_open_flags flags);
+DL_ICEDB const char* ICEDB_file_handle_get_name(ICEDB_FS_HANDLE_p);
 // Add can_open_path
 // Add get_open_flags
 DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p); // fix
@@ -77,7 +78,7 @@ DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS*);
 DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const char* path);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS *res);
 // Iterate / enumerate all one-level child objects
-DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS ***res);
+DL_ICEDB ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p, const char* path, size_t *numObjs, ICEDB_FS_PATH_CONTENTS ***res);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_free_objs(ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS **);
 
 // There are a few special subpaths / extended attributes (xattrs) / alternate data streams that may exist

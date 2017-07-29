@@ -91,37 +91,37 @@ namespace icedb {
 				};
 				class c_dirpaths {
 				private:
-					std::list<c_dirpathspage> pages;
+					std::list<std::shared_ptr<c_dirpathspage> > pages;
 					void compact() {
-						pages.remove_if([](c_dirpathspage &p) {
-							return p.empty();
+						pages.remove_if([](std::shared_ptr<c_dirpathspage> &p) {
+							return p->empty();
 						});
 					}
 					void addPage() {
-						c_dirpathspage c;
-						pages.push_back(std::move(c));
+						pages.push_back(std::shared_ptr<c_dirpathspage>(new c_dirpathspage));
 						rt = pages.rbegin();
 					}
-					std::list<c_dirpathspage>::reverse_iterator rt;
+					std::list<std::shared_ptr<c_dirpathspage> >::reverse_iterator rt;
 					size_t releaseCounter;
 				public:
-					c_dirpaths() : releaseCounter(0), rt(std::list<c_dirpathspage>::reverse_iterator()) {}
+					c_dirpaths() : releaseCounter(0), 
+						rt(std::list<std::shared_ptr<c_dirpathspage> >::reverse_iterator()) {}
 					~c_dirpaths() {}
 					ICEDB_FS_PATH_CONTENTS* pop() {
 						if (!pages.size()) addPage();
-						if (pages.rbegin()->full()) addPage();
-						return pages.rbegin()->pop();
+						if ((*(pages.rbegin()))->full()) addPage();
+						return (*(pages.rbegin()))->pop();
 					}
 					void release(ICEDB_FS_PATH_CONTENTS* p) {
 						if (rt != pages.rend()) {
-							if (rt->isObjOwner(p)) {
-								rt->release(p);
+							if ((*rt)->isObjOwner(p)) {
+								(*rt)->release(p);
 								return;
 							}
 						}
 						for (rt = pages.rbegin(); rt != pages.rend(); ++rt) {
-							if (rt->isObjOwner(p)) {
-								rt->release(p);
+							if ((*rt)->isObjOwner(p)) {
+								(*rt)->release(p);
 								break;
 							}
 						}
@@ -307,8 +307,8 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjs(ICEDB_FS_HANDLE_p p,
-		const char* from, ICEDB_FS_PATH_CONTENTS*** res) {
-		if (!p || !res) hnd->_vtable->_raiseExcept(hnd,
+		const char* from, size_t *numObjs, ICEDB_FS_PATH_CONTENTS*** res) {
+		if (!p || !res || !numObjs) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		std::string effpath = makeEffPath(p, from);
 		if (!PathFileExistsA(effpath.data())) {
@@ -372,7 +372,7 @@ extern "C" {
 		} else {
 			*res = nullptr;
 		}
-
+		*numObjs = children->size();
 		return ICEDB_ERRORCODES_NONE;
 	}
 

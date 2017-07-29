@@ -73,7 +73,7 @@ extern "C" {
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_unlink(ICEDB_FS_HANDLE_p p, const char* path);
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjs(ICEDB_FS_HANDLE_p p,
-		const char* from, ICEDB_FS_PATH_CONTENTS*** res);
+		const char* from, size_t *numObjs, ICEDB_FS_PATH_CONTENTS*** res);
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS** pc);
 }
 

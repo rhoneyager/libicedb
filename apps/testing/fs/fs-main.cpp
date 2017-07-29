@@ -13,10 +13,15 @@ int main(int argc, char** argv) {
 	ICEDB_FS_HANDLE_p f = ICEDB_file_handle_create(pDir.c_str(), nullptr, ICEDB_flags_rw);
 
 	ICEDB_FS_PATH_CONTENTS **fc = nullptr;
-	
-	ICEDB_error_code err = ICEDB_file_handle_readobjs(f, nullptr, &fc);
+	size_t numObjs = 0;
+	ICEDB_error_code err = ICEDB_file_handle_readobjs(f, nullptr, &numObjs, &fc);
 
-
+	cout << "Listing contents of " << pDir << endl;
+	cout << "Using filesystem plugin: " << ICEDB_file_handle_get_name(f) << endl;
+	for (size_t i = 0; i < numObjs; ++i) {
+		cout << i << " - " << (*fc)[i].p_name << " - "
+			<< ((*fc)[i].p_obj_type) << endl;
+	}
 
 	err = ICEDB_file_handle_free_objs(f, fc);
 	ICEDB_file_handle_destroy(f);

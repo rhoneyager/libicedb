@@ -138,10 +138,10 @@ ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p p, const char* pa
 	return p->i->path_info(p->i.get(), p, path, res);
 }
 // Iterate / enumerate all one-level child objects
-ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p p, const char* path, ICEDB_FS_PATH_CONTENTS ***res) {
+ICEDB_error_code ICEDB_file_handle_readobjs(ICEDB_FS_HANDLE_p p, const char* path, size_t *numObjs, ICEDB_FS_PATH_CONTENTS ***res) {
 	verify_pointer_fs_p(p);
-	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
-	return p->i->readobjs(p->i.get(), p, path, res);
+	if (!res || !numObjs) ICEDB_DEBUG_RAISE_EXCEPTION();
+	return p->i->readobjs(p->i.get(), p, path, numObjs, res);
 }
 ICEDB_error_code ICEDB_file_handle_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_CONTENTS **res) {
 	verify_pointer_fs_p(p);
@@ -191,7 +191,10 @@ DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS* res) {
 	return true;
 }
 
-
+DL_ICEDB const char* ICEDB_file_handle_get_name(ICEDB_FS_HANDLE_p p) {
+	if (!p) ICEDB_DEBUG_RAISE_EXCEPTION();
+	return p->pluginName;
+}
 
 
 

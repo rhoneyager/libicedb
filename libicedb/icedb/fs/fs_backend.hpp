@@ -38,6 +38,7 @@ struct ICEDB_FS_HANDLE {
 	ICEDB_DLL_BASE_HANDLE *d; // handle to dll
 	ICEDB_fs_plugin_capabilities c;
 	ICEDB_file_open_flags open_flags;
+	const char* pluginName;
 };
 
 
@@ -89,7 +90,7 @@ ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	path_info, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, ICEDB_FS_PATH_CONTENTS*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	readobjs, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, ICEDB_FS_PATH_CONTENTS***);
+	readobjs, ICEDB_error_code, ICEDB_FS_HANDLE_p, const char*, size_t*, ICEDB_FS_PATH_CONTENTS***);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	free_objs, ICEDB_error_code, ICEDB_FS_HANDLE_p, ICEDB_FS_PATH_CONTENTS**);
 

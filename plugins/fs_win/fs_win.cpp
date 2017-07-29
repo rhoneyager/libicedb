@@ -71,6 +71,7 @@ extern "C" {
 		//p->h_dest;
 		p->h = std::shared_ptr<ICEDB_handle_inner>(new ICEDB_handle_inner);
 		p->i = i_fs_self;
+		p->pluginName = pluginName;
 		return p;
 	}
 
