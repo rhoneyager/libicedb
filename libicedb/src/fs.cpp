@@ -171,6 +171,7 @@ ICEDB_error_code ICEDB_file_handle_attr_insert(ICEDB_FS_HANDLE_p p, const char* 
 
 
 DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_alloc(ICEDB_FS_PATH_CONTENTS* res) {
+	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	res->idx = 0;
 	//res->base_handle = icedb::plugins::fs_win::hndSelf;
 	res->base_path = (char*)ICEDB_malloc(sizeof(char)*ICEDB_FS_PATH_CONTENTS_PATH_MAX);
@@ -183,6 +184,7 @@ DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_alloc(ICEDB_FS_PATH_CONTENTS* res) {
 	return true;
 }
 DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS* res) {
+	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	ICEDB_free(res->base_path);
 	ICEDB_free(res->p_name);
 	ICEDB_free(res->p_obj_type);

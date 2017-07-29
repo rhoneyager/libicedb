@@ -53,6 +53,7 @@ namespace icedb {
 					c_dirpathspage() : numUsed(0), cur(0) { 
 						used.resize(numObjsInPage, false);
 						objs = new ICEDB_FS_PATH_CONTENTS[numObjsInPage];
+						memset(objs, 0, numObjsInPage * sizeof(ICEDB_FS_PATH_CONTENTS));
 					}
 					~c_dirpathspage() {
 						delete[] objs;
