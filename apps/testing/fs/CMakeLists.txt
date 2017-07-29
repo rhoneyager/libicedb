@@ -17,6 +17,7 @@ add_dependencies(germany_api_test_fs fs-win)
 else()
 add_dependencies(germany_api_test_fs fs-posix)
 ENDIF()
+add_dependencies(germany_api_test_fs netcdf_impl)
 addapp(germany_api_test_fs Testing)
 storebin(germany_api_test_fs)
 

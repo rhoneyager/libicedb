@@ -9,8 +9,16 @@ int main(int argc, char** argv) {
 	using namespace std;
 	ICEDB_libEntry(argc, argv);
 	string pDir(ICEDB_getPluginDirC());
+	char libncp[50] = "";
+	ICEDB_dll_name_mangle_simple("netcdf_impl", libncp, 50);
+	string pncp = pDir + "/" + string(libncp);
+	ICEDB_load_plugin(pncp.c_str());
 
-	ICEDB_FS_HANDLE_p f = ICEDB_file_handle_create(pDir.c_str(), nullptr, ICEDB_flags_rw);
+	string basepath = pDir;
+	if (argc > 1) {
+		basepath = string(argv[1]);
+	}
+	ICEDB_FS_HANDLE_p f = ICEDB_file_handle_create(basepath.c_str(), nullptr, ICEDB_flags_rw);
 
 	ICEDB_FS_PATH_CONTENTS **fc = nullptr;
 	size_t numObjs = 0;
