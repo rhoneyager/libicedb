@@ -63,18 +63,18 @@ DL_ICEDB ICEDB_error_code ICEDB_file_handle_create_sym_link(ICEDB_FS_HANDLE_p, c
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_follow_sym_link(ICEDB_FS_HANDLE_p,
 	const char* path, size_t out_max_sz, size_t* szout, char** out);
 
-// TODO: Change to allocate on the heap, not the stack!!!!!
-// TODO: Add constructor and destructor functions!!!!!
 #define ICEDB_FS_PATH_CONTENTS_PATH_MAX 32767
 struct ICEDB_FS_PATH_CONTENTS {
-	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
-	char p_name[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* path name */
-	char p_obj_type[ICEDB_FS_PATH_CONTENTS_PATH_MAX]; /* Descriptive type of object - hdf5 file, shape, compressed archive, ... */
-	ICEDB_FS_HANDLE_p base_handle; /* Pointer to base container */
-	char base_path[ICEDB_FS_PATH_CONTENTS_PATH_MAX];
 	int idx; /* id */
+	ICEDB_path_types p_type; /* Type of path - regular, dir, symlink */
+	char *p_name; /* path name */
+	char *p_obj_type; /* Descriptive type of object - hdf5 file, shape, compressed archive, ... */
+	//ICEDB_FS_HANDLE_p base_handle; /* Pointer to base container */
+	char *base_path;
 	//ICEDB_FS_PATH_CONTENTS* next; /* next element in list */
 };
+DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_alloc(ICEDB_FS_PATH_CONTENTS*);
+DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS*);
 
 DL_ICEDB bool ICEDB_file_handle_path_exists(ICEDB_FS_HANDLE_p, const char* path);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_path_info(ICEDB_FS_HANDLE_p, const char* path, ICEDB_FS_PATH_CONTENTS *res);

@@ -74,6 +74,7 @@ namespace icedb {
 					ICEDB_FS_PATH_CONTENTS* pop() {
 						if (!getNumFree()) return nullptr;
 						ICEDB_FS_PATH_CONTENTS* res = objs + cur;
+						i_fs_core->ICEDB_FS_PATH_CONTENTS_alloc(i_fs_core.get(), res);
 						used[cur] = true;
 						numUsed++;
 						findNextCur();
@@ -81,6 +82,7 @@ namespace icedb {
 					}
 					void release(ICEDB_FS_PATH_CONTENTS* p) {
 						size_t cur = (p - objs) / sizeof(ICEDB_FS_PATH_CONTENTS);
+						i_fs_core->ICEDB_FS_PATH_CONTENTS_free(i_fs_core.get(), p);
 						used[cur] = false;
 						numUsed--;
 						findNextCur();
@@ -150,8 +152,10 @@ extern "C" {
 		std::string effpath = makeEffPath(p, path);
 		if (!data) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		if (!data->base_path || !data->p_name || !data->p_obj_type) hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		
-		data->base_handle = p;
+		//data->base_handle = p;
 		if (p)
 			i_util->strncpy_s(i_util.get(), data->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.data(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 		else
@@ -329,9 +333,7 @@ extern "C" {
 		do
 		{
 			ICEDB_FS_PATH_CONTENTS *child = dirpaths::obj_c_dirpaths.pop();
-			child->base_handle = p;
 			i_util->strncpy_s(i_util.get(), child->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.c_str(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
-			child->idx = 0;
 			i_util->strncpy_s(i_util.get(), child->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, ffd.cFileName, 260);
 
 			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -396,17 +398,19 @@ extern "C" {
 		// Overall priority is quite low, as more specialized plugins are more useful here. Still,
 		// this can be used for viewing directory contents and querying file metadata / attributes.
 		const size_t valid_pri = 10;
-
+		size_t res = 0;
 		if (!fs_path_exists(nullptr, p)) return 0;
 		ICEDB_FS_PATH_CONTENTS finfo;
+		i_fs_core->ICEDB_FS_PATH_CONTENTS_alloc(i_fs_core.get(), &finfo);
 		fs_path_info(nullptr, p, &finfo);
 
 		// This plugin currently does not resolve symbolic links.]
 		// If file type is a file or a directory, then return valid_pri.
-		if (finfo.p_type == ICEDB_path_types::ICEDB_type_folder) return valid_pri;
-		if (finfo.p_type == ICEDB_path_types::ICEDB_type_normal_file) return valid_pri;
+		if (finfo.p_type == ICEDB_path_types::ICEDB_type_folder) res = valid_pri;
+		if (finfo.p_type == ICEDB_path_types::ICEDB_type_normal_file) res = valid_pri;
 
-		return 0;
+		i_fs_core->ICEDB_FS_PATH_CONTENTS_free(i_fs_core.get(), &finfo);
+		return res;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_FS_HANDLE_p fs_open_path(

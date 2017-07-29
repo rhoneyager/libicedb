@@ -32,6 +32,7 @@ namespace icedb {
 			extern std::shared_ptr<interface_ICEDB_core_mem> i_mem;
 			extern std::shared_ptr<interface_ICEDB_core_error> i_error;
 			extern std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
+			extern std::shared_ptr<interface_ICEDB_core_fs> i_fs_core;
 			void GenerateWinOSerror(DWORD winerr = 0);
 		}
 	}

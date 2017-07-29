@@ -4,6 +4,7 @@
 #include "../icedb/dlls/dllsImpl.hpp"
 #include "../icedb/dlls/dlls.hpp"
 #include "../icedb/dlls/dlls.h"
+#include "../icedb/dlls/linking.h"
 #include <string>
 #include <vector>
 
@@ -167,6 +168,29 @@ ICEDB_error_code ICEDB_file_handle_attr_insert(ICEDB_FS_HANDLE_p p, const char* 
 	if (!name || !data) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->attr_insert(p->i.get(), p, name, data, sz, type);
 }
+
+
+DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_alloc(ICEDB_FS_PATH_CONTENTS* res) {
+	res->idx = 0;
+	//res->base_handle = icedb::plugins::fs_win::hndSelf;
+	res->base_path = (char*)ICEDB_malloc(sizeof(char)*ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+	res->base_path[0] = '\0';
+	res->p_name = (char*)ICEDB_malloc(sizeof(char)*ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+	res->p_name[0] = '\0';
+	res->p_obj_type = (char*)ICEDB_malloc(sizeof(char)*ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+	res->p_obj_type[0] = '\0';
+	res->p_type = ICEDB_path_types::ICEDB_type_nonexistant;
+	return true;
+}
+DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS* res) {
+	ICEDB_free(res->base_path);
+	ICEDB_free(res->p_name);
+	ICEDB_free(res->p_obj_type);
+	return true;
+}
+
+
+
 
 
 ICEDB_END_DECL_C
