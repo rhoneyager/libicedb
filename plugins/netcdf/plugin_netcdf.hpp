@@ -3,6 +3,11 @@
 #define ICEDB_PLUGINS_H_FS_NETCDF
 #include <cstdint>
 #include <string>
+#include <map>
+#include "../../libicedb/icedb/fs/fs.h"
+#include "../../libicedb/icedb/fs/fs_backend.hpp"
+#include "../../libicedb/icedb/misc/memInterface.h"
+#include "../../libicedb/icedb/misc/utilInterface.h"
 #include "../../libicedb/icedb/dlls/dllsInterface.hpp"
 // This struct is deliberately redefined in each plugin.
 // The first field, however, is always a magic uint64_t, that indicates that the
@@ -12,6 +17,7 @@ struct ICEDB_handle_inner {
 	uint64_t magic;
 	std::string cwd;
 	std::map<std::string, std::string> props;
+	int ncid;
 };
 
 namespace icedb {

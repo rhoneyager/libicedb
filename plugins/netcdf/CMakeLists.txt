@@ -4,6 +4,7 @@ generaterc("netcdf_impl" "dll"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
 set (tsrcs 
+	paths.cpp
 	plugin_netcdf.cpp
 	plugin_netcdf.hpp
 	plugin_netcdf_impl.hpp
