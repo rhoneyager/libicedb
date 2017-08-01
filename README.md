@@ -29,7 +29,7 @@ sudo pkg install hdf5 cmake doxygen git netcdf
 ```
 On MacOS, install XCode and Homebrew (https://brew.sh), then run
 ```
-brew install netcdf doxygen hdf5 cmake git netcdf
+brew install homebrew/science/netcdf doxygen hdf5 cmake git
 ```
 
 Building:
