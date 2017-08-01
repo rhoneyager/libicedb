@@ -21,15 +21,15 @@ sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-d
 ```
 On Fedora, this command may be used:
 ```
-sudo dnf install cmake doxygen environment-modules boost-devel eigen3-devel hdf5-devel hdf5 git zlib-devel netcdf-devel
+sudo dnf install cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel
 ```
 On FreeBSD, use this command:
 ```
-sudo pkg install hdf5 cmake doxygen modules boost-all eigen git netcdf
+sudo pkg install hdf5 cmake doxygen git netcdf
 ```
 On MacOS, install XCode and Homebrew (https://brew.sh), then run
 ```
-TODO
+brew install netcdf doxygen hdf5 cmake git netcdf
 ```
 
 Building:
@@ -53,4 +53,8 @@ to the install directory using:
 ```
 sudo make install
 ```
+
+## Warning
+
+This library is quite new and under heavy development. Expect much to change, and use at your own risk.
 
