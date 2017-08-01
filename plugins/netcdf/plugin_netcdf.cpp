@@ -32,11 +32,39 @@ namespace icedb {
 			std::shared_ptr<interface_ICEDB_fs_plugin> i_fs_self;
 			std::shared_ptr<interface_ICEDB_core_fs> i_fs_core;
 			std::string sSelfName;
+			std::mutex libMutex;
 
 			std::shared_ptr<ICEDB_DLL_BASE_HANDLE> hndNetCDF = nullptr;
 			std::shared_ptr<interface_dlls> i_dlls;
 			std::function<void(ICEDB_DLL_BASE_HANDLE*)> hndDestroyer;
 			std::shared_ptr<interface_netcdf> i_nc;
+
+			void delayLoadNC() {
+				std::lock_guard<std::mutex> guard(libMutex);
+				if (hndNetCDF) return;
+
+				/// \todo Consult the fs and try to find netcdf.dll.
+				/// First, search the lib directory, then the local plugin directory.
+				//sSelfName has the path to the lib. Just remove the final / or \\.
+				std::string pluginDir = sSelfName.substr(0, sSelfName.find_last_of("/\\"));
+				
+				
+				/// \todo Second, consult environment variables.
+				/// \todo Third, search the Program Files (/ x86) directories on Windows for a "netCDF *" match, pick the highest version with the dll.
+				auto hNC = i_dlls->DLL_BASE_HANDLE_create(i_dlls.get(), "C:\\Program Files\\netCDF 4.4.1.1\\bin\\netcdf.dll");
+				if (!hNC) {
+					hnd->_vtable->_raiseExcept(hnd,
+						__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+				}
+				hndDestroyer = std::bind(i_dlls->DLL_BASE_HANDLE_destroy, i_dlls.get(), std::placeholders::_1);
+				auto hndNetCDF = std::shared_ptr<ICEDB_DLL_BASE_HANDLE>(hNC, hndDestroyer);
+				ICEDB_error_code dlerr = hndNetCDF->_vtable->open(hndNetCDF.get());
+				if (dlerr) hnd->_vtable->_raiseExcept(hnd,
+					__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+				//bool isOpen = hndNetCDF->_vtable->isOpen(hndNetCDF.get());
+				auto i_nc = std::shared_ptr<interface_netcdf>(create_netcdf(hndNetCDF.get()), destroy_netcdf);
+
+			}
 		}
 	}
 }
@@ -75,15 +103,20 @@ extern "C" {
 
 
 	SHARED_EXPORT_ICEDB void fs_get_capabilities(ICEDB_fs_plugin_capabilities* p) {
-		caps.can_copy = true;
-		caps.can_delete = true;
-		caps.can_hard_link = true;
-		caps.can_move = true;
-		caps.can_soft_link = true;
-		caps.fs_has_cyclic_links = false;
-		caps.has_external_links = false;
-		caps.has_folders = true;
-		caps.has_xattrs = true;
+		std::lock_guard<std::mutex> guard(libMutex);
+		static bool inited = false;
+		if (!inited) {
+			caps.can_copy = true;
+			caps.can_delete = true;
+			caps.can_hard_link = true;
+			caps.can_move = true;
+			caps.can_soft_link = true;
+			caps.fs_has_cyclic_links = false;
+			caps.has_external_links = false;
+			caps.has_folders = true;
+			caps.has_xattrs = true;
+			inited = true;
+		}
 		if (!p) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		*p = caps;
@@ -93,6 +126,8 @@ extern "C" {
 		if (!isValidHandle(p))
 			hnd->_vtable->_raiseExcept(hnd,
 				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+
+		std::lock_guard<std::mutex> guard(p->h->hMutex);
 		p->h = nullptr;
 		//p->h_dest = nullptr;
 		p->i = nullptr;
@@ -105,10 +140,12 @@ extern "C" {
 		if (!isValidHandle(p) || !key || !val)
 			hnd->_vtable->_raiseExcept(hnd,
 				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		std::lock_guard<std::mutex> guard(p->h->hMutex);
 		p->h->props[std::string(key)] = std::string(val);
 	}
 
 	SHARED_EXPORT_ICEDB void fs_set_global_property(const char* key, const char* val) {
+		std::lock_guard<std::mutex> guard(libMutex);
 		if (!key || !val)
 			hnd->_vtable->_raiseExcept(hnd,
 				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
@@ -119,6 +156,7 @@ extern "C" {
 		if (!isValidHandle(p) || !key || !mxsz)
 			hnd->_vtable->_raiseExcept(hnd,
 				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		std::lock_guard<std::mutex> guard(p->h->hMutex);
 		if (p->h->props.count(std::string(key))) {
 			std::string sval = p->h->props[std::string(key)];
 			size_t res = i_util->strncpy_s(i_util.get(), *val, mxsz, sval.c_str(), sval.length());
@@ -133,6 +171,7 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB size_t fs_get_global_property(const char* key, size_t mxsz, char** val, size_t *sz) {
+		std::lock_guard<std::mutex> guard(libMutex);
 		if (!key)
 			hnd->_vtable->_raiseExcept(hnd,
 				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
@@ -169,20 +208,6 @@ extern "C" {
 
 		i_dlls = std::shared_ptr<interface_dlls>(create_dlls(hDllMain), destroy_dlls);
 		
-		auto hNC = i_dlls->DLL_BASE_HANDLE_create(i_dlls.get(), "C:\\Program Files\\netCDF 4.4.1.1\\bin\\netcdf.dll");
-		if (!hNC) {
-			hnd->_vtable->_raiseExcept(hnd,
-				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-			return false;
-		}
-		hndDestroyer = std::bind(i_dlls->DLL_BASE_HANDLE_destroy, i_dlls.get(), std::placeholders::_1);
-		auto hndNetCDF = std::shared_ptr<ICEDB_DLL_BASE_HANDLE>(hNC, hndDestroyer);
-		ICEDB_error_code dlerr = hndNetCDF->_vtable->open(hndNetCDF.get());
-		if (dlerr) hnd->_vtable->_raiseExcept(hnd,
-			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-		bool isOpen = hndNetCDF->_vtable->isOpen(hndNetCDF.get());
-		auto i_nc = std::shared_ptr<interface_netcdf>(create_netcdf(hndNetCDF.get()), destroy_netcdf);
-
 		//int ncfp = 0;
 		//auto b = i_nc->Bind_nc_create(i_nc.get());
 		//int err = i_nc->nc_create(i_nc.get(), "C:\\Users\\ryan\\Documents\\Visual Studio 2017\\Projects\\germany_api_3\\build\\test.nc", NC_NETCDF4, &ncfp);

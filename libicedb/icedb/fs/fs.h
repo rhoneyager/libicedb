@@ -44,17 +44,12 @@ enum ICEDB_attr_types {
 	ICEDB_attr_type_other
 };
 
-DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_create( // rename function
+DL_ICEDB ICEDB_FS_HANDLE_p ICEDB_file_handle_create(
 	const char* path, const char* ftype, ICEDB_file_open_flags flags);
 DL_ICEDB const char* ICEDB_file_handle_get_name(ICEDB_FS_HANDLE_p);
 // Add can_open_path
 // Add get_open_flags
-DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p); // fix
-// Create the testing app
-// Create the linux plugin
-// Create the netcdf plugin
-// Implement shape reads and writes
-// Create the vtk plugin
+DL_ICEDB void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p);
 
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_move(ICEDB_FS_HANDLE_p, const char* src, const char* dest);
 DL_ICEDB ICEDB_error_code ICEDB_file_handle_copy(ICEDB_FS_HANDLE_p, const char* src, const char* dest, bool overwrite);

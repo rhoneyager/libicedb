@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <mutex>
 #include "../../libicedb/icedb/fs/fs.h"
 #include "../../libicedb/icedb/fs/fs_backend.hpp"
 #include "../../libicedb/icedb/misc/memInterface.h"
@@ -18,6 +19,7 @@ struct ICEDB_handle_inner {
 	std::string cwd;
 	std::map<std::string, std::string> props;
 	int ncid;
+	std::mutex hMutex;
 };
 
 namespace icedb {
@@ -36,6 +38,9 @@ namespace icedb {
 			extern std::shared_ptr<interface_ICEDB_core_error> i_error;
 			extern std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
 			extern std::shared_ptr<interface_ICEDB_core_fs> i_fs_core;
+			extern std::mutex libMutex;
+
+			void delayLoadNC();
 		}
 	}
 }
