@@ -58,3 +58,7 @@ sudo make install
 
 This library is quite new and under heavy development. Expect much to change, and use at your own risk.
 
+## License
+
+See [LICENSE.txt](./LICENSE.txt)
+
