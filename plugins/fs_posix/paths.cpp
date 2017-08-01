@@ -104,13 +104,17 @@ namespace icedb {
 				const size_t numObjsInPage = 400;
 				class c_dirpathspage {
 				private:
-					ICEDB_FS_PATH_CONTENTS objs[numObjsInPage];
+					ICEDB_FS_PATH_CONTENTS* objs;
 					size_t numUsed;
 					size_t cur;
 					std::vector<bool> used;
 				public:
-					c_dirpathspage() : numUsed(0), cur(0) { used.resize(numObjsInPage, false); }
-					~c_dirpathspage() {}
+					c_dirpathspage() : numUsed(0), cur(0) {
+						used.resize(numObjsInPage, false);
+						objs = new ICEDB_FS_PATH_CONTENTS[numObjsInPage];
+						memset(objs, 0, numObjsInPage * sizeof(ICEDB_FS_PATH_CONTENTS));
+					}
+					~c_dirpathspage() {delete[] objs;}
 					size_t getNumFree() const { return numObjsInPage - numUsed; }
 					inline bool empty() const { return (numUsed == 0) ? true : false; }
 					inline bool full() const { return (numUsed == numObjsInPage) ? true : false; }
@@ -128,6 +132,7 @@ namespace icedb {
 					ICEDB_FS_PATH_CONTENTS* pop() {
 						if (!getNumFree()) return nullptr;
 						ICEDB_FS_PATH_CONTENTS* res = objs + cur;
+						i_fs_core->ICEDB_FS_PATH_CONTENTS_alloc(i_fs_core.get(), res);
 						used[cur] = true;
 						numUsed++;
 						findNextCur();
@@ -135,6 +140,7 @@ namespace icedb {
 					}
 					void release(ICEDB_FS_PATH_CONTENTS* p) {
 						size_t cur = (p - objs) / sizeof(ICEDB_FS_PATH_CONTENTS);
+						i_fs_core->ICEDB_FS_PATH_CONTENTS_free(i_fs_core.get(), p);
 						used[cur] = false;
 						numUsed--;
 						findNextCur();
@@ -142,36 +148,36 @@ namespace icedb {
 				};
 				class c_dirpaths {
 				private:
-					std::list<c_dirpathspage> pages;
+					std::list<std::shared_ptr<c_dirpathspage> > pages;
 					void compact() {
-						pages.remove_if([](c_dirpathspage &p) {
-							return p.empty();
+						pages.remove_if([](std::shared_ptr<c_dirpathspage> &p) {
+							return p->empty();
 						});
 					}
 					void addPage() {
-						pages.push_back(c_dirpathspage());
+						pages.push_back(std::shared_ptr<c_dirpathspage>(new c_dirpathspage));
 						rt = pages.rbegin();
 					}
-					std::list<c_dirpathspage>::reverse_iterator rt;
+					std::list<std::shared_ptr<c_dirpathspage> >::reverse_iterator rt;
 					size_t releaseCounter;
 				public:
 					c_dirpaths() : releaseCounter(0) {}
 					~c_dirpaths() {}
 					ICEDB_FS_PATH_CONTENTS* pop() {
 						if (!pages.size()) addPage();
-						if (pages.rbegin()->full()) addPage();
-						return pages.rbegin()->pop();
+						if ((*(pages.rbegin()))->full()) addPage();
+						return (*(pages.rbegin()))->pop();
 					}
 					void release(ICEDB_FS_PATH_CONTENTS* p) {
 						if (rt != pages.rend()) {
-							if (rt->isObjOwner(p)) {
-								rt->release(p);
+							if ((*rt)->isObjOwner(p)) {
+								(*rt)->release(p);
 								return;
 							}
 						}
 						for (rt = pages.rbegin(); rt != pages.rend(); ++rt) {
-							if (rt->isObjOwner(p)) {
-								rt->release(p);
+							if ((*rt)->isObjOwner(p)) {
+								(*rt)->release(p);
 								break;
 							}
 						}
@@ -205,9 +211,14 @@ extern "C" {
 		std::string effpath = makeEffPath(p, path);
 		if (!data) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
+		if (!data->base_path || !data->p_name || !data->p_obj_type) hnd->_vtable->_raiseExcept(hnd,
+			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		
-		data->base_handle = p;
-		i_util->strncpy_s(i_util.get(), data->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.data(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+		//data->base_handle = p;
+		if (p)
+			i_util->strncpy_s(i_util.get(), data->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.data(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
+		else
+			i_util->strncpy_s(i_util.get(), data->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "", 2);
 		data->idx = -1;
 		if (path)
 			i_util->strncpy_s(i_util.get(), data->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, path, ICEDB_FS_PATH_CONTENTS_PATH_MAX);
@@ -371,8 +382,8 @@ extern "C" {
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjs(ICEDB_FS_HANDLE_p p,
-		const char* from, ICEDB_FS_PATH_CONTENTS*** res) {
-		if (!p || !res) hnd->_vtable->_raiseExcept(hnd,
+		const char* from, size_t* numObjs, ICEDB_FS_PATH_CONTENTS*** res) {
+		if (!p || !res || !numObjs) hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 		std::string effpath = makeEffPath(p, from);
 		
@@ -390,7 +401,10 @@ extern "C" {
 				{
 					while ((ep = readdir (dp))) {
 						//ep->d_name
-						toList.push_back(std::string(ep->d_name));
+						std::string res = effpath;
+						if (*(res.rbegin()) != '/') res.append("/");
+						res = res + std::string(ep->d_name);
+						toList.push_back(res);
 					}
 					(void) closedir (dp);
 				}
@@ -409,28 +423,30 @@ extern "C" {
 		children->reserve(toList.size());
 		for (const auto &f : toList) {
 			ICEDB_FS_PATH_CONTENTS *child = dirpaths::obj_c_dirpaths.pop();
-			child->base_handle = p;
+			//child->base_handle = p;
 			i_util->strncpy_s(i_util.get(), child->base_path, ICEDB_FS_PATH_CONTENTS_PATH_MAX, p->h->cwd.c_str(), ICEDB_FS_PATH_CONTENTS_PATH_MAX);
 			child->idx = 0;
 			i_util->strncpy_s(i_util.get(), child->p_name, ICEDB_FS_PATH_CONTENTS_PATH_MAX, f.c_str(), 260);
 			struct stat sb;
-			stat(f.c_str(), &sb);
+			errno_t se = stat(f.c_str(), &sb);
+			if (se) GeneratePosixError(errno);
 			if (S_ISDIR(sb.st_mode)) {
 				child->p_type = ICEDB_path_types::ICEDB_type_folder;
-				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", 7);
-				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
+				//errno_t e = 0;
+				i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "folder", 7);
+				//if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
 			} else if (S_ISLNK(sb.st_mode)) {
-				child->p_type = ICEDB_path_types::ICEDB_type_folder;
-				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "symlink", 7);
-				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
+				child->p_type = ICEDB_path_types::ICEDB_type_symlink;
+				i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "symlink", 7);
+				//if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
 			} else if (S_ISREG(sb.st_mode)) {
-				child->p_type = ICEDB_path_types::ICEDB_type_folder;
-				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "file", 7);
-				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
+				child->p_type = ICEDB_path_types::ICEDB_type_normal_file;
+				i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "file", 7);
+				//if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
 			} else {
 				child->p_type = ICEDB_path_types::ICEDB_type_unknown;
-				errno_t e = i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "unknown", 7);
-				if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
+				i_util->strncpy_s(i_util.get(), child->p_obj_type, ICEDB_FS_PATH_CONTENTS_PATH_MAX, "unknown", 7);
+				//if (e) { GeneratePosixError(EFAULT); return ICEDB_ERRORCODES_OS; }
 			}
 			children->push_back(child);
 		}
@@ -442,7 +458,7 @@ extern "C" {
 		} else {
 			*res = nullptr;
 		}
-
+		*numObjs = children->size();
 		return ICEDB_ERRORCODES_NONE;
 	}
 
@@ -469,17 +485,21 @@ extern "C" {
 		// Overall priority is quite low, as more specialized plugins are more useful here. Still,
 		// this can be used for viewing directory contents and querying file metadata / attributes.
 		const size_t valid_pri = 10;
+		size_t res = 0;
 
 		if (!fs_path_exists(nullptr, p)) return 0;
 		ICEDB_FS_PATH_CONTENTS finfo;
+		i_fs_core->ICEDB_FS_PATH_CONTENTS_alloc(i_fs_core.get(), &finfo);
 		fs_path_info(nullptr, p, &finfo);
 
 		// This plugin currently does not resolve symbolic links.]
 		// If file type is a file or a directory, then return valid_pri.
-		if (finfo.p_type == ICEDB_path_types::ICEDB_type_folder) return valid_pri;
-		if (finfo.p_type == ICEDB_path_types::ICEDB_type_normal_file) return valid_pri;
+		if (finfo.p_type == ICEDB_path_types::ICEDB_type_folder) res = valid_pri;
+		if (finfo.p_type == ICEDB_path_types::ICEDB_type_normal_file) res = valid_pri;
+		
+		i_fs_core->ICEDB_FS_PATH_CONTENTS_free(i_fs_core.get(), &finfo);
 
-		return 0;
+		return res;
 	}
 
 	SHARED_EXPORT_ICEDB ICEDB_FS_HANDLE_p fs_open_path(

@@ -24,6 +24,7 @@ namespace icedb {
 			std::shared_ptr<interface_ICEDB_core_error> i_error;
 			std::shared_ptr<interface_ICEDB_core_error_context> i_error_context;
 			std::shared_ptr<interface_ICEDB_fs_plugin> i_fs_self;
+			std::shared_ptr<interface_ICEDB_core_fs> i_fs_core;
 			std::string sSelfName;
 		}
 	}
@@ -56,6 +57,7 @@ extern "C" {
 		//p->h_dest;
 		p->h = std::shared_ptr<ICEDB_handle_inner>(new ICEDB_handle_inner);
 		p->i = i_fs_self;
+		p->pluginName = pluginName;
 		return p;
 	}
 
@@ -155,6 +157,7 @@ extern "C" {
 		i_mem = std::shared_ptr<interface_ICEDB_core_mem>(create_ICEDB_core_mem(hDll), destroy_ICEDB_core_mem);
 		i_error = std::shared_ptr<interface_ICEDB_core_error>(create_ICEDB_core_error(hDll), destroy_ICEDB_core_error);
 		i_error_context = std::shared_ptr<interface_ICEDB_core_error_context>(create_ICEDB_core_error_context(hDll), destroy_ICEDB_core_error_context);
+		i_fs_core = std::shared_ptr<interface_ICEDB_core_fs>(create_ICEDB_core_fs(hDll), destroy_ICEDB_core_fs);
 		return true;
 	}
 
@@ -165,6 +168,7 @@ extern "C" {
 		i_error = nullptr;
 		i_error_context = nullptr;
 		i_fs_self = nullptr;
+		i_fs_core = nullptr;
 		hndSelf = nullptr;
 	}
 }
