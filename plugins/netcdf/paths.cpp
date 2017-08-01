@@ -17,6 +17,7 @@
 #include "plugin_netcdf.hpp"
 #include "plugin_netcdf_interface.h"
 
+#if 0
 #include "c:/Program Files/netCDF 4.4.1.1/include/netcdf.h"
 
 
@@ -474,3 +475,5 @@ extern "C" {
 		return nullptr;
 	}
 }
+
+#endif

@@ -15,7 +15,8 @@ SET(tsrcs ${tsrcs}
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
 ENDIF()
 
-
+find_package(NetCDF REQUIRED)
+include_directories(SYSTEM ${NETCDF_C_INCLUDE_DIRS})
 add_library(netcdf_impl SHARED ${tsrcs})
 #target_link_libraries(testdll libicedb)
 addplugin(netcdf_impl Filesystem icedb)

@@ -14,8 +14,6 @@
 #include "plugin_netcdf_interface.h"
 #include "plugin_netcdf_impl.hpp"
 
-#include "c:/Program Files/netCDF 4.4.1.1/include/netcdf.h"
-
 ICEDB_DLL_PLUGINS_COMMON(fs_netcdf);
 
 namespace icedb {

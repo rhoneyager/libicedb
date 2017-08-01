@@ -10,8 +10,8 @@
 #include "../../../libicedb/icedb/dlls/dllsImpl.hpp"
 #include "../../../libicedb/icedb/misc/os_functions.hpp"
 #include "../../../libicedb/icedb/misc/os_functions.h"
-#include "../../../plugins/netcdf/plugin_netcdf_interface.h"
-#include "../../../plugins/netcdf/plugin_netcdf_impl.hpp"
+//#include "../../../plugins/netcdf/plugin_netcdf_interface.h"
+//#include "../../../plugins/netcdf/plugin_netcdf_impl.hpp"
 
 ICEDB_DLL_INTERFACE_BEGIN(testdll)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(testdll, setint, int, int)
