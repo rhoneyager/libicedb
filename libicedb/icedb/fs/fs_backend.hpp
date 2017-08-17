@@ -46,6 +46,8 @@ ICEDB_DLL_INTERFACE_BEGIN(ICEDB_core_fs)
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_fs,
 	ICEDB_file_handle_create, ICEDB_FS_HANDLE_p, const char*, const char*, ICEDB_file_open_flags);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_fs,
+	ICEDB_file_handle_create_with_registry, ICEDB_FS_HANDLE_p, const char*, const char*, ICEDB_file_open_flags, const char*);
+ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_fs,
 	ICEDB_file_handle_get_name, const char*, ICEDB_FS_HANDLE_p);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_core_fs,
 	ICEDB_file_handle_destroy, void, ICEDB_FS_HANDLE_p);

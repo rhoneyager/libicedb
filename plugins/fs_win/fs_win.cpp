@@ -162,6 +162,7 @@ extern "C" {
 		fMod((void*)Register, ICEDB_FS_PATH_CONTENTS_PATH_MAX, cSelf);
 		sSelfName = std::string(cSelf);
 		fReg("fs", 1000, cSelf); // 1000 is a really low priority
+		fReg("fs-base", 1000, cSelf); // 1000 is a really low priority
 
 		hnd = hDll;
 		hndSelf = hSelf;
@@ -177,6 +178,7 @@ extern "C" {
 
 	SHARED_EXPORT_ICEDB void Unregister(ICEDB_register_interface_f fUnReg, ICEDB_get_module_f fMod) {
 		fUnReg("fs", 1000, sSelfName.c_str());
+		fUnReg("fs-base", 1000, sSelfName.c_str());
 		i_util = nullptr;
 		i_mem = nullptr;
 		i_error = nullptr;

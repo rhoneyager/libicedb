@@ -15,19 +15,19 @@ extern "C" SHARED_EXPORT_ICEDB void writeShapeDat(ICEDB_L0_DDSCAT_SHAPE_p p, cha
 	// Internally, guess the memory space required, and allocate chunks as needed. Then,
 	// combine these when copying into the output buffer. The output buffer is allocated here,
 	// and needs to be freed after use.
-	if (!p) icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+	if (!p) icedb::plugins::ddscat_io::hnd->_vtable->_raiseExcept(icedb::plugins::ddscat_io::hnd,
 		__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-	if (!out) icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+	if (!out) icedb::plugins::ddscat_io::hnd->_vtable->_raiseExcept(icedb::plugins::ddscat_io::hnd,
 		__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
-	std::shared_ptr< interface_ICEDB_core_util> iutil(create_ICEDB_core_util(icedb::plugins::ddscat_io::h), destroy_ICEDB_core_util);
-	std::shared_ptr< interface_ICEDB_core_mem> imem(create_ICEDB_core_mem(icedb::plugins::ddscat_io::h), destroy_ICEDB_core_mem);
+	std::shared_ptr< interface_ICEDB_core_util> iutil(create_ICEDB_core_util(icedb::plugins::ddscat_io::hnd), destroy_ICEDB_core_util);
+	std::shared_ptr< interface_ICEDB_core_mem> imem(create_ICEDB_core_mem(icedb::plugins::ddscat_io::hnd), destroy_ICEDB_core_mem);
 
 	const size_t lineSz = 80;
 	const size_t chunkSz = (p->_vptrs->size(p) * lineSz) + 1000;
 	std::vector<std::unique_ptr<char[]> > data;
 	
 	char *cbuf = (char*)imem->malloc(imem.get(),sizeof(char)*chunkSz);
-	if (cbuf) icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+	if (cbuf) icedb::plugins::ddscat_io::hnd->_vtable->_raiseExcept(icedb::plugins::ddscat_io::hnd,
 		__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 	data.push_back(std::unique_ptr<char[]>(cbuf));
 	
@@ -63,7 +63,7 @@ extern "C" SHARED_EXPORT_ICEDB void writeShapeDat(ICEDB_L0_DDSCAT_SHAPE_p p, cha
 			// Write likely failed. Allocate a new chunk and repeat.
 			cbuf[old_i] = '\0';
 			cbuf = (char*)imem->malloc(imem.get(), sizeof(char)*chunkSz);
-			if (cbuf) icedb::plugins::ddscat_io::h->_vtable->_raiseExcept(icedb::plugins::ddscat_io::h,
+			if (cbuf) icedb::plugins::ddscat_io::hnd->_vtable->_raiseExcept(icedb::plugins::ddscat_io::hnd,
 				__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);
 			data.push_back(std::unique_ptr<char[]>(cbuf));
 			i = 0;

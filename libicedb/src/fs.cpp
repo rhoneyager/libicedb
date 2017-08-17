@@ -65,11 +65,16 @@ void ICEDB_file_handle_destroy(ICEDB_FS_HANDLE_p p) {
 
 ICEDB_FS_HANDLE_p ICEDB_file_handle_create
 (const char* path, const char* ftype, ICEDB_file_open_flags flags) {
+	return ICEDB_file_handle_create_with_registry(path, ftype, flags, "fs");
+}
+
+ICEDB_FS_HANDLE_p ICEDB_file_handle_create_with_registry
+(const char* path, const char* ftype, ICEDB_file_open_flags flags, const char* reg) {
 	{
 		ICEDB_FS_HANDLE_p res = nullptr;
 		//res->h_dest = nullptr;
 
-		std::vector<std::string> dlls = icedb::dll::query_interface("fs");
+		std::vector<std::string> dlls = icedb::dll::query_interface(reg);
 		for (const auto &f : dlls) {
 			std::shared_ptr<ICEDB_DLL_BASE_HANDLE> dhnd(
 				ICEDB_DLL_BASE_HANDLE_create(f.c_str()), ICEDB_DLL_BASE_HANDLE_destroy);
