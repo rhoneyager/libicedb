@@ -166,6 +166,11 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, 
 #pragma warning( disable : 4251 )
 #endif
 
+/// Pointer to an object that is modfied by a function
+#define ICEDB_OUT
+/// Denotes an 'optional' parameter (one which can be replaced with a NULL or nullptr)
+#define ICEDB_OPTIONAL
+
 ICEDB_END_DECL_C
 
 #endif
