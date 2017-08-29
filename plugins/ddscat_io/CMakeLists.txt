@@ -3,7 +3,15 @@ generaterc("ddscat_io" "dll"
 	"Implementation of the ddscat i/o functions"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
-	 set (tsrcs plugin_ddscat.cpp
+	 set (tsrcs 
+			level00_ddscat_avg.h
+			level00_ddscat_diel.h
+			level00_ddscat_fml.h
+			level00_ddscat_par.h
+			level00_ddscat_sca.h
+			level00_ddscat_shape.h
+			level00_ddscat_shape.hpp
+			plugin_ddscat.cpp
 			plugin_ddscat.hpp
 			raw_par_read.cpp
 			raw_par_write.cpp

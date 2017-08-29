@@ -65,6 +65,15 @@ set (base_objs
 	icedb/defs.h
 	src/defs.cpp
 	)
+set (level_0_objs
+	icedb/level_0/shape.h
+	icedb/level_0/shape.hpp
+	icedb/level_0/shapeInterface.h
+	icedb/level_0/shapeInterfaceImpl.hpp
+	docs/attributes.md
+	docs/level_0.md
+	docs/shapes.md
+	)
 
 generaterc("libicedb" "dll"
 	"libicedb"
@@ -74,7 +83,7 @@ generaterc("libicedb" "dll"
 
 set(srcs ${base_objs} ${dlls_objs} ${error_objs} ${fs_objs}
 	${misc_objs} ${units_objs}
-	${versioning_objs})
+	${versioning_objs} ${level_0_objs})
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
@@ -86,6 +95,7 @@ source_group("Filesystem" FILES ${fs_objs})
 source_group("Misc" FILES ${misc_objs})
 source_group("Units" FILES ${units_objs})
 source_group("Versioning" FILES ${versioning_objs})
+source_group("Level 0" FILES ${level_0_objs})
 
 add_library(libicedb SHARED ${srcs})
 addlib(libicedb SHARED)
