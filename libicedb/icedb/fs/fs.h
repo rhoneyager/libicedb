@@ -3,16 +3,18 @@
 #define ICEDB_H_FS_HANDLE
 #include "../defs.h"
 #include "../error/error.h"
+#include "../misc/mem.h"
 
 ICEDB_BEGIN_DECL_C
 
-// Filesystem handles are opaque types. They are implemented using several different backends - 
-// for folders, for compressed archives, for netcdf and hdf5 files, et cetera.
-// To switch to a different backend, open a new handle pointing to a place along the old path. For example,
-// you can open a directory, find a netcdf file, then open it, then find a shape structure, then view 
-// its attributes. Actually reading the data (other than basic attributes) is the provenance of other
-// classes. Those classes, however, might make use of the handles provided here, and the various fs dlls
-// may provide such facilities.
+/** Filesystem handles are opaque types. They are implemented using several different backends - 
+ * for folders, for compressed archives, for netcdf and hdf5 files, et cetera.
+ * To switch to a different backend, open a new handle pointing to a place along the old path. For example,
+ * you can open a directory, find a netcdf file, then open it, then find a shape structure, then view 
+ * its attributes. Actually reading the data (other than basic attributes) is the provenance of other
+ * classes. Those classes, however, might make use of the handles provided here, and the various fs dlls
+ * may provide such facilities.
+ **/
 struct ICEDB_fs_hnd;
 typedef ICEDB_fs_hnd* ICEDB_fs_hnd_p;
 
@@ -31,10 +33,39 @@ enum ICEDB_path_types {
 	ICEDB_type_symlink
 };
 
-/// Retreive all plugin handlers in a given registry
-DL_ICEDB void ICEDB_fh_getHandlers(const char* registry, ICEDB_OUT size_t* const numPlugins, ICEDB_OUT char *** const pluginids);
+/** \brief Retreive all plugin handlers in a given registry
+ *
+ * \param registry is the name of the plugin registry.
+ * \param numPlugins is the number of entries in the registry that were found.
+ * \param pluginids is the set of matching plugin id values. You provide a valid char*** pointer, and the function populates it. 
+ *		The populated char** is null-terminated. Once you are finished using it, then it should be freed using the deallocator function.
+ * \param deallocator is the function used to free the list of pluginids. It must be called to avoid memory leaks.
+ **/
+DL_ICEDB void ICEDB_fh_getHandlers(
+	const char* registry,
+	ICEDB_OUT size_t* const numPlugins,
+	ICEDB_OUT char *** const pluginids,
+	ICEDB_OUT ICEDB_free_charIPPP_f * const deallocator
+	);
 
-/// Can a path be opened?
+/** \brief Can a path be opened?
+	*
+	* \param path is the path. Can be relative or absolute. If base_handle is provided, then the path is relative to the base_handle's current path.
+	*	Otherwise, it is relative to the application's current working directory.
+	* \see getCWD
+	* \param ftype is the type of path to read. If not specified, then this is automatically detected.
+	* \param pluginid is the plugin that is queried. Optional, as this can be automatically detected.
+	* \param base_handle is a filesystem handle to some parent object, to provide a starting location
+	*	for path searches. It could, for example, point inside an already-opened netCDF file.
+	* \param flags are the file-open flags. Some plugins can read, but not write, and vice versa.
+	* \param numHandlersThatCanOpen returns the number of plugins that can read the path.
+	* \param pluginids is a list of plugins that can read the path. This list is ordered, and the ordering reflects 
+	*	how well each plugin thinks that it can understand the path. The top scores come first. The list is null-terminated.
+	* \param deallocator is a function that can deallocate pluginids once it is no longer needed.
+	* \param err is an error code. Non-NULL if there is an error. NULL otherwise.
+	* \see err.h
+	* \returns true if the path can be opened by at least one plugin. False if either no plugin can open the path, or if an error occurred.
+**/
 DL_ICEDB bool ICEDB_path_canOpen(
 	const char* path,
 	ICEDB_OPTIONAL const char* ftype,
@@ -43,16 +74,37 @@ DL_ICEDB bool ICEDB_path_canOpen(
 	ICEDB_OPTIONAL ICEDB_file_open_flags flags,
 	ICEDB_OUT size_t* const numHandlersThatCanOpen,
 	ICEDB_OPTIONAL ICEDB_OUT char *** const pluginids,
-	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPPP_f * const deallocator,
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
 
-/// Open a path and get a handle.
+/** \brief Open a path and get a handle.
+	* 
+	* \param path is the path. Can be relative or absolute. If base_handle is provided, then the path is relative to the base_handle's current path.
+	*	Otherwise, it is relative to the application's current working directory.
+	* \see getCWD
+	* \param ftype is the type of path to read. If not specified, then this is automatically detected.
+	* \param pluginid is the plugin that is queried. Optional, as this can be automatically detected.
+	* \param base_handle is a filesystem handle to some parent object, to provide a starting location
+	*	for path searches. It could, for example, point inside an already-opened netCDF file.
+	* \param flags are the file-open flags. Some plugins can read, but not write, and vice versa.
+	* \param err is an error code. Non-NULL if there is an error. NULL otherwise.
+	* \see err.h
+	* \returns a filesystem handle to the opened object. NULL if an error occurred.
+**/
 DL_ICEDB ICEDB_fs_hnd_p ICEDB_path_open(
-	const char* path, ICEDB_OPTIONAL const char* ftype,
+	const char* path, 
+	ICEDB_OPTIONAL const char* ftype,
 	ICEDB_OPTIONAL const char* pluginid, ICEDB_OPTIONAL ICEDB_fs_hnd_p base_handle,
 	ICEDB_OPTIONAL ICEDB_file_open_flags flags, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
 
-/// Get the full path opened by the file handle.
-DL_ICEDB const char* ICEDB_fh_get_name(ICEDB_fs_hnd_p, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
+/** \brief Get the full path opened by the file handle. 
+**/
+DL_ICEDB const char* ICEDB_fh_get_name(
+	ICEDB_fs_hnd_p, 
+	ICEDB_OPTIONAL size_t inPathSize, 
+	ICEDB_OUT size_t* outPathSize, 
+	ICEDB_OUT char ** const bufPath, 
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
 
 /// Get the ICEDB_file_open_flags passed to the plugin when the handle was opened
 DL_ICEDB ICEDB_file_open_flags ICEDB_fh_getOpenFlags(ICEDB_fs_hnd_p, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
