@@ -14,6 +14,7 @@ include(addapp)
 INCLUDE(addlib)
 include(generaterc)
 include(GetGitRevisionDescription)
+include(adddocs)
 
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
@@ -49,3 +50,5 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 ADD_SUBDIRECTORY(libicedb)
 ADD_SUBDIRECTORY(plugins)
 ADD_SUBDIRECTORY(apps)
+
+adddocs()
