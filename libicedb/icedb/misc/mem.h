@@ -5,7 +5,6 @@
 #include "../dlls/linking.h"
 ICEDB_BEGIN_DECL_C
 
-
 /** \brief Free a char**, and each sub-object. Assumes null-termination of the array. **/
 typedef void(*ICEDB_free_charPP_f)(char **);
 /** \brief Free a char***, and each sub-object. Assumes null-termination of the array. **/
