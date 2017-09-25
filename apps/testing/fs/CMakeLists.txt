@@ -4,7 +4,11 @@ generaterc("germany_api_test_fs" "exe"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
 
-set(srcs fs-main.cpp)
+set(srcs fs-main.cpp
+	fs-list-attrs.cpp
+	fs-list-files.cpp
+	fs-modify-attrs.cpp
+	fs-open-path.cpp)
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")

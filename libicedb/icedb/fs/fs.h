@@ -58,8 +58,8 @@ DL_ICEDB void ICEDB_fh_getHandlers(
 	* \param path is the path. Can be relative or absolute. If base_handle is provided, then the path is relative to the base_handle's current path.
 	*	Otherwise, it is relative to the application's current working directory.
 	* \see getCWD
-	* \param ftype is the type of path to read. If not specified, then this is automatically detected.
-	* \param pluginid is the plugin that is queried. Optional, as this can be automatically detected.
+	* \param pathtype is the type of path to read. If not specified, then this is automatically detected.
+	* \param pluginid is specified if you want to see if a given plugin can open a particular path.
 	* \param base_handle is a filesystem handle to some parent object, to provide a starting location
 	*	for path searches. It could, for example, point inside an already-opened netCDF file.
 	* \param flags are the file-open flags. Some plugins can read, but not write, and vice versa.
@@ -73,7 +73,7 @@ DL_ICEDB void ICEDB_fh_getHandlers(
 **/
 DL_ICEDB bool ICEDB_path_canOpen(
 	const char* path,
-	ICEDB_OPTIONAL const char* ftype,
+	ICEDB_OPTIONAL const char* pathtype,
 	ICEDB_OPTIONAL const char* pluginid,
 	ICEDB_OPTIONAL ICEDB_fs_hnd_p base_handle,
 	ICEDB_OPTIONAL ICEDB_file_open_flags flags,
