@@ -25,30 +25,14 @@ union ICEDB_ATTR_DATA {
 	double* dt;
 	char* ct;
 };
-enum ICEDB_ATTR_TYPES {
-	ICEDB_TYPE_CHAR, // NC_CHAR
-	ICEDB_TYPE_INT8, // NC_BYTE
-	ICEDB_TYPE_UINT8, // NC_UBYTE
-	ICEDB_TYPE_UINT16, // NC_USHORT
-	ICEDB_TYPE_INT16, // NC_SHORT
-	ICEDB_TYPE_UINT32, // NC_UINT
-	ICEDB_TYPE_INT32, // NC_INT (or NC_LONG)
-	ICEDB_TYPE_UINT64, // NC_UINT64
-	ICEDB_TYPE_INT64, // NC_INT64
-	ICEDB_TYPE_FLOAT, // NC_FLOAT
-	ICEDB_TYPE_DOUBLE, // NC_DOUBLE
-		// These have no corresponding NetCDF type. They never get saved by themselves, but contain pointers to things like string arrays, which are NetCDF objects.
-		ICEDB_TYPE_INTMAX,
-		ICEDB_TYPE_INTPTR,
-		ICEDB_TYPE_UINTMAX,
-		ICEDB_TYPE_UINTPTR
-};
+
 
 /** \brief A structure that describes an object attribute.
 **/
 struct ICEDB_ATTR {
+	ICEDB_fs_hnd_p parent; ///< The parent (container) of the attribute. May be NULL, but if non-NULL, then the parent must still EXIST, or else undefined behavior may occur upon write.
 	ICEDB_ATTR_DATA data; ///< The attribute data. Expressed as a union.
-	ICEDB_ATTR_TYPES type; ///< The type of data.
+	ICEDB_DATA_TYPES type; ///< The type of data.
 	size_t size; ///< The size of the data, in __bytes__. The number of values may be computed by size / sizeof(TYPE).
 	bool hasFixedSize; ///< Is the data fixed-vidth or variable. If variable, then the entry in data must be NULL-terminated.
 	const char* name; ///< The name of the attribute. A NULL-terminated string.
@@ -69,7 +53,7 @@ typedef ICEDB_ATTR* ICEDB_ATTR_p;
 **/
 DL_ICEDB ICEDB_ATTR_p ICEDB_ATTR_create(
 	ICEDB_OPTIONAL ICEDB_fs_hnd_p parent,
-	ICEDB_ATTR_TYPES type,
+	ICEDB_DATA_TYPES type,
 	size_t size,
 	bool hasSize,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
@@ -105,6 +89,16 @@ DL_ICEDB ICEDB_ATTR_p ICEDB_ATTR_delete(
 * \returns false if an error occurred, otherwise true.
 **/
 DL_ICEDB bool ICEDB_ATTR_close(
+	ICEDB_ATTR_p attr,
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
+);
+
+/** \brief Write an attribute back to the parent.
+* \param attr is the attribute. Must be non-NULL.
+* \param err is an error code
+* \returns false if an error occurred, otherwise true.
+**/
+DL_ICEDB bool ICEDB_ATTR_write(
 	ICEDB_ATTR_p attr,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
 );
@@ -174,7 +168,7 @@ DL_ICEDB bool ICEDB_ATTR_renameAttr(ICEDB_fs_hnd_p p, const char* oldname, const
 * \param err is an error code.
 * \returns Attribute type on success, NULL (ICEDB_type_invalid) on error.
 **/
-DL_ICEDB ICEDB_ATTR_TYPES ICEDB_ATTR_getAttrType(const ICEDB_fs_hnd_p p, const char* name, ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_DATA_TYPES ICEDB_ATTR_getAttrType(const ICEDB_fs_hnd_p p, const char* name, ICEDB_OUT ICEDB_error_code* err);
 
 /** \brief Gets the size of an attribute, in bytes.
 * \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.

@@ -283,7 +283,24 @@ DL_ICEDB ICEDB_fs_path_contents *** const ICEDB_fh_readObjs(
 DL_ICEDB void ICEDB_fh_freeObjs(
 	ICEDB_OUT ICEDB_fs_path_contents *** const p);
 
-
+enum ICEDB_DATA_TYPES {
+	ICEDB_TYPE_CHAR, // NC_CHAR
+	ICEDB_TYPE_INT8, // NC_BYTE
+	ICEDB_TYPE_UINT8, // NC_UBYTE
+	ICEDB_TYPE_UINT16, // NC_USHORT
+	ICEDB_TYPE_INT16, // NC_SHORT
+	ICEDB_TYPE_UINT32, // NC_UINT
+	ICEDB_TYPE_INT32, // NC_INT (or NC_LONG)
+	ICEDB_TYPE_UINT64, // NC_UINT64
+	ICEDB_TYPE_INT64, // NC_INT64
+	ICEDB_TYPE_FLOAT, // NC_FLOAT
+	ICEDB_TYPE_DOUBLE, // NC_DOUBLE
+					   // These have no corresponding NetCDF type. They never get saved by themselves, but contain pointers to things like string arrays, which are NetCDF objects.
+					   ICEDB_TYPE_INTMAX,
+					   ICEDB_TYPE_INTPTR,
+					   ICEDB_TYPE_UINTMAX,
+					   ICEDB_TYPE_UINTPTR
+};
 /** @} */ // end of fs
 
 ICEDB_END_DECL_C
