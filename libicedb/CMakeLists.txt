@@ -74,6 +74,10 @@ set (level_0_objs
 	docs/level_0.md
 	docs/shapes.md
 	)
+set (data_objs
+	icedb/data/attrs.h
+	icedb/data/tables.h
+	)
 
 generaterc("libicedb" "dll"
 	"libicedb"
@@ -81,7 +85,7 @@ generaterc("libicedb" "dll"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
 
-set(srcs ${base_objs} ${dlls_objs} ${error_objs} ${fs_objs}
+set(srcs ${base_objs} ${data_objs} ${dlls_objs} ${error_objs} ${fs_objs}
 	${misc_objs} ${units_objs}
 	${versioning_objs} ${level_0_objs})
 IF (WIN32 AND NOT CYGWIN)
@@ -89,6 +93,7 @@ SET(srcs ${srcs}
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 source_group("Base" FILES ${base_objs})
+source_group("Data Concepts" FILES ${data_objs})
 source_group("DLLs" FILES ${dlls_objs})
 source_group("Error" FILES ${error_objs})
 source_group("Filesystem" FILES ${fs_objs})

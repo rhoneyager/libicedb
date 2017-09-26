@@ -3,8 +3,6 @@
 #define ICEDB_H_SHAPE
 #include "../../libicedb/icedb/defs.h"
 #include "../../libicedb/icedb/error/error.h"
-#include <stdint.h>
-#include <stdbool.h>
 
 /// This is the public header file that defines the shape manipulation operations.
 
@@ -15,47 +13,7 @@ typedef ICEDB_L0_SHAPE_VOL_SPARSE ICEDB_SHAPE;
 typedef ICEDB_L0_SHAPE_VOL_SPARSE_p ICEDB_SHAPE_p;
 
 
-union ICEDB_ATTR_DATA {
-	int8_t* i8t;
-	int16_t* i16t;
-	int32_t* i32t;
-	int64_t* i64t;
-	intmax_t* imaxt;
-	intptr_t* iptrt;
-	uint8_t* ui8t;
-	uint16_t* ui16t;
-	uint32_t* ui32t;
-	uint64_t* ui64t;
-	uintmax_t* uimaxt;
-	uintptr_t* uiptrt;
-	float* ft;
-	double* dt;
-	char* ct;
-};
-enum ICEDB_ATTR_TYPES {
-	ICEDB_TYPE_CHAR, // NC_CHAR
-	ICEDB_TYPE_INT8, // NC_BYTE
-	ICEDB_TYPE_UINT8, // NC_UBYTE
-	ICEDB_TYPE_UINT16, // NC_USHORT
-	ICEDB_TYPE_INT16, // NC_SHORT
-	ICEDB_TYPE_UINT32, // NC_UINT
-	ICEDB_TYPE_INT32, // NC_INT (or NC_LONG)
-	ICEDB_TYPE_UINT64, // NC_UINT64
-	ICEDB_TYPE_INT64, // NC_INT64
-	ICEDB_TYPE_FLOAT, // NC_FLOAT
-	ICEDB_TYPE_DOUBLE, // NC_DOUBLE
-	// These have no corresponding NetCDF type. They never get saved by themselves, but contain pointers to things like string arrays, which are NetCDF objects.
-	ICEDB_TYPE_INTMAX,
-	ICEDB_TYPE_INTPTR,
-	ICEDB_TYPE_UINTMAX,
-	ICEDB_TYPE_UINTPTR
-};
-struct ICEDB_ATTR {
-	ICEDB_ATTR_DATA data;
-	ICEDB_ATTR_TYPES type;
-	size_t size;
-	bool hasSize; // if false, then the array is null-terminated. Most useful for character strings.
-};
+
 
 //typedef ICEDB_error_code(*ICEDB_SHAPE_read_f)(ICEDB_SHAPE_p, ICEDB_io_object_handle_p);
 //typedef ICEDB_error_code(*ICEDB_SHAPE_write_f)(const ICEDB_SHAPE_p, ICEDB_io_object_handle_p);

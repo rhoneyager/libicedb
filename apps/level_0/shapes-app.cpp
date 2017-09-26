@@ -3,6 +3,7 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include "../../libicedb/icedb/misc/os_functions.h"
+#include "../../libicedb/icedb/level_0/shape.h"
 int main(int argc, char** argv) {
 	using namespace std;
 	ICEDB_libEntry(argc, argv);
@@ -29,6 +30,9 @@ int main(int argc, char** argv) {
 	};
 	if (vm.count("help") || argc <= 1) doHelp("");
 	if (!vm.count("input") || !vm.count("output")) doHelp("Must specify input and output files.");
+	string sOutput = vm["output"].as<string>();
+	vector<string> sInputs = vm["input"].as<vector<string>>();
+
 
 	return 0;
 }
