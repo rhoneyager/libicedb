@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH
 set(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(addBaseProject)
-#include(addBoostUniform)
+include(addBoostUniform)
 include(adddocs)
 include(addapp)
 INCLUDE(addlib)
@@ -32,6 +32,9 @@ configure_file (
 # Add in script-generated includes
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
+
+
+addBoostUniform(program_options )
 #find_package(Eigen3 REQUIRED)
 #find_package(Udunits2)
 #if (UDUNITS2_INCLUDE_DIR)
