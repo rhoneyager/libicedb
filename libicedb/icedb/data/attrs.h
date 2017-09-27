@@ -8,6 +8,11 @@
 #include "../defs.h"
 #include "../fs/fs.h"
 
+/** @defgroup atts Attributes
+* 
+* @{
+**/
+
 union ICEDB_ATTR_DATA {
 	int8_t* i8t;
 	int16_t* i16t;
@@ -75,9 +80,9 @@ DL_ICEDB ICEDB_ATTR_p ICEDB_ATTR_open(
 * \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
 * \param name is the name of the attribute. Must be null-terminated.
 * \param err is an error code
-* \returns NULL if an error occurred, otherwise with a new copy of the attribute object.
+* \returns false if an error occurred, otherwise true.
 **/
-DL_ICEDB ICEDB_ATTR_p ICEDB_ATTR_delete(
+DL_ICEDB bool ICEDB_ATTR_delete(
 	ICEDB_fs_hnd_p parent,
 	const char* name,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
@@ -108,12 +113,15 @@ DL_ICEDB bool ICEDB_ATTR_write(
 * If an unattached attribute is created, call this function to attach the attribute to an fs object.
 * All memory is copied into the fs object's context and is subject to its memory management.
 * \param newparent is a pointer to the parent object (the object that stores the attribute's data). If NULL, then the attribute will be left dangling.
+* \param attr is the attribute to be copied
+* \param newname is the new name of the copied attribute. If NULL, then the name is the same.
 * \param err is an error code
 * \returns NULL if an error occurred, otherwise with a new copy of the attribute object.
 **/
 DL_ICEDB ICEDB_ATTR_p ICEDB_ATTR_copy(
 	ICEDB_OPTIONAL ICEDB_fs_hnd_p newparent,
 	ICEDB_ATTR_p attr,
+	ICEDB_OPTIONAL const char* newname,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
 );
 
@@ -206,5 +214,7 @@ DL_ICEDB ICEDB_ATTR_p** const ICEDB_ATTR_openAllAttrs(
 	ICEDB_OUT ICEDB_ATTR_p** const res,
 	ICEDB_OUT ICEDB_error_code* err);
 
+
+/** @} */ // end of atts
 
 #endif
