@@ -38,6 +38,14 @@ enum ICEDB_path_types {
 	ICEDB_type_symlink ///< Path is a symbolic link. Can check to see if it is dereferencable.
 };
 
+/// These indicate options for path iteration
+enum ICEDB_path_iteration {
+	ICEDB_path_base, ///< Only look at the base path
+	ICEDB_path_one, ///< Only look at immediate children
+	ICEDB_path_subtree, ///< Recurse through all children. Not base.
+	ICEDB_path_recursive ///< Recurse through base and all chuldren
+};
+
 /** \brief Retreive all plugin handlers in a given registry
  *
  * \param registry is the name of the plugin registry.
