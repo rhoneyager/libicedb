@@ -3,7 +3,10 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include "../../libicedb/icedb/misc/os_functions.h"
+#include "../../libicedb/icedb/data/attrs.h"
+#include "../../libicedb/icedb/data/tables.h"
 #include "../../libicedb/icedb/level_0/shape.h"
+
 int main(int argc, char** argv) {
 	using namespace std;
 	ICEDB_libEntry(argc, argv);
