@@ -19,7 +19,8 @@ int main(int argc, char** argv) {
 		("help,h", "produce help message")
 		("input,i", po::value<vector<string> >()->multitoken(), "Input shape file(s)")
 		("output,o", po::value<string>(), "Output file / folder")
-		("output-type", po::value<string>(), "Type of output")
+		("output-type", po::value<string>()->default_value(""), "Type of output (optional / autodetected)")
+		("output-plugin", po::value<string>()->default_value(""), "Plugin id used for output (optional)")
 		;
 
 	po::variables_map vm;
@@ -36,7 +37,7 @@ int main(int argc, char** argv) {
 	if (vm.count("help") || argc <= 1) doHelp("");
 	if (!vm.count("input") || !vm.count("output")) doHelp("Must specify input file(s).");
 
-	string sOutput, sOutputType;
+	string sOutput, sOutputType, sOutputPlugin;
 	ICEDB_error_code err;
 	bool printHash = false;
 	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
@@ -45,6 +46,7 @@ int main(int argc, char** argv) {
 	vector<string> sInputs = vm["input"].as<vector<string>>();
 	if (vm.count("print-hash")) printHash = true;
 	if (vm.count("output-type")) sOutputType = vm["output-type"].as<string>();
+	if (vm.count("output-plugin")) sOutputPlugin = vm["output-plugin"].as<string>();
 
 	for (const auto & in : sInputs) {
 		cout << "File " << in << endl;
@@ -73,13 +75,14 @@ int main(int argc, char** argv) {
 	
 
 	// If an output path is specified, write all unique shapes to this path.
+	// TODO: handle any errors that occur!
 	if (sOutput.size()) {
 		// Open the output path. 
 		shared_ptr<ICEDB_fs_hnd> p( // Encapsulating the opened file handle in a C++ shared_ptr that automatically closes the path when done.
 			ICEDB_path_open(
 				sOutput.c_str(), // Output file / folder name
 				sOutputType.c_str(), // Type of output
-				NULL, // Do not force any particular output plugin
+				sOutputPlugin.c_str(), // Do not force any particular output plugin
 				NULL, // No base handle
 				ICEDB_flags_none, // No special i/o flags
 				&err), // Write any error code to err
