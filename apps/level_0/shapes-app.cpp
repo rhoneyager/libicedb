@@ -35,21 +35,29 @@ int main(int argc, char** argv) {
 	};
 	if (vm.count("help") || argc <= 1) doHelp("");
 	if (!vm.count("input") || !vm.count("output")) doHelp("Must specify input file(s).");
-	string sOutput;
+
+	string sOutput, sOutputType;
+	ICEDB_error_code err;
+	bool printHash = false;
+	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
+
 	if (vm.count("output")) sOutput = vm["output"].as<string>();
 	vector<string> sInputs = vm["input"].as<vector<string>>();
-	bool printHash = false;
 	if (vm.count("print-hash")) printHash = true;
-	ICEDB_error_code err;
-	string sOutputType;
 	if (vm.count("output-type")) sOutputType = vm["output-type"].as<string>();
 
-	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
 	for (const auto & in : sInputs) {
 		cout << "File " << in << endl;
 		size_t nShapes = 0;
-		ICEDB_SHAPE_p **fileshapes = nullptr;
-		ICEDB_SHAPE_open_path_all(in.c_str(), ICEDB_path_recursive, ICEDB_flags_readonly, &nShapes, fileshapes, &err);
+		ICEDB_SHAPE_p **fileshapes = nullptr; // TODO: Set this?
+		ICEDB_SHAPE_open_path_all(
+			in.c_str(), // This is the base path - every shape contained within this path will be read.
+			ICEDB_path_recursive, // Read every shape
+			ICEDB_flags_readonly, // No modifying the source files.
+			&nShapes, // Number of shapes read
+			fileshapes, // The shapes
+			&err); // Presents an error code on error.
+		// Iterate over all read shapes. For all unique (non-repeated) shapes, store pointers to them.
 		for (size_t i = 0; i < nShapes; ++i) {
 			ICEDB_HASH_t hash;
 			(*fileshapes)[i]->_vptrs->getHash((*fileshapes)[i], &hash);
@@ -64,7 +72,7 @@ int main(int argc, char** argv) {
 	}
 	
 
-
+	// If an output path is specified, write all unique shapes to this path.
 	if (sOutput.size()) {
 		// Open the output path. 
 		shared_ptr<ICEDB_fs_hnd> p( // Encapsulating the opened file handle in a C++ shared_ptr that automatically closes the path when done.
