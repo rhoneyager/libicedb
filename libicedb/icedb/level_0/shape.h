@@ -18,14 +18,15 @@ typedef ICEDB_L0_SHAPE_VOL_SPARSE_p ICEDB_SHAPE_p;
 
 typedef size_t(*ICEDB_SHAPE_getSize_f)(const ICEDB_SHAPE_p);
 typedef void(*ICEDB_SHAPE_setSize_f)(ICEDB_SHAPE_p, size_t);
-typedef void(*ICEDB_SHAPE_setStrAttr_f)(ICEDB_SHAPE_p, const char*);
+typedef bool(*ICEDB_SHAPE_setStrAttr_f)(ICEDB_SHAPE_p, const char*);
 typedef const char*(*ICEDB_SHAPE_getStrAttr_f)(const ICEDB_SHAPE_p);
 typedef void(*ICEDB_SHAPE_getScattElemCoords_f)(const ICEDB_SHAPE_p, ICEDB_OUT float*);
 typedef void(*ICEDB_SHAPE_setScattElemCoords_f)(ICEDB_SHAPE_p, const float*);
 typedef bool(*ICEDB_SHAPE_tableExists_f)(const ICEDB_SHAPE_p, const char*);
 typedef ICEDB_fs_hnd_p(*ICEDB_SHAPE_getBackendPtr_f)(const ICEDB_SHAPE_p);
 typedef bool(*ICEDB_SHAPE_destructor_f)(ICEDB_SHAPE_p, ICEDB_OUT ICEDB_error_code*);
-typedef void(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE_p, ICEDB_OUT ICEDB_HASH_t*);
+typedef bool(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE_p, ICEDB_OUT ICEDB_HASH_t*);
+typedef bool(*ICEDB_SHAPE_idnum_f)(const ICEDB_SHAPE_p, ICEDB_OUT uint64_t*);
 typedef bool(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p, ICEDB_OUT ICEDB_SHAPE_p, ICEDB_OUT ICEDB_error_code*);
 typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p, ICEDB_OUT ICEDB_error_code*);
 //typedef ICEDB_ATTR_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE_p, const char*);
@@ -49,12 +50,13 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable {
 	ICEDB_SHAPE_destructor_f _destructor; ///< Removes shape from memory and performs clean-up tasks. Do not call directly.
 	ICEDB_SHAPE_getBackendPtr_f getFsPtr; ///< Get the underlying (low-level) filesystem object.
 	ICEDB_SHAPE_setStrAttr_f setDescription; ///< Set the description.
-	ICEDB_SHAPE_getStrAttr_f getDescription; ///< Get the description.
-	ICEDB_SHAPE_getScattElemCoords_f getScattElemCoords; ///< Get the scattering element coordinates. Coordinates are in row-major form, in the order of x1, y1, z1, x2, y2, z2, ...
+	//ICEDB_SHAPE_getStrAttr_f getDescription; ///< Get the description.
+	//ICEDB_SHAPE_getScattElemCoords_f getScattElemCoords; ///< Get the scattering element coordinates. Coordinates are in row-major form, in the order of x1, y1, z1, x2, y2, z2, ...
 	ICEDB_SHAPE_getSize_f getNumPoints; ///< Get the number of scattering elements.
 	ICEDB_SHAPE_setSize_f setNumPoints; ///< Resize the number of scattering elements. This operation is destructive. It removes all existing stored tables.
-	ICEDB_SHAPE_setScattElemCoords_f setScattElemCoords; ///< Set the scattering elements.
-	ICEDB_SHAPE_hash_f getHash; ///< Get a unique identifier for this shape.
+	//ICEDB_SHAPE_setScattElemCoords_f setScattElemCoords; ///< Set the scattering elements.
+	//ICEDB_SHAPE_hash_f getHash; ///< Get a unique identifier for this shape.
+	ICEDB_SHAPE_idnum_f getID; ///< Get a unique identifier for this shape.
 	ICEDB_SHAPE_copy_open_f copy_open; ///< Copy a shape to a new location. Return a pointer to the new, opened shape.
 	ICEDB_SHAPE_copy_f copy; ///< Copy a shape to a new location.
 	/// \todo Get scattering element types
@@ -63,9 +65,11 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable {
 	/// \todo Add support for manipulating attributes here, without getting the backend fs object.
 };
 
+struct _ICEDB_L0_SHAPE_VOL_SPARSE_impl;
+
 /// Represents a shape using a sparse-matrix form.
 struct ICEDB_L0_SHAPE_VOL_SPARSE {
-	void *_p; ///< An opaque pointer containing private implementation details.
+	_ICEDB_L0_SHAPE_VOL_SPARSE_impl *_p; ///< An opaque pointer containing private implementation details.
 	struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable *_vptrs;
 };
 

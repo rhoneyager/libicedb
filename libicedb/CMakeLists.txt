@@ -73,9 +73,11 @@ set (level_0_objs
 	docs/attributes.md
 	docs/level_0.md
 	docs/shapes.md
+	src/shapes.cpp
 	)
 set (data_objs
 	icedb/data/attrs.h
+	icedb/data/attrs.hpp
 	icedb/data/tables.h
 	)
 

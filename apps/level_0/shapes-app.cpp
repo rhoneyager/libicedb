@@ -39,12 +39,12 @@ int main(int argc, char** argv) {
 
 	string sOutput, sOutputType, sOutputPlugin;
 	ICEDB_error_code err;
-	bool printHash = false;
+	bool printID = false;
 	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
 
 	if (vm.count("output")) sOutput = vm["output"].as<string>();
 	vector<string> sInputs = vm["input"].as<vector<string>>();
-	if (vm.count("print-hash")) printHash = true;
+	if (vm.count("print-id")) printID = true;
 	if (vm.count("output-type")) sOutputType = vm["output-type"].as<string>();
 	if (vm.count("output-plugin")) sOutputPlugin = vm["output-plugin"].as<string>();
 
@@ -61,14 +61,14 @@ int main(int argc, char** argv) {
 			&err); // Presents an error code on error.
 		// Iterate over all read shapes. For all unique (non-repeated) shapes, store pointers to them.
 		for (size_t i = 0; i < nShapes; ++i) {
-			ICEDB_HASH_t hash;
-			(*fileshapes)[i]->_vptrs->getHash((*fileshapes)[i], &hash);
+			uint64_t id = 0;
+			(*fileshapes)[i]->_vptrs->getID((*fileshapes)[i], &id);
 			shared_ptr<ICEDB_SHAPE> sshp((*fileshapes)[i], ICEDB_SHAPE_destroy); // Auto-destructs shapes if not needed.
-			if (printHash) cout << "\t" << hash.low << endl;
-			if (!shapes.count(hash.low)) {
-				shapes[hash.low] = sshp;
+			if (printID) cout << "\t" << id << endl;
+			if (!shapes.count(id)) {
+				shapes[id] = sshp;
 			}
-			else if (printHash) cout << "\t\tRepeated shape" << endl;
+			else if (printID) cout << "\t\tRepeated shape" << endl;
 		}
 		ICEDB_SHAPE_open_path_all_free(fileshapes);
 	}
