@@ -12,36 +12,36 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE;
 typedef ICEDB_L0_SHAPE_VOL_SPARSE* ICEDB_L0_SHAPE_VOL_SPARSE_p;
 
 typedef ICEDB_L0_SHAPE_VOL_SPARSE ICEDB_SHAPE;
-typedef ICEDB_L0_SHAPE_VOL_SPARSE_p ICEDB_SHAPE_p;
+//typedef ICEDB_L0_SHAPE_VOL_SPARSE_p ICEDB_SHAPE*;
 
-typedef size_t(*ICEDB_SHAPE_getSize_f)(const ICEDB_SHAPE_p);
-typedef bool(*ICEDB_SHAPE_setSize_f)(ICEDB_SHAPE_p, size_t);
-typedef bool(*ICEDB_SHAPE_setStrAttr_f)(ICEDB_SHAPE_p, const char*);
-typedef const char*(*ICEDB_SHAPE_getStrAttr_f)(const ICEDB_SHAPE_p);
-typedef bool(*ICEDB_SHAPE_getScattElemCoords_f)(const ICEDB_SHAPE_p, ICEDB_OUT float*);
-typedef bool(*ICEDB_SHAPE_setScattElemCoords_f)(ICEDB_SHAPE_p, const float*);
-typedef bool(*ICEDB_SHAPE_tableExists_f)(const ICEDB_SHAPE_p, const char*);
-typedef ICEDB_fs_hnd_p(*ICEDB_SHAPE_getParentPtr_f)(const ICEDB_SHAPE_p);
-typedef bool(*ICEDB_SHAPE_close_f)(ICEDB_SHAPE_p);
-typedef bool(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE_p, ICEDB_OUT ICEDB_HASH_t*);
-typedef bool(*ICEDB_SHAPE_idnum_f)(const ICEDB_SHAPE_p, ICEDB_OUT uint64_t*);
-typedef bool(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p, ICEDB_OUT ICEDB_SHAPE_p);
-typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p);
-//typedef ICEDB_ATTR_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE_p, const char*);
+typedef size_t(*ICEDB_SHAPE_getSize_f)(const ICEDB_SHAPE*);
+typedef bool(*ICEDB_SHAPE_setSize_f)(ICEDB_SHAPE*, size_t);
+typedef bool(*ICEDB_SHAPE_setStrAttr_f)(ICEDB_SHAPE*, const char*);
+typedef const char*(*ICEDB_SHAPE_getStrAttr_f)(const ICEDB_SHAPE*);
+typedef bool(*ICEDB_SHAPE_getScattElemCoords_f)(const ICEDB_SHAPE*, ICEDB_OUT float*);
+typedef bool(*ICEDB_SHAPE_setScattElemCoords_f)(ICEDB_SHAPE*, const float*);
+typedef bool(*ICEDB_SHAPE_tableExists_f)(const ICEDB_SHAPE*, const char*);
+typedef ICEDB_fs_hnd*(*ICEDB_SHAPE_getParentPtr_f)(const ICEDB_SHAPE*);
+typedef bool(*ICEDB_SHAPE_close_f)(ICEDB_SHAPE*);
+typedef bool(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE*, ICEDB_OUT ICEDB_HASH_t*);
+typedef bool(*ICEDB_SHAPE_idnum_f)(const ICEDB_SHAPE*, ICEDB_OUT uint64_t*);
+typedef bool(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE*, ICEDB_fs_hnd*, ICEDB_OUT ICEDB_SHAPE*);
+typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE*, ICEDB_fs_hnd*);
+//typedef ICEDB_ATTR_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE*, const char*);
 
 // Args are: ptr to shape, number of table dimensions (should be 2), size of each dimension, pointer to the data.
 // Returns: a bool indicating success if true
-//typedef bool(*ICEDB_SHAPE_getFloatTable_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, float* const*);
-//typedef bool(*ICEDB_SHAPE_getDoubleTable_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, double**);
-//typedef bool(*ICEDB_SHAPE_getUInt8Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, uint8_t**);
-//typedef bool(*ICEDB_SHAPE_getInt8Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, int8_t**);
-//typedef bool(*ICEDB_SHAPE_getUInt16Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, uint16_t**);
-//typedef bool(*ICEDB_SHAPE_getInt16Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, int16_t**);
-//typedef bool(*ICEDB_SHAPE_getUInt32Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, uint32_t**);
-//typedef bool(*ICEDB_SHAPE_getInt32Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, int32_t**);
-//typedef bool(*ICEDB_SHAPE_getUInt64Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, uint64_t**);
-//typedef bool(*ICEDB_SHAPE_getInt64Table_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, int64_t**);
-//typedef bool(*ICEDB_SHAPE_getCharTable_f)(const ICEDB_SHAPE_p, const char*, size_t*, size_t**, char**);
+//typedef bool(*ICEDB_SHAPE_getFloatTable_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, float* const*);
+//typedef bool(*ICEDB_SHAPE_getDoubleTable_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, double**);
+//typedef bool(*ICEDB_SHAPE_getUInt8Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint8_t**);
+//typedef bool(*ICEDB_SHAPE_getInt8Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int8_t**);
+//typedef bool(*ICEDB_SHAPE_getUInt16Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint16_t**);
+//typedef bool(*ICEDB_SHAPE_getInt16Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int16_t**);
+//typedef bool(*ICEDB_SHAPE_getUInt32Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint32_t**);
+//typedef bool(*ICEDB_SHAPE_getInt32Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int32_t**);
+//typedef bool(*ICEDB_SHAPE_getUInt64Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint64_t**);
+//typedef bool(*ICEDB_SHAPE_getInt64Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int64_t**);
+//typedef bool(*ICEDB_SHAPE_getCharTable_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, char**);
 
 /// This is a convenient container for holding the functions that can operate on a shape.
 struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable {
@@ -77,7 +77,7 @@ DL_ICEDB ICEDB_SHAPE_close_f ICEDB_SHAPE_close;
 * \brief Create a new shape object.
 * \param backend is the storage backend used to store this shape. May be NULL, in which case a temporary backend is created.
 **/
-typedef ICEDB_SHAPE_p(*ICEDB_SHAPE_generate_f)(ICEDB_OPTIONAL ICEDB_fs_hnd_p backend);
+typedef ICEDB_SHAPE*(*ICEDB_SHAPE_generate_f)(ICEDB_OPTIONAL ICEDB_fs_hnd* backend);
 DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
 
 /** \brief This is a convenience function to open a single shape directly from a file.
@@ -86,7 +86,7 @@ DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
 * \param err is the error code, set upon error.
 * \returns A pointer to the loaded shape. NULL on error.
 **/
-typedef ICEDB_SHAPE_p(*ICEDB_SHAPE_open_single_file_f)(const char* filename, ICEDB_file_open_flags flags);
+typedef ICEDB_SHAPE*(*ICEDB_SHAPE_open_single_file_f)(const char* filename, ICEDB_file_open_flags flags);
 DL_ICEDB ICEDB_SHAPE_open_single_file_f ICEDB_SHAPE_open_single_file;
 
 /** \brief This is a convenience function to open all shapes under a path. 
@@ -103,7 +103,7 @@ typedef bool(*ICEDB_SHAPE_open_path_all_f)(
 	ICEDB_path_iteration pit,
 	ICEDB_file_open_flags flags,
 	ICEDB_OUT size_t * numShapes,
-	ICEDB_OUT ICEDB_SHAPE_p** const shapes);
+	ICEDB_OUT ICEDB_SHAPE*** const shapes);
 DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
 
 /** \brief Free the results of a ICEDB_SHAPE_open_path_all call
@@ -111,7 +111,7 @@ DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
 * \see ICEDB_SHAPE_open_path_all
 **/
 typedef void(*ICEDB_SHAPE_open_path_all_free_f)(
-	ICEDB_OUT ICEDB_SHAPE_p ** const shapes);
+	ICEDB_OUT ICEDB_SHAPE* ** const shapes);
 DL_ICEDB ICEDB_SHAPE_open_path_all_free_f ICEDB_SHAPE_open_path_all_free;
 
 struct ICEDB_SHAPE_container_vtable {

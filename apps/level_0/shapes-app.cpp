@@ -8,10 +8,25 @@
 #include "../../libicedb/icedb/data/tables.h"
 #include "../../libicedb/icedb/level_0/shape.h"
 
+/// This small block of code is called if an error is encountered by the library.
+/// It reads the error message, prints it, and terminates the program.
+void processError() {
+	auto errFuncs = ICEDB_error_getContainerFunctions();
+	std::shared_ptr<ICEDB_error_context> err(errFuncs->getContextThreadLocal(), errFuncs->contextFree);
+	size_t errLen = errFuncs->contextToCstrSize(err.get());
+	char *msg = new char[errLen];
+	errFuncs->contextToCstr(err.get(), errLen, msg);
+	std::cerr << msg << std::endl;
+	delete[] msg;
+	exit(4);
+};
+
 int main(int argc, char** argv) {
 	using namespace std;
+	// This function always should be called on application startup. The library needs to perform some startup tasks.
 	ICEDB_libEntry(argc, argv);
 
+	// The C++ boost::program_options library is used here because it makes it really easy to parse command-line options.
 	namespace po = boost::program_options;
 	po::options_description desc("Allowed options");
 
@@ -28,12 +43,13 @@ int main(int argc, char** argv) {
 		options(desc).run(), vm);
 	po::notify(vm);
 
-	auto doHelp = [&](const std::string& s)
+	auto doHelp = [&](const std::string& s)->void
 	{
 		cout << s << endl;
 		cout << desc << endl;
 		exit(3);
 	};
+	
 	if (vm.count("help") || argc <= 1) doHelp("");
 	if (!vm.count("input") || !vm.count("output")) doHelp("Must specify input file(s).");
 
@@ -41,6 +57,10 @@ int main(int argc, char** argv) {
 	ICEDB_error_code err;
 	bool printID = false;
 	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
+	auto attrFuncs = ICEDB_ATTR_getContainerFunctions();
+	auto tblFuncs = ICEDB_TBL_getContainerFunctions();
+	auto fsFuncs = ICEDB_fs_getContainerFunctions();
+	auto shpFuncs = ICEDB_SHAPE_getContainerFunctions();
 
 	if (vm.count("output")) sOutput = vm["output"].as<string>();
 	vector<string> sInputs = vm["input"].as<vector<string>>();
@@ -48,38 +68,40 @@ int main(int argc, char** argv) {
 	if (vm.count("output-type")) sOutputType = vm["output-type"].as<string>();
 	if (vm.count("output-plugin")) sOutputPlugin = vm["output-plugin"].as<string>();
 
-	auto attrFuncs = ICEDB_ATTR_getContainerFunctions();
-	auto tblFuncs = ICEDB_TBL_getContainerFunctions();
-	auto fsFuncs = ICEDB_fs_getContainerFunctions();
-	auto shpFuncs = ICEDB_SHAPE_getContainerFunctions();
+	// Program options have been read. Time to loop over the input files and read them.
 
 	for (const auto & in : sInputs) {
 		cout << "File " << in << endl;
 		size_t nShapes = 0;
-		ICEDB_SHAPE_p **fileshapes = nullptr; // TODO: Set this?
-		shpFuncs->openPathAll(
-			in.c_str(), // This is the base path - every shape contained within this path will be read.
-			ICEDB_path_iteration_recursive, // Read every shape
-			ICEDB_flags_readonly, // No modifying the source files.
-			&nShapes, // Number of shapes read
-			fileshapes); // The shapes
+		shared_ptr<ICEDB_SHAPE **> fileshapes(new ICEDB_SHAPE**);
+		// Each input file might contain zero, one or more shapes. openPathAll reads them all.
+		if (!shpFuncs->openPathAll(
+				in.c_str(), // This is the base path - every shape contained within this path will be read.
+				ICEDB_path_iteration_recursive, // Read every shape
+				ICEDB_flags_readonly, // No modifying the source files.
+				&nShapes, // Number of shapes read
+				fileshapes.get())) // The shapes
+			processError();
 		// Iterate over all read shapes. For all unique (non-repeated) shapes, store pointers to them.
 		for (size_t i = 0; i < nShapes; ++i) {
 			uint64_t id = 0;
-			(*fileshapes)[i]->_vptrs->getID((*fileshapes)[i], &id);
+			if (!(*fileshapes)[i]->_vptrs->getID((*fileshapes)[i], &id)) processError();
 			shared_ptr<ICEDB_SHAPE> sshp((*fileshapes)[i], shpFuncs->close); // Auto-destructs shapes if not needed.
 			if (printID) cout << "\t" << id << endl;
 			if (!shapes.count(id)) {
 				shapes[id] = sshp;
 				// Get the number of attributes and tables
 				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->_vptrs->getParent(sshp.get()), fsFuncs->close);
+				if (!parentFS) processError();
 				size_t numAtts = attrFuncs->count(parentFS.get(), &err);
+				if (err) processError();
 				size_t numTbls = tblFuncs->count(parentFS.get(), &err);
+				if (err) processError();
 				cout << "\t\tHas " << numAtts << " attributes and " << numTbls << " tables." << endl;
 			}
 			else if (printID) cout << "\t\tRepeated shape" << endl;
 		}
-		shpFuncs->openPathAllFree(fileshapes);
+		shpFuncs->openPathAllFree(fileshapes.get()); // TODO: Encapsulate the returned pointer into a shared_ptr with automatic freeing.
 	}
 	
 
@@ -95,9 +117,10 @@ int main(int argc, char** argv) {
 				NULL, // No base handle
 				ICEDB_flags_none), // No special i/o flags
 			fsFuncs->close);
+		if (!p) processError();
 		// Copy each shape to the output file / folder.
 		for (const auto & shp : shapes) {
-			shp.second->_vptrs->copy(shp.second.get(), p.get());
+			if (!shp.second->_vptrs->copy(shp.second.get(), p.get())) processError();
 		}
 	}
 

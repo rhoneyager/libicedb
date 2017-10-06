@@ -18,7 +18,8 @@ ICEDB_BEGIN_DECL_C
  * @{
  **/
 struct ICEDB_fs_hnd;
-typedef ICEDB_fs_hnd* ICEDB_fs_hnd_p;
+//typedef ICEDB_fs_hnd* ICEDB_fs_hnd_p;
+//typedef const ICEDB_fs_hnd* ICEDB_fs_hnd_cp;
 
 /// \brief These flags are used when opening a path. They are mutually exclusive.
 enum ICEDB_file_open_flags {
@@ -87,7 +88,7 @@ typedef bool(*ICEDB_fs_canOpen_f)(
 	const char* path,
 	ICEDB_OPTIONAL const char* pathtype,
 	ICEDB_OPTIONAL const char* pluginid,
-	ICEDB_OPTIONAL ICEDB_fs_hnd_p base_handle,
+	ICEDB_OPTIONAL const ICEDB_fs_hnd* base_handle,
 	ICEDB_OPTIONAL ICEDB_file_open_flags flags,
 	ICEDB_OUT size_t* const numHandlersThatCanOpen,
 	ICEDB_OPTIONAL ICEDB_OUT char *** const pluginids,
@@ -109,11 +110,11 @@ DL_ICEDB ICEDB_fs_canOpen_f ICEDB_fs_canOpen;
 	* \see err.h
 	* \returns a filesystem handle to the opened object. NULL if an error occurred.
 **/
-typedef ICEDB_fs_hnd_p(*ICEDB_fs_open_f)(
+typedef ICEDB_fs_hnd*(*ICEDB_fs_open_f)(
 	const char* path, 
 	ICEDB_OPTIONAL const char* ftype,
 	ICEDB_OPTIONAL const char* pluginid,
-	ICEDB_OPTIONAL ICEDB_fs_hnd_p base_handle,
+	ICEDB_OPTIONAL ICEDB_fs_hnd* base_handle,
 	ICEDB_OPTIONAL ICEDB_file_open_flags flags);
 DL_ICEDB ICEDB_fs_open_f ICEDB_fs_open;
 
@@ -130,7 +131,7 @@ DL_ICEDB ICEDB_fs_open_f ICEDB_fs_open;
 	* \returns bufPath on success, and NULL on error.
 **/
 typedef const char*(*ICEDB_fs_getPath_f)(
-	ICEDB_fs_hnd_p p, 
+	const ICEDB_fs_hnd* p, 
 	ICEDB_OPTIONAL size_t inPathSize, 
 	ICEDB_OUT size_t* outPathSize, 
 	ICEDB_OUT char ** const bufPath,
@@ -142,7 +143,7 @@ DL_ICEDB ICEDB_fs_getPath_f ICEDB_fs_getPath;
 	* \param p is the pointer to the file handle. It must be a valid pointer.
 	* \param err is an error code.
 	**/
-typedef ICEDB_file_open_flags(*ICEDB_fs_getOpenFlags_f)(ICEDB_fs_hnd_p p);
+typedef ICEDB_file_open_flags(*ICEDB_fs_getOpenFlags_f)(const ICEDB_fs_hnd* p);
 DL_ICEDB ICEDB_fs_getOpenFlags_f ICEDB_fs_getOpenFlags;
 
 /** \brief Close a file handle
@@ -150,7 +151,7 @@ DL_ICEDB ICEDB_fs_getOpenFlags_f ICEDB_fs_getOpenFlags;
 	* \param p is the pointer to the file handle. It must be a valid pointer.
 	* \returns an error code. Zero on success.
 	**/
-typedef ICEDB_error_code(*ICEDB_fs_close_f)(ICEDB_fs_hnd_p p);
+typedef ICEDB_error_code(*ICEDB_fs_close_f)(ICEDB_fs_hnd* p);
 DL_ICEDB ICEDB_fs_close_f ICEDB_fs_close;
 
 /** \brief Move an object
@@ -161,7 +162,7 @@ DL_ICEDB ICEDB_fs_close_f ICEDB_fs_close;
 	* \param err is an error code.
 	* \returns Zero on success, nonzero on any error.
 	**/
-typedef ICEDB_error_code(*ICEDB_fs_move_f)(ICEDB_fs_hnd_p p, const char* src, const char* dest);
+typedef ICEDB_error_code(*ICEDB_fs_move_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
 DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move;
 
 /** \brief Copy an object
@@ -172,7 +173,7 @@ DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move;
 * \param err is an error code.
 * \returns Zero on success, nonzero on any error.
 **/
-typedef ICEDB_error_code(*ICEDB_fs_copy_f)(ICEDB_fs_hnd_p p, const char* src, const char* dest, bool overwrite);
+typedef ICEDB_error_code(*ICEDB_fs_copy_f)(ICEDB_fs_hnd* p, const char* src, const char* dest, bool overwrite);
 DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy;
 
 /** \brief Unlink an object
@@ -183,7 +184,7 @@ DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy;
 * \param err is an error code.
 * \returns Zero on success, nonzero on any error.
 **/
-typedef ICEDB_error_code(*ICEDB_fs_unlink_f)(ICEDB_fs_hnd_p p, const char* path);
+typedef ICEDB_error_code(*ICEDB_fs_unlink_f)(ICEDB_fs_hnd* p, const char* path);
 DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink;
 
 /** \brief Create a hard link
@@ -194,7 +195,7 @@ DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink;
 * \param err is an error code.
 * \returns Zero on success, nonzero on any error.
 **/
-typedef ICEDB_error_code(*ICEDB_fs_createHardLink_f)(ICEDB_fs_hnd_p p, const char* src, const char* dest);
+typedef ICEDB_error_code(*ICEDB_fs_createHardLink_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
 DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
 
 /** \brief Create a symbolic link
@@ -205,7 +206,7 @@ DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
 * \param err is an error code.
 * \returns Zero on success, nonzero on any error.
 **/
-typedef ICEDB_error_code(*ICEDB_fs_createSymLink_f)(ICEDB_fs_hnd_p p, const char* src, const char* dest);
+typedef ICEDB_error_code(*ICEDB_fs_createSymLink_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
 DL_ICEDB ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink;
 
 /** \brief Follow a symbolic link
@@ -221,7 +222,7 @@ DL_ICEDB ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink;
 * \param err is an error code.
 * \returns bufPath on success, and NULL on error.
 **/
-typedef const char*(*ICEDB_fs_followSymLink_f)(ICEDB_fs_hnd_p p,
+typedef const char*(*ICEDB_fs_followSymLink_f)(ICEDB_fs_hnd* p,
 	const char* path, 
 	ICEDB_OPTIONAL size_t inPathSize,
 	ICEDB_OUT size_t* outPathSize,
@@ -236,7 +237,7 @@ DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
 * \param err is an error code.
 * \returns True if the path exists, false if the path does not exist or if there is an error (such as when a parent path does not exist).
 **/
-typedef bool(*ICEDB_fs_pathExists_f)(ICEDB_fs_hnd_p p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+typedef bool(*ICEDB_fs_pathExists_f)(const ICEDB_fs_hnd* p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
 DL_ICEDB ICEDB_fs_pathExists_f ICEDB_fs_pathExists;
 
 /// The maximum length of a path.
@@ -271,7 +272,7 @@ struct ICEDB_fs_path_contents {
 * \returns A pointer to the path information structure (same as res). Returned for convenience. Returns NULL if an error occurred (see err).
 **/
 typedef ICEDB_fs_path_contents*(*ICEDB_fs_pathInfo_f)(
-	ICEDB_fs_hnd_p p,
+	const ICEDB_fs_hnd* p,
 	const char* path,
 	ICEDB_OUT ICEDB_fs_path_contents *res);
 DL_ICEDB ICEDB_fs_pathInfo_f ICEDB_fs_pathInfo;
@@ -294,7 +295,7 @@ DL_ICEDB ICEDB_fs_pathInfoFree_f ICEDB_fs_pathInfoFree;
 * \returns A pointer to the path information structure (same as res). Returned for convenience. Returns NULL if an error occurred (see err).
 **/
 typedef ICEDB_fs_path_contents *** const(*ICEDB_fs_readObjs_f)(
-	ICEDB_fs_hnd_p p, 
+	const ICEDB_fs_hnd* p, 
 	const char* path, 
 	size_t *numObjs, 
 	ICEDB_OUT ICEDB_fs_path_contents *** const res);
