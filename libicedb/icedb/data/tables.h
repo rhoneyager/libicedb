@@ -33,10 +33,14 @@ union ICEDB_TBL_DATA {
 };
 */
 
+struct ICEDB_TBL_vtable;
+struct ICEDB_TBL_container_vtable;
+
 /** \brief A structure that describes an object table. 
 * \todo Make this internal.
 **/
 struct ICEDB_TBL {
+	ICEDB_TBL_vtable *_vptr; ///< Function table, for convenience.
 	ICEDB_fs_hnd_p obj; ///< The fs object represented by this table. MUST exist / be accessible.
 	ICEDB_DATA_TYPES type; ///< The type of data.
 	size_t numDims; ///< Number of dimensions of the data.
@@ -81,6 +85,61 @@ typedef ICEDB_TBL_p (*ICEDB_TBL_open_f)(
 );
 DL_ICEDB ICEDB_TBL_open_f ICEDB_TBL_open;
 
+/** \brief Does a table with this name exist?
+* \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
+* \param name is the name of the table. Must be null-terminated.
+* \param err is an error code
+* \returns NULL if an error occurred, otherwise with a new copy of the table object.
+**/
+typedef bool(*ICEDB_TBL_exists_f)(
+	ICEDB_fs_hnd_p parent,
+	const char* name,
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
+	);
+DL_ICEDB ICEDB_TBL_exists_f ICEDB_TBL_exists;
+
+/** \brief Get number of tables
+* \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
+* \param err is an error code
+* \returns NULL if an error occurred, otherwise with a new copy of the table object.
+**/
+typedef size_t(*ICEDB_TBL_getNumTbls_f)(
+	ICEDB_fs_hnd_p parent,
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
+	);
+DL_ICEDB ICEDB_TBL_getNumTbls_f ICEDB_TBL_getNumTbls;
+
+/** \brief Get the name of a table, by index
+* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
+* \param attrnum is the attribute number. Spans [0, numTbls). An error will occur if this is out of range.
+* \param inPathSize is used if the output name array is already pre-allocated, in which case it represents the size (in __bytes__) of the array.
+If dynamic allocation is instead requested, set this to NULL.
+* \param outPathSize is a pointer to the number of bytes in the output array neede to represent the path. If the path is too large to fit into
+a staticly-allocated array, then an error code will be emitted.
+* \param bufPath is a pointer to the output path array.
+* \param deallocator is a function that can deallocate bufPath once it is no longer needed. Use this only when inPathSize != 0.
+* \param err is an error code.
+* \returns bufPath on success, NULL on error.
+**/
+typedef const char*(*ICEDB_TBL_getTblName_f)(
+	const ICEDB_fs_hnd_p p,
+	size_t attrnum,
+	ICEDB_OPTIONAL size_t inPathSize,
+	ICEDB_OUT size_t* outPathSize,
+	ICEDB_OUT char ** const bufPath,
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
+DL_ICEDB ICEDB_TBL_getTblName_f ICEDB_TBL_getTblName;
+
+/** \brief Renames a table
+* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
+* \param oldname is the table's current name. Must be a NULL-terminated C-string.
+* \param newname is the table's new name. Must be a NULL-terminated C-string.
+* \param err is an error code.
+* \returns True on success, false if an error occured.
+**/
+typedef bool(*ICEDB_TBL_renameTbl_f)(ICEDB_fs_hnd_p p, const char* oldname, const char* newname);
+DL_ICEDB ICEDB_TBL_renameTbl_f ICEDB_TBL_renameTbl;
+
 /** \brief Delete a table
 *
 * Deletion fails if the table does not exist, if the table is opened elsewhere, or if the parent is read-only.
@@ -89,12 +148,12 @@ DL_ICEDB ICEDB_TBL_open_f ICEDB_TBL_open;
 * \param err is an error code
 * \returns false if an error occurred, otherwise true.
 **/
-typedef bool (*ICEDB_TBL_delete_f)(
+typedef bool (*ICEDB_TBL_remove_f)(
 	ICEDB_fs_hnd_p parent,
 	const char* name,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err
 );
-DL_ICEDB ICEDB_TBL_delete_f ICEDB_TBL_delete;
+DL_ICEDB ICEDB_TBL_remove_f ICEDB_TBL_remove;
 
 /** \brief Close a table (and free data structures)
 * \param tbl is the table. Must be non-NULL.
@@ -128,8 +187,8 @@ DL_ICEDB ICEDB_TBL_copy_f ICEDB_TBL_copy;
 * \param err is an error code on failure.
 * \returns NULL on error, otherwise a fs handle (that must be freed by the application)
 **/
-typedef ICEDB_fs_hnd_p (*ICEDB_TBL_getHandle_f)(ICEDB_TBL_p tbl, ICEDB_OUT ICEDB_error_code* err);
-DL_ICEDB ICEDB_TBL_getHandle_f ICEDB_TBL_getHandle;
+typedef ICEDB_fs_hnd_p (*ICEDB_TBL_getParent_f)(ICEDB_TBL_p tbl, ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_TBL_getParent_f ICEDB_TBL_getParent;
 
 /** \brief Gets the type of a table
 * \param p is the pointer to a table handle.
@@ -251,6 +310,46 @@ typedef bool (*ICEDB_TBL_writeFull_f)(
 	const void* in,
 	ICEDB_OUT ICEDB_error_code* err);
 DL_ICEDB ICEDB_TBL_writeFull_f ICEDB_TBL_writeFull;
+
+
+struct ICEDB_TBL_vtable {
+	ICEDB_TBL_close_f close;
+	ICEDB_TBL_copy_f copy;
+	ICEDB_TBL_getParent_f getParent;
+	ICEDB_TBL_getType_f getType;
+	ICEDB_TBL_getNumDims_f getNumDims;
+	ICEDB_TBL_getDims_f getDims;
+	ICEDB_TBL_resize_f resize;
+	ICEDB_TBL_readSingle_f readSingle;
+	ICEDB_TBL_readMapped_f readMapped;
+	ICEDB_TBL_readArray_f readArray;
+	ICEDB_TBL_readStride_f readStride;
+	ICEDB_TBL_readFull_f readFull;
+	ICEDB_TBL_writeSingle_f writeSingle;
+	ICEDB_TBL_writeMapped_f writeMapped;
+	ICEDB_TBL_writeArray_f writeArray;
+	ICEDB_TBL_writeStride_f writeStride;
+	ICEDB_TBL_writeFull_f writeFull;
+};
+
+/** \brief This acts as a container for all table functions that require a base fs object to act as a container.
+*
+* To get these functions, see ICEDB_TBL_getContainerFunctions.
+* \see ICEDB_TBL_getContainerFunctions
+**/
+struct ICEDB_TBL_container_vtable {
+	ICEDB_TBL_create_f create;
+	ICEDB_TBL_open_f open;
+	ICEDB_TBL_remove_f remove;
+	ICEDB_TBL_getNumTbls_f count;
+	ICEDB_TBL_getTblName_f getName;
+	ICEDB_TBL_renameTbl_f rename;
+	ICEDB_TBL_exists_f exists;
+
+};
+
+DL_ICEDB const ICEDB_TBL_container_vtable* ICEDB_TBL_getContainerFunctions(); ///< Returns a static ICEDB_TBL_container_vtable*. No need to free.
+
 
 /** @} */ // end of tbls
 
