@@ -79,6 +79,8 @@ set (data_objs
 	icedb/data/attrs.h
 	icedb/data/attrs.hpp
 	icedb/data/tables.h
+	src/attrs.cpp
+	src/tables.cpp
 	)
 
 generaterc("libicedb" "dll"

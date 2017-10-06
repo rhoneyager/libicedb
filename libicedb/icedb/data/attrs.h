@@ -8,6 +8,8 @@
 #include "../defs.h"
 #include "../fs/fs.h"
 
+ICEDB_BEGIN_DECL_C
+
 /** @defgroup atts Attributes
 * 
 * @{
@@ -54,8 +56,6 @@ struct ICEDB_ATTR {
 	ICEDB_ATTR* next; ///< The next object in the list. End of list is denoted by NULL.
 };
 
-//typedef ICEDB_ATTR* ICEDB_ATTR_p;
-
 /** \brief Close an attribute (and free data structures)
 * \param attr is the attribute. Must be non-NULL.
 * \returns false if an error occurred, otherwise true.
@@ -96,17 +96,17 @@ typedef const ICEDB_ATTR_DATA*(*ICEDB_ATTR_getData_f)(const ICEDB_ATTR* attr);
 /// Set attribute data. Copies attribute's size from indata into the attribute.
 typedef bool (*ICEDB_ATTR_setData_f)(ICEDB_ATTR* attr, const void* indata);
 
-DL_ICEDB ICEDB_ATTR_close_f ICEDB_ATTR_close;
-DL_ICEDB ICEDB_ATTR_write_f ICEDB_ATTR_write;
-DL_ICEDB ICEDB_ATTR_copy_f ICEDB_ATTR_copy;
-DL_ICEDB ICEDB_ATTR_getName_f ICEDB_ATTR_getName;
-DL_ICEDB ICEDB_ATTR_getParent_f ICEDB_ATTR_getParent;
-DL_ICEDB ICEDB_ATTR_getType_f ICEDB_ATTR_getType;
+extern DL_ICEDB ICEDB_ATTR_close_f ICEDB_ATTR_close;
+extern DL_ICEDB ICEDB_ATTR_write_f ICEDB_ATTR_write;
+extern DL_ICEDB ICEDB_ATTR_copy_f ICEDB_ATTR_copy;
+extern DL_ICEDB ICEDB_ATTR_getName_f ICEDB_ATTR_getName;
+extern DL_ICEDB ICEDB_ATTR_getParent_f ICEDB_ATTR_getParent;
+extern DL_ICEDB ICEDB_ATTR_getType_f ICEDB_ATTR_getType;
 //DL_ICEDB ICEDB_ATTR_hasFixedSize_f ICEDB_ATTR_hasFixedSize;
 //DL_ICEDB ICEDB_ATTR_resize_f ICEDB_ATTR_setSizeObjects;
 //DL_ICEDB ICEDB_ATTR_resize_f ICEDB_ATTR_setSizeBytes;
-DL_ICEDB ICEDB_ATTR_getData_f ICEDB_ATTR_getData;
-DL_ICEDB ICEDB_ATTR_setData_f ICEDB_ATTR_setData;
+extern DL_ICEDB ICEDB_ATTR_getData_f ICEDB_ATTR_getData;
+extern DL_ICEDB ICEDB_ATTR_setData_f ICEDB_ATTR_setData;
 
 struct ICEDB_ATTR_ftable {
 	ICEDB_ATTR_close_f close;
@@ -252,5 +252,6 @@ struct ICEDB_ATTR_container_ftable {
 DL_ICEDB const ICEDB_ATTR_container_ftable* ICEDB_ATTR_getContainerFunctions(); ///< Returns a static ICEDB_ATTR_container_vtable*. No need to free.
 
 /** @} */ // end of atts
+ICEDB_END_DECL_C
 
 #endif

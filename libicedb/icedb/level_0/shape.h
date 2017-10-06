@@ -6,6 +6,12 @@
 #include "../fs/fs.h"
 #include "../misc/hash.h"
 
+ICEDB_BEGIN_DECL_C
+
+/** @defgroup shps Shapes
+*
+* @{
+**/
 /// This is the public header file that defines the shape manipulation operations.
 
 struct ICEDB_L0_SHAPE_VOL_SPARSE;
@@ -71,14 +77,14 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE {
 	struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable *funcs;
 };
 
-DL_ICEDB ICEDB_SHAPE_close_f ICEDB_SHAPE_close;
+extern DL_ICEDB ICEDB_SHAPE_close_f ICEDB_SHAPE_close;
 
 /**
 * \brief Create a new shape object.
 * \param backend is the storage backend used to store this shape. May be NULL, in which case a temporary backend is created.
 **/
 typedef ICEDB_SHAPE*(*ICEDB_SHAPE_generate_f)(ICEDB_OPTIONAL ICEDB_fs_hnd* backend);
-DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
+extern DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
 
 /** \brief This is a convenience function to open a single shape directly from a file.
 * \param filename is the name of the file. Commonly shape.dat.
@@ -87,7 +93,7 @@ DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
 * \returns A pointer to the loaded shape. NULL on error.
 **/
 typedef ICEDB_SHAPE*(*ICEDB_SHAPE_open_single_file_f)(const char* filename, ICEDB_file_open_flags flags);
-DL_ICEDB ICEDB_SHAPE_open_single_file_f ICEDB_SHAPE_open_single_file;
+extern DL_ICEDB ICEDB_SHAPE_open_single_file_f ICEDB_SHAPE_open_single_file;
 
 /** \brief This is a convenience function to open all shapes under a path. 
 * \param path is the base path.
@@ -102,7 +108,7 @@ typedef ICEDB_SHAPE*** const (*ICEDB_SHAPE_open_path_all_f)(
 	ICEDB_path_iteration pit,
 	ICEDB_file_open_flags flags,
 	ICEDB_OUT size_t * numShapes);
-DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
+extern DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
 
 /** \brief Free the results of a ICEDB_SHAPE_open_path_all call
 * \param p is a pointer to the list of shapes. 
@@ -110,7 +116,7 @@ DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
 **/
 typedef void(*ICEDB_SHAPE_open_path_all_free_f)(
 	ICEDB_SHAPE*** const shapes);
-DL_ICEDB ICEDB_SHAPE_open_path_all_free_f ICEDB_SHAPE_open_path_all_free;
+extern DL_ICEDB ICEDB_SHAPE_open_path_all_free_f ICEDB_SHAPE_open_path_all_free;
 
 struct ICEDB_SHAPE_container_ftable {
 	ICEDB_SHAPE_generate_f generate;
@@ -121,5 +127,7 @@ struct ICEDB_SHAPE_container_ftable {
 };
 DL_ICEDB const ICEDB_SHAPE_container_ftable* ICEDB_SHAPE_getContainerFunctions(); ///< Returns a static ICEDB_SHAPE_container_vtable*. No need to free.
 
+/** @} */ // end of shps
+ICEDB_END_DECL_C
 
 #endif
