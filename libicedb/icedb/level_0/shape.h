@@ -2,11 +2,9 @@
 #ifndef ICEDB_H_SHAPE
 #define ICEDB_H_SHAPE
 #include "../../libicedb/icedb/defs.h"
-#include "../../libicedb/icedb/error/error.h"
+//#include "../../libicedb/icedb/error/error.h"
 #include "../fs/fs.h"
 #include "../misc/hash.h"
-//#include "../data/attrs.h"
-//#include "../data/tables.h"
 
 /// This is the public header file that defines the shape manipulation operations.
 
@@ -17,18 +15,18 @@ typedef ICEDB_L0_SHAPE_VOL_SPARSE ICEDB_SHAPE;
 typedef ICEDB_L0_SHAPE_VOL_SPARSE_p ICEDB_SHAPE_p;
 
 typedef size_t(*ICEDB_SHAPE_getSize_f)(const ICEDB_SHAPE_p);
-typedef void(*ICEDB_SHAPE_setSize_f)(ICEDB_SHAPE_p, size_t);
+typedef bool(*ICEDB_SHAPE_setSize_f)(ICEDB_SHAPE_p, size_t);
 typedef bool(*ICEDB_SHAPE_setStrAttr_f)(ICEDB_SHAPE_p, const char*);
 typedef const char*(*ICEDB_SHAPE_getStrAttr_f)(const ICEDB_SHAPE_p);
-typedef void(*ICEDB_SHAPE_getScattElemCoords_f)(const ICEDB_SHAPE_p, ICEDB_OUT float*);
-typedef void(*ICEDB_SHAPE_setScattElemCoords_f)(ICEDB_SHAPE_p, const float*);
+typedef bool(*ICEDB_SHAPE_getScattElemCoords_f)(const ICEDB_SHAPE_p, ICEDB_OUT float*);
+typedef bool(*ICEDB_SHAPE_setScattElemCoords_f)(ICEDB_SHAPE_p, const float*);
 typedef bool(*ICEDB_SHAPE_tableExists_f)(const ICEDB_SHAPE_p, const char*);
 typedef ICEDB_fs_hnd_p(*ICEDB_SHAPE_getParentPtr_f)(const ICEDB_SHAPE_p);
-typedef bool(*ICEDB_SHAPE_destructor_f)(ICEDB_SHAPE_p, ICEDB_OUT ICEDB_error_code*);
+typedef bool(*ICEDB_SHAPE_close_f)(ICEDB_SHAPE_p);
 typedef bool(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE_p, ICEDB_OUT ICEDB_HASH_t*);
 typedef bool(*ICEDB_SHAPE_idnum_f)(const ICEDB_SHAPE_p, ICEDB_OUT uint64_t*);
-typedef bool(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p, ICEDB_OUT ICEDB_SHAPE_p, ICEDB_OUT ICEDB_error_code*);
-typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p, ICEDB_OUT ICEDB_error_code*);
+typedef bool(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p, ICEDB_OUT ICEDB_SHAPE_p);
+typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p);
 //typedef ICEDB_ATTR_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE_p, const char*);
 
 // Args are: ptr to shape, number of table dimensions (should be 2), size of each dimension, pointer to the data.
@@ -47,7 +45,7 @@ typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE_p, ICEDB_fs_hnd_p, ICEDB_OUT
 
 /// This is a convenient container for holding the functions that can operate on a shape.
 struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable {
-	ICEDB_SHAPE_destructor_f _destructor; ///< Removes shape from memory and performs clean-up tasks. Do not call directly.
+	ICEDB_SHAPE_close_f close; ///< Removes shape from memory and performs clean-up tasks.
 	ICEDB_SHAPE_getParentPtr_f getParent; ///< Get the underlying (low-level) filesystem object.
 	ICEDB_SHAPE_setStrAttr_f setDescription; ///< Set the description.
 	//ICEDB_SHAPE_getStrAttr_f getDescription; ///< Get the description.
@@ -73,21 +71,23 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE {
 	struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable *_vptrs;
 };
 
+DL_ICEDB ICEDB_SHAPE_close_f ICEDB_SHAPE_close;
+
 /**
 * \brief Create a new shape object.
 * \param backend is the storage backend used to store this shape. May be NULL, in which case a temporary backend is created.
 **/
-DL_ICEDB ICEDB_SHAPE_p ICEDB_SHAPE_generate(ICEDB_OPTIONAL ICEDB_fs_hnd_p backend);
-/// Remove shape from memory and perform cleanup tasks.
-DL_ICEDB void ICEDB_SHAPE_destroy(ICEDB_SHAPE_p);
+typedef ICEDB_SHAPE_p(*ICEDB_SHAPE_generate_f)(ICEDB_OPTIONAL ICEDB_fs_hnd_p backend);
+DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
 
 /** \brief This is a convenience function to open a single shape directly from a file.
 * \param filename is the name of the file. Commonly shape.dat.
 * \param flags are the i/o flags (i.e. read-only, exclusive, ...)
 * \param err is the error code, set upon error.
-* \returns A pointer to the loaded shape. NULL on error (see err).
+* \returns A pointer to the loaded shape. NULL on error.
 **/
-DL_ICEDB ICEDB_SHAPE_p ICEDB_SHAPE_open_single_file(const char* filename, ICEDB_file_open_flags flags, ICEDB_OUT ICEDB_error_code* err);
+typedef ICEDB_SHAPE_p(*ICEDB_SHAPE_open_single_file_f)(const char* filename, ICEDB_file_open_flags flags);
+DL_ICEDB ICEDB_SHAPE_open_single_file_f ICEDB_SHAPE_open_single_file;
 
 /** \brief This is a convenience function to open all shapes under a path. 
 * \param path is the base path.
@@ -96,22 +96,32 @@ DL_ICEDB ICEDB_SHAPE_p ICEDB_SHAPE_open_single_file(const char* filename, ICEDB_
 * \param numShapes is the number of shapes that were loaded.
 * \param shapes is a pointer to an array of loaded shapes. Must be freed once the array is no longer used. Each member should also be freed.
 * \param err is the error code, set upon error.
-* \returns A pointer to the loaded shape. NULL on error (see err).
+* \returns A pointer to the loaded shape. NULL on error.
 **/
-DL_ICEDB bool ICEDB_SHAPE_open_path_all(
+typedef bool(*ICEDB_SHAPE_open_path_all_f)(
 	const char* path,
 	ICEDB_path_iteration pit,
 	ICEDB_file_open_flags flags,
 	ICEDB_OUT size_t * numShapes,
-	ICEDB_OUT ICEDB_SHAPE_p** const shapes,
-	ICEDB_OUT ICEDB_error_code* err);
+	ICEDB_OUT ICEDB_SHAPE_p** const shapes);
+DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
 
 /** \brief Free the results of a ICEDB_SHAPE_open_path_all call
 * \param p is a pointer to the list of shapes. 
 * \see ICEDB_SHAPE_open_path_all
 **/
-DL_ICEDB void ICEDB_SHAPE_open_path_all_free(
+typedef void(*ICEDB_SHAPE_open_path_all_free_f)(
 	ICEDB_OUT ICEDB_SHAPE_p ** const shapes);
+DL_ICEDB ICEDB_SHAPE_open_path_all_free_f ICEDB_SHAPE_open_path_all_free;
+
+struct ICEDB_SHAPE_container_vtable {
+	ICEDB_SHAPE_generate_f generate;
+	ICEDB_SHAPE_open_single_file_f openPathSingle;
+	ICEDB_SHAPE_open_path_all_f openPathAll;
+	ICEDB_SHAPE_open_path_all_free_f openPathAllFree;
+	ICEDB_SHAPE_close_f close;
+};
+DL_ICEDB const ICEDB_SHAPE_container_vtable* ICEDB_SHAPE_getContainerFunctions(); ///< Returns a static ICEDB_SHAPE_container_vtable*. No need to free.
 
 
 #endif

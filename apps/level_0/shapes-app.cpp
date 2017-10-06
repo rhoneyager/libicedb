@@ -50,37 +50,36 @@ int main(int argc, char** argv) {
 
 	auto attrFuncs = ICEDB_ATTR_getContainerFunctions();
 	auto tblFuncs = ICEDB_TBL_getContainerFunctions();
+	auto fsFuncs = ICEDB_fs_getContainerFunctions();
+	auto shpFuncs = ICEDB_SHAPE_getContainerFunctions();
 
 	for (const auto & in : sInputs) {
 		cout << "File " << in << endl;
 		size_t nShapes = 0;
 		ICEDB_SHAPE_p **fileshapes = nullptr; // TODO: Set this?
-		ICEDB_SHAPE_open_path_all(
+		shpFuncs->openPathAll(
 			in.c_str(), // This is the base path - every shape contained within this path will be read.
-			ICEDB_path_recursive, // Read every shape
+			ICEDB_path_iteration_recursive, // Read every shape
 			ICEDB_flags_readonly, // No modifying the source files.
 			&nShapes, // Number of shapes read
-			fileshapes, // The shapes
-			&err); // Presents an error code on error.
+			fileshapes); // The shapes
 		// Iterate over all read shapes. For all unique (non-repeated) shapes, store pointers to them.
 		for (size_t i = 0; i < nShapes; ++i) {
 			uint64_t id = 0;
 			(*fileshapes)[i]->_vptrs->getID((*fileshapes)[i], &id);
-			shared_ptr<ICEDB_SHAPE> sshp((*fileshapes)[i], ICEDB_SHAPE_destroy); // Auto-destructs shapes if not needed.
+			shared_ptr<ICEDB_SHAPE> sshp((*fileshapes)[i], shpFuncs->close); // Auto-destructs shapes if not needed.
 			if (printID) cout << "\t" << id << endl;
 			if (!shapes.count(id)) {
 				shapes[id] = sshp;
 				// Get the number of attributes and tables
-				// TODO: Dangling pointers here!!!!!
-				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->_vptrs->getParent(sshp.get()),
-					[](ICEDB_fs_hnd_p p) {ICEDB_fh_close(p, NULL); });
+				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->_vptrs->getParent(sshp.get()), fsFuncs->close);
 				size_t numAtts = attrFuncs->count(parentFS.get(), &err);
 				size_t numTbls = tblFuncs->count(parentFS.get(), &err);
 				cout << "\t\tHas " << numAtts << " attributes and " << numTbls << " tables." << endl;
 			}
 			else if (printID) cout << "\t\tRepeated shape" << endl;
 		}
-		ICEDB_SHAPE_open_path_all_free(fileshapes);
+		shpFuncs->openPathAllFree(fileshapes);
 	}
 	
 
@@ -89,17 +88,16 @@ int main(int argc, char** argv) {
 	if (sOutput.size()) {
 		// Open the output path. 
 		shared_ptr<ICEDB_fs_hnd> p( // Encapsulating the opened file handle in a C++ shared_ptr that automatically closes the path when done.
-			ICEDB_path_open(
+			fsFuncs->open(
 				sOutput.c_str(), // Output file / folder name
 				sOutputType.c_str(), // Type of output
 				sOutputPlugin.c_str(), // Do not force any particular output plugin
 				NULL, // No base handle
-				ICEDB_flags_none, // No special i/o flags
-				&err), // Write any error code to err
-			[](ICEDB_fs_hnd_p p) {ICEDB_fh_close(p, NULL); });
+				ICEDB_flags_none), // No special i/o flags
+			fsFuncs->close);
 		// Copy each shape to the output file / folder.
 		for (const auto & shp : shapes) {
-			shp.second->_vptrs->copy(shp.second.get(), p.get(), &err);
+			shp.second->_vptrs->copy(shp.second.get(), p.get());
 		}
 	}
 
