@@ -153,12 +153,12 @@ ICEDB_error_code ICEDB_file_handle_free_objs(ICEDB_FS_HANDLE_p p, ICEDB_FS_PATH_
 	return p->i->free_objs(p->i.get(), p, res);
 }
 
-ICEDB_error_code ICEDB_file_handle_readobjattrs(ICEDB_FS_HANDLE_p p, ICEDB_FS_ATTR_CONTENTS **res) {
+ICEDB_error_code ICEDB_file_handle_readobjattrs(ICEDB_FS_HANDLE_p p, ICEDB_FS_attr_CONTENTS **res) {
 	verify_pointer_fs_p(p);
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->i->readobjattrs(p->i.get(), p, res);
 }
-ICEDB_error_code ICEDB_file_handle_attr_free_objattrs(ICEDB_FS_HANDLE_p p, ICEDB_FS_ATTR_CONTENTS **res) {
+ICEDB_error_code ICEDB_file_handle_attr_free_objattrs(ICEDB_FS_HANDLE_p p, ICEDB_FS_attr_CONTENTS **res) {
 	verify_pointer_fs_p(p);
 	return p->i->free_objattrs(p->i.get(), p, res);
 }

@@ -33,7 +33,7 @@ typedef bool(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE*, ICEDB_OUT ICEDB_HASH_t*);
 typedef bool(*ICEDB_SHAPE_idnum_f)(const ICEDB_SHAPE*, ICEDB_OUT uint64_t*);
 typedef ICEDB_SHAPE*(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE* src, ICEDB_fs_hnd* hnd);
 typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE*, ICEDB_fs_hnd*);
-//typedef ICEDB_ATTR_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE*, const char*);
+//typedef ICEDB_attr_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE*, const char*);
 
 // Args are: ptr to shape, number of table dimensions (should be 2), size of each dimension, pointer to the data.
 // Returns: a bool indicating success if true

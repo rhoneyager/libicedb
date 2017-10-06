@@ -277,7 +277,7 @@ extern "C" {
 		return ICEDB_ERRORCODES_NONE;
 	}
 
-	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjattrs(ICEDB_FS_HANDLE_p, ICEDB_FS_ATTR_CONTENTS**) {
+	SHARED_EXPORT_ICEDB ICEDB_error_code fs_readobjattrs(ICEDB_FS_HANDLE_p, ICEDB_FS_attr_CONTENTS**) {
 		// Always throws, since attributes are not supported on this plugin.
 		hnd->_vtable->_raiseExcept(hnd,
 			__FILE__, (int)__LINE__, ICEDB_DEBUG_FSIG);

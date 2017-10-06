@@ -74,7 +74,7 @@ ICEDB_BEGIN_DECL_C
 #endif*/
 
 /// A convenience wrapper for all error functions
-	struct ICEDB_error_context_container_vtable {
+	struct ICEDB_error_context_container_ftable {
 		ICEDB_error_context_create_impl_f createImpl;
 		ICEDB_error_context_copy_f copy;
 		ICEDB_error_context_appendA_f appendA;
@@ -83,8 +83,8 @@ ICEDB_BEGIN_DECL_C
 		ICEDB_error_context_add_string2A_f addString2A;
 		ICEDB_error_context_widen_f widen;
 	};
-	DL_ICEDB const ICEDB_error_context_container_vtable* ICEDB_error_context_getContainerFunctions(); ///< Returns a static ICEDB_error_context_container_vtable*. No need to free.
-
+	DL_ICEDB extern const struct ICEDB_error_context_container_ftable ICEDB_ct_error_context;
+	
 
 /** @} */ // end of errs
 ICEDB_END_DECL_C

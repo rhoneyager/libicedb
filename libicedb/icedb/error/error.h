@@ -101,7 +101,7 @@ ICEDB_BEGIN_DECL_C
 	extern DL_ICEDB ICEDB_error_getOSname_f ICEDB_error_getOSname;
 
 	/// A convenience wrapper for all error functions
-	struct ICEDB_error_container_vtable {
+	struct ICEDB_error_container_ftable {
 		ICEDB_error_code_to_message_size_f codeToCstrSize;
 		ICEDB_error_code_to_message_f codeToCstr;
 		ICEDB_error_code_to_stream_f codeToStream;
@@ -114,7 +114,7 @@ ICEDB_BEGIN_DECL_C
 		ICEDB_error_test_f test;
 		ICEDB_error_getOSname_f getOSname;
 	};
-	DL_ICEDB const ICEDB_error_container_vtable* ICEDB_error_getContainerFunctions(); ///< Returns a static ICEDB_error_container_vtable*. No need to free.
+	DL_ICEDB extern const struct ICEDB_error_container_ftable ICEDB_ct_error;
 
 /** @} */ // end of errs
 	ICEDB_END_DECL_C

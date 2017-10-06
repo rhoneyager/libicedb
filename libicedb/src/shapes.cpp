@@ -53,10 +53,10 @@ ICEDB_fs_hnd_p shape_getBackendPtr(ICEDB_SHAPE_p shp) {
 
 bool shape_setDesc(ICEDB_SHAPE_p shp, const char* desc) {
 	if (validateShapePtr(shp)) {
-		ICEDB_ATTR_p attr = ICEDB_ATTR_create(shp->_p->fshnd, "description", ICEDB_TYPE_CHAR, strlen(desc) + 1, true);
+		ICEDB_attr_p attr = ICEDB_attr_create(shp->_p->fshnd, "description", ICEDB_TYPE_CHAR, strlen(desc) + 1, true);
 		strncpy(attr->data.ct, desc, strlen(desc) + 1);
-		ICEDB_ATTR_write(attr);
-		ICEDB_ATTR_close(attr);
+		ICEDB_attr_write(attr);
+		ICEDB_attr_close(attr);
 	}
 	else return false;
 }
@@ -69,12 +69,12 @@ size_t shape_getNumPoints(ICEDB_SHAPE_p shp) {
 			ICEDB_error_code err = 0;
 			ICEDB_fs_hnd_p h = shp->_p->fshnd; // shape_getBackendPtr(shp);
 			if (h) {
-				bool res = ICEDB_ATTR_attrExists(h, "particle_scattering_element_number", &err);
+				bool res = ICEDB_attr_attrExists(h, "particle_scattering_element_number", &err);
 				if (res) {
-					ICEDB_ATTR_p attr = ICEDB_ATTR_open(h, "particle_scattering_element_number");
+					ICEDB_attr_p attr = ICEDB_attr_open(h, "particle_scattering_element_number");
 					if (attr) {
 						shp->_p->numpts = attr->data.ui64t[0];
-						ICEDB_ATTR_close(attr);
+						ICEDB_attr_close(attr);
 					}
 				}
 			}

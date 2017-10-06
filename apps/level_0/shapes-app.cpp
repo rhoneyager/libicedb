@@ -57,8 +57,8 @@ int main(int argc, char** argv) {
 	ICEDB_error_code err;
 	bool printID = false;
 	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
-	auto attrFuncs = ICEDB_ATTR_getContainerFunctions();
-	auto tblFuncs = ICEDB_TBL_getContainerFunctions();
+	auto attrFuncs = ICEDB_attr_getContainerFunctions();
+	auto tblFuncs = ICEDB_tbl_getContainerFunctions();
 	auto fsFuncs = ICEDB_fs_getContainerFunctions();
 	auto shpFuncs = ICEDB_SHAPE_getContainerFunctions();
 

@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
 	ICEDB_error_code err;
 	bool printID = false;
 	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
-	auto attrFuncs = ICEDB_ATTR_getContainerFunctions();
-	auto tblFuncs = ICEDB_TBL_getContainerFunctions();
+	auto attrFuncs = ICEDB_attr_getContainerFunctions();
+	auto tblFuncs = ICEDB_tbl_getContainerFunctions();
 	auto fsFuncs = ICEDB_fs_getContainerFunctions();
 	auto shpFuncs = ICEDB_SHAPE_getContainerFunctions();
 
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
 
 			// Write the rms value as a single-valued float.
 			size_t sdims = 1;
-			shared_ptr<ICEDB_ATTR> aRMS(
+			shared_ptr<ICEDB_attr> aRMS(
 				attrFuncs->create(fsobj.get(), "RMS_mean", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 1, &sdims, true),
 				attrFuncs->close);
 			// The following two lines are really the same. 
@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
 
 			size_t dims = 3;
 			// Write the means as an attribute matrix with 3 rows and 1 column.
-			shared_ptr<ICEDB_ATTR> aMeans(attrFuncs->create(fsobj.get(), "Means", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT,
+			shared_ptr<ICEDB_attr> aMeans(attrFuncs->create(fsobj.get(), "Means", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT,
 				1, &dims, true),attrFuncs->close);
 			aMeans->funcs->setData(aMeans.get(), means);
 			aMeans->funcs->write(aMeans.get());

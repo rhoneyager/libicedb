@@ -9,15 +9,15 @@
 #include <string>
 
 ICEDB_BEGIN_DECL_C
-struct ICEDB_UNIT_CONVERTER {
+struct ICEDB_unit_converter {
 	icedb::units::iface::unitscpp::pointer_type converter;
 	ICEDB_unit_converter_s* cimpl;
-	ICEDB_UNIT_CONVERTER() : converter(nullptr), cimpl(nullptr) {}
+	ICEDB_unit_converter() : converter(nullptr), cimpl(nullptr) {}
 };
 
-ICEDB_UNIT_CONVERTER_p ICEDB_create_unit_converter(const char* type, const char* inUnits, const char* outUnits) {
-	ICEDB_UNIT_CONVERTER_p res = new ICEDB_UNIT_CONVERTER;
-	//ICEDB_UNIT_CONVERTER_p res = (ICEDB_UNIT_CONVERTER_p) ICEDB_malloc(sizeof(ICEDB_UNIT_CONVERTER));
+ICEDB_unit_converter* ICEDB_create_unit_converter(const char* type, const char* inUnits, const char* outUnits) {
+	ICEDB_unit_converter* res = new ICEDB_unit_converter;
+	//ICEDB_unit_converter_p res = (ICEDB_unit_converter_p) ICEDB_malloc(sizeof(ICEDB_unit_converter));
 	res->converter = nullptr;
 	std::vector<std::string> dlls = icedb::dll::query_interface("units");
 	for (const auto &f : dlls) {
@@ -45,7 +45,7 @@ ICEDB_UNIT_CONVERTER_p ICEDB_create_unit_converter(const char* type, const char*
 	}
 	return res;
 }
-void ICEDB_destroy_unit_converter(ICEDB_UNIT_CONVERTER_p p) {
+void ICEDB_destroy_unit_converter(ICEDB_unit_converter* p) {
 	if (p) {
 		if (p->cimpl) {
 			p->converter->freeConverter(p->cimpl);
@@ -55,7 +55,7 @@ void ICEDB_destroy_unit_converter(ICEDB_UNIT_CONVERTER_p p) {
 		delete p;
 	}
 }
-double ICEDB_unit_convert(ICEDB_UNIT_CONVERTER_p p, double in) {
+double ICEDB_unit_convert(const ICEDB_unit_converter* p, double in) {
 	return p->cimpl->convert(p->cimpl, in);
 	//return p->converter->convert(in);
 }
@@ -80,7 +80,7 @@ namespace icedb {
 		converter::converter_p converter::generate(
 			const char* type, const char* iunits, const char* ounits) {
 			converter::converter_p res(new converter);
-			res->p = std::shared_ptr<ICEDB_UNIT_CONVERTER>(
+			res->p = std::shared_ptr<ICEDB_unit_converter>(
 				ICEDB_create_unit_converter(type, iunits, ounits),
 				ICEDB_destroy_unit_converter);
 			if (res->p) return res;

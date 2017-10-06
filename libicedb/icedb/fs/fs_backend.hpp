@@ -143,9 +143,9 @@ ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	free_objs, ICEDB_error_code, ICEDB_fs_hnd_p, ICEDB_FS_PATH_CONTENTS**);
 
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	readobjattrs, ICEDB_error_code, ICEDB_fs_hnd_p, ICEDB_FS_ATTR_CONTENTS**);
+	readobjattrs, ICEDB_error_code, ICEDB_fs_hnd_p, ICEDB_FS_attr_CONTENTS**);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
-	free_objattrs, ICEDB_error_code, ICEDB_fs_hnd_p, ICEDB_FS_ATTR_CONTENTS**);
+	free_objattrs, ICEDB_error_code, ICEDB_fs_hnd_p, ICEDB_FS_attr_CONTENTS**);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,
 	attr_remove, ICEDB_error_code, ICEDB_fs_hnd_p, const char*);
 ICEDB_DLL_INTERFACE_DECLARE_FUNCTION(ICEDB_fs_plugin,

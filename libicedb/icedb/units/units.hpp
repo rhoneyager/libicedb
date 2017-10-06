@@ -10,7 +10,7 @@ namespace icedb {
 	namespace units {
 		class DL_ICEDB converter {
 		private:
-			typedef std::shared_ptr<ICEDB_UNIT_CONVERTER> _unit_converter_p;
+			typedef std::shared_ptr<ICEDB_unit_converter> _unit_converter_p;
 			_unit_converter_p p;
 			converter();
 		public:

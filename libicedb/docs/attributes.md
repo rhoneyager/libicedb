@@ -10,9 +10,9 @@ counterparts. Both files and datasets may be tagged with attributes.
 Internally, each attribute is stored using a C-style structure:
 
 ```c
-struct ICEDB_ATTR {
-	ICEDB_ATTR_DATA data;
-	ICEDB_ATTR_TYPES type;
+struct ICEDB_attr {
+	ICEDB_attr_DATA data;
+	ICEDB_attr_TYPES type;
 	size_t size;
 	bool hasSize;
 };
@@ -33,7 +33,7 @@ Variable length arrays are most useful for storing character data.
 ### Attribute types
 
 ```c
-enum ICEDB_ATTR_TYPES {
+enum ICEDB_attr_TYPES {
 	ICEDB_TYPE_CHAR, // NC_CHAR, a single 8-bit character, char*
 	ICEDB_TYPE_INT8, // NC_BYTE, 8-bit integer, int8_t*
 	ICEDB_TYPE_UINT8, // NC_UBYTE, unsigned 8-bit integer, uint8_t*
