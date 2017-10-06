@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <string>
@@ -104,6 +105,8 @@ int main(int argc, char** argv) {
 		shpFuncs->openPathAllFree(fileshapes.get()); // TODO: Encapsulate the returned pointer into a shared_ptr with automatic freeing.
 	}
 	
+	// Now, process the unique files and execute an algorithm
+
 
 	// If an output path is specified, write all unique shapes to this path.
 	// TODO: handle any errors that occur!
@@ -120,7 +123,53 @@ int main(int argc, char** argv) {
 		if (!p) processError();
 		// Copy each shape to the output file / folder.
 		for (const auto & shp : shapes) {
-			if (!shp.second->_vptrs->copy(shp.second.get(), p.get())) processError();
+			shared_ptr<ICEDB_SHAPE> outshp(shp.second->_vptrs->copy_open(shp.second.get(), p.get()), shpFuncs->close);
+			if (!outshp) processError();
+
+			// Examine the shape, and get the RMS distance from the center of each element of volume. Also determine the center of mass.
+			size_t numPts = outshp->_vptrs->getNumPoints(outshp.get());
+			shared_ptr<ICEDB_fs_hnd> fsobj(outshp->_vptrs->getParent(outshp.get()));
+			bool ptsTblExists = tblFuncs->exists(fsobj.get(), "Points", &err);
+			if (err) processError();
+			if (!ptsTblExists) continue;
+			shared_ptr<ICEDB_TBL> tblPts(tblFuncs->open(fsobj.get(), "Points"));
+			if (!tblPts) processError();
+			unique_ptr<float[]> ptArray(new float[numPts * 3]);
+			if (!tblPts->_vptr->readFull(tblPts.get(), ptArray.get())) processError();
+			// The points are written x1, y1, z1, x2, y2, z2, ...
+			// First, get the center of mass
+			float means[3] = { 0,0,0 };
+			float rms = 0;
+			for (size_t i = 0; i < numPts; ++i) {
+				means[0] += ptArray[(3 * i) + 0];
+				means[1] += ptArray[(3 * i) + 1];
+				means[2] += ptArray[(3 * i) + 2];
+			}
+			means[0] /= (float)numPts;
+			means[1] /= (float)numPts;
+			means[2] /= (float)numPts;
+
+			for (size_t i = 0; i < numPts; ++i) {
+				rms += std::pow<float>(ptArray[(3 * i)] - means[0], 2.f)
+					+ std::pow<float>(ptArray[(3 * i)+1] - means[1], 2.f)
+					+ std::pow<float>(ptArray[(3 * i)+2] - means[2], 2.f);
+				means[0] += ptArray[(3 * i) + 0];
+				means[1] += ptArray[(3 * i) + 1];
+				means[2] += ptArray[(3 * i) + 2];
+			}
+			rms = std::sqrt(rms);
+
+			// Write the rms value as a single-valued float.
+			shared_ptr<ICEDB_ATTR> aRMS(attrFuncs->create(fsobj.get(), "RMS_mean", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 1, true));
+			// The following two lines are really the same. 
+			*(aRMS->data.ft) = rms;
+			//aRMS->_vptr->setData(aRMS.get(), &rms);
+			aRMS->_vptr->write(aRMS.get());
+
+			size_t dims = 3;
+			// Write the means as an attribute matrix with 3 rows and 1 column.
+			shared_ptr<ICEDB_ATTR> aMeans(attrFuncs->create(fsobj.get(), "Means", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT,
+				1, &dims, true);
 		}
 	}
 

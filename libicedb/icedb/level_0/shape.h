@@ -25,7 +25,7 @@ typedef ICEDB_fs_hnd*(*ICEDB_SHAPE_getParentPtr_f)(const ICEDB_SHAPE*);
 typedef bool(*ICEDB_SHAPE_close_f)(ICEDB_SHAPE*);
 typedef bool(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE*, ICEDB_OUT ICEDB_HASH_t*);
 typedef bool(*ICEDB_SHAPE_idnum_f)(const ICEDB_SHAPE*, ICEDB_OUT uint64_t*);
-typedef bool(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE*, ICEDB_fs_hnd*, ICEDB_OUT ICEDB_SHAPE*);
+typedef ICEDB_SHAPE*(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE* src, ICEDB_fs_hnd* hnd);
 typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE*, ICEDB_fs_hnd*);
 //typedef ICEDB_ATTR_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE*, const char*);
 
