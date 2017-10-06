@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
 			shared_ptr<ICEDB_TBL> tblPts(tblFuncs->open(fsobj.get(), "particle_scattering_element_coordinates"));
 			if (!tblPts) processError();
 			unique_ptr<float[]> ptArray(new float[numPts * 3]);
-			if (!tblPts->_vptr->readFull(tblPts.get(), ptArray.get())) processError();
+			if (!tblPts->funcs->readFull(tblPts.get(), ptArray.get())) processError();
 			// The points are written x1, y1, z1, x2, y2, z2, ...
 			// First, get the center of mass
 			float means[3] = { 0,0,0 };

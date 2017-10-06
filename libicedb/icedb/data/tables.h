@@ -13,14 +13,14 @@
 * @{
 **/
 
-struct ICEDB_TBL_vtable;
-struct ICEDB_TBL_container_vtable;
+struct ICEDB_TBL_ftable;
+struct ICEDB_TBL_container_ftable;
 
 /** \brief A structure that describes an object table. 
 * \todo Make this internal.
 **/
 struct ICEDB_TBL {
-	ICEDB_TBL_vtable *_vptr; ///< Function table, for convenience.
+	ICEDB_TBL_ftable *funcs; ///< Function table, for convenience.
 	ICEDB_fs_hnd* obj; ///< The fs object represented by this table. MUST exist / be accessible.
 	ICEDB_DATA_TYPES type; ///< The type of data.
 	size_t numDims; ///< Number of dimensions of the data.
@@ -99,7 +99,7 @@ a staticly-allocated array, then an error code will be emitted.
 **/
 typedef const char*(*ICEDB_TBL_getTblName_f)(
 	const ICEDB_fs_hnd* p,
-	size_t attrnum,
+	size_t tblnum,
 	ICEDB_OPTIONAL size_t inPathSize,
 	ICEDB_OUT size_t* outPathSize,
 	ICEDB_OUT char ** const bufPath,
@@ -268,7 +268,7 @@ typedef bool (*ICEDB_TBL_writeFull_f)(
 DL_ICEDB ICEDB_TBL_writeFull_f ICEDB_TBL_writeFull;
 
 
-struct ICEDB_TBL_vtable {
+struct ICEDB_TBL_ftable {
 	ICEDB_TBL_close_f close;
 	ICEDB_TBL_copy_f copy;
 	ICEDB_TBL_getParent_f getParent;
@@ -293,9 +293,10 @@ struct ICEDB_TBL_vtable {
 * To get these functions, see ICEDB_TBL_getContainerFunctions.
 * \see ICEDB_TBL_getContainerFunctions
 **/
-struct ICEDB_TBL_container_vtable {
+struct ICEDB_TBL_container_ftable {
 	ICEDB_TBL_create_f create;
 	ICEDB_TBL_open_f open;
+	ICEDB_TBL_close_f close;
 	ICEDB_TBL_remove_f remove;
 	ICEDB_TBL_getNumTbls_f count;
 	ICEDB_TBL_getTblName_f getName;
@@ -304,7 +305,7 @@ struct ICEDB_TBL_container_vtable {
 
 };
 
-DL_ICEDB const ICEDB_TBL_container_vtable* ICEDB_TBL_getContainerFunctions(); ///< Returns a static ICEDB_TBL_container_vtable*. No need to free.
+DL_ICEDB const ICEDB_TBL_container_ftable* ICEDB_TBL_getContainerFunctions(); ///< Returns a static ICEDB_TBL_container_vtable*. No need to free.
 
 
 /** @} */ // end of tbls
