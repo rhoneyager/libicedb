@@ -31,22 +31,22 @@ enum ICEDB_file_open_flags {
 
 /// These indicate the type of a path. This is, is the path a folder, a sybolic link, a regular file...
 enum ICEDB_path_types {
-	ICEDB_type_nonexistant, ///< Path does not exist
-	ICEDB_type_unknown, ///< Path type is unhandled. May be a block device, a mapped memory page, etc.
-	ICEDB_type_normal_file, ///< Path is a regular file
-	ICEDB_type_folder, ///< Path is a directory or group
-	ICEDB_type_symlink ///< Path is a symbolic link. Can check to see if it is dereferencable.
+	ICEDB_path_type_nonexistant, ///< Path does not exist
+	ICEDB_path_type_unknown, ///< Path type is unhandled. May be a block device, a mapped memory page, etc.
+	ICEDB_path_type_normal_file, ///< Path is a regular file
+	ICEDB_path_type_folder, ///< Path is a directory or group
+	ICEDB_path_type_symlink ///< Path is a symbolic link. Can check to see if it is dereferencable.
 };
 
 /// These indicate options for path iteration
 enum ICEDB_path_iteration {
-	ICEDB_path_base, ///< Only look at the base path
-	ICEDB_path_one, ///< Only look at immediate children
-	ICEDB_path_subtree, ///< Recurse through all children. Not base.
-	ICEDB_path_recursive ///< Recurse through base and all chuldren
+	ICEDB_path_iteration_base, ///< Only look at the base path
+	ICEDB_path_iteration_one, ///< Only look at immediate children
+	ICEDB_path_iteration_subtree, ///< Recurse through all children. Not base.
+	ICEDB_path_iteration_recursive ///< Recurse through base and all chuldren
 };
 
-/** \brief Retreive all plugin handlers in a given registry
+/** \brief Retrieve all plugin handlers in a given registry
  *
  * \param registry is the name of the plugin registry.
  * \param numPlugins is the number of entries in the registry that were found.
@@ -54,7 +54,7 @@ enum ICEDB_path_iteration {
  *		The populated char** is null-terminated. Once you are finished using it, then it should be freed using the deallocator function.
  * \param deallocator is the function used to free the list of pluginids. It must be called to avoid memory leaks.
  **/
-DL_ICEDB void ICEDB_fh_getHandlers(
+DL_ICEDB void ICEDB_fs_getHandlers(
 	const char* registry,
 	ICEDB_OUT size_t* const numPlugins,
 	ICEDB_OUT char *** const pluginids,
@@ -79,7 +79,7 @@ DL_ICEDB void ICEDB_fh_getHandlers(
 	* \see err.h
 	* \returns true if the path can be opened by at least one plugin. False if either no plugin can open the path, or if an error occurred.
 **/
-DL_ICEDB bool ICEDB_path_canOpen(
+DL_ICEDB bool ICEDB_fs_path_canOpen(
 	const char* path,
 	ICEDB_OPTIONAL const char* pathtype,
 	ICEDB_OPTIONAL const char* pluginid,
@@ -104,11 +104,13 @@ DL_ICEDB bool ICEDB_path_canOpen(
 	* \see err.h
 	* \returns a filesystem handle to the opened object. NULL if an error occurred.
 **/
-DL_ICEDB ICEDB_fs_hnd_p ICEDB_path_open(
+DL_ICEDB ICEDB_fs_hnd_p ICEDB_fs_path_open(
 	const char* path, 
 	ICEDB_OPTIONAL const char* ftype,
-	ICEDB_OPTIONAL const char* pluginid, ICEDB_OPTIONAL ICEDB_fs_hnd_p base_handle,
-	ICEDB_OPTIONAL ICEDB_file_open_flags flags, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
+	ICEDB_OPTIONAL const char* pluginid,
+	ICEDB_OPTIONAL ICEDB_fs_hnd_p base_handle,
+	ICEDB_OPTIONAL ICEDB_file_open_flags flags,
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
 
 /** \brief Get the full path opened by the file handle.
 	*
@@ -122,7 +124,7 @@ DL_ICEDB ICEDB_fs_hnd_p ICEDB_path_open(
 	* \param err is an error code.
 	* \returns bufPath on success, and NULL on error.
 **/
-DL_ICEDB const char* ICEDB_fh_get_name(
+DL_ICEDB const char* ICEDB_fs_get_name(
 	ICEDB_fs_hnd_p p, 
 	ICEDB_OPTIONAL size_t inPathSize, 
 	ICEDB_OUT size_t* outPathSize, 
@@ -135,14 +137,14 @@ DL_ICEDB const char* ICEDB_fh_get_name(
 	* \param p is the pointer to the file handle. It must be a valid pointer.
 	* \param err is an error code.
 	**/
-DL_ICEDB ICEDB_file_open_flags ICEDB_fh_getOpenFlags(ICEDB_fs_hnd_p p, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_file_open_flags ICEDB_fs_getOpenFlags(ICEDB_fs_hnd_p p, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
 
 /** \brief Close a file handle
 	*
 	* \param p is the pointer to the file handle. It must be a valid pointer.
-	* \param err is an error code.
+	* \returns an error code. Zero on success.
 	**/
-DL_ICEDB bool ICEDB_fh_close(ICEDB_fs_hnd_p p, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code*);
+DL_ICEDB ICEDB_error_code ICEDB_fs_close(ICEDB_fs_hnd_p p);
 
 /** \brief Move an object
 	*
@@ -150,9 +152,9 @@ DL_ICEDB bool ICEDB_fh_close(ICEDB_fs_hnd_p p, ICEDB_OPTIONAL ICEDB_OUT ICEDB_er
 	* \param src is the source path. Must be a valid c-string. Cannot be NULL.
 	* \param dest is the destination path. Must be a valid c-string. Cannot be NULL.
 	* \param err is an error code.
-	* \returns True on success, false on any error.
+	* \returns Zero on success, nonzero on any error.
 	**/
-DL_ICEDB bool ICEDB_fh_move(ICEDB_fs_hnd_p p, const char* src, const char* dest, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_error_code ICEDB_fs_move(ICEDB_fs_hnd_p p, const char* src, const char* dest);
 
 /** \brief Copy an object
 *
@@ -160,9 +162,9 @@ DL_ICEDB bool ICEDB_fh_move(ICEDB_fs_hnd_p p, const char* src, const char* dest,
 * \param src is the source path. Must be a valid c-string. Cannot be NULL.
 * \param dest is the destination path. Must be a valid c-string. Cannot be NULL.
 * \param err is an error code.
-* \returns True on success, false on any error.
+* \returns Zero on success, nonzero on any error.
 **/
-DL_ICEDB bool ICEDB_fh_copy(ICEDB_fs_hnd_p p, const char* src, const char* dest, bool overwrite, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_error_code ICEDB_fs_copy(ICEDB_fs_hnd_p p, const char* src, const char* dest, bool overwrite);
 
 /** \brief Unlink an object
 *
@@ -170,9 +172,9 @@ DL_ICEDB bool ICEDB_fh_copy(ICEDB_fs_hnd_p p, const char* src, const char* dest,
 * \param src is the source path. Must be a valid c-string. Cannot be NULL.
 * \param dest is the destination path. Must be a valid c-string. Cannot be NULL.
 * \param err is an error code.
-* \returns True on success, false on any error.
+* \returns Zero on success, nonzero on any error.
 **/
-DL_ICEDB bool ICEDB_fh_unlink(ICEDB_fs_hnd_p p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_error_code ICEDB_fs_unlink(ICEDB_fs_hnd_p p, const char* path);
 
 /** \brief Create a hard link
 *
@@ -180,9 +182,9 @@ DL_ICEDB bool ICEDB_fh_unlink(ICEDB_fs_hnd_p p, const char* path, ICEDB_OPTIONAL
 * \param src is the source path. Must be a valid c-string. Cannot be NULL.
 * \param dest is the destination path. Must be a valid c-string. Cannot be NULL.
 * \param err is an error code.
-* \returns True on success, false on any error.
+* \returns Zero on success, nonzero on any error.
 **/
-DL_ICEDB bool ICEDB_fh_create_hard_link(ICEDB_fs_hnd_p p, const char* src, const char* dest, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_error_code ICEDB_fs_create_hard_link(ICEDB_fs_hnd_p p, const char* src, const char* dest);
 
 /** \brief Create a symbolic link
 *
@@ -190,9 +192,9 @@ DL_ICEDB bool ICEDB_fh_create_hard_link(ICEDB_fs_hnd_p p, const char* src, const
 * \param src is the source path. Must be a valid c-string. Cannot be NULL.
 * \param dest is the destination path. Must be a valid c-string. Cannot be NULL.
 * \param err is an error code.
-* \returns True on success, false on any error.
+* \returns Zero on success, nonzero on any error.
 **/
-DL_ICEDB bool ICEDB_fh_create_sym_link(ICEDB_fs_hnd_p p, const char* src, const char* dest, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB ICEDB_error_code ICEDB_fs_create_sym_link(ICEDB_fs_hnd_p p, const char* src, const char* dest);
 
 /** \brief Follow a symbolic link
 *
@@ -207,7 +209,7 @@ DL_ICEDB bool ICEDB_fh_create_sym_link(ICEDB_fs_hnd_p p, const char* src, const 
 * \param err is an error code.
 * \returns bufPath on success, and NULL on error.
 **/
-DL_ICEDB const char* ICEDB_fh_follow_sym_link(ICEDB_fs_hnd_p p,
+DL_ICEDB const char* ICEDB_fs_follow_sym_link(ICEDB_fs_hnd_p p,
 	const char* path, 
 	ICEDB_OPTIONAL size_t inPathSize,
 	ICEDB_OUT size_t* outPathSize,
@@ -222,7 +224,7 @@ DL_ICEDB const char* ICEDB_fh_follow_sym_link(ICEDB_fs_hnd_p p,
 * \param err is an error code.
 * \returns True if the path exists, false if the path does not exist or if there is an error (such as when a parent path does not exist).
 **/
-DL_ICEDB bool ICEDB_fh_path_exists(ICEDB_fs_hnd_p p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
+DL_ICEDB bool ICEDB_fs_path_exists(ICEDB_fs_hnd_p p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
 
 /// The maximum length of a path.
 #define ICEDB_FS_PATH_CONTENTS_PATH_MAX 32767
@@ -255,7 +257,7 @@ struct ICEDB_fs_path_contents {
 * \see ICEDB_fh_path_info_free
 * \returns A pointer to the path information structure (same as res). Returned for convenience. Returns NULL if an error occurred (see err).
 **/
-DL_ICEDB ICEDB_fs_path_contents* ICEDB_fh_path_info(
+DL_ICEDB ICEDB_fs_path_contents* ICEDB_fs_path_info(
 	ICEDB_fs_hnd_p p,
 	const char* path,
 	ICEDB_OUT ICEDB_fs_path_contents *res,
@@ -266,7 +268,7 @@ DL_ICEDB ICEDB_fs_path_contents* ICEDB_fh_path_info(
 * \param pc is a pointer to the path information structure. Must be non-NULL.
 * \see ICEDB_fh_path_info
 **/
-DL_ICEDB void ICEDB_fh_path_info_free(ICEDB_fs_path_contents *pc);
+DL_ICEDB void ICEDB_fs_path_info_free(ICEDB_fs_path_contents *pc);
 
 /** \brief Enumerate all one-level child objects
 * \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
@@ -277,7 +279,7 @@ DL_ICEDB void ICEDB_fh_path_info_free(ICEDB_fs_path_contents *pc);
 * \see ICEDB_fh_freeObjs
 * \returns A pointer to the path information structure (same as res). Returned for convenience. Returns NULL if an error occurred (see err).
 **/
-DL_ICEDB ICEDB_fs_path_contents *** const ICEDB_fh_readObjs(
+DL_ICEDB ICEDB_fs_path_contents *** const ICEDB_fs_readObjs(
 	ICEDB_fs_hnd_p p, 
 	const char* path, 
 	size_t *numObjs, 
@@ -288,7 +290,7 @@ DL_ICEDB ICEDB_fs_path_contents *** const ICEDB_fh_readObjs(
 * \param p is a pointer to the path information structure that gets populated. Must be non-NULL. Must be freed with ICEDB_fh_freeObjs after use.
 * \see ICEDB_fh_readObjs
 **/
-DL_ICEDB void ICEDB_fh_freeObjs(
+DL_ICEDB void ICEDB_fs_freeObjs(
 	ICEDB_OUT ICEDB_fs_path_contents *** const p);
 
 enum ICEDB_DATA_TYPES {

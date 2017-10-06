@@ -13,26 +13,6 @@
 * @{
 **/
 
-/*
-union ICEDB_TBL_DATA {
-	int8_t* i8t;
-	int16_t* i16t;
-	int32_t* i32t;
-	int64_t* i64t;
-	intmax_t* imaxt;
-	intptr_t* iptrt;
-	uint8_t* ui8t;
-	uint16_t* ui16t;
-	uint32_t* ui32t;
-	uint64_t* ui64t;
-	uintmax_t* uimaxt;
-	uintptr_t* uiptrt;
-	float* ft;
-	double* dt;
-	char* ct;
-};
-*/
-
 struct ICEDB_TBL_vtable;
 struct ICEDB_TBL_container_vtable;
 

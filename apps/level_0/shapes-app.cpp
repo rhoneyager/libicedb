@@ -48,6 +48,9 @@ int main(int argc, char** argv) {
 	if (vm.count("output-type")) sOutputType = vm["output-type"].as<string>();
 	if (vm.count("output-plugin")) sOutputPlugin = vm["output-plugin"].as<string>();
 
+	auto attrFuncs = ICEDB_ATTR_getContainerFunctions();
+	auto tblFuncs = ICEDB_TBL_getContainerFunctions();
+
 	for (const auto & in : sInputs) {
 		cout << "File " << in << endl;
 		size_t nShapes = 0;
@@ -67,6 +70,13 @@ int main(int argc, char** argv) {
 			if (printID) cout << "\t" << id << endl;
 			if (!shapes.count(id)) {
 				shapes[id] = sshp;
+				// Get the number of attributes and tables
+				// TODO: Dangling pointers here!!!!!
+				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->_vptrs->getParent(sshp.get()),
+					[](ICEDB_fs_hnd_p p) {ICEDB_fh_close(p, NULL); });
+				size_t numAtts = attrFuncs->count(parentFS.get(), &err);
+				size_t numTbls = tblFuncs->count(parentFS.get(), &err);
+				cout << "\t\tHas " << numAtts << " attributes and " << numTbls << " tables." << endl;
 			}
 			else if (printID) cout << "\t\tRepeated shape" << endl;
 		}
