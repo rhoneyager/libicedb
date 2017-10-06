@@ -74,25 +74,27 @@ int main(int argc, char** argv) {
 	for (const auto & in : sInputs) {
 		cout << "File " << in << endl;
 		size_t nShapes = 0;
-		shared_ptr<ICEDB_SHAPE **> fileshapes(new ICEDB_SHAPE**);
-		// Each input file might contain zero, one or more shapes. openPathAll reads them all.
-		if (!shpFuncs->openPathAll(
+		shared_ptr<ICEDB_SHAPE** const> fileshapes(
+			shpFuncs->openPathAll(
 				in.c_str(), // This is the base path - every shape contained within this path will be read.
 				ICEDB_path_iteration_recursive, // Read every shape
 				ICEDB_flags_readonly, // No modifying the source files.
-				&nShapes, // Number of shapes read
-				fileshapes.get())) // The shapes
-			processError();
+				&nShapes // Number of shapes read
+			), shpFuncs->openPathAllFree); // Automatic deallocation
+		if (!fileshapes) processError();
 		// Iterate over all read shapes. For all unique (non-repeated) shapes, store pointers to them.
 		for (size_t i = 0; i < nShapes; ++i) {
 			uint64_t id = 0;
-			if (!(*fileshapes)[i]->_vptrs->getID((*fileshapes)[i], &id)) processError();
-			shared_ptr<ICEDB_SHAPE> sshp((*fileshapes)[i], shpFuncs->close); // Auto-destructs shapes if not needed.
+			if (!(*fileshapes)[i]->funcs->getID((*fileshapes)[i], &id)) processError();
+			ICEDB_SHAPE* sshp = (*fileshapes)[i];
 			if (printID) cout << "\t" << id << endl;
 			if (!shapes.count(id)) {
-				shapes[id] = sshp;
+				// COPY the shape into the map. fileshapes is managed by a separate memory manager.
+				// The same backend can be used. No problems here.
+				shared_ptr<ICEDB_SHAPE> spsshp(sshp->funcs->copy_open(sshp, sshp->funcs->getParent(sshp)));
+				shapes[id] = spsshp;
 				// Get the number of attributes and tables
-				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->_vptrs->getParent(sshp.get()), fsFuncs->close);
+				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->funcs->getParent(sshp), fsFuncs->close);
 				if (!parentFS) processError();
 				size_t numAtts = attrFuncs->count(parentFS.get(), &err);
 				if (err) processError();
@@ -102,7 +104,6 @@ int main(int argc, char** argv) {
 			}
 			else if (printID) cout << "\t\tRepeated shape" << endl;
 		}
-		shpFuncs->openPathAllFree(fileshapes.get()); // TODO: Encapsulate the returned pointer into a shared_ptr with automatic freeing.
 	}
 	
 	// Now, process the unique files and execute an algorithm
@@ -123,16 +124,16 @@ int main(int argc, char** argv) {
 		if (!p) processError();
 		// Copy each shape to the output file / folder.
 		for (const auto & shp : shapes) {
-			shared_ptr<ICEDB_SHAPE> outshp(shp.second->_vptrs->copy_open(shp.second.get(), p.get()), shpFuncs->close);
+			shared_ptr<ICEDB_SHAPE> outshp(shp.second->funcs->copy_open(shp.second.get(), p.get()), shpFuncs->close);
 			if (!outshp) processError();
 
 			// Examine the shape, and get the RMS distance from the center of each element of volume. Also determine the center of mass.
-			size_t numPts = outshp->_vptrs->getNumPoints(outshp.get());
-			shared_ptr<ICEDB_fs_hnd> fsobj(outshp->_vptrs->getParent(outshp.get()));
-			bool ptsTblExists = tblFuncs->exists(fsobj.get(), "Points", &err);
+			size_t numPts = outshp->funcs->getNumPoints(outshp.get());
+			shared_ptr<ICEDB_fs_hnd> fsobj(outshp->funcs->getParent(outshp.get()), fsFuncs->close);
+			bool ptsTblExists = tblFuncs->exists(fsobj.get(), "particle_scattering_element_coordinates", &err);
 			if (err) processError();
 			if (!ptsTblExists) continue;
-			shared_ptr<ICEDB_TBL> tblPts(tblFuncs->open(fsobj.get(), "Points"));
+			shared_ptr<ICEDB_TBL> tblPts(tblFuncs->open(fsobj.get(), "particle_scattering_element_coordinates"));
 			if (!tblPts) processError();
 			unique_ptr<float[]> ptArray(new float[numPts * 3]);
 			if (!tblPts->_vptr->readFull(tblPts.get(), ptArray.get())) processError();
@@ -160,16 +161,21 @@ int main(int argc, char** argv) {
 			rms = std::sqrt(rms);
 
 			// Write the rms value as a single-valued float.
-			shared_ptr<ICEDB_ATTR> aRMS(attrFuncs->create(fsobj.get(), "RMS_mean", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 1, true));
+			size_t sdims = 1;
+			shared_ptr<ICEDB_ATTR> aRMS(
+				attrFuncs->create(fsobj.get(), "RMS_mean", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 1, &sdims, true),
+				attrFuncs->close);
 			// The following two lines are really the same. 
 			*(aRMS->data.ft) = rms;
 			//aRMS->_vptr->setData(aRMS.get(), &rms);
-			aRMS->_vptr->write(aRMS.get());
+			aRMS->funcs->write(aRMS.get());
 
 			size_t dims = 3;
 			// Write the means as an attribute matrix with 3 rows and 1 column.
 			shared_ptr<ICEDB_ATTR> aMeans(attrFuncs->create(fsobj.get(), "Means", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT,
-				1, &dims, true);
+				1, &dims, true),attrFuncs->close);
+			aMeans->funcs->setData(aMeans.get(), means);
+			aMeans->funcs->write(aMeans.get());
 		}
 	}
 

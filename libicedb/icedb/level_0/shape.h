@@ -44,7 +44,7 @@ typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE*, ICEDB_fs_hnd*);
 //typedef bool(*ICEDB_SHAPE_getCharTable_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, char**);
 
 /// This is a convenient container for holding the functions that can operate on a shape.
-struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable {
+struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable {
 	ICEDB_SHAPE_close_f close; ///< Removes shape from memory and performs clean-up tasks.
 	ICEDB_SHAPE_getParentPtr_f getParent; ///< Get the underlying (low-level) filesystem object.
 	ICEDB_SHAPE_setStrAttr_f setDescription; ///< Set the description.
@@ -68,7 +68,7 @@ struct _ICEDB_L0_SHAPE_VOL_SPARSE_impl;
 /// Represents a shape using a sparse-matrix form.
 struct ICEDB_L0_SHAPE_VOL_SPARSE {
 	_ICEDB_L0_SHAPE_VOL_SPARSE_impl *_p; ///< An opaque pointer containing private implementation details.
-	struct ICEDB_L0_SHAPE_VOL_SPARSE_vtable *_vptrs;
+	struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable *funcs;
 };
 
 DL_ICEDB ICEDB_SHAPE_close_f ICEDB_SHAPE_close;
@@ -94,16 +94,14 @@ DL_ICEDB ICEDB_SHAPE_open_single_file_f ICEDB_SHAPE_open_single_file;
 * \param pit specifies the type of iteration scheme used when looking for shapes.
 * \param flags are the i/o flags (i.e. read-only, exclusive, ...)
 * \param numShapes is the number of shapes that were loaded.
-* \param shapes is a pointer to an array of loaded shapes. Must be freed once the array is no longer used. Each member should also be freed.
-* \param err is the error code, set upon error.
-* \returns A pointer to the loaded shape. NULL on error.
+* \param shapes is a pointer to a null-terminated array of loaded shapes. Must be freed once the array is no longer used. Each member should NOT be manually freed.
+* \returns shapes.
 **/
-typedef bool(*ICEDB_SHAPE_open_path_all_f)(
+typedef ICEDB_SHAPE*** const (*ICEDB_SHAPE_open_path_all_f)(
 	const char* path,
 	ICEDB_path_iteration pit,
 	ICEDB_file_open_flags flags,
-	ICEDB_OUT size_t * numShapes,
-	ICEDB_OUT ICEDB_SHAPE*** const shapes);
+	ICEDB_OUT size_t * numShapes);
 DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
 
 /** \brief Free the results of a ICEDB_SHAPE_open_path_all call
@@ -111,17 +109,17 @@ DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
 * \see ICEDB_SHAPE_open_path_all
 **/
 typedef void(*ICEDB_SHAPE_open_path_all_free_f)(
-	ICEDB_OUT ICEDB_SHAPE* ** const shapes);
+	ICEDB_SHAPE*** const shapes);
 DL_ICEDB ICEDB_SHAPE_open_path_all_free_f ICEDB_SHAPE_open_path_all_free;
 
-struct ICEDB_SHAPE_container_vtable {
+struct ICEDB_SHAPE_container_ftable {
 	ICEDB_SHAPE_generate_f generate;
 	ICEDB_SHAPE_open_single_file_f openPathSingle;
 	ICEDB_SHAPE_open_path_all_f openPathAll;
 	ICEDB_SHAPE_open_path_all_free_f openPathAllFree;
 	ICEDB_SHAPE_close_f close;
 };
-DL_ICEDB const ICEDB_SHAPE_container_vtable* ICEDB_SHAPE_getContainerFunctions(); ///< Returns a static ICEDB_SHAPE_container_vtable*. No need to free.
+DL_ICEDB const ICEDB_SHAPE_container_ftable* ICEDB_SHAPE_getContainerFunctions(); ///< Returns a static ICEDB_SHAPE_container_vtable*. No need to free.
 
 
 #endif

@@ -33,13 +33,13 @@ union ICEDB_ATTR_DATA {
 	char* ct;
 };
 
-struct ICEDB_ATTR_vtable;
+struct ICEDB_ATTR_ftable;
 
 /** \brief A structure that describes an object attribute.
 ** \todo This will be made opaque.
 **/
 struct ICEDB_ATTR {
-	ICEDB_ATTR_vtable *_vptr; ///< Function table
+	ICEDB_ATTR_ftable *funcs; ///< Function table
 	ICEDB_fs_hnd* parent; ///< The parent (container) of the attribute. May be NULL, but if non-NULL, then the parent must still EXIST, or else undefined behavior may occur upon write.
 	ICEDB_ATTR_DATA data; ///< The attribute data. Expressed as a union.
 	ICEDB_DATA_TYPES type; ///< The type of data.
@@ -108,7 +108,7 @@ DL_ICEDB ICEDB_ATTR_getType_f ICEDB_ATTR_getType;
 DL_ICEDB ICEDB_ATTR_getData_f ICEDB_ATTR_getData;
 DL_ICEDB ICEDB_ATTR_setData_f ICEDB_ATTR_setData;
 
-struct ICEDB_ATTR_vtable {
+struct ICEDB_ATTR_ftable {
 	ICEDB_ATTR_close_f close;
 	ICEDB_ATTR_write_f write;
 	ICEDB_ATTR_copy_f copy;
@@ -119,7 +119,7 @@ struct ICEDB_ATTR_vtable {
 	ICEDB_ATTR_getData_f getData;
 	ICEDB_ATTR_setData_f setData;
 };
-DL_ICEDB const ICEDB_ATTR_vtable* ICEDB_ATTR_getAttrFunctions(); ///< Return a static ICEDB_ATTR_vtable*. No need to free.
+DL_ICEDB const ICEDB_ATTR_ftable* ICEDB_ATTR_getAttrFunctions(); ///< Return a static ICEDB_ATTR_vtable*. No need to free.
 
 /** \brief Create an attribute
 * \param parent is a pointer to the parent object (the object that stores the attribute's data). If no parent is specified, then the attribute cannot be stored.
@@ -234,10 +234,11 @@ typedef ICEDB_ATTR*** const(*ICEDB_ATTR_openAllAttrs_f)(
 * To get these functions, see ICEDB_ATTR_getFunctions.
 * \see ICEDB_ATTR_getFunctions
 **/
-struct ICEDB_ATTR_container_vtable {
+struct ICEDB_ATTR_container_ftable {
 	ICEDB_ATTR_create_f create;
 	ICEDB_ATTR_open_f open;
 	ICEDB_ATTR_remove_f remove;
+	ICEDB_ATTR_close_f close;
 	ICEDB_ATTR_getNumAttrs_f count;
 	ICEDB_ATTR_getAttrName_f getName;
 	ICEDB_ATTR_attrExists_f exists;
@@ -248,7 +249,7 @@ struct ICEDB_ATTR_container_vtable {
 	ICEDB_ATTR_openAllAttrs_f openAllAttrs;
 };
 
-DL_ICEDB const ICEDB_ATTR_container_vtable* ICEDB_ATTR_getContainerFunctions(); ///< Returns a static ICEDB_ATTR_container_vtable*. No need to free.
+DL_ICEDB const ICEDB_ATTR_container_ftable* ICEDB_ATTR_getContainerFunctions(); ///< Returns a static ICEDB_ATTR_container_vtable*. No need to free.
 
 /** @} */ // end of atts
 
