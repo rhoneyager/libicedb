@@ -33,6 +33,7 @@ union ICEDB_attr_DATA {
 	float* ft;
 	double* dt;
 	char* ct;
+	void* vt;
 };
 
 struct ICEDB_attr_ftable;
@@ -81,175 +82,45 @@ typedef ICEDB_attr*(*ICEDB_attr_copy_f)(
 	ICEDB_OPTIONAL ICEDB_fs_hnd* newparent,
 	const ICEDB_attr* attr,
 	ICEDB_OPTIONAL const char* newname);
-/// Get the attribute name
-typedef const char*(*ICEDB_attr_getName_f)(const ICEDB_attr* attr);
+// Get the attribute name
+//typedef const char*(*ICEDB_attr_getName_f)(const ICEDB_attr* attr);
 /// Get the attribute's parent
 typedef ICEDB_fs_hnd*(*ICEDB_attr_getParent_f)(const ICEDB_attr* attr);
 /// Get the attribute's type
 typedef ICEDB_DATA_TYPES(*ICEDB_attr_getType_f)(const ICEDB_attr* attr);
 /// Does the attribute have a fixed size?
 typedef bool(*ICEDB_attr_hasFixedSize_f)(const ICEDB_attr* attr);
-/// Resize attribute
-typedef bool(*ICEDB_attr_resize_f)(ICEDB_attr* attr, size_t newSize);
-/// Get attribute data
-typedef const ICEDB_attr_DATA*(*ICEDB_attr_getData_f)(const ICEDB_attr* attr);
+/// \brief Resize attribute
+typedef bool(*ICEDB_attr_resize_f)(ICEDB_attr* attr, ICEDB_DATA_TYPES newType, size_t numDims, size_t* dims);
+// Get attribute data
+//typedef const ICEDB_attr_DATA*(*ICEDB_attr_getData_f)(const ICEDB_attr* attr);
 /// Set attribute data. Copies attribute's size from indata into the attribute.
-typedef bool (*ICEDB_attr_setData_f)(ICEDB_attr* attr, const void* indata);
+typedef bool (*ICEDB_attr_setData_f)(ICEDB_attr* attr, const void* indata, size_t indataByteSize);
 
 extern DL_ICEDB ICEDB_attr_close_f ICEDB_attr_close;
 extern DL_ICEDB ICEDB_attr_write_f ICEDB_attr_write;
 extern DL_ICEDB ICEDB_attr_copy_f ICEDB_attr_copy;
-extern DL_ICEDB ICEDB_attr_getName_f ICEDB_attr_getName;
+//extern DL_ICEDB ICEDB_attr_getName_f ICEDB_attr_getName;
 extern DL_ICEDB ICEDB_attr_getParent_f ICEDB_attr_getParent;
 extern DL_ICEDB ICEDB_attr_getType_f ICEDB_attr_getType;
 //DL_ICEDB ICEDB_attr_hasFixedSize_f ICEDB_attr_hasFixedSize;
-//DL_ICEDB ICEDB_attr_resize_f ICEDB_attr_setSizeObjects;
-//DL_ICEDB ICEDB_attr_resize_f ICEDB_attr_setSizeBytes;
-extern DL_ICEDB ICEDB_attr_getData_f ICEDB_attr_getData;
+extern DL_ICEDB ICEDB_attr_resize_f ICEDB_attr_resize;
+//extern DL_ICEDB ICEDB_attr_getData_f ICEDB_attr_getData;
 extern DL_ICEDB ICEDB_attr_setData_f ICEDB_attr_setData;
 
 struct ICEDB_attr_ftable {
 	ICEDB_attr_close_f close;
 	ICEDB_attr_write_f write;
 	ICEDB_attr_copy_f copy;
-	ICEDB_attr_getName_f getName;
+	//ICEDB_attr_getName_f getName; ///< TODO: Change def to do a string copy to new memory.
 	ICEDB_attr_getParent_f getParent;
 	ICEDB_attr_getType_f getType;
-	//ICEDB_attr_hasFixedSize_f hasFixedSize;
-	ICEDB_attr_getData_f getData;
+	//ICEDB_attr_getData_f getData;
+	ICEDB_attr_resize_f resize;
 	ICEDB_attr_setData_f setData;
 };
-DL_ICEDB const ICEDB_attr_ftable* ICEDB_attr_getAttrFunctions(); ///< Return a static ICEDB_attr_vtable*. No need to free.
+extern DL_ICEDB const struct ICEDB_attr_ftable ICEDB_ct_attr_obj;
 
-/** \brief Create an attribute
-* \param parent is a pointer to the parent object (the object that stores the attribute's data). If no parent is specified, then the attribute cannot be stored.
-* \param type is the type of the attribute.
-* \param size is the size, in bytes, of the attribute.
-* \param hasSize indicates if the attribute is fixed-size or variable.
-* \param err is an error code
-* \returns NULL if an error occurred, otherwise with a new attribute object.
-**/
-typedef ICEDB_attr*(*ICEDB_attr_create_f)(
-	ICEDB_OPTIONAL ICEDB_fs_hnd* parent, 
-	const char* name, 
-	ICEDB_DATA_TYPES type, 
-	size_t numDims,
-	size_t *dims,
-	bool hasFixedSize);
-/** \brief Open an attribute
-* \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
-* \param name is the name of the attribute. Must be null-terminated.
-* \param err is an error code
-* \returns NULL if an error occurred, otherwise with a new copy of the attribute object.
-**/
-typedef ICEDB_attr*(*ICEDB_attr_open_f)(
-	const ICEDB_fs_hnd* parent,
-	const char* name);
-/** \brief Delete an attribute attached to an object
-* \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
-* \param name is the name of the attribute. Must be null-terminated.
-* \param err is an error code
-* \returns false if an error occurred, otherwise true.
-**/
-typedef bool(*ICEDB_attr_remove_f)(ICEDB_fs_hnd* parent, const char* name);
-/** \brief Returns the number of attributes for a filesystem handle.
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param err is an error code.
-* \returns The number of attributes. If an error occurs, returns 0.
-**/
-typedef size_t(*ICEDB_attr_getNumAttrs_f)(const ICEDB_fs_hnd* p, ICEDB_OUT ICEDB_error_code* err);
-/** \brief Get the name of an attribute
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param attrnum is the attribute number. Spans [0, numAttrs). An error will occur if this is out of range.
-* \param inPathSize is used if the output name array is already pre-allocated, in which case it represents the size (in __bytes__) of the array.
-If dynamic allocation is instead requested, set this to NULL.
-* \param outPathSize is a pointer to the number of bytes in the output array neede to represent the path. If the path is too large to fit into
-a staticly-allocated array, then an error code will be emitted.
-* \param bufPath is a pointer to the output path array.
-* \param deallocator is a function that can deallocate bufPath once it is no longer needed. Use this only when inPathSize != 0.
-* \param err is an error code.
-* \returns bufPath on success, NULL on error.
-**/
-typedef const char*(*ICEDB_attr_getAttrName_f)(
-	const ICEDB_fs_hnd* p,
-	size_t attrnum,
-	ICEDB_OPTIONAL size_t inPathSize,
-	ICEDB_OUT size_t* outPathSize,
-	ICEDB_OUT char ** const bufPath,
-	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
-/** \brief Returns whether an attribute exists with the specified name.
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param name is the attribute name. Must be a NULL-terminated C-string.
-* \param err is an error code.
-* \returns True if the attribute exists, false if not. If an error occurs, returns false.
-**/
-typedef bool(*ICEDB_attr_attrExists_f)(const ICEDB_fs_hnd* p, const char* name, ICEDB_OUT ICEDB_error_code* err);
-/** \brief Renames an attribute
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param oldname is the attribute's current name. Must be a NULL-terminated C-string.
-* \param newname is the attribute's new name. Must be a NULL-terminated C-string.
-* \param err is an error code.
-* \returns True on success, false if an error occured.
-**/
-typedef bool(*ICEDB_attr_renameAttr_f)(ICEDB_fs_hnd* p, const char* oldname, const char* newname);
-/** \brief Gets the type of an attribute
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param name is the attribute name. Must be a NULL-terminated C-string.
-* \param err is an error code.
-* \returns Attribute type on success, NULL (ICEDB_type_invalid) on error.
-**/
-typedef ICEDB_DATA_TYPES(*ICEDB_attr_getAttrType_f)(const ICEDB_fs_hnd* p, const char* name, ICEDB_OUT ICEDB_error_code* err);
-/** \brief Gets the size of an attribute, in bytes.
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param name is the attribute name. Must be a NULL-terminated C-string.
-* \param err is an error code.
-* \returns Attribute size, in __bytes__. 0 on error.
-**/
-//typedef size_t(*ICEDB_attr_getAttrSize_f)(const ICEDB_fs_hnd* p, const char* name, ICEDB_OUT ICEDB_error_code* err);
-/** \brief Determines whether an attribute is of variable length.
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param name is the attribute name. Must be a NULL-terminated C-string.
-* \param err is an error code.
-* \returns True if the length is variable. False if not or on error.
-**/
-//typedef bool(*ICEDB_attr_getAttrIsVariableSize_f)(const ICEDB_fs_hnd* p, const char* name, ICEDB_OUT ICEDB_error_code* err);
-/** \brief Free the results of a ICEDB_fh_readAttr call
-* \param p is a pointer to the ICEDB_attr*** structure that was populated. Must be non-NULL.
-* \see ICEDB_fh_readAllAttrs
-**/
-typedef bool(*ICEDB_attr_freeAttrList_f)(ICEDB_attr*** const p);
-/** \brief Read all attributes for a file handle.
-* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
-* \param numAtts is filled with the number of attributes that were read.
-* \param res is the target pointer that gets populated.
-* \param err is an error code.
-* \returns A pointer to the attributes structure, which must be manually freed when no longer needed. NULL if an error occurred.
-* \see ICEDB_fh_freeAttrList
-**/
-typedef ICEDB_attr*** const(*ICEDB_attr_openAllAttrs_f)(
-	const ICEDB_fs_hnd* p, size_t *numAtts, ICEDB_OUT ICEDB_attr*** const res);
-
-/** \brief This acts as a container for all attribute functions that require a base fs object to act as a container.
-*
-* To get these functions, see ICEDB_attr_getFunctions.
-* \see ICEDB_attr_getFunctions
-**/
-struct ICEDB_attr_container_ftable {
-	ICEDB_attr_create_f create;
-	ICEDB_attr_open_f open;
-	ICEDB_attr_remove_f remove;
-	ICEDB_attr_close_f close;
-	ICEDB_attr_getNumAttrs_f count;
-	ICEDB_attr_getAttrName_f getName;
-	ICEDB_attr_attrExists_f exists;
-	ICEDB_attr_renameAttr_f rename;
-	ICEDB_attr_getAttrType_f getType;
-	//ICEDB_attr_getAttrIsVariableSize_f hasVariableSize;
-	ICEDB_attr_freeAttrList_f freeAttrList;
-	ICEDB_attr_openAllAttrs_f openAllAttrs;
-};
-
-DL_ICEDB const ICEDB_attr_container_ftable* ICEDB_attr_getContainerFunctions(); ///< Returns a static ICEDB_attr_container_vtable*. No need to free.
 
 /** @} */ // end of atts
 ICEDB_END_DECL_C

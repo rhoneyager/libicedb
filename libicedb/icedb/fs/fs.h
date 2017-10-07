@@ -64,7 +64,7 @@ typedef void(*ICEDB_fs_getHandlers_f)(
 	ICEDB_OUT char *** const pluginids,
 	ICEDB_OUT ICEDB_free_charIPPP_f * const deallocator
 	);
-DL_ICEDB ICEDB_fs_getHandlers_f ICEDB_fs_getHandlers;
+extern DL_ICEDB ICEDB_fs_getHandlers_f ICEDB_fs_getHandlers;
 
 /** \brief Can a path be opened?
 	*
@@ -94,7 +94,7 @@ typedef bool(*ICEDB_fs_canOpen_f)(
 	ICEDB_OPTIONAL ICEDB_OUT char *** const pluginids,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPPP_f * const deallocator,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
-DL_ICEDB ICEDB_fs_canOpen_f ICEDB_fs_canOpen;
+extern DL_ICEDB ICEDB_fs_canOpen_f ICEDB_fs_canOpen;
 
 /** \brief Open a path and get a handle.
 	* 
@@ -116,7 +116,17 @@ typedef ICEDB_fs_hnd*(*ICEDB_fs_open_f)(
 	ICEDB_OPTIONAL const char* pluginid,
 	ICEDB_OPTIONAL ICEDB_fs_hnd* base_handle,
 	ICEDB_OPTIONAL ICEDB_file_open_flags flags);
-DL_ICEDB ICEDB_fs_open_f ICEDB_fs_open;
+extern DL_ICEDB ICEDB_fs_open_f ICEDB_fs_open;
+
+/** \brief Duplicate a handle
+*
+* \param handle is a filesystem handle to some object
+* \returns a filesystem handle to the opened object. NULL if an error occurred.
+**/
+typedef ICEDB_fs_hnd*(*ICEDB_fs_clone_f)(
+	ICEDB_fs_hnd* handle);
+extern DL_ICEDB ICEDB_fs_clone_f ICEDB_fs_clone;
+
 
 /** \brief Get the full path opened by the file handle.
 	*
@@ -136,7 +146,7 @@ typedef const char*(*ICEDB_fs_getPath_f)(
 	ICEDB_OUT size_t* outPathSize, 
 	ICEDB_OUT char ** const bufPath,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
-DL_ICEDB ICEDB_fs_getPath_f ICEDB_fs_getPath;
+extern DL_ICEDB ICEDB_fs_getPath_f ICEDB_fs_getPath;
 
 /** \brief Get the ICEDB_file_open_flags passed to the plugin when the handle was opened
 	*
@@ -144,7 +154,7 @@ DL_ICEDB ICEDB_fs_getPath_f ICEDB_fs_getPath;
 	* \param err is an error code.
 	**/
 typedef ICEDB_file_open_flags(*ICEDB_fs_getOpenFlags_f)(const ICEDB_fs_hnd* p);
-DL_ICEDB ICEDB_fs_getOpenFlags_f ICEDB_fs_getOpenFlags;
+extern DL_ICEDB ICEDB_fs_getOpenFlags_f ICEDB_fs_getOpenFlags;
 
 /** \brief Close a file handle
 	*
@@ -152,7 +162,7 @@ DL_ICEDB ICEDB_fs_getOpenFlags_f ICEDB_fs_getOpenFlags;
 	* \returns an error code. Zero on success.
 	**/
 typedef ICEDB_error_code(*ICEDB_fs_close_f)(ICEDB_fs_hnd* p);
-DL_ICEDB ICEDB_fs_close_f ICEDB_fs_close;
+extern DL_ICEDB ICEDB_fs_close_f ICEDB_fs_close;
 
 /** \brief Move an object
 	*
@@ -163,7 +173,7 @@ DL_ICEDB ICEDB_fs_close_f ICEDB_fs_close;
 	* \returns Zero on success, nonzero on any error.
 	**/
 typedef ICEDB_error_code(*ICEDB_fs_move_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
-DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move;
+extern DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move;
 
 /** \brief Copy an object
 *
@@ -174,7 +184,7 @@ DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_copy_f)(ICEDB_fs_hnd* p, const char* src, const char* dest, bool overwrite);
-DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy;
+extern DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy;
 
 /** \brief Unlink an object
 *
@@ -185,7 +195,7 @@ DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_unlink_f)(ICEDB_fs_hnd* p, const char* path);
-DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink;
+extern DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink;
 
 /** \brief Create a hard link
 *
@@ -196,7 +206,7 @@ DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_createHardLink_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
-DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
+extern DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
 
 /** \brief Create a symbolic link
 *
@@ -207,7 +217,7 @@ DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_createSymLink_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
-DL_ICEDB ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink;
+extern DL_ICEDB ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink;
 
 /** \brief Follow a symbolic link
 *
@@ -228,7 +238,7 @@ typedef const char*(*ICEDB_fs_followSymLink_f)(ICEDB_fs_hnd* p,
 	ICEDB_OUT size_t* outPathSize,
 	ICEDB_OUT char ** const bufPath,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
-DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
+extern DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
 
 /** \brief Does a path exist?
 *
@@ -238,7 +248,7 @@ DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
 * \returns True if the path exists, false if the path does not exist or if there is an error (such as when a parent path does not exist).
 **/
 typedef bool(*ICEDB_fs_pathExists_f)(const ICEDB_fs_hnd* p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
-DL_ICEDB ICEDB_fs_pathExists_f ICEDB_fs_pathExists;
+extern DL_ICEDB ICEDB_fs_pathExists_f ICEDB_fs_pathExists;
 
 /// The maximum length of a path.
 #define ICEDB_FS_PATH_CONTENTS_PATH_MAX 32767
@@ -275,7 +285,7 @@ typedef ICEDB_fs_path_contents*(*ICEDB_fs_pathInfo_f)(
 	const ICEDB_fs_hnd* p,
 	const char* path,
 	ICEDB_OUT ICEDB_fs_path_contents *res);
-DL_ICEDB ICEDB_fs_pathInfo_f ICEDB_fs_pathInfo;
+extern DL_ICEDB ICEDB_fs_pathInfo_f ICEDB_fs_pathInfo;
 
 /** \brief Free a path structure
 *
@@ -283,7 +293,7 @@ DL_ICEDB ICEDB_fs_pathInfo_f ICEDB_fs_pathInfo;
 * \see ICEDB_fh_path_info
 **/
 typedef void(*ICEDB_fs_pathInfoFree_f)(ICEDB_fs_path_contents *pc);
-DL_ICEDB ICEDB_fs_pathInfoFree_f ICEDB_fs_pathInfoFree;
+extern DL_ICEDB ICEDB_fs_pathInfoFree_f ICEDB_fs_pathInfoFree;
 
 /** \brief Enumerate all one-level child objects
 * \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
@@ -299,7 +309,7 @@ typedef ICEDB_fs_path_contents *** const(*ICEDB_fs_readObjs_f)(
 	const char* path, 
 	size_t *numObjs, 
 	ICEDB_OUT ICEDB_fs_path_contents *** const res);
-DL_ICEDB ICEDB_fs_readObjs_f ICEDB_fs_readObjs;
+extern DL_ICEDB ICEDB_fs_readObjs_f ICEDB_fs_readObjs;
 
 /** \brief Free the results of a ICEDB_fh_readObjs call
 * \param p is a pointer to the path information structure that gets populated. Must be non-NULL. Must be freed with ICEDB_fh_freeObjs after use.
@@ -307,20 +317,21 @@ DL_ICEDB ICEDB_fs_readObjs_f ICEDB_fs_readObjs;
 **/
 typedef void(*ICEDB_fs_freeObjs_f)(
 	ICEDB_OUT ICEDB_fs_path_contents *** const p);
-DL_ICEDB ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs;
+extern DL_ICEDB ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs;
 
 enum ICEDB_DATA_TYPES {
-	ICEDB_TYPE_CHAR, // NC_CHAR
-	ICEDB_TYPE_INT8, // NC_BYTE
-	ICEDB_TYPE_UINT8, // NC_UBYTE
-	ICEDB_TYPE_UINT16, // NC_USHORT
-	ICEDB_TYPE_INT16, // NC_SHORT
-	ICEDB_TYPE_UINT32, // NC_UINT
-	ICEDB_TYPE_INT32, // NC_INT (or NC_LONG)
-	ICEDB_TYPE_UINT64, // NC_UINT64
-	ICEDB_TYPE_INT64, // NC_INT64
-	ICEDB_TYPE_FLOAT, // NC_FLOAT
-	ICEDB_TYPE_DOUBLE, // NC_DOUBLE
+	ICEDB_TYPE_NOTYPE, ///< Signifies no type / an error
+	ICEDB_TYPE_CHAR, ///< Equiv. to NC_CHAR
+	ICEDB_TYPE_INT8, ///< Equiv. to NC_BYTE
+	ICEDB_TYPE_UINT8, ///< Equiv. to NC_UBYTE
+	ICEDB_TYPE_UINT16, ///< Equiv. to NC_USHORT
+	ICEDB_TYPE_INT16, ///< Equiv. to NC_SHORT
+	ICEDB_TYPE_UINT32, ///< Equiv. to NC_UINT
+	ICEDB_TYPE_INT32, ///< Equiv. to NC_INT (or NC_LONG)
+	ICEDB_TYPE_UINT64, ///< Equiv. to NC_UINT64
+	ICEDB_TYPE_INT64, ///< Equiv. to NC_INT64
+	ICEDB_TYPE_FLOAT, ///< Equiv. to NC_FLOAT
+	ICEDB_TYPE_DOUBLE, ///< Equiv. to NC_DOUBLE
 					   // These have no corresponding NetCDF type. They never get saved by themselves, but contain pointers to things like string arrays, which are NetCDF objects.
 					   ICEDB_TYPE_INTMAX,
 					   ICEDB_TYPE_INTPTR,
@@ -328,10 +339,127 @@ enum ICEDB_DATA_TYPES {
 					   ICEDB_TYPE_UINTPTR
 };
 
-struct ICEDB_fs_container_vtable {
+// Base attribute manipulation functions go here
+struct ICEDB_attr;
+/** \brief Create an attribute
+* \param parent is a pointer to the parent object (the object that stores the attribute's data). If no parent is specified, then the attribute cannot be stored.
+* \param type is the type of the attribute.
+* \param size is the size, in bytes, of the attribute.
+* \param hasSize indicates if the attribute is fixed-size or variable.
+* \param err is an error code
+* \returns NULL if an error occurred, otherwise with a new attribute object.
+**/
+typedef ICEDB_attr*(*ICEDB_attr_create_f)(
+	ICEDB_OPTIONAL ICEDB_fs_hnd* parent,
+	const char* name,
+	ICEDB_DATA_TYPES type,
+	size_t numDims,
+	size_t *dims,
+	bool hasFixedSize);
+/** \brief Open an attribute
+* \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
+* \param name is the name of the attribute. Must be null-terminated.
+* \param err is an error code
+* \returns NULL if an error occurred, otherwise with a new copy of the attribute object.
+**/
+typedef ICEDB_attr*(*ICEDB_attr_open_f)(
+	const ICEDB_fs_hnd* parent,
+	const char* name);
+/** \brief Delete an attribute attached to an object
+* \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
+* \param name is the name of the attribute. Must be null-terminated.
+* \param err is an error code
+* \returns false if an error occurred, otherwise true.
+**/
+typedef bool(*ICEDB_attr_remove_f)(ICEDB_fs_hnd* parent, const char* name);
+/** \brief Returns the number of attributes for a filesystem handle.
+* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
+* \param err is an error code.
+* \returns The number of attributes. If an error occurs, returns 0.
+**/
+typedef size_t(*ICEDB_attr_getNumAttrs_f)(const ICEDB_fs_hnd* p, ICEDB_OUT ICEDB_error_code* err);
+/** \brief Get the name of an attribute
+* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
+* \param attrnum is the attribute number. Spans [0, numAttrs). An error will occur if this is out of range.
+* \param inPathSize is used if the output name array is already pre-allocated, in which case it represents the size (in __bytes__) of the array.
+If dynamic allocation is instead requested, set this to NULL.
+* \param outPathSize is a pointer to the number of bytes in the output array neede to represent the path. If the path is too large to fit into
+a staticly-allocated array, then an error code will be emitted.
+* \param bufPath is a pointer to the output path array.
+* \param deallocator is a function that can deallocate bufPath once it is no longer needed. Use this only when inPathSize != 0.
+* \param err is an error code.
+* \returns bufPath on success, NULL on error.
+**/
+typedef const char*(*ICEDB_attr_getAttrName_f)(
+	const ICEDB_fs_hnd* p,
+	size_t attrnum,
+	ICEDB_OPTIONAL size_t inPathSize,
+	ICEDB_OUT size_t* outPathSize,
+	ICEDB_OUT char ** const bufPath,
+	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
+/** \brief Returns whether an attribute exists with the specified name.
+* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
+* \param name is the attribute name. Must be a NULL-terminated C-string.
+* \param err is an error code.
+* \returns True if the attribute exists, false if not. If an error occurs, returns false.
+**/
+typedef bool(*ICEDB_attr_attrExists_f)(const ICEDB_fs_hnd* p, const char* name, ICEDB_OUT ICEDB_error_code* err);
+/** \brief Renames an attribute
+* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
+* \param oldname is the attribute's current name. Must be a NULL-terminated C-string.
+* \param newname is the attribute's new name. Must be a NULL-terminated C-string.
+* \param err is an error code.
+* \returns True on success, false if an error occured.
+**/
+typedef bool(*ICEDB_attr_renameAttr_f)(ICEDB_fs_hnd* p, const char* oldname, const char* newname);
+/** \brief Free the results of a ICEDB_fh_readAttr call
+* \param p is a pointer to the ICEDB_attr*** structure that was populated. Must be non-NULL.
+* \see ICEDB_fh_readAllAttrs
+**/
+typedef bool(*ICEDB_attr_freeAttrList_f)(ICEDB_attr*** const p);
+/** \brief Read all attributes for a file handle.
+* \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
+* \param numAtts is filled with the number of attributes that were read.
+* \param res is the target pointer that gets populated.
+* \param err is an error code.
+* \returns A pointer to the attributes structure, which must be manually freed when no longer needed. NULL if an error occurred.
+* \see ICEDB_fh_freeAttrList
+**/
+typedef ICEDB_attr*** const(*ICEDB_attr_openAllAttrs_f)(
+	const ICEDB_fs_hnd* p, size_t *numAtts, ICEDB_OUT ICEDB_attr*** const res);
+/// Backend function to actually write the attribute's data.
+typedef bool(*ICEDB_attr_fs_write_backend)(
+	ICEDB_fs_hnd* p, const char* name,
+	ICEDB_DATA_TYPES type,
+	size_t numDims,
+	size_t *dims,
+	bool hasFixedSize,
+	void* data
+	);
+/** \brief This acts as a container for all attribute functions that require a base fs object to act as a container.
+*
+* To get these functions, see ICEDB_attr_getFunctions.
+* \see ICEDB_attr_getFunctions
+**/
+struct ICEDB_attr_container_ftable {
+	ICEDB_attr_create_f create;
+	ICEDB_attr_open_f open;
+	ICEDB_attr_remove_f remove;
+	ICEDB_attr_getNumAttrs_f count;
+	ICEDB_attr_getAttrName_f getName;
+	ICEDB_attr_attrExists_f exists;
+	ICEDB_attr_renameAttr_f rename;
+	ICEDB_attr_freeAttrList_f freeAttrList;
+	ICEDB_attr_openAllAttrs_f openAllAttrs;
+	ICEDB_attr_fs_write_backend writeAttrData;
+};
+//extern DL_ICEDB const struct ICEDB_attr_container_ftable ICEDB_ct_attr;
+
+struct ICEDB_fs_container_ftable {
 	ICEDB_fs_getHandlers_f getHandlers;
 	ICEDB_fs_canOpen_f canOpen;
 	ICEDB_fs_open_f open;
+	ICEDB_fs_clone_f clone;
 	ICEDB_fs_getPath_f getPath;
 	ICEDB_fs_getOpenFlags_f getOpenFlags;
 	ICEDB_fs_close_f close;
@@ -346,9 +474,12 @@ struct ICEDB_fs_container_vtable {
 	ICEDB_fs_pathInfoFree_f pathInfoFree;
 	ICEDB_fs_readObjs_f readObjs;
 	ICEDB_fs_freeObjs_f freeObjs;
+	const struct ICEDB_attr_container_ftable attrs;
 };
 
-DL_ICEDB const ICEDB_fs_container_vtable* ICEDB_fs_getContainerFunctions();
+//DL_ICEDB const ICEDB_fs_container_vtable* ICEDB_fs_getContainerFunctions();
+extern DL_ICEDB const struct ICEDB_fs_container_ftable ICEDB_ct_fs;
+
 
 /** @} */ // end of fs
 
