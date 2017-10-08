@@ -133,7 +133,7 @@ int main(int argc, char** argv) {
 			bool ptsTblExists = tblFuncs->exists(fsobj.get(), "particle_scattering_element_coordinates", &err);
 			if (err) processError();
 			if (!ptsTblExists) continue;
-			shared_ptr<ICEDB_TBL> tblPts(tblFuncs->open(fsobj.get(), "particle_scattering_element_coordinates"));
+			shared_ptr<ICEDB_tbl> tblPts(tblFuncs->open(fsobj.get(), "particle_scattering_element_coordinates"));
 			if (!tblPts) processError();
 			unique_ptr<float[]> ptArray(new float[numPts * 3]);
 			if (!tblPts->funcs->readFull(tblPts.get(), ptArray.get())) processError();

@@ -133,7 +133,7 @@ int main(int argc, char** argv) {
 			bool ptsTblExists = tblFuncs->exists(fsobj.get(), "particle_scattering_element_coordinates", &err);
 			if (err) processError();
 			if (!ptsTblExists) continue;
-			shared_ptr<ICEDB_TBL> tblPts(tblFuncs->open(fsobj.get(), "particle_scattering_element_coordinates"));
+			shared_ptr<ICEDB_tbl> tblPts(tblFuncs->open(fsobj.get(), "particle_scattering_element_coordinates"));
 			if (!tblPts) processError();
 			unique_ptr<float[]> ptArray(new float[numPts * 3]);
 			if (!tblPts->funcs->readFull(tblPts.get(), ptArray.get())) processError();
@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
 			size_t dims = 3;
 
 			// Write the means as an table with 3 rows and 1 column.
-			shared_ptr<ICEDB_TBL> tMeans(tblFuncs->create(fsobj.get(), "Means", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT,
+			shared_ptr<ICEDB_tbl> tMeans(tblFuncs->create(fsobj.get(), "Means", ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT,
 				1, &dims), tblFuncs->close);
 			tMeans->funcs->writeFull(tMeans.get(), means);
 		}

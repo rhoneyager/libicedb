@@ -31,6 +31,11 @@ bool attr_close(ICEDB_attr *attr)
 	if (!validate_attr_ptr(attr)) return false;
 	delete[] attr->dims;
 	delete[] attr->name;
+	attr->dims = nullptr;
+	attr->name = nullptr;
+
+	ICEDB_funcs_fs.close(attr->parent);
+	attr->parent = nullptr;
 	
 	delete attr;
 	return true;
@@ -39,19 +44,23 @@ DL_ICEDB ICEDB_attr_close_f ICEDB_attr_close = attr_close;
 
 bool attr_write(ICEDB_attr *attr) {
 	if (!validate_attr_ptr(attr)) return false;
-	return ICEDB_ct_fs.attrs.writeAttrData(attr->parent, attr->name, attr->type, attr->numDims,
-		attr->dims, attr->hasFixedSize, attr->data.vt);
+	return ICEDB_funcs_fs.attrs.writeAttrData(attr->parent, attr->name, attr->type, attr->numDims,
+		attr->dims, attr->data.vt);
 }
 DL_ICEDB ICEDB_attr_write_f ICEDB_attr_write = attr_write;
 
-ICEDB_attr* attr_copy(ICEDB_fs_hnd* newparent, const ICEDB_attr *oldattr, const char* newname) {
+ICEDB_attr* attr_copy(
+	const ICEDB_attr *oldattr, 
+	ICEDB_fs_hnd* newparent,
+	const char* newname) {
 	if (!validate_attr_ptr(oldattr)) return nullptr;
-	if (!newparent || !newname) {
+	if (!newparent) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_NULLPTR);
 		return nullptr;
 	}
-	ICEDB_attr *res = ICEDB_ct_fs.attrs.create(newparent, newname, oldattr->type, oldattr->numDims,
-		oldattr->dims, oldattr->hasFixedSize);
+	if (!newname) newname = oldattr->name;
+	ICEDB_attr *res = ICEDB_funcs_fs.attrs.create(newparent, newname, oldattr->type, oldattr->numDims,
+		oldattr->dims);
 	if (!res) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_NULLPTR);
 		return nullptr;
@@ -73,11 +82,11 @@ const char* attr_getName(const ICEDB_attr *attr) {
 }
 DL_ICEDB ICEDB_attr_getName_f ICEDB_attr_getName = attr_getName;
 */
-
+/*
 /// \note Makes a copy of the handle, which must be freed by the caller.
 ICEDB_fs_hnd* attr_getParent(const ICEDB_attr *attr) {
 	if (!validate_attr_ptr(attr)) return nullptr;
-	return ICEDB_ct_fs.clone(attr->parent);
+	return ICEDB_funcs_fs.clone(attr->parent);
 }
 DL_ICEDB ICEDB_attr_getParent_f ICEDB_attr_getParent = attr_getParent;
 
@@ -86,7 +95,7 @@ ICEDB_DATA_TYPES attr_getType(const ICEDB_attr *attr) {
 	return attr->type;
 }
 DL_ICEDB ICEDB_attr_getType_f ICEDB_attr_getType = attr_getType;
-
+*/
 bool attr_resize(ICEDB_attr *attr, ICEDB_DATA_TYPES newtype, size_t newNumDims, size_t* newDims) {
 	if (!validate_attr_ptr(attr)) return false;
 	if (!newDims || (newtype == ICEDB_DATA_TYPES::ICEDB_TYPE_NOTYPE) ){
@@ -158,7 +167,9 @@ bool attr_setData(ICEDB_attr *attr, const void* indata, size_t indataByteSize) {
 DL_ICEDB ICEDB_attr_setData_f ICEDB_attr_setData = attr_setData;
 
 
-DL_ICEDB const struct ICEDB_attr_ftable ICEDB_ct_attr_obj = {
-	attr_close, attr_write, attr_copy, attr_getParent,
-	attr_getType, attr_resize, attr_setData
+DL_ICEDB const struct ICEDB_attr_ftable ICEDB_funcs_attr_obj = {
+	attr_close, attr_write, attr_copy, //attr_getParent,
+	//attr_getType, 
+	attr_resize, 
+	attr_setData
 };
