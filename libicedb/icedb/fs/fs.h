@@ -545,6 +545,27 @@ typedef bool(*ICEDB_tbl_remove_f)(
 	);
 extern DL_ICEDB ICEDB_tbl_remove_f ICEDB_tbl_remove;
 
+/// Backend function to read table data
+typedef bool(*ICEDB_fs_inner_tbl_readMapped_f)(
+	const ICEDB_fs_hnd* parent,
+	const size_t *start,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	const ptrdiff_t *imapp,
+	ICEDB_OUT void* out);
+extern DL_ICEDB ICEDB_fs_inner_tbl_readMapped_f ICEDB_fs_inner_tbl_readMapped;
+
+/// Backend function to write table data
+typedef bool(*ICEDB_fs_inner_tbl_writeMapped_f)(
+	ICEDB_fs_hnd* parent,
+	const size_t *start,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	const ptrdiff_t *imapp,
+	const void* in);
+extern DL_ICEDB ICEDB_fs_inner_tbl_writeMapped_f ICEDB_fs_inner_tbl_writeMapped;
+
+
 /** \brief This acts as a container for all table functions that require a base fs object to act as a container.
 **/
 struct ICEDB_tbl_container_ftable{
@@ -555,6 +576,8 @@ struct ICEDB_tbl_container_ftable{
 	ICEDB_tbl_getTblName_f getName;
 	ICEDB_tbl_renameTbl_f rename;
 	ICEDB_tbl_exists_f exists;
+	ICEDB_fs_inner_tbl_readMapped_f _inner_tbl_readMapped;
+	ICEDB_fs_inner_tbl_writeMapped_f _inner_tbl_writeMapped;
 };
 
 struct ICEDB_fs_container_ftable {

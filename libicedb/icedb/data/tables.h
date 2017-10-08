@@ -102,8 +102,8 @@ extern DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy;
    If impossible, then the function will return an error and the internal data should be untouched.
 * \returns true on success, false on error.
 **/
-typedef bool (*ICEDB_tbl_resize_f)(ICEDB_tbl* tbl, size_t newnumdims, const size_t *newdims, bool conserve);
-extern DL_ICEDB ICEDB_tbl_resize_f ICEDB_tbl_resize;
+//typedef bool (*ICEDB_tbl_resize_f)(ICEDB_tbl* tbl, size_t newnumdims, const size_t *newdims);
+//extern DL_ICEDB ICEDB_tbl_resize_f ICEDB_tbl_resize;
 
 // Read values
 
@@ -187,7 +187,7 @@ struct ICEDB_tbl_ftable {
 	//ICEDB_tbl_getType_f getType;
 	//ICEDB_tbl_getNumDims_f getNumDims;
 	//ICEDB_tbl_getDims_f getDims;
-	ICEDB_tbl_resize_f resize;
+	//ICEDB_tbl_resize_f resize;
 	// These are handled by the underlying fs plugin
 	ICEDB_tbl_readSingle_f readSingle;
 	ICEDB_tbl_readMapped_f readMapped;

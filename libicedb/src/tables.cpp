@@ -102,3 +102,266 @@ ICEDB_tbl* tbl_copy(const ICEDB_tbl *srctbl,
 }
 DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy = tbl_copy;
 
+bool tbl_readMapped(
+	const ICEDB_tbl* tbl,
+	const size_t *start,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	const ptrdiff_t *imapp,
+	ICEDB_OUT void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
+		start, count, stride, imapp, out);
+}
+DL_ICEDB ICEDB_tbl_readMapped_f ICEDB_tbl_readMapped = tbl_readMapped;
+
+bool tbl_writeMapped(
+	ICEDB_tbl* tbl,
+	const size_t *start,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	const ptrdiff_t *imapp,
+	const void* in)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
+		start, count, stride, imapp, in);
+}
+DL_ICEDB ICEDB_tbl_writeMapped_f ICEDB_tbl_writeMapped = tbl_writeMapped;
+
+bool tbl_readSingle(
+	const ICEDB_tbl* tbl,
+	const size_t *index,
+	ICEDB_OUT void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	std::unique_ptr<size_t[]> unitvec(new size_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitstride(new ptrdiff_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+	for (size_t i = 0; i < tbl->numDims; ++i) {
+		unitvec[i] = 1;
+		unitstride[i] = 1;
+	}
+	
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i-1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
+		index, unitvec.get(), unitstride.get(), unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_readSingle_f ICEDB_tbl_readSingle = tbl_readSingle;
+
+bool tbl_readArray(
+	const ICEDB_tbl* tbl,
+	const size_t *index,
+	const size_t *count,
+	ICEDB_OUT void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	//std::unique_ptr<size_t[]> unitvec(new size_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitstride(new ptrdiff_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+	for (size_t i = 0; i < tbl->numDims; ++i) {
+		//unitvec[i] = 1;
+		unitstride[i] = 1;
+	}
+
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i - 1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
+		index, count, unitstride.get(), unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_readArray_f ICEDB_tbl_readArray = tbl_readArray;
+
+bool tbl_readStride(
+	const ICEDB_tbl* tbl,
+	const size_t *index,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	ICEDB_OUT void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i - 1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
+		index, count, stride, unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_readStride_f ICEDB_tbl_readStride = tbl_readStride;
+
+bool tbl_readFull(
+	const ICEDB_tbl* tbl,
+	ICEDB_OUT void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	std::unique_ptr<size_t[]> index(new size_t[tbl->numDims]);
+	std::unique_ptr<size_t[]> unitvec(new size_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitstride(new ptrdiff_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+	for (size_t i = 0; i < tbl->numDims; ++i) {
+		index[i] = 0;
+		unitvec[i] = 1;
+		unitstride[i] = 1;
+	}
+
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i - 1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
+		index.get(), tbl->dims, unitstride.get(), unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_readFull_f ICEDB_tbl_readFull = tbl_readFull;
+
+bool tbl_writeSingle(
+	ICEDB_tbl* tbl,
+	const size_t *index,
+	const void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	std::unique_ptr<size_t[]> unitvec(new size_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitstride(new ptrdiff_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+	for (size_t i = 0; i < tbl->numDims; ++i) {
+		unitvec[i] = 1;
+		unitstride[i] = 1;
+	}
+
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i - 1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
+		index, unitvec.get(), unitstride.get(), unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_writeSingle_f ICEDB_tbl_writeSingle = tbl_writeSingle;
+
+bool tbl_writeArray(
+	ICEDB_tbl* tbl,
+	const size_t *index,
+	const size_t *count,
+	const void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	//std::unique_ptr<size_t[]> unitvec(new size_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitstride(new ptrdiff_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+	for (size_t i = 0; i < tbl->numDims; ++i) {
+		//unitvec[i] = 1;
+		unitstride[i] = 1;
+	}
+
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i - 1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
+		index, count, unitstride.get(), unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_writeArray_f ICEDB_tbl_writeArray = tbl_writeArray;
+
+bool tbl_writeStride(
+	ICEDB_tbl* tbl,
+	const size_t *index,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	const void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i - 1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
+		index, count, stride, unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_writeStride_f ICEDB_tbl_writeStride = tbl_writeStride;
+
+bool tbl_writeFull(
+	ICEDB_tbl* tbl,
+	const void* out)
+{
+	if (!validate_tbl_ptr(tbl)) return false;
+	if (tbl->numDims == 0) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+		return false;
+	}
+	std::unique_ptr<size_t[]> index(new size_t[tbl->numDims]);
+	std::unique_ptr<size_t[]> unitvec(new size_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitstride(new ptrdiff_t[tbl->numDims]);
+	std::unique_ptr<ptrdiff_t[]> unitmap(new ptrdiff_t[tbl->numDims]);
+	for (size_t i = 0; i < tbl->numDims; ++i) {
+		index[i] = 0;
+		unitvec[i] = 1;
+		unitstride[i] = 1;
+	}
+
+	ptrdiff_t runmap = 1;
+	for (size_t i = tbl->numDims; i > 0; i--) {
+		unitmap[i - 1] = runmap;
+		runmap *= tbl->dims[i - 1];
+	}
+	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
+		index.get(), tbl->dims, unitstride.get(), unitmap.get(), out);
+}
+DL_ICEDB ICEDB_tbl_writeFull_f ICEDB_tbl_writeFull = tbl_writeFull;
+
+
+DL_ICEDB const struct ICEDB_tbl_ftable ICEDB_funcs_tbl_obj = {
+	tbl_close,
+	tbl_copy,
+	tbl_readSingle,
+	tbl_readMapped,
+	tbl_readArray,
+	tbl_readStride,
+	tbl_readFull,
+	tbl_writeSingle,
+	tbl_writeMapped,
+	tbl_writeArray,
+	tbl_writeStride,
+	tbl_writeFull
+};
