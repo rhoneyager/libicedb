@@ -58,7 +58,7 @@ extern DL_ICEDB ICEDB_shape_copy_f ICEDB_shape_copy;
 struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable {
 	ICEDB_shape_close_f close; ///< Removes shape from memory and performs clean-up tasks.
 	ICEDB_shape_getFSPtr_f getFSself; ///< Get the underlying (low-level) filesystem object.
-	ICEDB_shape_getFSPtr_f getFSparent; ///< Get the underlying (low-level) filesystem object.
+	//ICEDB_shape_getFSPtr_f getFSparent; ///< Get the underlying (low-level) filesystem object.
 	//ICEDB_shape_setStrAttr_f setDescription; ///< Set the description.
 	//ICEDB_shape_getStrAttr_f getDescription; ///< Get the description.
 	//ICEDB_shape_getScattElemCoords_f getScattElemCoords; ///< Get the scattering element coordinates. Coordinates are in row-major form, in the order of x1, y1, z1, x2, y2, z2, ...
@@ -80,18 +80,21 @@ struct _ICEDB_L0_SHAPE_VOL_SPARSE_impl;
 
 /// Represents a shape using a sparse-matrix form.
 struct ICEDB_L0_SHAPE_VOL_SPARSE {
-	ICEDB_fs_hnd *fsSelf, *fsParent;
+	ICEDB_fs_hnd *fsSelf; // , *fsParent;
 	//_ICEDB_L0_SHAPE_VOL_SPARSE_impl *_p; ///< An opaque pointer containing private implementation details.
-	struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable *funcs;
+	const struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable *funcs;
 };
 
 extern DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close;
 
 /**
 * \brief Create a new shape object.
-* \param backend is the storage backend used to store this shape. May be NULL, in which case a temporary backend is created.
+*
+* This function creates a new shape _at_ the location specified by objBackend.
+* The fs backend always allows you to create a subpath.
+* \param objBackend is the storage backend used to store this shape.
 **/
-typedef ICEDB_shape*(*ICEDB_shape_generate_f)(ICEDB_OPTIONAL ICEDB_fs_hnd* backend);
+typedef ICEDB_shape*(*ICEDB_shape_generate_f)(ICEDB_fs_hnd* objBackend);
 extern DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate;
 
 /** \brief This is a convenience function to open a single shape directly from a file.

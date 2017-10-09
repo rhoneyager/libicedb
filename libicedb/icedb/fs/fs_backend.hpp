@@ -31,6 +31,12 @@ struct ICEDB_fs_plugin_capabilities {
 
 struct interface_ICEDB_fs_plugin;
 
+struct ICEDB_fs_hnd_cpp;
+struct ICEDB_fs_hnd {
+	uint64_t magic;
+	std::shared_ptr<ICEDB_fs_hnd_cpp> _h;
+};
+
 struct ICEDB_fs_hnd_cpp : std::enable_shared_from_this<ICEDB_fs_hnd_cpp>{
 	uint64_t magic;
 	icedb::fs::hnd_t h; ///< The 'inner' handle. Contains the plugin's implementation details.
@@ -40,7 +46,7 @@ struct ICEDB_fs_hnd_cpp : std::enable_shared_from_this<ICEDB_fs_hnd_cpp>{
 	ICEDB_file_open_flags open_flags;
 	const char* pluginName;
 
-	ICEDB_fs_hnd* clone() const {
+	ICEDB_fs_hnd* clone() {
 		ICEDB_fs_hnd *nh = new ICEDB_fs_hnd;
 		nh->magic = magic;
 		nh->_h = this->shared_from_this();
@@ -48,10 +54,7 @@ struct ICEDB_fs_hnd_cpp : std::enable_shared_from_this<ICEDB_fs_hnd_cpp>{
 	}
 };
 
-struct ICEDB_fs_hnd {
-	uint64_t magic;
-	std::shared_ptr<ICEDB_fs_hnd_cpp> _h;
-};
+
 
 /*
 ICEDB_DLL_INTERFACE_BEGIN(ICEDB_core_fs)

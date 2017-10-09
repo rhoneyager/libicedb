@@ -336,7 +336,7 @@ typedef ICEDB_attr*(*ICEDB_attr_create_f)(
 	const char* name,
 	ICEDB_DATA_TYPES type,
 	size_t numDims,
-	size_t *dims);
+	const size_t *dims);
 /** \brief Open an attribute
 * \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
 * \param name is the name of the attribute. Must be null-terminated.
@@ -450,7 +450,7 @@ typedef struct ICEDB_tbl* (*ICEDB_tbl_create_f)(
 	const char* name,
 	ICEDB_DATA_TYPES type,
 	size_t numDims,
-	size_t *dims
+	const size_t *dims
 	);
 extern DL_ICEDB ICEDB_tbl_create_f ICEDB_tbl_create;
 

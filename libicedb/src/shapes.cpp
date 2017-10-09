@@ -43,6 +43,7 @@ ICEDB_fs_hnd* shape_getFSself(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 }
 DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself = shape_getFSself;
 
+/*
 ICEDB_fs_hnd* shape_getFSparent(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (validateShapePtr(shp)) {
 		return ICEDB_funcs_fs.clone(shp->fsParent);
@@ -50,6 +51,7 @@ ICEDB_fs_hnd* shape_getFSparent(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	else return nullptr;
 }
 DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSparent = shape_getFSparent;
+*/
 
 uint64_t shape_getNumPoints(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (!validateShapePtr(shp)) return 0;
@@ -110,7 +112,7 @@ uint64_t shape_getID(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 			size_t memSize = tSEC->dims[0] * tSEC->dims[1];
 			std::unique_ptr<float[]> data(new float[memSize]);
 			tSEC->funcs->readFull(tSEC.get(), data.get());
-			ICEDB_HASH_t hash = ICEDB_HASH(data.get(), memSize * sizeof(float));
+			ICEDB_HASH_t hash = ICEDB_HASH(data.get(), (int) (memSize * sizeof(float)));
 			return (uint64_t)hash.low;
 		}
 		else {
@@ -172,3 +174,51 @@ bool shape_copy(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
 	return false;
 }
 DL_ICEDB ICEDB_shape_copy_f ICEDB_shape_copy = shape_copy;
+
+
+ICEDB_shape* shape_generate(ICEDB_fs_hnd* objBackend) {
+	ICEDB_shape* res = new ICEDB_shape;
+	res->fsSelf = objBackend;
+	res->funcs = &ICEDB_funcs_shp_obj;
+	// Create some basic tables and attributes.
+	const size_t typelen = 17;
+	const char objtype[typelen] = "shape_vol_sparse";
+	using namespace std;
+	shared_ptr<ICEDB_attr> aType(ICEDB_funcs_fs.attrs.create(objBackend, "icedb_obj_type",
+		ICEDB_DATA_TYPES::ICEDB_TYPE_CHAR, 1, &typelen), ICEDB_funcs_fs.attrs.close);
+	memcpy_s(aType->data.ct, aType->sizeBytes, objtype, typelen);
+	aType->funcs->write(aType.get());
+
+	const size_t uidlen = 1;
+	shared_ptr<ICEDB_attr> aID(ICEDB_funcs_fs.attrs.create(objBackend, "particle_id",
+		ICEDB_DATA_TYPES::ICEDB_TYPE_UINT64, 1, &uidlen), ICEDB_funcs_fs.attrs.close);
+	aID->data.ui64t[0] = 0;
+	aID->funcs->write(aID.get());
+
+	shared_ptr<ICEDB_attr> aSpacing(ICEDB_funcs_fs.attrs.create(objBackend, "particle_scattering_element_spacing",
+		ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 1, &uidlen), ICEDB_funcs_fs.attrs.close);
+	aSpacing->data.ft[0] = -1;
+	aSpacing->funcs->write(aSpacing.get());
+
+	// Tables
+	const size_t tblPtDims[] = { 1, 3 };
+	const float tblPtData[] = { -1, -1, -1 };
+	shared_ptr<ICEDB_tbl> tCoords(ICEDB_funcs_fs.tbls.create(objBackend, "particle_scattering_element_coordinates",
+		ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 2, tblPtDims), ICEDB_funcs_fs.tbls.close);
+	tCoords->funcs->writeFull(tCoords.get(), tblPtData);
+
+	const size_t tblPtConst[] = { 4 };
+	shared_ptr<ICEDB_tbl> tConstName(ICEDB_funcs_fs.tbls.create(objBackend, "particle_constituent_name",
+		ICEDB_DATA_TYPES::ICEDB_TYPE_CHAR, 1, tblPtConst), ICEDB_funcs_fs.tbls.close);
+	const char* tblPtConstData = "Ice";
+	tConstName->funcs->writeFull(tConstName.get(), tblPtConstData);
+
+	const size_t tblPtConstFracsSz[] = { 1, 1 };
+	const float tblPtConstFracsData[] = { 1.0f };
+	shared_ptr<ICEDB_tbl> tConstFracs(ICEDB_funcs_fs.tbls.create(objBackend, "particle_scattering_element_composition",
+		ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 2, tblPtConstFracsSz), ICEDB_funcs_fs.tbls.close);
+	tConstFracs->funcs->writeFull(tConstFracs.get(), tblPtConstFracsData);
+
+	return res;
+}
+DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate = shape_generate;
