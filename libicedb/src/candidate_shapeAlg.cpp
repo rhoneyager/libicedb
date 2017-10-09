@@ -48,7 +48,7 @@ bool NaiveAlg(const ICEDB_tbl** inTbls, const ICEDB_attr** inAtts,
 	free(points);
 	const size_t outSz = 1;
 	outDist->funcs->resize(outDist, ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT, 1, &outSz);
-	*(outDist->data.ft) = sqrtf(maxDistSq);
+	*(outDist->data.ft) = sqrtf(maxDistSq) * interLatticeSpacing_m;
 	outDist->funcs->write(outDist);
 	return true;
 }
@@ -59,7 +59,7 @@ bool NaiveAlg(const ICEDB_tbl** inTbls, const ICEDB_attr** inAtts,
 DL_ICEDB const struct ICEDB_L1_shape_alg_def alg_naive_max_distance = 
 {
 	// The algorithm name
-	"alg_nieve_max_distance",
+	"alg_naive_max_distance",
 	// The description
 	"Computes the maximum distance between any two scattering centers",
 	// This is a very expensive algorithm, so it should really never be used
