@@ -40,7 +40,7 @@ struct ICEDB_tbl {
 * \param newparent is a pointer to the parent object (the object that stores the table's data).
 * \param srctbl is the table that is copied
 * \param newname is the name of the copied table. If NULL, then the name is the same.
-* \returns NULL if an error occurred, otherwise with a new copy of the attribute object.
+* \returns NULL if an error occurred, otherwise with a new copy of the table object.
 **/
 typedef ICEDB_tbl* (*ICEDB_tbl_copy_f)(
 	const ICEDB_tbl* srctbl,

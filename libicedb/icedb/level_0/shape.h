@@ -27,6 +27,7 @@ typedef bool(*ICEDB_shape_setScattElemCoords_f)(ICEDB_shape*, const float*);
 typedef bool(*ICEDB_shape_tableExists_f)(const ICEDB_shape*, const char*);
 typedef ICEDB_fs_hnd*(*ICEDB_shape_getFSPtr_f)(const ICEDB_shape*);
 extern DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself;
+extern DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSparent;
 typedef bool(*ICEDB_shape_close_f)(ICEDB_shape*);
 extern DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close;
 
@@ -57,6 +58,7 @@ extern DL_ICEDB ICEDB_shape_copy_f ICEDB_shape_copy;
 struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable {
 	ICEDB_shape_close_f close; ///< Removes shape from memory and performs clean-up tasks.
 	ICEDB_shape_getFSPtr_f getFSself; ///< Get the underlying (low-level) filesystem object.
+	ICEDB_shape_getFSPtr_f getFSparent; ///< Get the underlying (low-level) filesystem object.
 	//ICEDB_shape_setStrAttr_f setDescription; ///< Set the description.
 	//ICEDB_shape_getStrAttr_f getDescription; ///< Get the description.
 	//ICEDB_shape_getScattElemCoords_f getScattElemCoords; ///< Get the scattering element coordinates. Coordinates are in row-major form, in the order of x1, y1, z1, x2, y2, z2, ...
@@ -78,7 +80,7 @@ struct _ICEDB_L0_SHAPE_VOL_SPARSE_impl;
 
 /// Represents a shape using a sparse-matrix form.
 struct ICEDB_L0_SHAPE_VOL_SPARSE {
-	ICEDB_fs_hnd *fsSelf;
+	ICEDB_fs_hnd *fsSelf, *fsParent;
 	//_ICEDB_L0_SHAPE_VOL_SPARSE_impl *_p; ///< An opaque pointer containing private implementation details.
 	struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable *funcs;
 };

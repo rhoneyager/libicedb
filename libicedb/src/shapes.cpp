@@ -43,6 +43,14 @@ ICEDB_fs_hnd* shape_getFSself(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 }
 DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself = shape_getFSself;
 
+ICEDB_fs_hnd* shape_getFSparent(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
+	if (validateShapePtr(shp)) {
+		return ICEDB_funcs_fs.clone(shp->fsParent);
+	}
+	else return nullptr;
+}
+DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSparent = shape_getFSparent;
+
 uint64_t shape_getNumPoints(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (!validateShapePtr(shp)) return 0;
 
@@ -115,6 +123,52 @@ uint64_t shape_getID(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 DL_ICEDB ICEDB_shape_getID_f ICEDB_shape_getID = shape_getID;
 
 ICEDB_shape* shape_copy_open(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
+	if (!validateShapePtr(shp)) return nullptr;
+	if (!newparent) {
+		ICEDB_error_context_create(ICEDB_ERRORCODES_NULLPTR);
+		return nullptr;
+	}
+	// Create a new shape, and copy over all tables and attributes.
+	ICEDB_shape* res = ICEDB_funcs_fs_shp.generate(newparent);
 
+	// Copy all attributes
+	ICEDB_error_code err = 0;
+	size_t numAtts = 0;
+	ICEDB_attr ** allAtts;
+	ICEDB_funcs_fs.attrs.openAllAttrs(shp->fsSelf, &numAtts, &allAtts);
+	for (size_t i = 0; i < numAtts; ++i) {
+		std::shared_ptr<ICEDB_attr> newatt(
+			ICEDB_funcs_attr_obj.copy((allAtts)[i], res->fsSelf, NULL),
+			ICEDB_funcs_attr_obj.close);
+		ICEDB_funcs_attr_obj.write(newatt.get());
+	}
+	ICEDB_funcs_fs.attrs.freeAttrList(&allAtts);
+
+	// Copy all tables
+	size_t numTbls = ICEDB_funcs_fs.tbls.count(shp->fsSelf, &err);
+	for (size_t i = 0; i < numTbls; ++i) {
+		char tblName[1000] = "";
+		ICEDB_funcs_fs.tbls.getName(shp->fsSelf, i, 1000, NULL, (char**)(&tblName), NULL);
+		std::shared_ptr<ICEDB_tbl> tbl(
+			ICEDB_funcs_fs.tbls.open(shp->fsSelf, tblName),
+			ICEDB_funcs_fs.tbls.close);
+		// This gets freed pretty much instantly, but I don't want to
+		// change the function definition, and I might want to slightly modify the table.
+		std::shared_ptr<ICEDB_tbl> newtbl(
+			tbl->funcs->copy(tbl.get(), res->fsSelf, nullptr),
+			ICEDB_funcs_fs.tbls.close);
+	}
+
+	return res;
 }
 DL_ICEDB ICEDB_shape_copy_open_f ICEDB_shape_copy_open = shape_copy_open;
+
+bool shape_copy(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
+	std::shared_ptr<ICEDB_shape> newshp(
+		shape_copy_open(shp, newparent),
+		shape_close
+	);
+	if (newshp) return true;
+	return false;
+}
+DL_ICEDB ICEDB_shape_copy_f ICEDB_shape_copy = shape_copy;
