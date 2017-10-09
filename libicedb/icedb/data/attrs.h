@@ -86,7 +86,7 @@ typedef ICEDB_attr*(*ICEDB_attr_copy_f)(
 /// Does the attribute have a fixed size?
 //typedef bool(*ICEDB_attr_hasFixedSize_f)(const ICEDB_attr* attr);
 /// \brief Resize attribute
-typedef bool(*ICEDB_attr_resize_f)(ICEDB_attr* attr, ICEDB_DATA_TYPES newType, size_t numDims, size_t* dims);
+typedef bool(*ICEDB_attr_resize_f)(ICEDB_attr* attr, ICEDB_DATA_TYPES newType, size_t numDims, const size_t* dims);
 // Get attribute data
 //typedef const ICEDB_attr_DATA*(*ICEDB_attr_getData_f)(const ICEDB_attr* attr);
 /// Set attribute data. Copies attribute's size from indata into the attribute.

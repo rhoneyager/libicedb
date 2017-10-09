@@ -319,25 +319,7 @@ typedef void(*ICEDB_fs_freeObjs_f)(
 	ICEDB_OUT ICEDB_fs_path_contents *** const p);
 extern DL_ICEDB ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs;
 
-enum ICEDB_DATA_TYPES {
-	ICEDB_TYPE_NOTYPE, ///< Signifies no type / an error
-	ICEDB_TYPE_CHAR, ///< Equiv. to NC_CHAR
-	ICEDB_TYPE_INT8, ///< Equiv. to NC_BYTE
-	ICEDB_TYPE_UINT8, ///< Equiv. to NC_UBYTE
-	ICEDB_TYPE_UINT16, ///< Equiv. to NC_USHORT
-	ICEDB_TYPE_INT16, ///< Equiv. to NC_SHORT
-	ICEDB_TYPE_UINT32, ///< Equiv. to NC_UINT
-	ICEDB_TYPE_INT32, ///< Equiv. to NC_INT (or NC_LONG)
-	ICEDB_TYPE_UINT64, ///< Equiv. to NC_UINT64
-	ICEDB_TYPE_INT64, ///< Equiv. to NC_INT64
-	ICEDB_TYPE_FLOAT, ///< Equiv. to NC_FLOAT
-	ICEDB_TYPE_DOUBLE, ///< Equiv. to NC_DOUBLE
-					   // These have no corresponding NetCDF type. They never get saved by themselves, but contain pointers to things like string arrays, which are NetCDF objects.
-					   ICEDB_TYPE_INTMAX,
-					   ICEDB_TYPE_INTPTR,
-					   ICEDB_TYPE_UINTMAX,
-					   ICEDB_TYPE_UINTPTR
-};
+
 
 // Base attribute manipulation functions go here
 struct ICEDB_attr;

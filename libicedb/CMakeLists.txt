@@ -75,6 +75,10 @@ set (level_0_objs
 	docs/shapes.md
 	src/shapes.cpp
 	)
+set (level_1_objs
+	icedb/level_1/candidate_shapeAlg.h
+	src/candidate_shapeAlg.cpp
+	)
 set (data_objs
 	icedb/data/attrs.h
 	icedb/data/attrs.hpp
@@ -91,7 +95,7 @@ generaterc("libicedb" "dll"
 
 set(srcs ${base_objs} ${data_objs} ${dlls_objs} ${error_objs} ${fs_objs}
 	${misc_objs} ${units_objs}
-	${versioning_objs} ${level_0_objs})
+	${versioning_objs} ${level_0_objs} ${level_1_objs})
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
@@ -105,6 +109,7 @@ source_group("Misc" FILES ${misc_objs})
 source_group("Units" FILES ${units_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("Level 0" FILES ${level_0_objs})
+source_group("Level 1" FILES ${level_1_objs})
 
 add_library(libicedb SHARED ${srcs})
 addlib(libicedb SHARED)

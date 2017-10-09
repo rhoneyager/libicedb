@@ -171,6 +171,26 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, 
 /// Denotes an 'optional' parameter (one which can be replaced with a NULL or nullptr)
 #define ICEDB_OPTIONAL
 
+enum ICEDB_DATA_TYPES {
+	ICEDB_TYPE_NOTYPE, ///< Signifies no type / an error
+	ICEDB_TYPE_CHAR, ///< Equiv. to NC_CHAR
+	ICEDB_TYPE_INT8, ///< Equiv. to NC_BYTE
+	ICEDB_TYPE_UINT8, ///< Equiv. to NC_UBYTE
+	ICEDB_TYPE_UINT16, ///< Equiv. to NC_USHORT
+	ICEDB_TYPE_INT16, ///< Equiv. to NC_SHORT
+	ICEDB_TYPE_UINT32, ///< Equiv. to NC_UINT
+	ICEDB_TYPE_INT32, ///< Equiv. to NC_INT (or NC_LONG)
+	ICEDB_TYPE_UINT64, ///< Equiv. to NC_UINT64
+	ICEDB_TYPE_INT64, ///< Equiv. to NC_INT64
+	ICEDB_TYPE_FLOAT, ///< Equiv. to NC_FLOAT
+	ICEDB_TYPE_DOUBLE, ///< Equiv. to NC_DOUBLE
+					   // These have no corresponding NetCDF type. They never get saved by themselves, but contain pointers to things like string arrays, which are NetCDF objects.
+					   ICEDB_TYPE_INTMAX,
+					   ICEDB_TYPE_INTPTR,
+					   ICEDB_TYPE_UINTMAX,
+					   ICEDB_TYPE_UINTPTR
+};
+
 ICEDB_END_DECL_C
 
 #endif
