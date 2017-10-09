@@ -1,4 +1,5 @@
 #include "../icedb/data/tables.h"
+#include "../icedb/data/attrs.h"
 #include "../icedb/fs/fs.h"
 #include "../icedb/error/error_context.h"
 #include <memory>
@@ -98,6 +99,18 @@ ICEDB_tbl* tbl_copy(const ICEDB_tbl *srctbl,
 		res->funcs->close(res);
 		return nullptr;
 	}
+
+	// Also, copy all attributes!
+	size_t numAtts = 0;
+	ICEDB_attr ** allAtts;
+	ICEDB_funcs_fs.attrs.openAllAttrs(srctbl->self, &numAtts, &allAtts);
+	for (size_t i = 0; i < numAtts; ++i) {
+		std::shared_ptr<ICEDB_attr> newatt(
+			ICEDB_funcs_attr_obj.copy((allAtts)[i], newparent, NULL),
+			ICEDB_funcs_attr_obj.close);
+		ICEDB_funcs_attr_obj.write(newatt.get());
+	}
+	ICEDB_funcs_fs.attrs.freeAttrList(&allAtts);
 	return res;
 }
 DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy = tbl_copy;

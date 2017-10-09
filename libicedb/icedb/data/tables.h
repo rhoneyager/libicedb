@@ -34,14 +34,6 @@ struct ICEDB_tbl {
 	//ICEDB_attr* next; ///< The next object in the list. End of list is denoted by NULL.
 };
 
-/** \brief Close a table (and free data structures)
-* \param tbl is the table. Must be non-NULL.
-* \returns false if an error occurred, otherwise true.
-**/
-typedef bool (*ICEDB_tbl_close_f)(
-	ICEDB_tbl* tbl
-);
-extern DL_ICEDB ICEDB_tbl_close_f ICEDB_tbl_close;
 
 
 /** \brief Copy a table

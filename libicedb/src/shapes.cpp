@@ -4,90 +4,117 @@
 #include "../libicedb/icedb/error/error.h"
 #include "../libicedb/icedb/error/error_context.h"
 #include "../libicedb/icedb/fs/fs_backend.hpp"
+#include "../libicedb/icedb/misc/hash.h"
+#include <memory>
+#include <cassert>
 
-struct _ICEDB_L0_SHAPE_VOL_SPARSE_impl {
-	ICEDB_fs_hnd_p fshnd;
-	size_t numpts;
-};
-
-bool validateShapePtr(ICEDB_SHAPE_p shp) {
+bool validateShapePtr(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (!shp) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
 		return false;
 	}
-	if (!shp->_p) {
+	if (!shp->fsSelf) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
 		return false;
 	}
-	if (!shp->_p->fshnd) {
-		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
-		return false;
-	}
-	if (!shp->_vptrs) {
+	if (!shp->funcs) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
 		return false;
 	}
 	return true;
 }
 
-bool shape_destructor(ICEDB_SHAPE_p shp, ICEDB_OUT ICEDB_error_code* err) {
-	bool good = false;
+bool shape_close(ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (validateShapePtr(shp)) {
-		delete shp->_p;
-		delete shp->_vptrs;
+		//delete shp->_p;
+		ICEDB_funcs_fs.close(shp->fsSelf);
 		delete shp;
-		good = true;
-	} else {
-		*err = ICEDB_ERRORCODES_TODO;
-		// ICEDB_error_context_create(ICEDB_ERRORCODES_TODO); // Context already created
+		return true;
 	}
-	return good;
+	return false;
 }
+DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close = shape_close;
 
-ICEDB_fs_hnd_p shape_getBackendPtr(ICEDB_SHAPE_p shp) {
+ICEDB_fs_hnd* shape_getFSself(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (validateShapePtr(shp)) {
-		return shp->_p->fshnd->_h->clone();
+		return ICEDB_funcs_fs.clone(shp->fsSelf);
 	}
 	else return nullptr;
 }
+DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself = shape_getFSself;
 
-bool shape_setDesc(ICEDB_SHAPE_p shp, const char* desc) {
-	if (validateShapePtr(shp)) {
-		ICEDB_attr_p attr = ICEDB_attr_create(shp->_p->fshnd, "description", ICEDB_TYPE_CHAR, strlen(desc) + 1, true);
-		strncpy(attr->data.ct, desc, strlen(desc) + 1);
-		ICEDB_attr_write(attr);
-		ICEDB_attr_close(attr);
-	}
-	else return false;
-}
+uint64_t shape_getNumPoints(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
+	if (!validateShapePtr(shp)) return 0;
 
-size_t shape_getNumPoints(ICEDB_SHAPE_p shp) {
-	if (validateShapePtr(shp)) {
-		// Query the underlying fs plugin
-		if (shp->_p->numpts) return shp->_p->numpts;
-		else {
-			ICEDB_error_code err = 0;
-			ICEDB_fs_hnd_p h = shp->_p->fshnd; // shape_getBackendPtr(shp);
-			if (h) {
-				bool res = ICEDB_attr_attrExists(h, "particle_scattering_element_number", &err);
-				if (res) {
-					ICEDB_attr_p attr = ICEDB_attr_open(h, "particle_scattering_element_number");
-					if (attr) {
-						shp->_p->numpts = attr->data.ui64t[0];
-						ICEDB_attr_close(attr);
-					}
-				}
-			}
+	ICEDB_error_code err = 0; // Not really used here. I only care if objects exist, not if they cannot be read due to an error.
+	bool exists = ICEDB_funcs_fs.attrs.exists(shp->fsSelf, "particle_scattering_element_number", &err);
+	if (exists) {
+		std::shared_ptr<ICEDB_attr> aNumScatt(
+			ICEDB_funcs_fs.attrs.open(shp->fsSelf, "particle_scattering_element_number"),
+			ICEDB_funcs_fs.attrs.close);
+		assert(aNumScatt->type == ICEDB_DATA_TYPES::ICEDB_TYPE_UINT64);
+		assert(aNumScatt->sizeElems == 1);
+		return aNumScatt->data.ui64t[0];
+	} else {
+		// Someone forgot to set this attribute. It is easy to calculate from the
+		// "particle_scattering_element_coordinates" table.
+		exists = ICEDB_funcs_fs.tbls.exists(shp->fsSelf, "particle_scattering_element_coordinates", &err);
+		if (exists) {
+			std::shared_ptr<ICEDB_tbl> tSEC(
+				ICEDB_funcs_fs.tbls.open(shp->fsSelf, "particle_scattering_element_coordinates"),
+				ICEDB_funcs_fs.tbls.close);
+			assert(tSEC->numDims == 2);
+			// Ordering is rows, cols
+			return (uint64_t) tSEC->dims[0];
+		} else {
+			// Unable to get the number of points. The object is bad.
+			ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+			return 0;
 		}
-		return shp->_p->numpts;
 	}
-	else return 0;
-}
 
-bool shape_getID(ICEDB_SHAPE_p shp, ICEDB_OUT uint64_t* id) {
-	if (validateShapePtr(shp)) {
-		*id = 0;
+}
+DL_ICEDB ICEDB_shape_getNumPoints_f ICEDB_shape_getNumPoints = shape_getNumPoints;
+
+uint64_t shape_getID(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
+	if (!validateShapePtr(shp)) return 0;
+	ICEDB_error_code err = 0; // Not really used here. I only care if objects exist, not if they cannot be read due to an error.
+	bool exists = ICEDB_funcs_fs.attrs.exists(shp->fsSelf, "particle_id", &err);
+	if (exists) {
+		std::shared_ptr<ICEDB_attr> aNumScatt(
+			ICEDB_funcs_fs.attrs.open(shp->fsSelf, "particle_id"),
+			ICEDB_funcs_fs.attrs.close);
+		assert(aNumScatt->type == ICEDB_DATA_TYPES::ICEDB_TYPE_UINT64);
+		assert(aNumScatt->sizeElems == 1);
+		return aNumScatt->data.ui64t[0];
 	}
-	else return false;
+	else {
+		// Someone forgot to set this attribute.
+		// By default, calculate from the "particle_scattering_element_coordinates" table.
+		exists = ICEDB_funcs_fs.tbls.exists(shp->fsSelf, "particle_scattering_element_coordinates", &err);
+		if (exists) {
+			std::shared_ptr<ICEDB_tbl> tSEC(
+				ICEDB_funcs_fs.tbls.open(shp->fsSelf, "particle_scattering_element_coordinates"),
+				ICEDB_funcs_fs.tbls.close);
+			assert(tSEC->numDims == 2);
+			// Ordering is rows, cols
+			assert(tSEC->type == ICEDB_DATA_TYPES::ICEDB_TYPE_FLOAT);
+			size_t memSize = tSEC->dims[0] * tSEC->dims[1];
+			std::unique_ptr<float[]> data(new float[memSize]);
+			tSEC->funcs->readFull(tSEC.get(), data.get());
+			ICEDB_HASH_t hash = ICEDB_HASH(data.get(), memSize * sizeof(float));
+			return (uint64_t)hash.low;
+		}
+		else {
+			// Unable to get the number of points. The object is bad.
+			ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
+			return 0;
+		}
+	}
 }
+DL_ICEDB ICEDB_shape_getID_f ICEDB_shape_getID = shape_getID;
 
+ICEDB_shape* shape_copy_open(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
+
+}
+DL_ICEDB ICEDB_shape_copy_open_f ICEDB_shape_copy_open = shape_copy_open;

@@ -15,76 +15,82 @@ ICEDB_BEGIN_DECL_C
 /// This is the public header file that defines the shape manipulation operations.
 
 struct ICEDB_L0_SHAPE_VOL_SPARSE;
-typedef ICEDB_L0_SHAPE_VOL_SPARSE* ICEDB_L0_SHAPE_VOL_SPARSE_p;
+typedef ICEDB_L0_SHAPE_VOL_SPARSE ICEDB_shape;
 
-typedef ICEDB_L0_SHAPE_VOL_SPARSE ICEDB_SHAPE;
-//typedef ICEDB_L0_SHAPE_VOL_SPARSE_p ICEDB_SHAPE*;
+typedef uint64_t(*ICEDB_shape_getNumPoints_f)(const ICEDB_shape*);
+extern DL_ICEDB ICEDB_shape_getNumPoints_f ICEDB_shape_getNumPoints;
+typedef bool(*ICEDB_shape_setSize_f)(ICEDB_shape*, uint64_t);
+typedef bool(*ICEDB_shape_setStrAttr_f)(ICEDB_shape*, const char*);
+typedef const char*(*ICEDB_shape_getStrAttr_f)(const ICEDB_shape*);
+typedef bool(*ICEDB_shape_getScattElemCoords_f)(const ICEDB_shape*, ICEDB_OUT float*);
+typedef bool(*ICEDB_shape_setScattElemCoords_f)(ICEDB_shape*, const float*);
+typedef bool(*ICEDB_shape_tableExists_f)(const ICEDB_shape*, const char*);
+typedef ICEDB_fs_hnd*(*ICEDB_shape_getFSPtr_f)(const ICEDB_shape*);
+extern DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself;
+typedef bool(*ICEDB_shape_close_f)(ICEDB_shape*);
+extern DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close;
 
-typedef size_t(*ICEDB_SHAPE_getSize_f)(const ICEDB_SHAPE*);
-typedef bool(*ICEDB_SHAPE_setSize_f)(ICEDB_SHAPE*, size_t);
-typedef bool(*ICEDB_SHAPE_setStrAttr_f)(ICEDB_SHAPE*, const char*);
-typedef const char*(*ICEDB_SHAPE_getStrAttr_f)(const ICEDB_SHAPE*);
-typedef bool(*ICEDB_SHAPE_getScattElemCoords_f)(const ICEDB_SHAPE*, ICEDB_OUT float*);
-typedef bool(*ICEDB_SHAPE_setScattElemCoords_f)(ICEDB_SHAPE*, const float*);
-typedef bool(*ICEDB_SHAPE_tableExists_f)(const ICEDB_SHAPE*, const char*);
-typedef ICEDB_fs_hnd*(*ICEDB_SHAPE_getParentPtr_f)(const ICEDB_SHAPE*);
-typedef bool(*ICEDB_SHAPE_close_f)(ICEDB_SHAPE*);
-typedef bool(*ICEDB_SHAPE_hash_f)(const ICEDB_SHAPE*, ICEDB_OUT ICEDB_HASH_t*);
-typedef bool(*ICEDB_SHAPE_idnum_f)(const ICEDB_SHAPE*, ICEDB_OUT uint64_t*);
-typedef ICEDB_SHAPE*(*ICEDB_SHAPE_copy_open_f)(const ICEDB_SHAPE* src, ICEDB_fs_hnd* hnd);
-typedef bool(*ICEDB_SHAPE_copy_f)(const ICEDB_SHAPE*, ICEDB_fs_hnd*);
-//typedef ICEDB_attr_TYPES(*ICEDB_SHAPE_getTableType_f)(const ICEDB_SHAPE*, const char*);
+typedef bool(*ICEDB_shape_hash_f)(const ICEDB_shape*, ICEDB_OUT ICEDB_HASH_t*);
+typedef uint64_t(*ICEDB_shape_getID_f)(const ICEDB_shape*);
+extern DL_ICEDB ICEDB_shape_getID_f ICEDB_shape_getID;
+typedef ICEDB_shape*(*ICEDB_shape_copy_open_f)(const ICEDB_shape* src, ICEDB_fs_hnd* hnd);
+extern DL_ICEDB ICEDB_shape_copy_open_f ICEDB_shape_copy_open;
+typedef bool(*ICEDB_shape_copy_f)(const ICEDB_shape*, ICEDB_fs_hnd*);
+extern DL_ICEDB ICEDB_shape_copy_f ICEDB_shape_copy;
+//typedef ICEDB_attr_TYPES(*ICEDB_shape_getTableType_f)(const ICEDB_shape*, const char*);
 
 // Args are: ptr to shape, number of table dimensions (should be 2), size of each dimension, pointer to the data.
 // Returns: a bool indicating success if true
-//typedef bool(*ICEDB_SHAPE_getFloatTable_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, float* const*);
-//typedef bool(*ICEDB_SHAPE_getDoubleTable_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, double**);
-//typedef bool(*ICEDB_SHAPE_getUInt8Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint8_t**);
-//typedef bool(*ICEDB_SHAPE_getInt8Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int8_t**);
-//typedef bool(*ICEDB_SHAPE_getUInt16Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint16_t**);
-//typedef bool(*ICEDB_SHAPE_getInt16Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int16_t**);
-//typedef bool(*ICEDB_SHAPE_getUInt32Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint32_t**);
-//typedef bool(*ICEDB_SHAPE_getInt32Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int32_t**);
-//typedef bool(*ICEDB_SHAPE_getUInt64Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, uint64_t**);
-//typedef bool(*ICEDB_SHAPE_getInt64Table_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, int64_t**);
-//typedef bool(*ICEDB_SHAPE_getCharTable_f)(const ICEDB_SHAPE*, const char*, size_t*, size_t**, char**);
+//typedef bool(*ICEDB_shape_getFloatTable_f)(const ICEDB_shape*, const char*, size_t*, size_t**, float* const*);
+//typedef bool(*ICEDB_shape_getDoubleTable_f)(const ICEDB_shape*, const char*, size_t*, size_t**, double**);
+//typedef bool(*ICEDB_shape_getUInt8Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, uint8_t**);
+//typedef bool(*ICEDB_shape_getInt8Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, int8_t**);
+//typedef bool(*ICEDB_shape_getUInt16Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, uint16_t**);
+//typedef bool(*ICEDB_shape_getInt16Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, int16_t**);
+//typedef bool(*ICEDB_shape_getUInt32Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, uint32_t**);
+//typedef bool(*ICEDB_shape_getInt32Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, int32_t**);
+//typedef bool(*ICEDB_shape_getUInt64Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, uint64_t**);
+//typedef bool(*ICEDB_shape_getInt64Table_f)(const ICEDB_shape*, const char*, size_t*, size_t**, int64_t**);
+//typedef bool(*ICEDB_shape_getCharTable_f)(const ICEDB_shape*, const char*, size_t*, size_t**, char**);
 
 /// This is a convenient container for holding the functions that can operate on a shape.
 struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable {
-	ICEDB_SHAPE_close_f close; ///< Removes shape from memory and performs clean-up tasks.
-	ICEDB_SHAPE_getParentPtr_f getParent; ///< Get the underlying (low-level) filesystem object.
-	ICEDB_SHAPE_setStrAttr_f setDescription; ///< Set the description.
-	//ICEDB_SHAPE_getStrAttr_f getDescription; ///< Get the description.
-	//ICEDB_SHAPE_getScattElemCoords_f getScattElemCoords; ///< Get the scattering element coordinates. Coordinates are in row-major form, in the order of x1, y1, z1, x2, y2, z2, ...
-	ICEDB_SHAPE_getSize_f getNumPoints; ///< Get the number of scattering elements.
-	ICEDB_SHAPE_setSize_f setNumPoints; ///< Resize the number of scattering elements. This operation is destructive. It removes all existing stored tables.
-	//ICEDB_SHAPE_setScattElemCoords_f setScattElemCoords; ///< Set the scattering elements.
-	//ICEDB_SHAPE_hash_f getHash; ///< Get a unique identifier for this shape.
-	ICEDB_SHAPE_idnum_f getID; ///< Get a unique identifier for this shape.
-	ICEDB_SHAPE_copy_open_f copy_open; ///< Copy a shape to a new location. Return a pointer to the new, opened shape.
-	ICEDB_SHAPE_copy_f copy; ///< Copy a shape to a new location.
+	ICEDB_shape_close_f close; ///< Removes shape from memory and performs clean-up tasks.
+	ICEDB_shape_getFSPtr_f getFSself; ///< Get the underlying (low-level) filesystem object.
+	//ICEDB_shape_setStrAttr_f setDescription; ///< Set the description.
+	//ICEDB_shape_getStrAttr_f getDescription; ///< Get the description.
+	//ICEDB_shape_getScattElemCoords_f getScattElemCoords; ///< Get the scattering element coordinates. Coordinates are in row-major form, in the order of x1, y1, z1, x2, y2, z2, ...
+	ICEDB_shape_getNumPoints_f getNumPoints; ///< Get the number of scattering elements.
+	//ICEDB_shape_setSize_f setNumPoints; ///< Resize the number of scattering elements. This operation is destructive. It removes all existing stored tables.
+	//ICEDB_shape_setScattElemCoords_f setScattElemCoords; ///< Set the scattering elements.
+	//ICEDB_shape_hash_f getHash; ///< Get a unique identifier for this shape.
+	ICEDB_shape_getID_f getID; ///< Get a unique identifier for this shape.
+	ICEDB_shape_copy_open_f copy_open; ///< Copy a shape to a new location. Return a pointer to the new, opened shape.
+	ICEDB_shape_copy_f copy; ///< Copy a shape to a new location.
 	/// \todo Get scattering element types
 	/// \todo Set scattering element types
 	/// \todo Add support for manipulating other tables here, without getting the backend fs object.
 	/// \todo Add support for manipulating attributes here, without getting the backend fs object.
 };
+extern DL_ICEDB const struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable ICEDB_funcs_shp_obj;
 
 struct _ICEDB_L0_SHAPE_VOL_SPARSE_impl;
 
 /// Represents a shape using a sparse-matrix form.
 struct ICEDB_L0_SHAPE_VOL_SPARSE {
-	_ICEDB_L0_SHAPE_VOL_SPARSE_impl *_p; ///< An opaque pointer containing private implementation details.
+	ICEDB_fs_hnd *fsSelf;
+	//_ICEDB_L0_SHAPE_VOL_SPARSE_impl *_p; ///< An opaque pointer containing private implementation details.
 	struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable *funcs;
 };
 
-extern DL_ICEDB ICEDB_SHAPE_close_f ICEDB_SHAPE_close;
+extern DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close;
 
 /**
 * \brief Create a new shape object.
 * \param backend is the storage backend used to store this shape. May be NULL, in which case a temporary backend is created.
 **/
-typedef ICEDB_SHAPE*(*ICEDB_SHAPE_generate_f)(ICEDB_OPTIONAL ICEDB_fs_hnd* backend);
-extern DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
+typedef ICEDB_shape*(*ICEDB_shape_generate_f)(ICEDB_OPTIONAL ICEDB_fs_hnd* backend);
+extern DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate;
 
 /** \brief This is a convenience function to open a single shape directly from a file.
 * \param filename is the name of the file. Commonly shape.dat.
@@ -92,8 +98,8 @@ extern DL_ICEDB ICEDB_SHAPE_generate_f ICEDB_SHAPE_generate;
 * \param err is the error code, set upon error.
 * \returns A pointer to the loaded shape. NULL on error.
 **/
-typedef ICEDB_SHAPE*(*ICEDB_SHAPE_open_single_file_f)(const char* filename, ICEDB_file_open_flags flags);
-extern DL_ICEDB ICEDB_SHAPE_open_single_file_f ICEDB_SHAPE_open_single_file;
+typedef ICEDB_shape*(*ICEDB_shape_open_single_file_f)(const char* filename, ICEDB_file_open_flags flags);
+extern DL_ICEDB ICEDB_shape_open_single_file_f ICEDB_shape_open_single_file;
 
 /** \brief This is a convenience function to open all shapes under a path. 
 * \param path is the base path.
@@ -103,29 +109,29 @@ extern DL_ICEDB ICEDB_SHAPE_open_single_file_f ICEDB_SHAPE_open_single_file;
 * \param shapes is a pointer to a null-terminated array of loaded shapes. Must be freed once the array is no longer used. Each member should NOT be manually freed.
 * \returns shapes.
 **/
-typedef ICEDB_SHAPE*** const (*ICEDB_SHAPE_open_path_all_f)(
+typedef ICEDB_shape*** const (*ICEDB_shape_open_path_all_f)(
 	const char* path,
 	ICEDB_path_iteration pit,
 	ICEDB_file_open_flags flags,
 	ICEDB_OUT size_t * numShapes);
-extern DL_ICEDB ICEDB_SHAPE_open_path_all_f ICEDB_SHAPE_open_path_all;
+extern DL_ICEDB ICEDB_shape_open_path_all_f ICEDB_shape_open_path_all;
 
-/** \brief Free the results of a ICEDB_SHAPE_open_path_all call
+/** \brief Free the results of a ICEDB_shape_open_path_all call
 * \param p is a pointer to the list of shapes. 
-* \see ICEDB_SHAPE_open_path_all
+* \see ICEDB_shape_open_path_all
 **/
-typedef void(*ICEDB_SHAPE_open_path_all_free_f)(
-	ICEDB_SHAPE*** const shapes);
-extern DL_ICEDB ICEDB_SHAPE_open_path_all_free_f ICEDB_SHAPE_open_path_all_free;
+typedef void(*ICEDB_shape_open_path_all_free_f)(
+	ICEDB_shape*** const shapes);
+extern DL_ICEDB ICEDB_shape_open_path_all_free_f ICEDB_shape_open_path_all_free;
 
-struct ICEDB_SHAPE_container_ftable {
-	ICEDB_SHAPE_generate_f generate;
-	ICEDB_SHAPE_open_single_file_f openPathSingle;
-	ICEDB_SHAPE_open_path_all_f openPathAll;
-	ICEDB_SHAPE_open_path_all_free_f openPathAllFree;
-	ICEDB_SHAPE_close_f close;
+struct ICEDB_shp_ftable {
+	ICEDB_shape_generate_f generate;
+	ICEDB_shape_open_single_file_f openPathSingle;
+	ICEDB_shape_open_path_all_f openPathAll;
+	ICEDB_shape_open_path_all_free_f openPathAllFree;
 };
-DL_ICEDB const ICEDB_SHAPE_container_ftable* ICEDB_SHAPE_getContainerFunctions(); ///< Returns a static ICEDB_SHAPE_container_vtable*. No need to free.
+extern DL_ICEDB const struct ICEDB_shp_ftable ICEDB_funcs_fs_shp;
+
 
 /** @} */ // end of shps
 ICEDB_END_DECL_C

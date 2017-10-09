@@ -56,11 +56,11 @@ int main(int argc, char** argv) {
 	string sOutput, sOutputType, sOutputPlugin;
 	ICEDB_error_code err;
 	bool printID = false;
-	map<uint64_t, shared_ptr<ICEDB_SHAPE> > shapes;
+	map<uint64_t, shared_ptr<ICEDB_shape> > shapes;
 	auto attrFuncs = ICEDB_attr_getContainerFunctions();
 	auto tblFuncs = ICEDB_tbl_getContainerFunctions();
 	auto fsFuncs = ICEDB_fs_getContainerFunctions();
-	auto shpFuncs = ICEDB_SHAPE_getContainerFunctions();
+	auto shpFuncs = ICEDB_shape_getContainerFunctions();
 
 	if (vm.count("output")) sOutput = vm["output"].as<string>();
 	vector<string> sInputs = vm["input"].as<vector<string>>();
@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 		cout << "File " << in << endl;
 		size_t nShapes = 0;
 		// Each input file might contain zero, one or more shapes. openPathAll reads them all.
-		shared_ptr<ICEDB_SHAPE** const> fileshapes(
+		shared_ptr<ICEDB_shape** const> fileshapes(
 			shpFuncs->openPathAll(
 				in.c_str(), // This is the base path - every shape contained within this path will be read.
 				ICEDB_path_iteration_recursive, // Read every shape
@@ -86,13 +86,13 @@ int main(int argc, char** argv) {
 		for (size_t i = 0; i < nShapes; ++i) {
 			uint64_t id = 0;
 			if (!(*fileshapes)[i]->funcs->getID((*fileshapes)[i], &id)) processError();
-			ICEDB_SHAPE* sshp = (*fileshapes)[i];
-			//shared_ptr<ICEDB_SHAPE> sshp((*fileshapes)[i], shpFuncs->close); // Auto-destructs shapes if not needed.
+			ICEDB_shape* sshp = (*fileshapes)[i];
+			//shared_ptr<ICEDB_shape> sshp((*fileshapes)[i], shpFuncs->close); // Auto-destructs shapes if not needed.
 			if (printID) cout << "\t" << id << endl;
 			if (!shapes.count(id)) {
 				// COPY the shape into the map. fileshapes is managed by a separate memory manager.
 				// The same backend can be used. No problems here.
-				shared_ptr<ICEDB_SHAPE> spsshp(sshp->funcs->copy_open(sshp, sshp->funcs->getParent(sshp)));
+				shared_ptr<ICEDB_shape> spsshp(sshp->funcs->copy_open(sshp, sshp->funcs->getParent(sshp)));
 				shapes[id] = spsshp;
 				// Get the number of attributes and tables
 				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->funcs->getParent(sshp), fsFuncs->close);

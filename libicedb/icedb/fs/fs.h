@@ -434,9 +434,15 @@ typedef bool(*ICEDB_attr_fs_write_backend)(
 	size_t *dims,
 	void* data
 	);
+/** \brief Close an attribute (and free data structures)
+* \param attr is the attribute. Must be non-NULL.
+* \returns false if an error occurred, otherwise true.
+**/
+typedef bool(*ICEDB_attr_close_f)(ICEDB_attr* attr);
 /** \brief This acts as a container for all attribute functions that require a base fs object to act as a container.
 **/
 struct ICEDB_attr_container_ftable {
+	ICEDB_attr_close_f close;
 	ICEDB_attr_create_f create;
 	ICEDB_attr_open_f open;
 	ICEDB_attr_remove_f remove;
@@ -565,12 +571,21 @@ typedef bool(*ICEDB_fs_inner_tbl_writeMapped_f)(
 	const void* in);
 extern DL_ICEDB ICEDB_fs_inner_tbl_writeMapped_f ICEDB_fs_inner_tbl_writeMapped;
 
+/** \brief Close a table (and free data structures)
+* \param tbl is the table. Must be non-NULL.
+* \returns false if an error occurred, otherwise true.
+**/
+typedef bool(*ICEDB_tbl_close_f)(
+	ICEDB_tbl* tbl
+	);
+extern DL_ICEDB ICEDB_tbl_close_f ICEDB_tbl_close;
 
 /** \brief This acts as a container for all table functions that require a base fs object to act as a container.
 **/
 struct ICEDB_tbl_container_ftable{
 	ICEDB_tbl_create_f create;
 	ICEDB_tbl_open_f open;
+	ICEDB_tbl_close_f close;
 	ICEDB_tbl_remove_f remove;
 	ICEDB_tbl_getNumTbls_f count;
 	ICEDB_tbl_getTblName_f getName;

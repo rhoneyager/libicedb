@@ -57,11 +57,6 @@ struct ICEDB_attr {
 	//ICEDB_attr* next; ///< The next object in the list. End of list is denoted by NULL.
 };
 
-/** \brief Close an attribute (and free data structures)
-* \param attr is the attribute. Must be non-NULL.
-* \returns false if an error occurred, otherwise true.
-**/
-typedef bool(*ICEDB_attr_close_f)(ICEDB_attr* attr);
 /** \brief Write an attribute back to the parent.
 * \param attr is the attribute. Must be non-NULL.
 * \param err is an error code
