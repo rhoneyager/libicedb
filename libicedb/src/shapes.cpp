@@ -222,3 +222,23 @@ ICEDB_shape* shape_generate(ICEDB_fs_hnd* objBackend) {
 	return res;
 }
 DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate = shape_generate;
+
+ICEDB_shape* shape_openPathSingle(const char* filename, ICEDB_file_open_flags flags) {
+	throw;
+	return nullptr;
+}
+DL_ICEDB ICEDB_shape_open_single_file_f ICEDB_shape_openPathSingle = shape_openPathSingle;
+
+ICEDB_shape*** const openPathAll(const char* path, ICEDB_path_iteration pit, ICEDB_file_open_flags flags, size_t *numShapes) {
+	throw;
+	return nullptr;
+}
+DL_ICEDB ICEDB_shape_open_path_all_f ICEDB_shape_openPathAll = openPathAll;
+
+void openPathAllFree(ICEDB_shape*** const shps) {
+	delete shps;
+	throw;
+}
+DL_ICEDB ICEDB_shape_open_path_all_free_f ICEDB_shape_openPathAllFree = openPathAllFree;
+
+

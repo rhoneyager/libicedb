@@ -51,7 +51,7 @@ struct ICEDB_attr {
 	size_t sizeBytes; ///< The size of the data, in __bytes__. 
 	size_t sizeElems; ///< The size of the data, in number of elements.
 	//bool hasFixedSize; ///< Is the data fixed-vidth or variable. If variable, then the entry in data must be NULL-terminated.
-	const char* name; ///< The name of the attribute. A NULL-terminated string.
+	char* name; ///< The name of the attribute. A NULL-terminated string.
 	//void(*_free_fs_attr_p)(ICEDB_attr *); ///< A destructor funcion (used across module boundaries). Will be hidden in the future.
 	//void(*_free_fs_attr_pp)(ICEDB_attr **); ///< A destructor funcion (used across module boundaries). Will be hidden in the future.
 	//ICEDB_attr* next; ///< The next object in the list. End of list is denoted by NULL.

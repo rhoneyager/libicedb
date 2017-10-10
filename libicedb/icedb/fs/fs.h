@@ -344,7 +344,7 @@ typedef ICEDB_attr*(*ICEDB_attr_create_f)(
 * \returns NULL if an error occurred, otherwise with a new copy of the attribute object.
 **/
 typedef ICEDB_attr*(*ICEDB_attr_open_f)(
-	const ICEDB_fs_hnd* parent,
+	ICEDB_fs_hnd* parent,
 	const char* name);
 /** \brief Delete an attribute attached to an object
 * \param parent is a pointer to the parent object (the object that stores the attribute's data). Must be non-NULL.
@@ -371,7 +371,7 @@ a staticly-allocated array, then an error code will be emitted.
 * \param err is an error code.
 * \returns bufPath on success, NULL on error.
 **/
-typedef const char*(*ICEDB_attr_getAttrName_f)(
+typedef const char*(*ICEDB_attr_getName_f)(
 	const ICEDB_fs_hnd* p,
 	size_t attrnum,
 	ICEDB_OPTIONAL size_t inPathSize,
@@ -384,7 +384,7 @@ typedef const char*(*ICEDB_attr_getAttrName_f)(
 * \param err is an error code.
 * \returns True if the attribute exists, false if not. If an error occurs, returns false.
 **/
-typedef bool(*ICEDB_attr_attrExists_f)(const ICEDB_fs_hnd* p, const char* name, ICEDB_OUT ICEDB_error_code* err);
+typedef bool(*ICEDB_attr_exists_f)(const ICEDB_fs_hnd* p, const char* name, ICEDB_OUT ICEDB_error_code* err);
 /** \brief Renames an attribute
 * \param p is the pointer to a file handle. It may be NULL, in which case path must be non-NULL.
 * \param oldname is the attribute's current name. Must be a NULL-terminated C-string.
@@ -392,7 +392,7 @@ typedef bool(*ICEDB_attr_attrExists_f)(const ICEDB_fs_hnd* p, const char* name, 
 * \param err is an error code.
 * \returns True on success, false if an error occured.
 **/
-typedef bool(*ICEDB_attr_renameAttr_f)(ICEDB_fs_hnd* p, const char* oldname, const char* newname);
+typedef bool(*ICEDB_attr_rename_f)(ICEDB_fs_hnd* p, const char* oldname, const char* newname);
 /** \brief Free the results of a ICEDB_fh_readAttr call
 * \param p is a pointer to the ICEDB_attr*** structure that was populated. Must be non-NULL.
 * \see ICEDB_fh_readAllAttrs
@@ -409,7 +409,7 @@ typedef bool(*ICEDB_attr_freeAttrList_f)(ICEDB_attr*** const p);
 typedef ICEDB_attr*** const(*ICEDB_attr_openAllAttrs_f)(
 	const ICEDB_fs_hnd* p, size_t *numAtts, ICEDB_OUT ICEDB_attr*** const res);
 /// Backend function to actually write the attribute's data.
-typedef bool(*ICEDB_attr_fs_write_backend)(
+typedef bool(*ICEDB_attr_fs_write_backend_f)(
 	ICEDB_fs_hnd* p, const char* name,
 	ICEDB_DATA_TYPES type,
 	size_t numDims,
@@ -429,13 +429,14 @@ struct ICEDB_attr_container_ftable {
 	ICEDB_attr_open_f open;
 	ICEDB_attr_remove_f remove;
 	ICEDB_attr_getNumAttrs_f count;
-	ICEDB_attr_getAttrName_f getName;
-	ICEDB_attr_attrExists_f exists;
-	ICEDB_attr_renameAttr_f rename;
+	ICEDB_attr_getName_f getName;
+	ICEDB_attr_exists_f exists;
+	ICEDB_attr_rename_f rename;
 	ICEDB_attr_freeAttrList_f freeAttrList;
 	ICEDB_attr_openAllAttrs_f openAllAttrs;
-	ICEDB_attr_fs_write_backend writeAttrData;
+	ICEDB_attr_fs_write_backend_f writeAttrData; ///< \note In fs.cpp
 };
+extern DL_ICEDB const struct ICEDB_attr_container_ftable ICEDB_funcs_attr_container;
 
 /** \brief Create a table
 * \param parent is a pointer to the parent object (the object that stores the table's data).

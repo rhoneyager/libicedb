@@ -96,7 +96,7 @@ ICEDB_DATA_TYPES attr_getType(const ICEDB_attr *attr) {
 }
 DL_ICEDB ICEDB_attr_getType_f ICEDB_attr_getType = attr_getType;
 */
-bool attr_resize(ICEDB_attr *attr, ICEDB_DATA_TYPES newtype, size_t newNumDims, size_t* newDims) {
+bool attr_resize(ICEDB_attr *attr, ICEDB_DATA_TYPES newtype, size_t newNumDims, const size_t* newDims) {
 	if (!validate_attr_ptr(attr)) return false;
 	if (!newDims || (newtype == ICEDB_DATA_TYPES::ICEDB_TYPE_NOTYPE) ){
 		ICEDB_error_context_create(ICEDB_ERRORCODES_NULLPTR);
@@ -172,4 +172,100 @@ DL_ICEDB const struct ICEDB_attr_ftable ICEDB_funcs_attr_obj = {
 	//attr_getType, 
 	attr_resize, 
 	attr_setData
+};
+
+ICEDB_attr* attr_create(ICEDB_fs_hnd* parent, const char* name, 
+	ICEDB_DATA_TYPES type, size_t numDims, const size_t* dims)
+{
+	ICEDB_attr* res = new ICEDB_attr;
+	res->parent = parent;
+	size_t nameLen = strlen(name);
+	res->name = new char[nameLen + 1];
+	strcpy_s(res->name, nameLen + 1, name);
+	res->dims = nullptr;
+	res->data.ct = nullptr;
+	res->numDims = 0;
+	attr_resize(res, type, numDims, dims);
+	return res;
+}
+DL_ICEDB ICEDB_attr_create_f ICEDB_attr_create = attr_create;
+
+/// \todo Implement
+ICEDB_attr* attr_open(ICEDB_fs_hnd* parent, const char* name)
+{
+	ICEDB_attr* res = new ICEDB_attr;
+	throw;
+	return res;
+}
+DL_ICEDB ICEDB_attr_open_f ICEDB_attr_open = attr_open;
+
+bool attr_remove(ICEDB_fs_hnd* parent, const char* name) {
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_attr_remove_f ICEDB_attr_remove = attr_remove;
+
+size_t attr_count(const ICEDB_fs_hnd* p, ICEDB_OUT ICEDB_error_code* err) {
+	*err = 1;
+	throw;
+	return 0;
+}
+DL_ICEDB ICEDB_attr_getNumAttrs_f ICEDB_attr_count = attr_count;
+
+const char* attr_getName(const ICEDB_fs_hnd* p, size_t attrnum, size_t inPathSize,
+	size_t *outPathSize, char **bufPath, ICEDB_free_charIPP_f *deallocator) {
+	throw;
+	return nullptr;
+}
+DL_ICEDB ICEDB_attr_getName_f ICEDB_attr_getName = attr_getName;
+
+bool attr_exists(const ICEDB_fs_hnd* parent, const char* name, ICEDB_OUT ICEDB_error_code* err) {
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_attr_exists_f ICEDB_attr_exists = attr_exists;
+
+bool attr_rename(ICEDB_fs_hnd* parent, const char* oldname, const char* newname) {
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_attr_rename_f ICEDB_attr_rename = attr_rename;
+
+bool attr_freeAttrList(ICEDB_attr ***p) {
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_attr_freeAttrList_f ICEDB_attr_freeAttrList = attr_freeAttrList;
+
+ICEDB_attr *** const attr_openAllAttrs(const ICEDB_fs_hnd* parent, size_t* numAttrs, ICEDB_attr *** list) {
+	throw;
+	return nullptr;
+}
+DL_ICEDB ICEDB_attr_openAllAttrs_f ICEDB_attr_openAllAttrs = attr_openAllAttrs;
+
+bool attr_fs_write_backend(
+	ICEDB_fs_hnd* p, const char* name,
+	ICEDB_DATA_TYPES type,
+	size_t numDims,
+	size_t *dims,
+	void* data)
+{
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_attr_fs_write_backend_f ICEDB_attr_fs_write_backend = attr_fs_write_backend;
+
+
+DL_ICEDB const struct ICEDB_attr_container_ftable ICEDB_funcs_attr_container = {
+	attr_close,
+	attr_create,
+	attr_open,
+	attr_remove,
+	attr_count,
+	attr_getName,
+	attr_exists,
+	attr_rename,
+	attr_freeAttrList,
+	attr_openAllAttrs,
+	attr_fs_write_backend
 };
