@@ -378,3 +378,119 @@ DL_ICEDB const struct ICEDB_tbl_ftable ICEDB_funcs_tbl_obj = {
 	tbl_writeStride,
 	tbl_writeFull
 };
+
+
+
+
+
+ICEDB_tbl* tbl_create(
+	struct ICEDB_fs_hnd* parent,
+	const char* name,
+	ICEDB_DATA_TYPES type,
+	size_t numDims,
+	const size_t* dims)
+{
+	ICEDB_tbl* res = new ICEDB_tbl;
+	res->parent = parent;
+	size_t nameLen = strlen(name);
+	res->name = new char[nameLen + 1];
+	strcpy_s(res->name, nameLen + 1, name);
+	res->numDims = numDims;
+	res->dims = new size_t[numDims];
+	for (size_t i = 0; i < numDims; ++i)
+		res->dims[i] = dims[i];
+	//attr_resize(res, type, numDims, dims);
+	throw;
+	return res;
+}
+DL_ICEDB ICEDB_tbl_create_f ICEDB_tbl_create = tbl_create;
+
+ICEDB_tbl* tbl_open(
+	struct ICEDB_fs_hnd* parent,
+	const char* name)
+{
+	ICEDB_tbl* res = new ICEDB_tbl;
+	throw;
+	return res;
+}
+DL_ICEDB ICEDB_tbl_open_f ICEDB_tbl_open = tbl_open;
+
+bool tbl_remove(ICEDB_fs_hnd* parent, const char* name) {
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_tbl_remove_f ICEDB_tbl_remove = tbl_remove;
+
+size_t tbl_count(
+	const ICEDB_fs_hnd* p,
+	ICEDB_OUT ICEDB_error_code* err) {
+	*err = 1;
+	throw;
+	return 0;
+}
+DL_ICEDB ICEDB_tbl_getNumTbls_f ICEDB_tbl_getNumTbls = tbl_count;
+
+const char* tbl_getName(
+	const ICEDB_fs_hnd* p,
+	size_t attrnum,
+	size_t inPathSize,
+	size_t *outPathSize,
+	char **bufPath,
+	ICEDB_free_charIPP_f *deallocator) {
+	throw;
+	return nullptr;
+}
+DL_ICEDB ICEDB_tbl_getTblName_f ICEDB_tbl_getName = tbl_getName;
+
+bool tbl_exists(const ICEDB_fs_hnd* parent, const char* name, ICEDB_OUT ICEDB_error_code* err) {
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_tbl_exists_f ICEDB_tbl_exists = tbl_exists;
+
+bool tbl_rename(ICEDB_fs_hnd* parent, const char* oldname, const char* newname) {
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_tbl_renameTbl_f ICEDB_tbl_rename = tbl_rename;
+
+
+
+bool inner_tbl_readMapped(
+	const ICEDB_fs_hnd *parent,
+	const size_t *start,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	const ptrdiff_t *imapp,
+	ICEDB_OUT void* out)
+{
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_fs_inner_tbl_readMapped_f ICEDB_fs_inner_tbl_readMapped = inner_tbl_readMapped;
+
+bool inner_tbl_writeMapped(
+	ICEDB_fs_hnd *parent,
+	const size_t *start,
+	const size_t *count,
+	const ptrdiff_t *stride,
+	const ptrdiff_t *imapp,
+	const void* in)
+{
+	throw;
+	return false;
+}
+DL_ICEDB ICEDB_fs_inner_tbl_writeMapped_f ICEDB_fs_inner_tbl_writeMapped = inner_tbl_writeMapped;
+
+DL_ICEDB const struct ICEDB_tbl_container_ftable ICEDB_funcs_tbl_container = {
+	tbl_create,
+	tbl_open,
+	tbl_close,
+	tbl_remove,
+	tbl_count,
+	tbl_getName,
+	tbl_rename,
+	tbl_exists,
+	inner_tbl_readMapped,
+	inner_tbl_writeMapped
+};

@@ -28,7 +28,7 @@ struct ICEDB_tbl {
 	size_t numDims; ///< Number of dimensions of the data.
 	size_t *dims; ///< The dimensions of the data.
 	size_t reservedSize; ///< The reserved size of the data, in __bytes__. The number of values may be computed by size / sizeof(TYPE).
-	const char* name; ///< The name of the table. A NULL-terminated string.
+	char* name; ///< The name of the table. A NULL-terminated string.
 	//void(*_free_fs_attr_p)(ICEDB_attr *); ///< A destructor funcion (used across module boundaries). Will be hidden in the future.
 	//void(*_free_fs_attr_pp)(ICEDB_attr **); ///< A destructor funcion (used across module boundaries). Will be hidden in the future.
 	//ICEDB_attr* next; ///< The next object in the list. End of list is denoted by NULL.
