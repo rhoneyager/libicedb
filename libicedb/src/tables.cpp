@@ -400,7 +400,7 @@ ICEDB_tbl* tbl_create(
 	for (size_t i = 0; i < numDims; ++i)
 		res->dims[i] = dims[i];
 	//attr_resize(res, type, numDims, dims);
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return res;
 }
 DL_ICEDB ICEDB_tbl_create_f ICEDB_tbl_create = tbl_create;
@@ -410,13 +410,13 @@ ICEDB_tbl* tbl_open(
 	const char* name)
 {
 	ICEDB_tbl* res = new ICEDB_tbl;
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return res;
 }
 DL_ICEDB ICEDB_tbl_open_f ICEDB_tbl_open = tbl_open;
 
 bool tbl_remove(ICEDB_fs_hnd* parent, const char* name) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_tbl_remove_f ICEDB_tbl_remove = tbl_remove;
@@ -425,7 +425,7 @@ size_t tbl_count(
 	const ICEDB_fs_hnd* p,
 	ICEDB_OUT ICEDB_error_code* err) {
 	*err = 1;
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
 DL_ICEDB ICEDB_tbl_getNumTbls_f ICEDB_tbl_getNumTbls = tbl_count;
@@ -437,19 +437,19 @@ const char* tbl_getName(
 	size_t *outPathSize,
 	char **bufPath,
 	ICEDB_free_charIPP_f *deallocator) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
 DL_ICEDB ICEDB_tbl_getTblName_f ICEDB_tbl_getName = tbl_getName;
 
 bool tbl_exists(const ICEDB_fs_hnd* parent, const char* name, ICEDB_OUT ICEDB_error_code* err) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_tbl_exists_f ICEDB_tbl_exists = tbl_exists;
 
 bool tbl_rename(ICEDB_fs_hnd* parent, const char* oldname, const char* newname) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_tbl_renameTbl_f ICEDB_tbl_rename = tbl_rename;
@@ -464,7 +464,7 @@ bool inner_tbl_readMapped(
 	const ptrdiff_t *imapp,
 	ICEDB_OUT void* out)
 {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_fs_inner_tbl_readMapped_f ICEDB_fs_inner_tbl_readMapped = inner_tbl_readMapped;
@@ -477,7 +477,7 @@ bool inner_tbl_writeMapped(
 	const ptrdiff_t *imapp,
 	const void* in)
 {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_fs_inner_tbl_writeMapped_f ICEDB_fs_inner_tbl_writeMapped = inner_tbl_writeMapped;

@@ -194,51 +194,51 @@ DL_ICEDB ICEDB_attr_create_f ICEDB_attr_create = attr_create;
 ICEDB_attr* attr_open(ICEDB_fs_hnd* parent, const char* name)
 {
 	ICEDB_attr* res = new ICEDB_attr;
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return res;
 }
 DL_ICEDB ICEDB_attr_open_f ICEDB_attr_open = attr_open;
 
 bool attr_remove(ICEDB_fs_hnd* parent, const char* name) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_attr_remove_f ICEDB_attr_remove = attr_remove;
 
 size_t attr_count(const ICEDB_fs_hnd* p, ICEDB_OUT ICEDB_error_code* err) {
 	*err = 1;
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
 DL_ICEDB ICEDB_attr_getNumAttrs_f ICEDB_attr_count = attr_count;
 
 const char* attr_getName(const ICEDB_fs_hnd* p, size_t attrnum, size_t inPathSize,
 	size_t *outPathSize, char **bufPath, ICEDB_free_charIPP_f *deallocator) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
 DL_ICEDB ICEDB_attr_getName_f ICEDB_attr_getName = attr_getName;
 
 bool attr_exists(const ICEDB_fs_hnd* parent, const char* name, ICEDB_OUT ICEDB_error_code* err) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_attr_exists_f ICEDB_attr_exists = attr_exists;
 
 bool attr_rename(ICEDB_fs_hnd* parent, const char* oldname, const char* newname) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_attr_rename_f ICEDB_attr_rename = attr_rename;
 
 bool attr_freeAttrList(ICEDB_attr ***p) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_attr_freeAttrList_f ICEDB_attr_freeAttrList = attr_freeAttrList;
 
 ICEDB_attr *** const attr_openAllAttrs(const ICEDB_fs_hnd* parent, size_t* numAttrs, ICEDB_attr *** list) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
 DL_ICEDB ICEDB_attr_openAllAttrs_f ICEDB_attr_openAllAttrs = attr_openAllAttrs;
@@ -250,7 +250,7 @@ bool attr_fs_write_backend(
 	size_t *dims,
 	void* data)
 {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
 DL_ICEDB ICEDB_attr_fs_write_backend_f ICEDB_attr_fs_write_backend = attr_fs_write_backend;

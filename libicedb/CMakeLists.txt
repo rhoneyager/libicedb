@@ -15,6 +15,10 @@ set (fs_objs
 	icedb/fs/fs.h
 	icedb/fs/fs_backend.hpp
 	icedb/fs/fs_dll_impl.hpp
+	icedb/fs/fs_attr_base.h
+	icedb/fs/fs_path_functions.h
+	icedb/fs/fs_enums.h
+	icedb/fs/fs_tbl_base.h
 	src/fs.cpp)
 set (error_objs
 	icedb/error/error.h
