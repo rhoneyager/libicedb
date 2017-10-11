@@ -142,6 +142,7 @@ struct ICEDB_tbl_container_ftable {
 	ICEDB_fs_inner_tbl_readMapped_f _inner_tbl_readMapped;
 	ICEDB_fs_inner_tbl_writeMapped_f _inner_tbl_writeMapped;
 };
+extern DL_ICEDB const struct ICEDB_tbl_container_ftable ICEDB_funcs_tbl_container;
 
 
 #endif

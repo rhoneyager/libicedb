@@ -17,6 +17,8 @@ ICEDB_BEGIN_DECL_C
  * may provide such facilities.
  * @{
  **/
+
+/// \note Defined in fs_backend.hpp
 struct ICEDB_fs_hnd;
 struct ICEDB_fs_container_vtable;
 
@@ -100,7 +102,7 @@ extern DL_ICEDB ICEDB_fs_openPath_f ICEDB_fs_openPath;
 **/
 typedef ICEDB_fs_hnd*(*ICEDB_fs_cloneHandle_f)(
 	ICEDB_fs_hnd* handle);
-extern DL_ICEDB ICEDB_fs_cloneHandle_f ICEDB_fs_clone;
+extern DL_ICEDB ICEDB_fs_cloneHandle_f ICEDB_fs_cloneHandle;
 
 
 /** \brief Get the full path opened by the file handle.
@@ -121,7 +123,7 @@ typedef const char*(*ICEDB_fs_getPathFromHandle_f)(
 	ICEDB_OUT size_t* outPathSize, 
 	ICEDB_OUT char ** const bufPath,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
-extern DL_ICEDB ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPath;
+extern DL_ICEDB ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPathFromHandle;
 
 /** \brief Get the ICEDB_file_open_flags passed to the plugin when the handle was opened
 	*
@@ -129,7 +131,7 @@ extern DL_ICEDB ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPath;
 	* \param err is an error code.
 	**/
 typedef ICEDB_file_open_flags(*ICEDB_fs_getHandleIOflags_f)(const ICEDB_fs_hnd* p);
-extern DL_ICEDB ICEDB_fs_getHandleIOflags_f ICEDB_fs_getOpenFlags;
+extern DL_ICEDB ICEDB_fs_getHandleIOflags_f ICEDB_fs_getHandleIOflags;
 
 /** \brief Close a file handle
 	*
@@ -137,7 +139,7 @@ extern DL_ICEDB ICEDB_fs_getHandleIOflags_f ICEDB_fs_getOpenFlags;
 	* \returns an error code. Zero on success.
 	**/
 typedef ICEDB_error_code(*ICEDB_fs_closeHandle_f)(ICEDB_fs_hnd* p);
-extern DL_ICEDB ICEDB_fs_closeHandle_f ICEDB_fs_close;
+extern DL_ICEDB ICEDB_fs_closeHandle_f ICEDB_fs_closeHandle;
 
 /** \brief Move an object
 	*
@@ -223,7 +225,7 @@ extern DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
 * \returns True if the path exists, false if the path does not exist or if there is an error (such as when a parent path does not exist).
 **/
 typedef bool(*ICEDB_fs_doesPathExist_f)(const ICEDB_fs_hnd* p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
-extern DL_ICEDB ICEDB_fs_doesPathExist_f ICEDB_fs_pathExists;
+extern DL_ICEDB ICEDB_fs_doesPathExist_f ICEDB_fs_doesPathExist;
 
 /** \brief Get information about a path.
 *
@@ -235,11 +237,11 @@ extern DL_ICEDB ICEDB_fs_doesPathExist_f ICEDB_fs_pathExists;
 * \see ICEDB_fh_path_info_free
 * \returns A pointer to the path information structure (same as res). Returned for convenience. Returns NULL if an error occurred (see err).
 **/
-typedef ICEDB_fs_path_contents*(*ICEDB_fs_pathInfo_f)(
+typedef ICEDB_fs_path_contents*(*ICEDB_fs_getPathInfo_f)(
 	const ICEDB_fs_hnd* p,
 	const char* path,
 	ICEDB_OUT ICEDB_fs_path_contents *res);
-extern DL_ICEDB ICEDB_fs_pathInfo_f ICEDB_fs_pathInfo;
+extern DL_ICEDB ICEDB_fs_getPathInfo_f ICEDB_fs_getPathInfo;
 
 /** \brief Free a path structure
 *
@@ -265,7 +267,7 @@ typedef ICEDB_fs_objectList_t(*ICEDB_fs_getAllObjects_f)(
 	const char* path, 
 	size_t *numObjs, 
 	ICEDB_OUT ICEDB_fs_objectList_t res);
-extern DL_ICEDB ICEDB_fs_getAllObjects_f ICEDB_fs_readObjs;
+extern DL_ICEDB ICEDB_fs_getAllObjects_f ICEDB_fs_getAllObjects;
 
 /** \brief Free the results of a ICEDB_fh_readObjs call
 * \param p is a pointer to the path information structure that gets populated. Must be non-NULL. Must be freed with ICEDB_fh_freeObjs after use.
@@ -279,21 +281,21 @@ extern DL_ICEDB ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs;
 struct ICEDB_fs_container_ftable {
 	ICEDB_fs_getHandlers_f getHandlers;
 	ICEDB_fs_canOpenPath_f canOpen;
-	ICEDB_fs_openPath_f open;
-	ICEDB_fs_cloneHandle_f clone;
-	ICEDB_fs_getPathFromHandle_f getPath;
-	ICEDB_fs_getHandleIOflags_f getOpenFlags;
-	ICEDB_fs_closeHandle_f close;
+	ICEDB_fs_openPath_f openHandle;
+	ICEDB_fs_cloneHandle_f cloneHandle;
+	ICEDB_fs_getPathFromHandle_f getPathFromHandle;
+	ICEDB_fs_getHandleIOflags_f getHandleIOflags;
+	ICEDB_fs_closeHandle_f closeHandle;
 	ICEDB_fs_move_f move;
 	ICEDB_fs_copy_f copy;
 	ICEDB_fs_unlink_f unlink;
 	ICEDB_fs_createHardLink_f createHardLink;
 	ICEDB_fs_createSymLink_f createSymLink;
 	ICEDB_fs_followSymLink_f followSymLink;
-	ICEDB_fs_doesPathExist_f pathExists;
-	ICEDB_fs_pathInfo_f pathInfo;
+	ICEDB_fs_doesPathExist_f doesPathExist;
+	ICEDB_fs_getPathInfo_f getPathInfo;
 	ICEDB_fs_pathInfoFree_f pathInfoFree;
-	ICEDB_fs_getAllObjects_f readObjs;
+	ICEDB_fs_getAllObjects_f getAllChildObjects;
 	ICEDB_fs_freeObjs_f freeObjs;
 	const struct ICEDB_attr_container_ftable attrs;
 	const struct ICEDB_tbl_container_ftable tbls;
