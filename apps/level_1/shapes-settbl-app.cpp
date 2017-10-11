@@ -90,10 +90,13 @@ int main(int argc, char** argv) {
 			if (!shapes.count(id)) {
 				// COPY the shape into the map. fileshapes is managed by a separate memory manager.
 				// The same backend can be used. No problems here.
-				shared_ptr<ICEDB_shape> spsshp(sshp->funcs->copy_open(sshp, sshp->funcs->getParent(sshp)));
+				shared_ptr<ICEDB_shape> spsshp(
+					sshp->funcs->clone(sshp),
+					sshp->funcs->close);
 				shapes[id] = spsshp;
 				// Get the number of attributes and tables
-				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->funcs->getParent(sshp), fsFuncs.closeHandle);
+				shared_ptr<ICEDB_fs_hnd> parentFS(
+					sshp->funcs->getFSself(sshp), fsFuncs.closeHandle);
 				if (!parentFS) processError();
 				size_t numAtts = attrFuncs.count(parentFS.get(), &err);
 				if (err) processError();
@@ -125,12 +128,13 @@ int main(int argc, char** argv) {
 		for (const auto & shp : shapes) {
 			shared_ptr<ICEDB_shape> outshp(
 				shp.second->funcs->copy_open(shp.second.get(), p.get()),
-				shpFuncs->close);
+				ICEDB_funcs_shp_obj.close);
 			if (!outshp) processError();
 
 			// Examine the shape, and get the RMS distance from the center of each element of volume. Also determine the center of mass.
 			size_t numPts = outshp->funcs->getNumPoints(outshp.get());
-			shared_ptr<ICEDB_fs_hnd> fsobj(outshp->funcs->getParent(outshp.get()), fsFuncs.closeHandle);
+			shared_ptr<ICEDB_fs_hnd> fsobj(
+				outshp->funcs->getFSself(outshp.get()), fsFuncs.closeHandle);
 			bool ptsTblExists = tblFuncs.exists(fsobj.get(), "particle_scattering_element_coordinates", &err);
 			if (err) processError();
 			if (!ptsTblExists) continue;

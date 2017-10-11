@@ -176,10 +176,19 @@ bool shape_copy(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
 }
 DL_ICEDB const ICEDB_shape_copy_f ICEDB_shape_copy = shape_copy;
 
+ICEDB_shape* shape_clone(const ICEDB_L0_SHAPE_VOL_SPARSE* src) {
+	if (!validateShapePtr(src)) return nullptr;
+	ICEDB_shape* res = new ICEDB_shape;
+	res->fsSelf = src->fsSelf->_h->clone();
+	res->funcs = &ICEDB_funcs_shp_obj;
+	return res;
+}
+DL_ICEDB const ICEDB_shape_clone_f ICEDB_shape_clone = shape_clone;
+
 
 ICEDB_shape* shape_generate(ICEDB_fs_hnd* objBackend) {
 	ICEDB_shape* res = new ICEDB_shape;
-	res->fsSelf = objBackend;
+	res->fsSelf = objBackend->_h->clone();
 	res->funcs = &ICEDB_funcs_shp_obj;
 	// Create some basic tables and attributes.
 	const size_t typelen = 17;
@@ -247,7 +256,8 @@ DL_ICEDB const struct ICEDB_shp_ftable ICEDB_funcs_fs_shp = {
 	shape_generate,
 	shape_openPathSingle,
 	openPathAll,
-	openPathAllFree
+	openPathAllFree,
+	shape_close
 };
 
 DL_ICEDB const struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable ICEDB_funcs_shp_obj = {
@@ -256,7 +266,8 @@ DL_ICEDB const struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable ICEDB_funcs_shp_obj = {
 	shape_getNumPoints,
 	shape_getID,
 	shape_copy_open,
-	shape_copy
+	shape_copy,
+	shape_clone
 };
 
 ICEDB_END_DECL_C

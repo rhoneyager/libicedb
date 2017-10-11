@@ -93,11 +93,12 @@ int main(int argc, char** argv) {
 				// COPY the shape into the map. fileshapes is managed by a separate memory manager.
 				// The same backend can be used. No problems here.
 				shared_ptr<ICEDB_shape> spsshp(
-					sshp->funcs->copy_open(sshp, sshp->funcs.getParent(sshp)),
+					sshp->funcs->clone(sshp),
 					sshp->funcs->close);
 				shapes[id] = spsshp;
 				// Get the number of attributes and tables
-				shared_ptr<ICEDB_fs_hnd> parentFS(sshp->funcs.getParent(sshp), fsFuncs.closeHandle);
+				shared_ptr<ICEDB_fs_hnd> parentFS(
+					sshp->funcs->getFSself(sshp), fsFuncs.closeHandle);
 				if (!parentFS) processError();
 				size_t numAtts = attrFuncs.count(parentFS.get(), &err);
 				if (err) processError();

@@ -38,6 +38,11 @@ typedef ICEDB_shape*(*ICEDB_shape_copy_open_f)(const ICEDB_shape* src, ICEDB_fs_
 extern DL_ICEDB const ICEDB_shape_copy_open_f ICEDB_shape_copy_open;
 typedef bool(*ICEDB_shape_copy_f)(const ICEDB_shape*, ICEDB_fs_hnd*);
 extern DL_ICEDB const ICEDB_shape_copy_f ICEDB_shape_copy;
+
+/// Like copy, but make a clone of the shape, pointing to a clone of the fs pointer. Convenience function.
+typedef ICEDB_shape*(*ICEDB_shape_clone_f)(const ICEDB_shape* src);
+extern DL_ICEDB const ICEDB_shape_clone_f ICEDB_shape_clone;
+
 //typedef ICEDB_attr_TYPES(*ICEDB_shape_getTableType_f)(const ICEDB_shape*, const char*);
 
 // Args are: ptr to shape, number of table dimensions (should be 2), size of each dimension, pointer to the data.
@@ -69,6 +74,7 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable {
 	ICEDB_shape_getID_f getID; ///< Get a unique identifier for this shape.
 	ICEDB_shape_copy_open_f copy_open; ///< Copy a shape to a new location. Return a pointer to the new, opened shape.
 	ICEDB_shape_copy_f copy; ///< Copy a shape to a new location.
+	ICEDB_shape_clone_f clone; ///< Like copy, but make a clone of the shape, pointing to a clone of the fs pointer. Convenience function.
 	/// \todo Get scattering element types
 	/// \todo Set scattering element types
 	/// \todo Add support for manipulating other tables here, without getting the backend fs object.
@@ -134,6 +140,7 @@ struct ICEDB_shp_ftable {
 	ICEDB_shape_open_single_file_f openPathSingle;
 	ICEDB_shape_open_path_all_f openPathAll;
 	ICEDB_shape_open_path_all_free_f openPathAllFree;
+	ICEDB_shape_close_f close; ///< Removes shape from memory and performs clean-up tasks.
 };
 extern DL_ICEDB const struct ICEDB_shp_ftable ICEDB_funcs_fs_shp;
 
