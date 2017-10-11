@@ -7,6 +7,7 @@
 #include "../icedb/units/unitsInterfaceImpl.hpp"
 #include <vector>
 #include <string>
+#include <cstring> // gives memset
 
 ICEDB_BEGIN_DECL_C
 struct ICEDB_unit_converter {

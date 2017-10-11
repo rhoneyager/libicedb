@@ -1,3 +1,9 @@
+#include "../icedb/defs.h"
+#include <stddef.h>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+#include "../icedb/misc/util.h"
 #include "../icedb/data/attrs.h"
 #include "../icedb/data/attrs.hpp"
 #include "../icedb/fs/fs.h"
@@ -68,7 +74,7 @@ ICEDB_attr* attr_copy(
 		return nullptr;
 	}
 	// There should NEVER be an error with copying memory here if the new object was correctly initialized.
-	errno_t err = memcpy_s(res->data.ct, res->sizeBytes, oldattr->data.ct, oldattr->sizeBytes);
+	errno_t err = ICEDB_COMPAT_memcpy_s(res->data.ct, res->sizeBytes, oldattr->data.ct, oldattr->sizeBytes);
 	if (err) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_TODO);
 		return nullptr;
@@ -154,7 +160,7 @@ bool attr_resize(ICEDB_attr *attr, ICEDB_DATA_TYPES newtype, size_t newNumDims, 
 		break;
 	}
 	attr->data.ct = new char[attr->sizeBytes];
-	memset(attr->data.ct, NULL, attr->sizeBytes);
+	memset(attr->data.ct, 0, attr->sizeBytes);
 
 	return true;
 }
@@ -163,7 +169,7 @@ DL_ICEDB const ICEDB_attr_resize_f ICEDB_attr_resize = attr_resize;
 
 bool attr_setData(ICEDB_attr *attr, const void* indata, size_t indataByteSize) {
 	if (!validate_attr_ptr(attr)) return false;
-	memcpy_s(attr->data.ct, attr->sizeBytes, indata, indataByteSize);
+	ICEDB_COMPAT_memcpy_s(attr->data.ct, attr->sizeBytes, indata, indataByteSize);
 	return true;
 }
 DL_ICEDB const ICEDB_attr_setData_f ICEDB_attr_setData = attr_setData;
@@ -183,7 +189,7 @@ ICEDB_attr* attr_create(ICEDB_fs_hnd* parent, const char* name,
 	res->parent = parent;
 	size_t nameLen = strlen(name);
 	res->name = new char[nameLen + 1];
-	strcpy_s(res->name, nameLen + 1, name);
+	ICEDB_COMPAT_strncpy_s(res->name, nameLen + 1, name, nameLen+1);
 	res->dims = nullptr;
 	res->data.ct = nullptr;
 	res->numDims = 0;

@@ -6,7 +6,7 @@
 #include "../dlls/dlls.hpp"
 #include "../units/unitsInterface.hpp"
 #include "../dlls/dllsImpl.hpp"
-
+#include <string.h>
 
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_BEGIN(units);
 ICEDB_DLL_INTERFACE_IMPLEMENTATION_SYMBOL_FUNCTION(units, canConvert, "canConvert", bool, const char*, const char*, const char*);

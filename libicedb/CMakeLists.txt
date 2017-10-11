@@ -78,7 +78,6 @@ set (level_0_objs
 	icedb/level_0/shape.hpp
 	icedb/level_0/shapeInterface.h
 	icedb/level_0/shapeInterfaceImpl.hpp
-	docs/level_0.md
 	docs/shapes.md
 	src/shapes.cpp
 	)

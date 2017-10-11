@@ -2,7 +2,9 @@
 #include "../icedb/data/attrs.h"
 #include "../icedb/fs/fs.h"
 #include "../icedb/error/error_context.h"
+#include "../icedb/misc/util.h"
 #include <memory>
+#include <string.h>
 
 ICEDB_BEGIN_DECL_C
 
@@ -40,7 +42,7 @@ ICEDB_tbl* tbl_copy(const ICEDB_tbl *srctbl,
 	ICEDB_fs_hnd* newparent,
 	ICEDB_OPTIONAL const char* newname)
 {
-	if (!validate_tbl_ptr(srctbl)) return false;
+	if (!validate_tbl_ptr(srctbl)) return nullptr;
 	if (!newname) newname = srctbl->name;
 	ICEDB_tbl *res = ICEDB_funcs_fs.tbls.create(newparent, newname,
 		srctbl->type, srctbl->numDims, srctbl->dims);
@@ -79,14 +81,14 @@ ICEDB_tbl* tbl_copy(const ICEDB_tbl *srctbl,
 	case ICEDB_TYPE_UINTPTR:
 	{
 		ICEDB_error_context_create(ICEDB_ERRORCODES_UNIMPLEMENTED);
-		return false;
+		return nullptr;
 	}
 	break;
 	case ICEDB_TYPE_NOTYPE:
 	default:
 	{
 		ICEDB_error_context_create(ICEDB_ERRORCODES_NULLPTR);
-		return false;
+		return nullptr;
 	}
 	break;
 	}
@@ -396,7 +398,7 @@ ICEDB_tbl* tbl_create(
 	res->parent = parent;
 	size_t nameLen = strlen(name);
 	res->name = new char[nameLen + 1];
-	strcpy_s(res->name, nameLen + 1, name);
+	ICEDB_COMPAT_strncpy_s(res->name, nameLen + 1, name, nameLen+1);
 	res->numDims = numDims;
 	res->dims = new size_t[numDims];
 	for (size_t i = 0; i < numDims; ++i)

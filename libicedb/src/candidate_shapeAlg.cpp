@@ -70,7 +70,7 @@ DL_ICEDB const struct ICEDB_L1_shape_alg_def alg_naive_max_distance =
 	// The interlattice spacings are needed for this algorithm.
 	inNaiveAttNames,
 	// The output table names. No output tables.
-	{ NULL },
+	NULL,
 	// The output attribute names.
 	outNaiveAttNames,
 	// Output table types

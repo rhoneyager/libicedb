@@ -45,7 +45,8 @@
 
 namespace icedb {
 	namespace os_functions {
-		namespace vars {
+		namespace vars
+		{
 			std::mutex m_sys_names;
 			std::string hostname, username,
 				homeDir, appConfigDir, moduleCallbackBuffer,
@@ -59,9 +60,11 @@ namespace icedb {
 			bool doWaitOnExitQueriedDefault = false;
 			std::map<std::string, std::string> mmods;
 		}
-		namespace win {
-#ifdef _WIN32
-			BOOL WINAPI _CloseHandlerRoutine(DWORD dwCtrlType) {
+		namespace os_win
+		{
+#ifdef _WIN32 // windows block
+			BOOL WINAPI _CloseHandlerRoutine(DWORD dwCtrlType) 
+			{
 				// Helps gracefully close console
 				vars::_consoleTerminated = true;
 				return false;
@@ -222,9 +225,12 @@ namespace icedb {
 				if (fIsRunAsAdmin) return true;
 				return false;
 			}
-#endif
+#endif // _WIN32 block
 		}
-		namespace unix {
+
+
+
+		namespace os_unix {
 #if defined(__linux__) || defined(__unix__)
 			/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
 			int moduleCallback(dl_phdr_info *info, size_t sz, void* data)
@@ -255,14 +261,19 @@ namespace icedb {
 				{
 					out = std::string(info.dli_fname);
 				}
-                if (!out.size()) {
-                    ICEDB_DEBUG_RAISE_EXCEPTION();
-                }
+				if (!out.size()) {
+				    ICEDB_DEBUG_RAISE_EXCEPTION();
+				}
 				return out;
 			}
 #endif
-		}
-		bool populateOSstrings() {
+		} // end namespace os_unix
+
+
+
+
+		bool populateOSstrings()
+		{
 			using namespace icedb::os_functions::vars;
 			std::lock_guard<std::mutex> lock(m_sys_names);
 			// Because of the mutex lock, all of the getlogin functions are safe.
@@ -275,40 +286,40 @@ namespace icedb {
 			DWORD len = clen;
 			TCHAR hname[clen];
 			res = GetUserName(hname, &len);
-			if (res) username = win::convertStr(hname);
+			if (res) username = os_win::convertStr(hname);
 			else goto funcErrorOS;
 
 			res = GetComputerName(hname, &len);
-			if (res) hostname = win::convertStr(hname);
+			if (res) hostname = os_win::convertStr(hname);
 			else goto funcErrorOS;
 
 			HRESULT resl = false;
 			wchar_t* happname = nullptr;
 			res = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &happname);
-			if (resl == S_OK) appConfigDir = win::convertStr(happname);
+			if (resl == S_OK) appConfigDir = os_win::convertStr(happname);
 			else goto funcErrorOS;
 
 			wchar_t* hhomename = nullptr;
 			res = SHGetKnownFolderPath(FOLDERID_Profile, 0, NULL, &hhomename);
-			if (resl == S_OK) homeDir = win::convertStr(hhomename);
+			if (resl == S_OK) homeDir = os_win::convertStr(hhomename);
 			else goto funcErrorOS;
 
 			goto done;
-			funcErrorOS:
-				DWORD errn = GetLastError();
-				auto err = ICEDB_error_context_create(ICEDB_ERRORCODES_OS);
-				const char* osname = ICEDB_error_getOSname();
-				ICEDB_error_context_add_string2(err, "OS_id", osname);
-				char errns[50];
-				snprintf(errns, 50, "%d", errn);
-				ICEDB_error_context_add_string2(err, "OS_errno", errns);
-				if (!username.size()) ICEDB_error_context_add_string2(err, "OS_func", "GetUserName");
-				else if (!hostname.size()) ICEDB_error_context_add_string2(err, "OS_func", "GetComputerName");
-				else if (!appConfigDir.size()) ICEDB_error_context_add_string2(err, "OS_func", "SHGetKnownFolderPath app config dir");
-				else if (!homeDir.size()) ICEDB_error_context_add_string2(err, "OS_func", "SHGetKnownFolderPath profile dir");
-			done:
-				if (happname) CoTaskMemFree(static_cast<void*>(happname));
-				if (hhomename) CoTaskMemFree(static_cast<void*>(hhomename));
+		funcErrorOS:
+			DWORD errn = GetLastError();
+			auto err = ICEDB_error_context_create(ICEDB_ERRORCODES_OS);
+			const char* osname = ICEDB_error_getOSname();
+			ICEDB_error_context_add_string2(err, "OS_id", osname);
+			char errns[50];
+			snprintf(errns, 50, "%d", errn);
+			ICEDB_error_context_add_string2(err, "OS_errno", errns);
+			if (!username.size()) ICEDB_error_context_add_string2(err, "OS_func", "GetUserName");
+			else if (!hostname.size()) ICEDB_error_context_add_string2(err, "OS_func", "GetComputerName");
+			else if (!appConfigDir.size()) ICEDB_error_context_add_string2(err, "OS_func", "SHGetKnownFolderPath app config dir");
+			else if (!homeDir.size()) ICEDB_error_context_add_string2(err, "OS_func", "SHGetKnownFolderPath profile dir");
+		done:
+			if (happname) CoTaskMemFree(static_cast<void*>(happname));
+			if (hhomename) CoTaskMemFree(static_cast<void*>(hhomename));
 
 #elif defined(__unix__) || defined(__APPLE__)
 			const size_t len = 65536;
@@ -329,7 +340,7 @@ namespace icedb {
 				// Has getpwuid_r
 				if (!username.size()) {
 					uid_t uid = geteuid();
-					struct passwd* ps = ICEDB_malloc(sizeof passwd);
+					struct passwd* ps = (struct passwd*) ICEDB_malloc(sizeof(passwd));
 					struct passwd** pres;
 					res = getpwuid_r(uid, ps, hname, len, pres);
 					if ((res == 0) && pres) {
@@ -360,6 +371,7 @@ namespace icedb {
 				if (res == 0) {
 					const char *homedir = pw.pw_dir;
 					homeDir = std::string(homedir);
+				}
 #else
 				struct passwd* ps = getpwuid(geteuid());
 				if (ps) homeDir = std::string(ps->pw_dir);
@@ -395,6 +407,8 @@ namespace icedb {
 		}
 	}
 }
+
+
 using namespace icedb::os_functions::vars;
 
 bool ICEDB_pidExists(int pid, bool &res)
@@ -433,7 +447,7 @@ bool ICEDB_pidExists(int pid, bool &res)
 	// Need to check existence of directory /proc/pid
 	std::ostringstream pname;
 	pname << "/proc/" << pid;
-	if (icedb::os_functions::unix::dirExists(pname.str().c_str())) {
+	if (icedb::os_functions::os_unix::dirExists(pname.str().c_str())) {
 		res = true;
 		return true;
 	}
@@ -546,7 +560,7 @@ bool ICEDB_waitOnExitGetDefault() {
 
 	// Get parent process name
 	std::string filepath, filename;
-	icedb::os_functions::win::getPathWIN32(ppid, filepath, filename);
+	icedb::os_functions::os_win::getPathWIN32(ppid, filepath, filename);
 
 	//std::cout << filename.string() << std::endl;
 	// If run from cmd, no need to wait
@@ -616,8 +630,8 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 		mod->dwSize = sizeof(MODULEENTRY32); // Annoying requirement
 		if (!Module32First(snapshot, mod.get())) goto err;
 		do {
-			std::string modName = icedb::os_functions::win::convertStr(mod->szModule);
-			std::string modPath = icedb::os_functions::win::convertStr(mod->szExePath);
+			std::string modName = icedb::os_functions::os_win::convertStr(mod->szModule);
+			std::string modPath = icedb::os_functions::os_win::convertStr(mod->szExePath);
 			icedb::os_functions::vars::mmods[modName] = modPath;
 		} while (Module32Next(snapshot, mod.get()));
 
@@ -644,7 +658,7 @@ ICEDB_enumModulesRes* ICEDB_enumModules(int pid) {
 		return NULL;
 	}
 	if (!moduleCallbackBuffer.size()) {
-		dl_iterate_phdr(icedb::os_functions::unix::moduleCallback, NULL);
+		dl_iterate_phdr(icedb::os_functions::os_unix::moduleCallback, NULL);
 	}
 #elif defined(__APPLE__)
 	uint32_t count = _dyld_image_count();
@@ -690,11 +704,11 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 		HMODULE mod;
 		success = GetModuleHandleEx(flags, lpModuleName, &mod);
 		if (!success) return nullptr;
-		modpath = icedb::os_functions::win::GetModulePath(mod);
+		modpath = icedb::os_functions::os_win::GetModulePath(mod);
 		FreeLibrary(mod);
-	} else modpath = icedb::os_functions::win::GetModulePath(NULL);
+	} else modpath = icedb::os_functions::os_win::GetModulePath(NULL);
 #elif defined(__unix__) || defined(__APPLE__)
-	modpath = icedb::os_functions::unix::GetModulePath(ptr);
+	modpath = icedb::os_functions::os_unix::GetModulePath(ptr);
 #else
     ICEDB_DEBUG_RAISE_EXCEPTION();
 #endif
@@ -704,9 +718,9 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 
 void ICEDB_getLibDirI() {
 #if defined(_WIN32)
-	libPath = icedb::os_functions::win::GetModulePath(NULL);
+	libPath = icedb::os_functions::os_win::GetModulePath(NULL);
 #elif defined(__unix__) || defined(__APPLE__)
-	libPath = icedb::os_functions::unix::GetModulePath((void*)ICEDB_getLibDirI);
+	libPath = icedb::os_functions::os_unix::GetModulePath((void*)ICEDB_getLibDirI);
 #endif
 	libDir = libPath.substr(0, libPath.find_last_of("/\\"));
 }
@@ -724,7 +738,7 @@ void ICEDB_getAppDirI() {
 #if defined(_WIN32)
 	DWORD pid = (DWORD)ICEDB_getPID(); // int always fits in DWORD
 	std::string filename;
-	icedb::os_functions::win::getPathWIN32(pid, appPath, filename);
+	icedb::os_functions::os_win::getPathWIN32(pid, appPath, filename);
 	appd = appPath.substr(0, appPath.find_last_of("/\\"));
 #elif defined(__APPLE__)
 	char exePath[PATH_MAX];
@@ -866,7 +880,7 @@ void ICEDB_libEntry(int, char**) {
 	// without causing a fault.
 	// The fault is because the window closes before the atexit 
 	// functions can write output.
-	SetConsoleCtrlHandler(icedb::os_functions::win::_CloseHandlerRoutine, true);
+	SetConsoleCtrlHandler(icedb::os_functions::os_win::_CloseHandlerRoutine, true);
 	CloseHandle(h);
 #endif
 

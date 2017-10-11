@@ -1,11 +1,11 @@
 #pragma once
 #ifndef ICEDB_H_ATTRS
 #define ICEDB_H_ATTRS
+#include "../defs.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../defs.h"
 #include "../fs/fs.h"
 
 ICEDB_BEGIN_DECL_C

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_H_SHAPE
 #define ICEDB_H_SHAPE
-#include "../../libicedb/icedb/defs.h"
+#include "../defs.h"
 //#include "../../libicedb/icedb/error/error.h"
 #include "../fs/fs.h"
 #include "../misc/hash.h"
@@ -142,7 +142,7 @@ struct ICEDB_shp_ftable {
 	ICEDB_shape_open_path_all_free_f openPathAllFree;
 	ICEDB_shape_close_f close; ///< Removes shape from memory and performs clean-up tasks.
 };
-extern DL_ICEDB const struct ICEDB_shp_ftable ICEDB_funcs_fs_shp;
+DL_ICEDB extern const struct ICEDB_shp_ftable ICEDB_funcs_fs_shp;
 
 
 /** @} */ // end of shps

@@ -1,7 +1,7 @@
 #include "../icedb/defs.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <cwchar>
+#include <wchar.h>
 #if defined(_WIN32)
 #include <Windows.h>
 #else

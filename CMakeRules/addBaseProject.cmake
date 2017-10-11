@@ -7,10 +7,14 @@ macro(getMSVCappend)
 endmacro(getMSVCappend)
 macro(addBaseProject)
 
-# g++
+set (CMAKE_CXX_STANDARD 11)
 IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
     SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
 ENDIF()
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # using regular Clang or AppleClang
+#	SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-stdlib=libc++")
+endif()
 IF(DEFINED MSVC)
     # MSVC parallel builds by default
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

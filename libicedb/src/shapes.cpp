@@ -5,6 +5,8 @@
 #include "../libicedb/icedb/error/error_context.h"
 #include "../libicedb/icedb/fs/fs_backend.hpp"
 #include "../libicedb/icedb/misc/hash.h"
+#include "../libicedb/icedb/misc/util.h"
+
 #include <memory>
 #include <cassert>
 ICEDB_BEGIN_DECL_C
@@ -196,7 +198,7 @@ ICEDB_shape* shape_generate(ICEDB_fs_hnd* objBackend) {
 	using namespace std;
 	shared_ptr<ICEDB_attr> aType(ICEDB_funcs_fs.attrs.create(objBackend, "icedb_obj_type",
 		ICEDB_DATA_TYPES::ICEDB_TYPE_CHAR, 1, &typelen), ICEDB_funcs_fs.attrs.close);
-	memcpy_s(aType->data.ct, aType->sizeBytes, objtype, typelen);
+	ICEDB_COMPAT_memcpy_s(aType->data.ct, aType->sizeBytes, objtype, typelen);
 	aType->funcs->write(aType.get());
 
 	const size_t uidlen = 1;
