@@ -51,7 +51,10 @@ addBoostUniform(program_options )
 #endif(UDUNITS2_INCLUDE_DIR)
 
 ADD_SUBDIRECTORY(libicedb)
+option(BUILD_PLUGINS OFF "Build plugins (all in development)")
+if (BUILD_PLUGINS)
 ADD_SUBDIRECTORY(plugins)
+endif()
 ADD_SUBDIRECTORY(apps)
 
 adddocs()

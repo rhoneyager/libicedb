@@ -12,7 +12,7 @@ ENDIF()
 
 add_executable(units-app ${srcs})
 target_link_libraries(units-app libicedb)
-add_dependencies(units-app units-simple)
+#add_dependencies(units-app units-simple)
 addapp(units-app Misc)
 storebin(units-app)
 
