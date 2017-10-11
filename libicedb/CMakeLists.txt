@@ -19,7 +19,9 @@ set (fs_objs
 	icedb/fs/fs_path_functions.h
 	icedb/fs/fs_enums.h
 	icedb/fs/fs_tbl_base.h
-	src/fs.cpp)
+	src/fs.cpp
+	docs/fs.md
+	)
 set (error_objs
 	icedb/error/error.h
 	icedb/error/error.hpp
@@ -33,6 +35,7 @@ set (error_objs
 	src/error.cpp
 	src/error_context.cpp
 	src/errorCodes.cpp
+	docs/errors.md
 	)
 set (misc_objs
 	icedb/misc/hash.h
@@ -68,13 +71,13 @@ set (versioning_objs
 set (base_objs
 	icedb/defs.h
 	src/defs.cpp
+	docs/conventions.md
 	)
 set (level_0_objs
 	icedb/level_0/shape.h
 	icedb/level_0/shape.hpp
 	icedb/level_0/shapeInterface.h
 	icedb/level_0/shapeInterfaceImpl.hpp
-	docs/attributes.md
 	docs/level_0.md
 	docs/shapes.md
 	src/shapes.cpp
@@ -82,6 +85,7 @@ set (level_0_objs
 set (level_1_objs
 	icedb/level_1/candidate_shapeAlg.h
 	src/candidate_shapeAlg.cpp
+	docs/shapeAlgs.md
 	)
 set (data_objs
 	icedb/data/attrs.h
@@ -89,6 +93,8 @@ set (data_objs
 	icedb/data/tables.h
 	src/attrs.cpp
 	src/tables.cpp
+	docs/attributes.md
+	docs/tables.md
 	)
 
 generaterc("libicedb" "dll"
