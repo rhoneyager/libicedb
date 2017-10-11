@@ -7,6 +7,7 @@
 #include "../libicedb/icedb/misc/hash.h"
 #include <memory>
 #include <cassert>
+ICEDB_BEGIN_DECL_C
 
 bool validateShapePtr(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (!shp) {
@@ -27,7 +28,7 @@ bool validateShapePtr(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 bool shape_close(ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (validateShapePtr(shp)) {
 		//delete shp->_p;
-		ICEDB_funcs_fs.close(shp->fsSelf);
+		ICEDB_funcs_fs.closeHandle(shp->fsSelf);
 		delete shp;
 		return true;
 	}
@@ -37,7 +38,7 @@ DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close = shape_close;
 
 ICEDB_fs_hnd* shape_getFSself(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (validateShapePtr(shp)) {
-		return ICEDB_funcs_fs.clone(shp->fsSelf);
+		return ICEDB_funcs_fs.cloneHandle(shp->fsSelf);
 	}
 	else return nullptr;
 }
@@ -224,21 +225,38 @@ ICEDB_shape* shape_generate(ICEDB_fs_hnd* objBackend) {
 DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate = shape_generate;
 
 ICEDB_shape* shape_openPathSingle(const char* filename, ICEDB_file_open_flags flags) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
 DL_ICEDB ICEDB_shape_open_single_file_f ICEDB_shape_openPathSingle = shape_openPathSingle;
 
 ICEDB_shape*** const openPathAll(const char* path, ICEDB_path_iteration pit, ICEDB_file_open_flags flags, size_t *numShapes) {
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
 DL_ICEDB ICEDB_shape_open_path_all_f ICEDB_shape_openPathAll = openPathAll;
 
 void openPathAllFree(ICEDB_shape*** const shps) {
 	delete shps;
-	throw;
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 }
 DL_ICEDB ICEDB_shape_open_path_all_free_f ICEDB_shape_openPathAllFree = openPathAllFree;
 
 
+DL_ICEDB const struct ICEDB_shp_ftable ICEDB_funcs_fs_shp = {
+	shape_generate,
+	shape_openPathSingle,
+	openPathAll,
+	openPathAllFree
+};
+
+DL_ICEDB const struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable ICEDB_funcs_shp_obj = {
+	shape_close,
+	shape_getFSself,
+	shape_getNumPoints,
+	shape_getID,
+	shape_copy_open,
+	shape_copy
+};
+
+ICEDB_END_DECL_C

@@ -4,6 +4,8 @@
 #include "../icedb/error/error_context.h"
 #include <memory>
 
+ICEDB_BEGIN_DECL_C
+
 bool validate_tbl_ptr(const ICEDB_tbl *tbl) {
 	if (!tbl) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_NULLPTR);
@@ -22,8 +24,8 @@ bool tbl_close(ICEDB_tbl *tbl)
 	delete[] tbl->dims;
 	delete[] tbl->name;
 	// Release the self and parent pointers
-	ICEDB_funcs_fs.close(tbl->self);
-	ICEDB_funcs_fs.close(tbl->parent);
+	ICEDB_funcs_fs.closeHandle(tbl->self);
+	ICEDB_funcs_fs.closeHandle(tbl->parent);
 	tbl->dims = nullptr;
 	tbl->name = nullptr;
 	tbl->self = nullptr;
@@ -494,3 +496,5 @@ DL_ICEDB const struct ICEDB_tbl_container_ftable ICEDB_funcs_tbl_container = {
 	inner_tbl_readMapped,
 	inner_tbl_writeMapped
 };
+
+ICEDB_END_DECL_C

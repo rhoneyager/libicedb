@@ -5,7 +5,7 @@
 #include <string>
 
 ICEDB_BEGIN_DECL_C
-ICEDB_HASH_t HASH(const void *key, int len)
+ICEDB_HASH_t ICEDB_HASH(const void *key, int len)
 {
 	ICEDB_HASH_t res;
 	MurmurHash3_x64_128(key, len, ICEDB_HASHSEED, &res);

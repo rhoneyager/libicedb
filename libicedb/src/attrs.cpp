@@ -3,6 +3,8 @@
 #include "../icedb/fs/fs.h"
 #include "../icedb/error/error_context.h"
 
+ICEDB_BEGIN_DECL_C
+
 bool validate_attr_ptr(const ICEDB_attr *attr) {
 	if (!attr) {
 		ICEDB_error_context_create(ICEDB_ERRORCODES_NULLPTR);
@@ -34,7 +36,7 @@ bool attr_close(ICEDB_attr *attr)
 	attr->dims = nullptr;
 	attr->name = nullptr;
 
-	ICEDB_funcs_fs.close(attr->parent);
+	ICEDB_funcs_fs.closeHandle(attr->parent);
 	attr->parent = nullptr;
 	
 	delete attr;
@@ -269,3 +271,5 @@ DL_ICEDB const struct ICEDB_attr_container_ftable ICEDB_funcs_attr_container = {
 	attr_openAllAttrs,
 	attr_fs_write_backend
 };
+
+ICEDB_END_DECL_C
