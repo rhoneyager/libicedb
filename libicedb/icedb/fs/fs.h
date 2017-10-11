@@ -41,7 +41,7 @@ typedef void(*ICEDB_fs_getHandlers_f)(
 	ICEDB_OUT char *** const pluginids,
 	ICEDB_OUT ICEDB_free_charIPPP_f * const deallocator
 	);
-extern DL_ICEDB ICEDB_fs_getHandlers_f ICEDB_fs_getHandlers;
+extern DL_ICEDB const  ICEDB_fs_getHandlers_f ICEDB_fs_getHandlers;
 
 /** \brief Can a path be opened?
 	*
@@ -71,7 +71,7 @@ typedef bool(*ICEDB_fs_canOpenPath_f)(
 	ICEDB_OPTIONAL ICEDB_OUT char *** const pluginids,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPPP_f * const deallocator,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
-extern DL_ICEDB ICEDB_fs_canOpenPath_f ICEDB_fs_canOpenPath;
+extern DL_ICEDB const  ICEDB_fs_canOpenPath_f ICEDB_fs_canOpenPath;
 
 /** \brief Open a path and get a handle.
 	* 
@@ -93,7 +93,7 @@ typedef ICEDB_fs_hnd*(*ICEDB_fs_openPath_f)(
 	ICEDB_OPTIONAL const char* pluginid,
 	ICEDB_OPTIONAL ICEDB_fs_hnd* base_handle,
 	ICEDB_OPTIONAL ICEDB_file_open_flags flags);
-extern DL_ICEDB ICEDB_fs_openPath_f ICEDB_fs_openPath;
+extern DL_ICEDB const  ICEDB_fs_openPath_f ICEDB_fs_openPath;
 
 /** \brief Duplicate a handle
 *
@@ -102,7 +102,7 @@ extern DL_ICEDB ICEDB_fs_openPath_f ICEDB_fs_openPath;
 **/
 typedef ICEDB_fs_hnd*(*ICEDB_fs_cloneHandle_f)(
 	ICEDB_fs_hnd* handle);
-extern DL_ICEDB ICEDB_fs_cloneHandle_f ICEDB_fs_cloneHandle;
+extern DL_ICEDB const  ICEDB_fs_cloneHandle_f ICEDB_fs_cloneHandle;
 
 
 /** \brief Get the full path opened by the file handle.
@@ -123,7 +123,7 @@ typedef const char*(*ICEDB_fs_getPathFromHandle_f)(
 	ICEDB_OUT size_t* outPathSize, 
 	ICEDB_OUT char ** const bufPath,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
-extern DL_ICEDB ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPathFromHandle;
+extern DL_ICEDB const  ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPathFromHandle;
 
 /** \brief Get the ICEDB_file_open_flags passed to the plugin when the handle was opened
 	*
@@ -131,7 +131,7 @@ extern DL_ICEDB ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPathFromHandle;
 	* \param err is an error code.
 	**/
 typedef ICEDB_file_open_flags(*ICEDB_fs_getHandleIOflags_f)(const ICEDB_fs_hnd* p);
-extern DL_ICEDB ICEDB_fs_getHandleIOflags_f ICEDB_fs_getHandleIOflags;
+extern DL_ICEDB const  ICEDB_fs_getHandleIOflags_f ICEDB_fs_getHandleIOflags;
 
 /** \brief Close a file handle
 	*
@@ -139,7 +139,7 @@ extern DL_ICEDB ICEDB_fs_getHandleIOflags_f ICEDB_fs_getHandleIOflags;
 	* \returns an error code. Zero on success.
 	**/
 typedef ICEDB_error_code(*ICEDB_fs_closeHandle_f)(ICEDB_fs_hnd* p);
-extern DL_ICEDB ICEDB_fs_closeHandle_f ICEDB_fs_closeHandle;
+extern DL_ICEDB const  ICEDB_fs_closeHandle_f ICEDB_fs_closeHandle;
 
 /** \brief Move an object
 	*
@@ -150,7 +150,7 @@ extern DL_ICEDB ICEDB_fs_closeHandle_f ICEDB_fs_closeHandle;
 	* \returns Zero on success, nonzero on any error.
 	**/
 typedef ICEDB_error_code(*ICEDB_fs_move_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
-extern DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move;
+extern DL_ICEDB const  ICEDB_fs_move_f ICEDB_fs_move;
 
 /** \brief Copy an object
 *
@@ -161,7 +161,7 @@ extern DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_copy_f)(ICEDB_fs_hnd* p, const char* src, const char* dest, bool overwrite);
-extern DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy;
+extern DL_ICEDB const  ICEDB_fs_copy_f ICEDB_fs_copy;
 
 /** \brief Unlink an object
 *
@@ -172,7 +172,7 @@ extern DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_unlink_f)(ICEDB_fs_hnd* p, const char* path);
-extern DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink;
+extern DL_ICEDB const  ICEDB_fs_unlink_f ICEDB_fs_unlink;
 
 /** \brief Create a hard link
 *
@@ -183,7 +183,7 @@ extern DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_createHardLink_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
-extern DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
+extern DL_ICEDB const  ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
 
 /** \brief Create a symbolic link
 *
@@ -194,7 +194,7 @@ extern DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink;
 * \returns Zero on success, nonzero on any error.
 **/
 typedef ICEDB_error_code(*ICEDB_fs_createSymLink_f)(ICEDB_fs_hnd* p, const char* src, const char* dest);
-extern DL_ICEDB ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink;
+extern DL_ICEDB const  ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink;
 
 /** \brief Follow a symbolic link
 *
@@ -215,7 +215,7 @@ typedef const char*(*ICEDB_fs_followSymLink_f)(ICEDB_fs_hnd* p,
 	ICEDB_OUT size_t* outPathSize,
 	ICEDB_OUT char ** const bufPath,
 	ICEDB_OPTIONAL ICEDB_OUT ICEDB_free_charIPP_f * const deallocator);
-extern DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
+extern DL_ICEDB const  ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
 
 /** \brief Does a path exist?
 *
@@ -225,7 +225,7 @@ extern DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink;
 * \returns True if the path exists, false if the path does not exist or if there is an error (such as when a parent path does not exist).
 **/
 typedef bool(*ICEDB_fs_doesPathExist_f)(const ICEDB_fs_hnd* p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err);
-extern DL_ICEDB ICEDB_fs_doesPathExist_f ICEDB_fs_doesPathExist;
+extern DL_ICEDB const  ICEDB_fs_doesPathExist_f ICEDB_fs_doesPathExist;
 
 /** \brief Get information about a path.
 *
@@ -241,7 +241,7 @@ typedef ICEDB_fs_path_contents*(*ICEDB_fs_getPathInfo_f)(
 	const ICEDB_fs_hnd* p,
 	const char* path,
 	ICEDB_OUT ICEDB_fs_path_contents *res);
-extern DL_ICEDB ICEDB_fs_getPathInfo_f ICEDB_fs_getPathInfo;
+extern DL_ICEDB const  ICEDB_fs_getPathInfo_f ICEDB_fs_getPathInfo;
 
 /** \brief Free a path structure
 *
@@ -249,7 +249,7 @@ extern DL_ICEDB ICEDB_fs_getPathInfo_f ICEDB_fs_getPathInfo;
 * \see ICEDB_fh_path_info
 **/
 typedef void(*ICEDB_fs_pathInfoFree_f)(ICEDB_fs_path_contents *pc);
-extern DL_ICEDB ICEDB_fs_pathInfoFree_f ICEDB_fs_pathInfoFree;
+extern DL_ICEDB const  ICEDB_fs_pathInfoFree_f ICEDB_fs_pathInfoFree;
 
 
 typedef ICEDB_fs_path_contents *** const ICEDB_fs_objectList_t;
@@ -267,7 +267,7 @@ typedef ICEDB_fs_objectList_t(*ICEDB_fs_getAllObjects_f)(
 	const char* path, 
 	size_t *numObjs, 
 	ICEDB_OUT ICEDB_fs_objectList_t res);
-extern DL_ICEDB ICEDB_fs_getAllObjects_f ICEDB_fs_getAllObjects;
+extern DL_ICEDB const  ICEDB_fs_getAllObjects_f ICEDB_fs_getAllObjects;
 
 /** \brief Free the results of a ICEDB_fh_readObjs call
 * \param p is a pointer to the path information structure that gets populated. Must be non-NULL. Must be freed with ICEDB_fh_freeObjs after use.
@@ -275,7 +275,7 @@ extern DL_ICEDB ICEDB_fs_getAllObjects_f ICEDB_fs_getAllObjects;
 **/
 typedef void(*ICEDB_fs_freeObjs_f)(
 	ICEDB_fs_objectList_t p);
-extern DL_ICEDB ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs;
+extern DL_ICEDB const  ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs;
 
 
 struct ICEDB_fs_container_ftable {

@@ -47,28 +47,28 @@ typedef ICEDB_tbl* (*ICEDB_tbl_copy_f)(
 	ICEDB_fs_hnd* newparent,
 	ICEDB_OPTIONAL const char* newname
 );
-extern DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy;
+extern DL_ICEDB const ICEDB_tbl_copy_f ICEDB_tbl_copy;
 
 /** \brief Returns the filesystem handle for the table. Used particularly with attribute operations.
 * \param tbl is the table
 * \returns NULL on error, otherwise a fs handle (that must be freed by the application)
 **/
 //typedef ICEDB_fs_hnd* (*ICEDB_tbl_getSelfFS_f)(ICEDB_tbl* tbl);
-//extern DL_ICEDB ICEDB_tbl_getSelfFS_f ICEDB_tbl_getSelfFS;
+//extern DL_ICEDB const ICEDB_tbl_getSelfFS_f ICEDB_tbl_getSelfFS;
 
 /** \brief Returns the filesystem handle for the table's parent. Used particularly with attribute operations.
 * \param tbl is the table
 * \returns NULL on error, otherwise a fs handle (that must be freed by the application)
 **/
 //typedef ICEDB_fs_hnd* (*ICEDB_tbl_getParent_f)(ICEDB_tbl* tbl);
-//extern DL_ICEDB ICEDB_tbl_getParent_f ICEDB_tbl_getParent;
+//extern DL_ICEDB const ICEDB_tbl_getParent_f ICEDB_tbl_getParent;
 
 /** \brief Gets the type of a table
 * \param p is the pointer to a table handle.
 * \returns Attribute type on success, NULL (ICEDB_type_invalid) on error.
 **/
 //typedef ICEDB_DATA_TYPES (*ICEDB_tbl_getType_f)(const ICEDB_tbl* p);
-//extern DL_ICEDB ICEDB_tbl_getType_f ICEDB_tbl_getType;
+//extern DL_ICEDB const ICEDB_tbl_getType_f ICEDB_tbl_getType;
 
 /** \brief Gets the number of dimensions for a table.
 * \param p is the pointer to a table handle.
@@ -76,7 +76,7 @@ extern DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy;
 * \returns Number of dimensions. 0 on error. Always check err.
 **/
 //typedef size_t (*ICEDB_tbl_getNumDims_f)(const ICEDB_tbl* p, ICEDB_OUT ICEDB_error_code* err);
-//extern DL_ICEDB ICEDB_tbl_getNumDims_f ICEDB_tbl_getNumDims;
+//extern DL_ICEDB const ICEDB_tbl_getNumDims_f ICEDB_tbl_getNumDims;
 
 /** \brief Gets the dimensions for a table.
 * \param p is the pointer to a table handle.
@@ -84,7 +84,7 @@ extern DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy;
 * \returns True on success, false on error.
 **/
 //typedef bool (*ICEDB_tbl_getDims_f)(const ICEDB_tbl* p, ICEDB_OUT size_t * dims);
-//extern DL_ICEDB ICEDB_tbl_getDims_f ICEDB_tbl_getDims;
+//extern DL_ICEDB const ICEDB_tbl_getDims_f ICEDB_tbl_getDims;
 
 /** \brief Resize table
 * \param tbl is the pointer to the table
@@ -95,7 +95,7 @@ extern DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy;
 * \returns true on success, false on error.
 **/
 //typedef bool (*ICEDB_tbl_resize_f)(ICEDB_tbl* tbl, size_t newnumdims, const size_t *newdims);
-//extern DL_ICEDB ICEDB_tbl_resize_f ICEDB_tbl_resize;
+//extern DL_ICEDB const ICEDB_tbl_resize_f ICEDB_tbl_resize;
 
 // Read values
 
@@ -103,7 +103,7 @@ typedef bool (*ICEDB_tbl_readSingle_f)(
 	const ICEDB_tbl* p, 
 	const size_t *index, 
 	ICEDB_OUT void* out);
-extern DL_ICEDB ICEDB_tbl_readSingle_f ICEDB_tbl_readSingle;
+extern DL_ICEDB const ICEDB_tbl_readSingle_f ICEDB_tbl_readSingle;
 
 typedef bool (*ICEDB_tbl_readMapped_f)(
 	const ICEDB_tbl* p,
@@ -112,14 +112,14 @@ typedef bool (*ICEDB_tbl_readMapped_f)(
 	const ptrdiff_t *stride,
 	const ptrdiff_t *imapp,
 	ICEDB_OUT void* out);
-extern DL_ICEDB ICEDB_tbl_readMapped_f ICEDB_tbl_readMapped;
+extern DL_ICEDB const ICEDB_tbl_readMapped_f ICEDB_tbl_readMapped;
 
 typedef bool (*ICEDB_tbl_readArray_f)(
 	const ICEDB_tbl* p,
 	const size_t *start,
 	const size_t *count,
 	ICEDB_OUT void* out);
-extern DL_ICEDB ICEDB_tbl_readArray_f ICEDB_tbl_readArray;
+extern DL_ICEDB const ICEDB_tbl_readArray_f ICEDB_tbl_readArray;
 
 typedef bool (*ICEDB_tbl_readStride_f)(
 	const ICEDB_tbl* p,
@@ -127,12 +127,12 @@ typedef bool (*ICEDB_tbl_readStride_f)(
 	const size_t *count,
 	const ptrdiff_t *stride,
 	ICEDB_OUT void* out);
-extern DL_ICEDB ICEDB_tbl_readStride_f ICEDB_tbl_readStride;
+extern DL_ICEDB const ICEDB_tbl_readStride_f ICEDB_tbl_readStride;
 
 typedef bool (*ICEDB_tbl_readFull_f)(
 	const ICEDB_tbl* p,
 	ICEDB_OUT void* out);
-extern DL_ICEDB ICEDB_tbl_readFull_f ICEDB_tbl_readFull;
+extern DL_ICEDB const ICEDB_tbl_readFull_f ICEDB_tbl_readFull;
 
 // Write values
 
@@ -140,7 +140,7 @@ typedef bool (*ICEDB_tbl_writeSingle_f)(
 	ICEDB_tbl* p,
 	const size_t *index,
 	const void* in);
-extern DL_ICEDB ICEDB_tbl_writeSingle_f ICEDB_tbl_writeSingle;
+extern DL_ICEDB const ICEDB_tbl_writeSingle_f ICEDB_tbl_writeSingle;
 
 typedef bool (*ICEDB_tbl_writeMapped_f)(
 	ICEDB_tbl* p,
@@ -149,14 +149,14 @@ typedef bool (*ICEDB_tbl_writeMapped_f)(
 	const ptrdiff_t *stride,
 	const ptrdiff_t *imapp,
 	const void* in);
-extern DL_ICEDB ICEDB_tbl_writeMapped_f ICEDB_tbl_writeMapped;
+extern DL_ICEDB const ICEDB_tbl_writeMapped_f ICEDB_tbl_writeMapped;
 
 typedef bool (*ICEDB_tbl_writeArray_f)(
 	ICEDB_tbl* p,
 	const size_t *start,
 	const size_t *count,
 	const void* in);
-extern DL_ICEDB ICEDB_tbl_writeArray_f ICEDB_tbl_writeArray;
+extern DL_ICEDB const ICEDB_tbl_writeArray_f ICEDB_tbl_writeArray;
 
 typedef bool (*ICEDB_tbl_writeStride_f)(
 	ICEDB_tbl* p,
@@ -164,12 +164,12 @@ typedef bool (*ICEDB_tbl_writeStride_f)(
 	const size_t *count,
 	const ptrdiff_t *stride,
 	const void* in);
-extern DL_ICEDB ICEDB_tbl_writeStride_f ICEDB_tbl_writeStride;
+extern DL_ICEDB const ICEDB_tbl_writeStride_f ICEDB_tbl_writeStride;
 
 typedef bool (*ICEDB_tbl_writeFull_f)(
 	ICEDB_tbl* p,
 	const void* in);
-extern DL_ICEDB ICEDB_tbl_writeFull_f ICEDB_tbl_writeFull;
+extern DL_ICEDB const ICEDB_tbl_writeFull_f ICEDB_tbl_writeFull;
 
 
 struct ICEDB_tbl_ftable {

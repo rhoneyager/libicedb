@@ -18,7 +18,7 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE;
 typedef ICEDB_L0_SHAPE_VOL_SPARSE ICEDB_shape;
 
 typedef uint64_t(*ICEDB_shape_getNumPoints_f)(const ICEDB_shape*);
-extern DL_ICEDB ICEDB_shape_getNumPoints_f ICEDB_shape_getNumPoints;
+extern DL_ICEDB const ICEDB_shape_getNumPoints_f ICEDB_shape_getNumPoints;
 typedef bool(*ICEDB_shape_setSize_f)(ICEDB_shape*, uint64_t);
 typedef bool(*ICEDB_shape_setStrAttr_f)(ICEDB_shape*, const char*);
 typedef const char*(*ICEDB_shape_getStrAttr_f)(const ICEDB_shape*);
@@ -26,18 +26,18 @@ typedef bool(*ICEDB_shape_getScattElemCoords_f)(const ICEDB_shape*, ICEDB_OUT fl
 typedef bool(*ICEDB_shape_setScattElemCoords_f)(ICEDB_shape*, const float*);
 typedef bool(*ICEDB_shape_tableExists_f)(const ICEDB_shape*, const char*);
 typedef ICEDB_fs_hnd*(*ICEDB_shape_getFSPtr_f)(const ICEDB_shape*);
-extern DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself;
-extern DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSparent;
+extern DL_ICEDB const ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself;
+extern DL_ICEDB const ICEDB_shape_getFSPtr_f ICEDB_shape_getFSparent;
 typedef bool(*ICEDB_shape_close_f)(ICEDB_shape*);
-extern DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close;
+extern DL_ICEDB const ICEDB_shape_close_f ICEDB_shape_close;
 
 typedef bool(*ICEDB_shape_hash_f)(const ICEDB_shape*, ICEDB_OUT ICEDB_HASH_t*);
 typedef uint64_t(*ICEDB_shape_getID_f)(const ICEDB_shape*);
-extern DL_ICEDB ICEDB_shape_getID_f ICEDB_shape_getID;
+extern DL_ICEDB const ICEDB_shape_getID_f ICEDB_shape_getID;
 typedef ICEDB_shape*(*ICEDB_shape_copy_open_f)(const ICEDB_shape* src, ICEDB_fs_hnd* hnd);
-extern DL_ICEDB ICEDB_shape_copy_open_f ICEDB_shape_copy_open;
+extern DL_ICEDB const ICEDB_shape_copy_open_f ICEDB_shape_copy_open;
 typedef bool(*ICEDB_shape_copy_f)(const ICEDB_shape*, ICEDB_fs_hnd*);
-extern DL_ICEDB ICEDB_shape_copy_f ICEDB_shape_copy;
+extern DL_ICEDB const ICEDB_shape_copy_f ICEDB_shape_copy;
 //typedef ICEDB_attr_TYPES(*ICEDB_shape_getTableType_f)(const ICEDB_shape*, const char*);
 
 // Args are: ptr to shape, number of table dimensions (should be 2), size of each dimension, pointer to the data.
@@ -85,7 +85,7 @@ struct ICEDB_L0_SHAPE_VOL_SPARSE {
 	const struct ICEDB_L0_SHAPE_VOL_SPARSE_ftable *funcs;
 };
 
-extern DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close;
+extern DL_ICEDB const ICEDB_shape_close_f ICEDB_shape_close;
 
 /**
 * \brief Create a new shape object.
@@ -95,7 +95,7 @@ extern DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close;
 * \param objBackend is the storage backend used to store this shape.
 **/
 typedef ICEDB_shape*(*ICEDB_shape_generate_f)(ICEDB_fs_hnd* objBackend);
-extern DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate;
+extern DL_ICEDB const ICEDB_shape_generate_f ICEDB_shape_generate;
 
 /** \brief This is a convenience function to open a single shape directly from a file.
 * \param filename is the name of the file. Commonly shape.dat.
@@ -104,7 +104,7 @@ extern DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate;
 * \returns A pointer to the loaded shape. NULL on error.
 **/
 typedef ICEDB_shape*(*ICEDB_shape_open_single_file_f)(const char* filename, ICEDB_file_open_flags flags);
-extern DL_ICEDB ICEDB_shape_open_single_file_f ICEDB_shape_open_single_file;
+extern DL_ICEDB const ICEDB_shape_open_single_file_f ICEDB_shape_open_single_file;
 
 /** \brief This is a convenience function to open all shapes under a path. 
 * \param path is the base path.
@@ -119,7 +119,7 @@ typedef ICEDB_shape*** const (*ICEDB_shape_open_path_all_f)(
 	ICEDB_path_iteration pit,
 	ICEDB_file_open_flags flags,
 	ICEDB_OUT size_t * numShapes);
-extern DL_ICEDB ICEDB_shape_open_path_all_f ICEDB_shape_open_path_all;
+extern DL_ICEDB const ICEDB_shape_open_path_all_f ICEDB_shape_open_path_all;
 
 /** \brief Free the results of a ICEDB_shape_open_path_all call
 * \param p is a pointer to the list of shapes. 
@@ -127,7 +127,7 @@ extern DL_ICEDB ICEDB_shape_open_path_all_f ICEDB_shape_open_path_all;
 **/
 typedef void(*ICEDB_shape_open_path_all_free_f)(
 	ICEDB_shape*** const shapes);
-extern DL_ICEDB ICEDB_shape_open_path_all_free_f ICEDB_shape_open_path_all_free;
+extern DL_ICEDB const ICEDB_shape_open_path_all_free_f ICEDB_shape_open_path_all_free;
 
 struct ICEDB_shp_ftable {
 	ICEDB_shape_generate_f generate;

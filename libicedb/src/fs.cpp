@@ -67,7 +67,7 @@ void fs_getHandlers(
 {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 }
-DL_ICEDB ICEDB_fs_getHandlers_f ICEDB_fs_getHandlers = fs_getHandlers;
+DL_ICEDB const  ICEDB_fs_getHandlers_f ICEDB_fs_getHandlers = fs_getHandlers;
 
 bool fs_canOpenPath(
 	const char* path,
@@ -83,7 +83,7 @@ bool fs_canOpenPath(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
-DL_ICEDB ICEDB_fs_canOpenPath_f ICEDB_fs_canOpenPath = fs_canOpenPath;
+DL_ICEDB const  ICEDB_fs_canOpenPath_f ICEDB_fs_canOpenPath = fs_canOpenPath;
 
 ICEDB_fs_hnd* fs_openPath(
 	const char* path,
@@ -95,7 +95,7 @@ ICEDB_fs_hnd* fs_openPath(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
-DL_ICEDB ICEDB_fs_openPath_f ICEDB_fs_openPath = fs_openPath;
+DL_ICEDB const  ICEDB_fs_openPath_f ICEDB_fs_openPath = fs_openPath;
 
 ICEDB_fs_hnd* fs_cloneHandle(
 	ICEDB_fs_hnd* handle)
@@ -103,7 +103,7 @@ ICEDB_fs_hnd* fs_cloneHandle(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
-DL_ICEDB ICEDB_fs_cloneHandle_f ICEDB_fs_cloneHandle = fs_cloneHandle;
+DL_ICEDB const  ICEDB_fs_cloneHandle_f ICEDB_fs_cloneHandle = fs_cloneHandle;
 
 const char* fs_getPathFromHandle(
 	const ICEDB_fs_hnd* handle,
@@ -115,49 +115,49 @@ const char* fs_getPathFromHandle(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
-DL_ICEDB ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPathFromHandle = fs_getPathFromHandle;
+DL_ICEDB const  ICEDB_fs_getPathFromHandle_f ICEDB_fs_getPathFromHandle = fs_getPathFromHandle;
 
 ICEDB_file_open_flags fs_getHandleIOflags(const ICEDB_fs_hnd* p) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return ICEDB_file_open_flags::ICEDB_flags_invalid;
 }
-DL_ICEDB ICEDB_fs_getHandleIOflags_f ICEDB_fs_getHandleIOflags = fs_getHandleIOflags;
+DL_ICEDB const  ICEDB_fs_getHandleIOflags_f ICEDB_fs_getHandleIOflags = fs_getHandleIOflags;
 
 ICEDB_error_code fs_closeHandle(ICEDB_fs_hnd* p) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_closeHandle_f ICEDB_fs_closeHandle = fs_closeHandle;
+DL_ICEDB const  ICEDB_fs_closeHandle_f ICEDB_fs_closeHandle = fs_closeHandle;
 
 ICEDB_error_code fs_move(ICEDB_fs_hnd* p, const char* src, const char* dest) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_move_f ICEDB_fs_move = fs_move;
+DL_ICEDB const  ICEDB_fs_move_f ICEDB_fs_move = fs_move;
 
 ICEDB_error_code fs_copy(ICEDB_fs_hnd* p, const char* src, const char* dest, bool overwrite) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_copy_f ICEDB_fs_copy = fs_copy;
+DL_ICEDB const  ICEDB_fs_copy_f ICEDB_fs_copy = fs_copy;
 
 ICEDB_error_code fs_unlink(ICEDB_fs_hnd* p, const char* path) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_unlink_f ICEDB_fs_unlink = fs_unlink;
+DL_ICEDB const  ICEDB_fs_unlink_f ICEDB_fs_unlink = fs_unlink;
 
 ICEDB_error_code fs_createHardLink(ICEDB_fs_hnd* p, const char* src, const char* dest) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink = fs_createHardLink;
+DL_ICEDB const  ICEDB_fs_createHardLink_f ICEDB_fs_createHardLink = fs_createHardLink;
 
 ICEDB_error_code fs_createSymLink(ICEDB_fs_hnd* p, const char* src, const char* dest) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink = fs_createSymLink;
+DL_ICEDB const  ICEDB_fs_createSymLink_f ICEDB_fs_createSymLink = fs_createSymLink;
 
 const char* fs_followSymLink(ICEDB_fs_hnd* p,
 	const char* path,
@@ -169,13 +169,13 @@ const char* fs_followSymLink(ICEDB_fs_hnd* p,
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink = fs_followSymLink;
+DL_ICEDB const  ICEDB_fs_followSymLink_f ICEDB_fs_followSymLink = fs_followSymLink;
 
 bool fs_doesPathExist(const ICEDB_fs_hnd* p, const char* path, ICEDB_OPTIONAL ICEDB_OUT ICEDB_error_code* err) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
-DL_ICEDB ICEDB_fs_doesPathExist_f ICEDB_fs_doesPathExist = fs_doesPathExist;
+DL_ICEDB const  ICEDB_fs_doesPathExist_f ICEDB_fs_doesPathExist = fs_doesPathExist;
 
 ICEDB_fs_path_contents* fs_getPathInfo(
 	const ICEDB_fs_hnd* p,
@@ -185,12 +185,12 @@ ICEDB_fs_path_contents* fs_getPathInfo(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_getPathInfo_f ICEDB_fs_getPathInfo = fs_getPathInfo;
+DL_ICEDB const  ICEDB_fs_getPathInfo_f ICEDB_fs_getPathInfo = fs_getPathInfo;
 
 void fs_pathInfoFree(ICEDB_fs_path_contents *pc) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 }
-DL_ICEDB ICEDB_fs_pathInfoFree_f ICEDB_fs_pathInfoFree = fs_pathInfoFree;
+DL_ICEDB const  ICEDB_fs_pathInfoFree_f ICEDB_fs_pathInfoFree = fs_pathInfoFree;
 
 ICEDB_fs_objectList_t fs_getAllObjects(
 	const ICEDB_fs_hnd* p,
@@ -200,13 +200,13 @@ ICEDB_fs_objectList_t fs_getAllObjects(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_fs_getAllObjects_f ICEDB_fs_getAllObjects = fs_getAllObjects;
+DL_ICEDB const  ICEDB_fs_getAllObjects_f ICEDB_fs_getAllObjects = fs_getAllObjects;
 
 void fs_freeObjs(
 	ICEDB_fs_objectList_t p) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 }
-DL_ICEDB ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs = fs_freeObjs;
+DL_ICEDB const  ICEDB_fs_freeObjs_f ICEDB_fs_freeObjs = fs_freeObjs;
 
 DL_ICEDB const struct ICEDB_fs_container_ftable ICEDB_funcs_fs = {
 	fs_getHandlers,
@@ -357,7 +357,7 @@ ICEDB_error_code ICEDB_file_handle_attr_insert(ICEDB_fs_hnd* p, const char* name
 }
 
 
-DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_alloc(ICEDB_FS_PATH_CONTENTS* res) {
+DL_ICEDB const  bool ICEDB_FS_PATH_CONTENTS_alloc(ICEDB_FS_PATH_CONTENTS* res) {
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	res->idx = 0;
 	//res->base_handle = icedb::plugins::fs_win::hndSelf;
@@ -370,7 +370,7 @@ DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_alloc(ICEDB_FS_PATH_CONTENTS* res) {
 	res->p_type = ICEDB_path_types::ICEDB_type_nonexistant;
 	return true;
 }
-DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS* res) {
+DL_ICEDB const  bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS* res) {
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	ICEDB_free(res->base_path);
 	ICEDB_free(res->p_name);
@@ -378,7 +378,7 @@ DL_ICEDB bool ICEDB_FS_PATH_CONTENTS_free(ICEDB_FS_PATH_CONTENTS* res) {
 	return true;
 }
 
-DL_ICEDB const char* ICEDB_file_handle_get_name(ICEDB_fs_hnd* p) {
+DL_ICEDB const  const char* ICEDB_file_handle_get_name(ICEDB_fs_hnd* p) {
 	if (!p) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return p->pluginName;
 }

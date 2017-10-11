@@ -92,16 +92,16 @@ typedef bool(*ICEDB_attr_resize_f)(ICEDB_attr* attr, ICEDB_DATA_TYPES newType, s
 /// Set attribute data. Copies attribute's size from indata into the attribute.
 typedef bool (*ICEDB_attr_setData_f)(ICEDB_attr* attr, const void* indata, size_t indataByteSize);
 
-extern DL_ICEDB ICEDB_attr_close_f ICEDB_attr_close;
-extern DL_ICEDB ICEDB_attr_write_f ICEDB_attr_write;
-extern DL_ICEDB ICEDB_attr_copy_f ICEDB_attr_copy;
-//extern DL_ICEDB ICEDB_attr_getName_f ICEDB_attr_getName;
-//extern DL_ICEDB ICEDB_attr_getParent_f ICEDB_attr_getParent;
-//extern DL_ICEDB ICEDB_attr_getType_f ICEDB_attr_getType;
+extern DL_ICEDB const ICEDB_attr_close_f ICEDB_attr_close;
+extern DL_ICEDB const ICEDB_attr_write_f ICEDB_attr_write;
+extern DL_ICEDB const ICEDB_attr_copy_f ICEDB_attr_copy;
+//extern DL_ICEDB const ICEDB_attr_getName_f ICEDB_attr_getName;
+//extern DL_ICEDB const ICEDB_attr_getParent_f ICEDB_attr_getParent;
+//extern DL_ICEDB const ICEDB_attr_getType_f ICEDB_attr_getType;
 //DL_ICEDB ICEDB_attr_hasFixedSize_f ICEDB_attr_hasFixedSize;
-extern DL_ICEDB ICEDB_attr_resize_f ICEDB_attr_resize;
-//extern DL_ICEDB ICEDB_attr_getData_f ICEDB_attr_getData;
-extern DL_ICEDB ICEDB_attr_setData_f ICEDB_attr_setData;
+extern DL_ICEDB const ICEDB_attr_resize_f ICEDB_attr_resize;
+//extern DL_ICEDB const ICEDB_attr_getData_f ICEDB_attr_getData;
+extern DL_ICEDB const ICEDB_attr_setData_f ICEDB_attr_setData;
 
 struct ICEDB_attr_ftable {
 	ICEDB_attr_close_f close;

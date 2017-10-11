@@ -34,7 +34,7 @@ bool shape_close(ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	}
 	return false;
 }
-DL_ICEDB ICEDB_shape_close_f ICEDB_shape_close = shape_close;
+DL_ICEDB const ICEDB_shape_close_f ICEDB_shape_close = shape_close;
 
 ICEDB_fs_hnd* shape_getFSself(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (validateShapePtr(shp)) {
@@ -42,7 +42,7 @@ ICEDB_fs_hnd* shape_getFSself(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	}
 	else return nullptr;
 }
-DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself = shape_getFSself;
+DL_ICEDB const ICEDB_shape_getFSPtr_f ICEDB_shape_getFSself = shape_getFSself;
 
 /*
 ICEDB_fs_hnd* shape_getFSparent(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
@@ -51,7 +51,7 @@ ICEDB_fs_hnd* shape_getFSparent(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	}
 	else return nullptr;
 }
-DL_ICEDB ICEDB_shape_getFSPtr_f ICEDB_shape_getFSparent = shape_getFSparent;
+DL_ICEDB const ICEDB_shape_getFSPtr_f ICEDB_shape_getFSparent = shape_getFSparent;
 */
 
 uint64_t shape_getNumPoints(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
@@ -85,7 +85,7 @@ uint64_t shape_getNumPoints(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	}
 
 }
-DL_ICEDB ICEDB_shape_getNumPoints_f ICEDB_shape_getNumPoints = shape_getNumPoints;
+DL_ICEDB const ICEDB_shape_getNumPoints_f ICEDB_shape_getNumPoints = shape_getNumPoints;
 
 uint64_t shape_getID(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 	if (!validateShapePtr(shp)) return 0;
@@ -123,7 +123,7 @@ uint64_t shape_getID(const ICEDB_L0_SHAPE_VOL_SPARSE* shp) {
 		}
 	}
 }
-DL_ICEDB ICEDB_shape_getID_f ICEDB_shape_getID = shape_getID;
+DL_ICEDB const ICEDB_shape_getID_f ICEDB_shape_getID = shape_getID;
 
 ICEDB_shape* shape_copy_open(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
 	if (!validateShapePtr(shp)) return nullptr;
@@ -164,7 +164,7 @@ ICEDB_shape* shape_copy_open(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd*
 
 	return res;
 }
-DL_ICEDB ICEDB_shape_copy_open_f ICEDB_shape_copy_open = shape_copy_open;
+DL_ICEDB const ICEDB_shape_copy_open_f ICEDB_shape_copy_open = shape_copy_open;
 
 bool shape_copy(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
 	std::shared_ptr<ICEDB_shape> newshp(
@@ -174,7 +174,7 @@ bool shape_copy(const ICEDB_L0_SHAPE_VOL_SPARSE* shp, ICEDB_fs_hnd* newparent) {
 	if (newshp) return true;
 	return false;
 }
-DL_ICEDB ICEDB_shape_copy_f ICEDB_shape_copy = shape_copy;
+DL_ICEDB const ICEDB_shape_copy_f ICEDB_shape_copy = shape_copy;
 
 
 ICEDB_shape* shape_generate(ICEDB_fs_hnd* objBackend) {
@@ -222,25 +222,25 @@ ICEDB_shape* shape_generate(ICEDB_fs_hnd* objBackend) {
 
 	return res;
 }
-DL_ICEDB ICEDB_shape_generate_f ICEDB_shape_generate = shape_generate;
+DL_ICEDB const ICEDB_shape_generate_f ICEDB_shape_generate = shape_generate;
 
 ICEDB_shape* shape_openPathSingle(const char* filename, ICEDB_file_open_flags flags) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
-DL_ICEDB ICEDB_shape_open_single_file_f ICEDB_shape_openPathSingle = shape_openPathSingle;
+DL_ICEDB const ICEDB_shape_open_single_file_f ICEDB_shape_openPathSingle = shape_openPathSingle;
 
 ICEDB_shape*** const openPathAll(const char* path, ICEDB_path_iteration pit, ICEDB_file_open_flags flags, size_t *numShapes) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
-DL_ICEDB ICEDB_shape_open_path_all_f ICEDB_shape_openPathAll = openPathAll;
+DL_ICEDB const ICEDB_shape_open_path_all_f ICEDB_shape_openPathAll = openPathAll;
 
 void openPathAllFree(ICEDB_shape*** const shps) {
 	delete shps;
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 }
-DL_ICEDB ICEDB_shape_open_path_all_free_f ICEDB_shape_openPathAllFree = openPathAllFree;
+DL_ICEDB const ICEDB_shape_open_path_all_free_f ICEDB_shape_openPathAllFree = openPathAllFree;
 
 
 DL_ICEDB const struct ICEDB_shp_ftable ICEDB_funcs_fs_shp = {

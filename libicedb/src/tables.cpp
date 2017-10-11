@@ -34,7 +34,7 @@ bool tbl_close(ICEDB_tbl *tbl)
 	delete tbl;
 	return true;
 }
-DL_ICEDB ICEDB_tbl_close_f ICEDB_tbl_close = tbl_close;
+DL_ICEDB const ICEDB_tbl_close_f ICEDB_tbl_close = tbl_close;
 
 ICEDB_tbl* tbl_copy(const ICEDB_tbl *srctbl,
 	ICEDB_fs_hnd* newparent,
@@ -115,7 +115,7 @@ ICEDB_tbl* tbl_copy(const ICEDB_tbl *srctbl,
 	ICEDB_funcs_fs.attrs.freeAttrList(&allAtts);
 	return res;
 }
-DL_ICEDB ICEDB_tbl_copy_f ICEDB_tbl_copy = tbl_copy;
+DL_ICEDB const ICEDB_tbl_copy_f ICEDB_tbl_copy = tbl_copy;
 
 bool tbl_readMapped(
 	const ICEDB_tbl* tbl,
@@ -129,7 +129,7 @@ bool tbl_readMapped(
 	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
 		start, count, stride, imapp, out);
 }
-DL_ICEDB ICEDB_tbl_readMapped_f ICEDB_tbl_readMapped = tbl_readMapped;
+DL_ICEDB const ICEDB_tbl_readMapped_f ICEDB_tbl_readMapped = tbl_readMapped;
 
 bool tbl_writeMapped(
 	ICEDB_tbl* tbl,
@@ -143,7 +143,7 @@ bool tbl_writeMapped(
 	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
 		start, count, stride, imapp, in);
 }
-DL_ICEDB ICEDB_tbl_writeMapped_f ICEDB_tbl_writeMapped = tbl_writeMapped;
+DL_ICEDB const ICEDB_tbl_writeMapped_f ICEDB_tbl_writeMapped = tbl_writeMapped;
 
 bool tbl_readSingle(
 	const ICEDB_tbl* tbl,
@@ -171,7 +171,7 @@ bool tbl_readSingle(
 	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
 		index, unitvec.get(), unitstride.get(), unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_readSingle_f ICEDB_tbl_readSingle = tbl_readSingle;
+DL_ICEDB const ICEDB_tbl_readSingle_f ICEDB_tbl_readSingle = tbl_readSingle;
 
 bool tbl_readArray(
 	const ICEDB_tbl* tbl,
@@ -200,7 +200,7 @@ bool tbl_readArray(
 	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
 		index, count, unitstride.get(), unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_readArray_f ICEDB_tbl_readArray = tbl_readArray;
+DL_ICEDB const ICEDB_tbl_readArray_f ICEDB_tbl_readArray = tbl_readArray;
 
 bool tbl_readStride(
 	const ICEDB_tbl* tbl,
@@ -224,7 +224,7 @@ bool tbl_readStride(
 	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
 		index, count, stride, unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_readStride_f ICEDB_tbl_readStride = tbl_readStride;
+DL_ICEDB const ICEDB_tbl_readStride_f ICEDB_tbl_readStride = tbl_readStride;
 
 bool tbl_readFull(
 	const ICEDB_tbl* tbl,
@@ -253,7 +253,7 @@ bool tbl_readFull(
 	return ICEDB_funcs_fs.tbls._inner_tbl_readMapped(tbl->self,
 		index.get(), tbl->dims, unitstride.get(), unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_readFull_f ICEDB_tbl_readFull = tbl_readFull;
+DL_ICEDB const ICEDB_tbl_readFull_f ICEDB_tbl_readFull = tbl_readFull;
 
 bool tbl_writeSingle(
 	ICEDB_tbl* tbl,
@@ -281,7 +281,7 @@ bool tbl_writeSingle(
 	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
 		index, unitvec.get(), unitstride.get(), unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_writeSingle_f ICEDB_tbl_writeSingle = tbl_writeSingle;
+DL_ICEDB const ICEDB_tbl_writeSingle_f ICEDB_tbl_writeSingle = tbl_writeSingle;
 
 bool tbl_writeArray(
 	ICEDB_tbl* tbl,
@@ -310,7 +310,7 @@ bool tbl_writeArray(
 	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
 		index, count, unitstride.get(), unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_writeArray_f ICEDB_tbl_writeArray = tbl_writeArray;
+DL_ICEDB const ICEDB_tbl_writeArray_f ICEDB_tbl_writeArray = tbl_writeArray;
 
 bool tbl_writeStride(
 	ICEDB_tbl* tbl,
@@ -334,7 +334,7 @@ bool tbl_writeStride(
 	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
 		index, count, stride, unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_writeStride_f ICEDB_tbl_writeStride = tbl_writeStride;
+DL_ICEDB const ICEDB_tbl_writeStride_f ICEDB_tbl_writeStride = tbl_writeStride;
 
 bool tbl_writeFull(
 	ICEDB_tbl* tbl,
@@ -363,7 +363,7 @@ bool tbl_writeFull(
 	return ICEDB_funcs_fs.tbls._inner_tbl_writeMapped(tbl->self,
 		index.get(), tbl->dims, unitstride.get(), unitmap.get(), out);
 }
-DL_ICEDB ICEDB_tbl_writeFull_f ICEDB_tbl_writeFull = tbl_writeFull;
+DL_ICEDB const ICEDB_tbl_writeFull_f ICEDB_tbl_writeFull = tbl_writeFull;
 
 
 DL_ICEDB const struct ICEDB_tbl_ftable ICEDB_funcs_tbl_obj = {
@@ -405,7 +405,7 @@ ICEDB_tbl* tbl_create(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return res;
 }
-DL_ICEDB ICEDB_tbl_create_f ICEDB_tbl_create = tbl_create;
+DL_ICEDB const ICEDB_tbl_create_f ICEDB_tbl_create = tbl_create;
 
 ICEDB_tbl* tbl_open(
 	struct ICEDB_fs_hnd* parent,
@@ -415,13 +415,13 @@ ICEDB_tbl* tbl_open(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return res;
 }
-DL_ICEDB ICEDB_tbl_open_f ICEDB_tbl_open = tbl_open;
+DL_ICEDB const ICEDB_tbl_open_f ICEDB_tbl_open = tbl_open;
 
 bool tbl_remove(ICEDB_fs_hnd* parent, const char* name) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
-DL_ICEDB ICEDB_tbl_remove_f ICEDB_tbl_remove = tbl_remove;
+DL_ICEDB const ICEDB_tbl_remove_f ICEDB_tbl_remove = tbl_remove;
 
 size_t tbl_count(
 	const ICEDB_fs_hnd* p,
@@ -430,7 +430,7 @@ size_t tbl_count(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return 0;
 }
-DL_ICEDB ICEDB_tbl_getNumTbls_f ICEDB_tbl_getNumTbls = tbl_count;
+DL_ICEDB const ICEDB_tbl_getNumTbls_f ICEDB_tbl_getNumTbls = tbl_count;
 
 const char* tbl_getName(
 	const ICEDB_fs_hnd* p,
@@ -442,19 +442,19 @@ const char* tbl_getName(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return nullptr;
 }
-DL_ICEDB ICEDB_tbl_getTblName_f ICEDB_tbl_getName = tbl_getName;
+DL_ICEDB const ICEDB_tbl_getTblName_f ICEDB_tbl_getName = tbl_getName;
 
 bool tbl_exists(const ICEDB_fs_hnd* parent, const char* name, ICEDB_OUT ICEDB_error_code* err) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
-DL_ICEDB ICEDB_tbl_exists_f ICEDB_tbl_exists = tbl_exists;
+DL_ICEDB const ICEDB_tbl_exists_f ICEDB_tbl_exists = tbl_exists;
 
 bool tbl_rename(ICEDB_fs_hnd* parent, const char* oldname, const char* newname) {
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
-DL_ICEDB ICEDB_tbl_renameTbl_f ICEDB_tbl_rename = tbl_rename;
+DL_ICEDB const ICEDB_tbl_renameTbl_f ICEDB_tbl_rename = tbl_rename;
 
 
 
@@ -469,7 +469,7 @@ bool inner_tbl_readMapped(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
-DL_ICEDB ICEDB_fs_inner_tbl_readMapped_f ICEDB_fs_inner_tbl_readMapped = inner_tbl_readMapped;
+DL_ICEDB const ICEDB_fs_inner_tbl_readMapped_f ICEDB_fs_inner_tbl_readMapped = inner_tbl_readMapped;
 
 bool inner_tbl_writeMapped(
 	ICEDB_fs_hnd *parent,
@@ -482,7 +482,7 @@ bool inner_tbl_writeMapped(
 	ICEDB_DEBUG_RAISE_EXCEPTION();
 	return false;
 }
-DL_ICEDB ICEDB_fs_inner_tbl_writeMapped_f ICEDB_fs_inner_tbl_writeMapped = inner_tbl_writeMapped;
+DL_ICEDB const ICEDB_fs_inner_tbl_writeMapped_f ICEDB_fs_inner_tbl_writeMapped = inner_tbl_writeMapped;
 
 DL_ICEDB const struct ICEDB_tbl_container_ftable ICEDB_funcs_tbl_container = {
 	tbl_create,
