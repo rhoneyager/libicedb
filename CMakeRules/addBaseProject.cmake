@@ -23,6 +23,7 @@ if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
 	IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
 		SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")
 		SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl")
+		SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ldl")
 	ENDIF()
 endif()
 # If doing a debug build, set the appropriate compiler defines
