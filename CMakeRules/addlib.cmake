@@ -16,6 +16,12 @@ macro(addlib libname libshared )
 	# These two are for symbol export
 	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
+
+	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
+		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
+			target_link_libraries(${libname} dl)
+		endif()
+	endif()
 	INSTALL(TARGETS ${libname} 
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
 		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}

@@ -122,10 +122,6 @@ source_group("Level 1" FILES ${level_1_objs})
 
 add_library(libicedb SHARED ${srcs})
 addlib(libicedb SHARED)
-if(WIN32 AND NOT CYGWIN)
-elseif(APPLE OR LINUX)
-	target_link_libraries(libicedb dl)
-endif()
 storebin(libicedb)
 #target_link_libraries(libicedb ${liblist})
 #
