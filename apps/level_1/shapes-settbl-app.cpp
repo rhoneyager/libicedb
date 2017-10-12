@@ -156,9 +156,9 @@ int main(int argc, char** argv) {
 			means[2] /= (float)numPts;
 
 			for (size_t i = 0; i < numPts; ++i) {
-				rms += std::pow<float>(ptArray[(3 * i)] - means[0], 2.f)
-					+ std::pow<float>(ptArray[(3 * i) + 1] - means[1], 2.f)
-					+ std::pow<float>(ptArray[(3 * i) + 2] - means[2], 2.f);
+				rms += powf(ptArray[(3 * i)] - means[0], 2.f)
+					+ powf(ptArray[(3 * i) + 1] - means[1], 2.f)
+					+ powf(ptArray[(3 * i) + 2] - means[2], 2.f);
 				means[0] += ptArray[(3 * i) + 0];
 				means[1] += ptArray[(3 * i) + 1];
 				means[2] += ptArray[(3 * i) + 2];
