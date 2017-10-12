@@ -16,6 +16,9 @@ include(generaterc)
 include(GetGitRevisionDescription)
 include(adddocs)
 
+ENABLE_TESTING()
+INCLUDE(CTest)
+
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
 set(MINOR 0)
@@ -58,3 +61,7 @@ endif()
 ADD_SUBDIRECTORY(apps)
 
 adddocs()
+
+set(BUILDNAME "Unspecified" CACHE STRING "Build name variable for CTest")
+add_test ( get_id command uname -a)
+
