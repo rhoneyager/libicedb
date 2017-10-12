@@ -1,5 +1,9 @@
 # LIBICEDB
 
+
+[A site for logging different builds is now available.](https://icedb.met.honeyager.info/CDash/index.php?project=icedb)
+
+
 [CLICK HERE for some of today's discussion](https://icedb.met.honeyager.info/md_libicedb_docs_Discussion_2017-10-11.html)
 
 ## Synopsis
@@ -23,11 +27,11 @@ sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-d
 ```
 On Fedora, this command may be used:
 ```
-sudo dnf install cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel
+sudo dnf install cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel gcc-c++
 ```
 On FreeBSD, use this command:
 ```
-sudo pkg install hdf5 cmake doxygen git netcdf
+sudo pkg install hdf5 cmake doxygen git netcdf gcc7 boost-all
 ```
 On MacOS, install XCode and Homebrew (https://brew.sh), then run
 ```
@@ -36,6 +40,8 @@ brew install homebrew/science/netcdf doxygen hdf5 cmake git
 
 Building:
 -------------
+
+[For the latest build statuses, visit the CDash page](https://icedb.met.honeyager.info/CDash/index.php?project=icedb)
 
 - Download (and perhaps extract) the source code package. 
 - Create a new build directory. It can be anywhere. Switch into this directory.
