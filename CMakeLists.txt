@@ -63,5 +63,6 @@ ADD_SUBDIRECTORY(apps)
 adddocs()
 
 set(BUILDNAME "Unspecified" CACHE STRING "Build name variable for CTest")
+set(SITE "Unknown" CACHE STRING "Site name")
 add_test ( get_id command uname -a)
 
