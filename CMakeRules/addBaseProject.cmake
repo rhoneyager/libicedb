@@ -9,7 +9,7 @@ macro(addBaseProject)
 
 set (CMAKE_CXX_STANDARD 11)
 IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-    SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
+	#SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
 ENDIF()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
@@ -19,7 +19,12 @@ IF(DEFINED MSVC)
     # MSVC parallel builds by default
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 ENDIF()
-
+if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
+	IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
+		SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")
+		SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl")
+	ENDIF()
+endif()
 # If doing a debug build, set the appropriate compiler defines
 IF("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
     add_definitions(-D_DEBUG)

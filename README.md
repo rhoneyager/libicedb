@@ -17,11 +17,11 @@ Requirements:
 
 On Debian-based systems (e.g. Ubuntu), the necessary dependencies may be installed using this command:
 ```
-sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev
+sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev libboost-all-dev
 ```
 On Fedora, this command may be used:
 ```
-sudo dnf install cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel
+sudo dnf install cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel gcc-c++
 ```
 On FreeBSD, use this command:
 ```
