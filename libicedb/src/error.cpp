@@ -1,4 +1,5 @@
-#define __STDC_WANT_LIB_EXT1__ 1
+//#define __STDC_WANT_LIB_EXT1__ 1
+#include "../icedb/defs.h"
 #include "../icedb/error/error.h"
 #include "../icedb/error/error_context.h"
 #include "../icedb/error/error.hpp"
