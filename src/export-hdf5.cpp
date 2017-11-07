@@ -1,32 +1,30 @@
-#include "export-hdf5.hpp"
-//#include "cmake-settings.h"
+#include "../icedb/hdf5_supplemental.hpp"
+#include "../icedb/gsl/gsl_assert"
+#include "../icedb/defs.h"
+#include <string>
+#include <sstream>
+#include <utility>
+#include <algorithm>
 
-namespace {
-	bool zlib = true;
-}
-
-namespace scatdb {
-	namespace plugins
+namespace icedb {
+	namespace fs
 	{
 		namespace hdf5
 		{
-			void useZLIB(bool val)
-			{
-				zlib = val;
-			}
-			bool useZLIB() { 
-				return zlib; }
-
 			template <class DataType>
 			MatchAttributeTypeType MatchAttributeType() { throw("Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."); }
 			template<> MatchAttributeTypeType MatchAttributeType<std::string>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
 			template<> MatchAttributeTypeType MatchAttributeType<const char*>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT)); }
-			template<> MatchAttributeTypeType MatchAttributeType<unsigned long long>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_ULLONG)); }
-			template<> MatchAttributeTypeType MatchAttributeType<unsigned long>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_ULONG)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint8_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT8)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint16_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT16)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint32_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT32)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint64_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT64)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int8_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT8)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int16_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT16)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int32_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT32)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int64_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT64)); }
+
 			template<> MatchAttributeTypeType MatchAttributeType<float>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_FLOAT)); }
-			template<> MatchAttributeTypeType MatchAttributeType<short>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_SHORT)); }
-			template<> MatchAttributeTypeType MatchAttributeType<unsigned short>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_USHORT)); }
 			template<> MatchAttributeTypeType MatchAttributeType<double>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_DOUBLE)); }
 			// \note bools are not recommended in HDF5. This type may be switched later on.
 			//template<> MatchAttributeTypeType MatchAttributeType<bool>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_HBOOL)); }
@@ -147,12 +145,68 @@ namespace scatdb {
 				hsize_t chunk[2] = { (hsize_t)rows, (hsize_t)cols };
 				auto plist = std::shared_ptr<DSetCreatPropList>(new DSetCreatPropList);
 				plist->setChunk(2, chunk);
-				if (compress && zlib)
+				if (compress)
 					plist->setDeflate(6);
-//#if COMPRESS_ZLIB
-//				plist->setDeflate(6);
-//#endif
 				return plist;
+			}
+
+			std::set<std::string> getGroupMembers(const H5::Group &base) {
+				std::set<std::string> res;
+				hsize_t numObjs = base.getNumObjs();
+				for (hsize_t i = 0; i < numObjs; ++i)
+				{
+					std::string name = base.getObjnameByIdx(i);
+					res.insert(name);
+				}
+				return res;
+			}
+
+			std::vector<std::string> explode(std::string const & s, char delim)
+			{
+				std::vector<std::string> result;
+				std::istringstream iss(s);
+
+				for (std::string token; std::getline(iss, token, delim); )
+				{
+					result.push_back(std::move(token));
+				}
+
+				return result;
+			}
+
+			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base) {
+				// Using the '/' specifier, pop off the group names and 
+				// create groups if necessary in the tree. Return the final group.
+				Expects(groupName.size() > 0);
+				std::string mountStr = groupName;
+				std::replace(mountStr.begin(), mountStr.end(), '\\', '/');
+				std::vector<std::string> groups = explode(mountStr, '/');
+
+
+				/// \note This is really awkwardly stated because of an MSVC2017 bug.
+				/// The HDF5 group copy constructor fails to update its id field, even though
+				/// the hid_t is a uint64 and the copy is trivial. These 'relocatable references'
+				/// allow me to avoid these copies through liberal use of std::move.
+				std::shared_ptr<H5::Group> current(&base, [](H5::Group*) {});
+				std::vector<H5::Group> vgrps;
+				//vgrps.push_back(current);
+
+				//H5::Group current(base);
+				for (const auto &grpname : groups) {
+					if (!grpname.size()) continue; // Skip any empty entries
+					std::set<std::string> members = getGroupMembers(*(current.get()));
+					if (!members.count(grpname)) {
+						vgrps.push_back(std::move(current->createGroup(grpname)));
+						current = std::shared_ptr<H5::Group>(&(*(vgrps.rbegin())), [](H5::Group*) {});
+					}
+					else {
+						//H5::Group newcur = current->openGroup(grpname);
+						//current = newcur;
+						vgrps.push_back(std::move(current->openGroup(grpname)));
+						current = std::shared_ptr<H5::Group>(&(*(vgrps.rbegin())), [](H5::Group*) {});
+					}
+				}
+				return std::move((*(vgrps.rbegin())));
 			}
 		}
 	}

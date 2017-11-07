@@ -57,6 +57,7 @@ set(gsl_objs
 	)
 
 set(lib_objs
+	icedb/defs.h
 	icedb/fs.hpp
 	icedb/hdf5_supplemental.hpp
 	icedb/shape.hpp

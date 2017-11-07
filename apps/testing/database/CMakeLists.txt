@@ -9,7 +9,8 @@ SET(srcs ${srcs}
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
 ENDIF()
 add_executable(database ${srcs})
-target_link_libraries(database libicedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_include_directories(database SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(database libicedb ${Boost_PROGRAM_OPTIONS_LIBRARY} ${h5libs})
 
 addapp(database Testing)
 storebin(database)

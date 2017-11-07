@@ -1,15 +1,11 @@
-#include "cdffs.h"
-#include "gsl/gsl_assert"
 #include <set>
 #include <map>
 #include <memory>
+#include "../icedb/fs.hpp"
+#include "../icedb/gsl/gsl_assert"
+#include "../private/fs_backend.hpp"
+#include "../icedb/hdf5_supplemental.hpp"
 #include <H5Cpp.h>
-
-//#include <H5>
-
-#include "fs_backend.hpp"
-#include "hdf5_supplemental.hpp"
-#include "export-hdf5.hpp"
 
 namespace icedb {
 	namespace fs {
@@ -91,7 +87,7 @@ namespace icedb {
 				//res._impl->hFileImage = std::make_shared<impl::file_image>("VIRTUAL-ROOT", virt_mem_size);
 				res._impl->hFile = std::make_shared<H5::H5File>(
 					(location + "/index.hdf5"), H5F_ACC_TRUNC, H5P_DEFAULT);
-				scatdb::plugins::hdf5::addAttr<uint64_t, H5::H5File>(res._impl->hFile, "Version", 1);
+				icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res._impl->hFile, "Version", 1);
 
 				//res._impl->hFile = res._impl->hFileImage->getHFile();
 				for (const auto &toMount : mountFiles) {
@@ -104,7 +100,7 @@ namespace icedb {
 					std::string linkName = mountStr.substr(mountStr.find_last_of('/') + 1);
 					if (mountStr.find('/') != std::string::npos) {
 						mountStr = mountStr.substr(0, mountStr.find_last_of('/'));
-						H5::Group grp = impl::createGroupStructure(mountStr, *(res._impl->hFile.get()));
+						H5::Group grp = icedb::fs::hdf5::createGroupStructure(mountStr, *(res._impl->hFile.get()));
 						H5Lcreate_external(toMount.second.c_str(), "/", grp.getLocId(), linkName.c_str(), H5P_DEFAULT, H5P_DEFAULT);
 					}
 					else {
@@ -165,7 +161,7 @@ namespace icedb {
 					std::string mountStr = toMount.second;
 					std::replace(mountStr.begin(), mountStr.end(), '\\', '/');
 					if (mountStr == "index.hdf5") continue;
-					H5::Group grp = impl::createGroupStructure(mountStr, *(res._impl->hFile.get()));
+					H5::Group grp = icedb::fs::hdf5::createGroupStructure(mountStr, *(res._impl->hFile.get()));
 					// Open files and mount in the relative path tree
 					std::shared_ptr<H5::H5File> newHfile = std::make_shared<H5::H5File>(toMount.first.string(), Hflags);
 					//res._impl->mappedFiles[toMount.second] = newHfile;
@@ -198,10 +194,10 @@ namespace icedb {
 			//H5::H5File fMeta((pBase / "metadata.hdf5").string(), H5F_ACC_TRUNC);
 			std::shared_ptr<H5::H5File> fMeta(new H5::H5File((pBase / "metadata.hdf5").string(), H5F_ACC_TRUNC));
 			
-			scatdb::plugins::hdf5::addAttr<uint64_t, H5::H5File>(f3D1, "Version", 1);
-			scatdb::plugins::hdf5::addAttr<uint64_t, H5::H5File>(f3D2, "Version", 1);
-			scatdb::plugins::hdf5::addAttr<uint64_t, H5::H5File>(f3D3, "Version", 1);
-			scatdb::plugins::hdf5::addAttr<uint64_t, H5::H5File>(fMeta, "Version", 1);
+			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(f3D1, "Version", 1);
+			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(f3D2, "Version", 1);
+			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(f3D3, "Version", 1);
+			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(fMeta, "Version", 1);
 			//fMeta.createAttribute("version", H)
 
 			return openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE);

@@ -307,6 +307,13 @@ namespace icedb {
 
 			/// Creates a property list with the compression + chunking as specified
 			std::shared_ptr<H5::DSetCreatPropList> make_plist(size_t rows, size_t cols, bool compress = true);
+
+
+			std::set<std::string> getGroupMembers(const H5::Group &base);
+
+			std::vector<std::string> explode(std::string const & s, char delim);
+
+			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base);
 		}
 	}
 }
