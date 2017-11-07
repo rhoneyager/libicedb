@@ -36,11 +36,13 @@ configure_file (
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 addBoostUniform(program_options )
-find_package(HDF5 REQUIRED)
+find_package(HDF5 REQUIRED COMPONENTS C CXX)
 include_directories(${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
 add_definitions(${HDF5_DEFINITIONS})
 if(DEFINED HDF5_C_LIBRARIES)
-	set (h5libs ${HDF5_C_LIBRARIES} ${HDF5_CXX_LIBRARIES})
+	#set (h5libs ${HDF5_C_LIBRARIES} ${HDF5_CXX_LIBRARIES})
+	set (h5libs ${HDF5_LIBRARIES})
+	#message("${h5libs}")
 endif()
 #find_package(Eigen3 REQUIRED)
 
