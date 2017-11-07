@@ -1,5 +1,6 @@
 #include "../icedb/hdf5_supplemental.hpp"
 #include "../icedb/gsl/gsl_assert"
+#include "../icedb/fs.hpp"
 #include "../icedb/defs.h"
 #include <string>
 #include <sstream>
@@ -168,10 +169,17 @@ namespace icedb {
 
 				for (std::string token; std::getline(iss, token, delim); )
 				{
-					result.push_back(std::move(token));
+					if (token.size())
+						result.push_back(std::move(token));
 				}
 
 				return result;
+			}
+
+			std::vector<std::string> explodeHDF5groupPath(const std::string &s) {
+				std::string mountStr = s;
+				std::replace(mountStr.begin(), mountStr.end(), '\\', '/');
+				return explode(mountStr, '/');
 			}
 
 			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base) {
@@ -182,6 +190,10 @@ namespace icedb {
 				std::replace(mountStr.begin(), mountStr.end(), '\\', '/');
 				std::vector<std::string> groups = explode(mountStr, '/');
 
+				return std::move(createGroupStructure(groups, base));
+			}
+
+			H5::Group createGroupStructure(const std::vector<std::string> &groups, H5::Group &base) {
 
 				/// \note This is really awkwardly stated because of an MSVC2017 bug.
 				/// The HDF5 group copy constructor fails to update its id field, even though
@@ -207,6 +219,17 @@ namespace icedb {
 					}
 				}
 				return std::move((*(vgrps.rbegin())));
+			}
+
+
+			/// \todo Candidate for constexpr inlining
+			unsigned int getHDF5IOflags(enum class fs::IOopenFlags flags) {
+				unsigned int Hflags = 0; // HDF5 flags
+				if (flags == fs::IOopenFlags::READ_ONLY) Hflags = H5F_ACC_RDONLY;
+				else if (flags == fs::IOopenFlags::READ_WRITE) Hflags = H5F_ACC_RDWR;
+				else if (flags == fs::IOopenFlags::TRUNCATE) Hflags = H5F_ACC_TRUNC;
+				else if (flags == fs::IOopenFlags::CREATE) Hflags = H5F_ACC_CREAT;
+				return Hflags;
 			}
 		}
 	}

@@ -59,11 +59,17 @@ set(gsl_objs
 	)
 
 set(lib_objs
+	icedb/Attribute.hpp
+	icedb/Data_Types.hpp
+	icedb/Database.hpp
 	icedb/defs.h
 	icedb/fs.hpp
+	icedb/Group.hpp
 	icedb/hdf5_supplemental.hpp
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
+	icedb/Table.hpp
+	icedb/compat/hdf5_load.h
 	private/fs_backend.hpp
 	private/resource.h
 	src/databases.cpp

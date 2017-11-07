@@ -5,10 +5,15 @@
 #include "../icedb/gsl/gsl_assert"
 #include "../private/fs_backend.hpp"
 #include "../icedb/hdf5_supplemental.hpp"
-#include <H5Cpp.h>
+#include "../icedb/Database.hpp"
+#include <atomic>
+#include <sstream>
+#include <string>
+#include "../icedb/compat/hdf5_load.h"
+
 
 namespace icedb {
-	namespace fs {
+	namespace Databases {
 		namespace impl {
 			class file_image {
 				hid_t propertyList;
@@ -35,7 +40,7 @@ namespace icedb {
 				}
 
 			};
-			
+
 		}
 
 		class Database::Database_impl {
@@ -43,139 +48,57 @@ namespace icedb {
 			std::shared_ptr<H5::H5File> hFile;
 			/// Used if a virtual base is needed (the typical case)
 			std::shared_ptr<impl::file_image> hFileImage;
+
+			static sfs::path resolveSymlinkPathandForceExists(const std::string &location) {
+				sfs::path res;
+				sfs::path pBase(location);
+				Expects(sfs::exists(pBase));
+				res = fs::impl::resolveSymLinks(pBase);
+				Expects(sfs::exists(res));
+				return res;
+			}
+
+			static fs::impl::CollectedFilesRet_Type collectActualHDF5files(const sfs::path &pBaseS) {
+				// Find any hdf5 files underneath the current base location (recursive)
+				// and create a key/value map showing where to mount these files.
+				fs::impl::CollectedFilesRet_Type mountFilesCands = fs::impl::collectDatasetFiles(pBaseS);
+				fs::impl::CollectedFilesRet_Type mountFiles;
+				// Ensure that the candidate files are actually HDF5 files
+				for (const auto & cand : mountFilesCands) {
+					// Returns >0 if a valid HDF5 file. = 0 if not. -1 on error (nonexistent file).
+					htri_t isval = H5Fis_hdf5(cand.first.string().c_str());
+					Expects(isval >= 0 && "File should exist at this point." && cand.first.string().c_str());
+					if (isval > 0)
+						mountFiles.insert(cand);
+				}
+				return mountFiles;
+			}
+
+			static std::shared_ptr<H5::H5File> makeDatabaseFileStandard(const std::string &p) {
+				auto res = std::make_shared<H5::H5File>(p,
+					fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE),
+					H5P_DEFAULT);
+				constexpr uint64_t dbverno = 1;
+				icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res, "Version", dbverno);
+				return res;
+			}
+			static std::string getUniqueVROOTname() {
+				static std::atomic<int> i{ 0 };
+				int j = i++;
+				std::ostringstream out;
+				out << "VIRTUAL-" << j;
+				return std::string(out.str());
+			}
 		};
 		Database::Database() {
 			_impl = std::make_shared<Database_impl>();
 		}
 
-		void Database::indexDatabase(const std::string &location)
-		{
-			Database res;
-
-			sfs::path pBase(location);
-			Expects(sfs::exists(pBase));
-			sfs::path pBaseS = impl::resolveSymLinks(pBase);
-			Expects(sfs::exists(pBaseS));
-
-			// Find any hdf5 files underneath the current base location (recursive)
-			// and create a key/value map showing where to mount these files.
-			impl::CollectedFilesRet_Type mountFilesCands = impl::collectDatasetFiles(pBaseS);
-			impl::CollectedFilesRet_Type mountFiles;
-			// Ensure that the candidate files are actually HDF5 files
-			for (const auto & cand : mountFilesCands) {
-				// Returns >0 if a valid HDF5 file. = 0 if not. -1 on error (nonexistent file).
-				htri_t isval = H5Fis_hdf5(cand.first.string().c_str());
-				Expects(isval >= 0 && "File should exist at this point." && cand.first.string().c_str());
-				if (isval > 0)
-					mountFiles.insert(cand);
-			}
-
-			// Check the number of detected hdf5 / netCDF files. If only one, then this is
-			// the root file and is the entire dataset. If more than one, then open
-			// a virtual file hierarchy, and mount each hdf5 file into the corresponding
-			// mount point.
-
-			unsigned int Hflags = H5F_ACC_RDONLY; // HDF5 flags
-
-			Expects(mountFiles.size() > 0);
-			if (mountFiles.size() == 1) {
-				res._impl->hFile = std::make_shared<H5::H5File>(
-					mountFiles.begin()->first.string().c_str(), Hflags, H5P_DEFAULT);
-			}
-			else {
-				constexpr size_t virt_mem_size = 10 * 1024 * 1024; // 10 MB
-				//res._impl->hFileImage = std::make_shared<impl::file_image>("VIRTUAL-ROOT", virt_mem_size);
-				res._impl->hFile = std::make_shared<H5::H5File>(
-					(location + "/index.hdf5"), H5F_ACC_TRUNC, H5P_DEFAULT);
-				icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res._impl->hFile, "Version", 1);
-
-				//res._impl->hFile = res._impl->hFileImage->getHFile();
-				for (const auto &toMount : mountFiles) {
-					// Check for the existence of the appropriate groups in the relative path tree
-					// Create any missing groups in the relative path tree
-					std::string mountStr = toMount.second;
-					std::replace(mountStr.begin(), mountStr.end(), '\\', '/');
-					if (mountStr == "index.hdf5") continue;
-					// Suppress the final group - this will be the link name
-					std::string linkName = mountStr.substr(mountStr.find_last_of('/') + 1);
-					if (mountStr.find('/') != std::string::npos) {
-						mountStr = mountStr.substr(0, mountStr.find_last_of('/'));
-						H5::Group grp = icedb::fs::hdf5::createGroupStructure(mountStr, *(res._impl->hFile.get()));
-						H5Lcreate_external(toMount.second.c_str(), "/", grp.getLocId(), linkName.c_str(), H5P_DEFAULT, H5P_DEFAULT);
-					}
-					else {
-						H5Lcreate_external(toMount.second.c_str(), "/", res._impl->hFile->getLocId(), linkName.c_str(), H5P_DEFAULT, H5P_DEFAULT);
-					}
-
-				}
-			}
-
-		}
-
-		Database Database::openDatabase(
-			const std::string &location, IOopenFlags flags)
-		{
-			Database res;
-			
-			sfs::path pBase(location);
-			Expects(sfs::exists(pBase));
-			sfs::path pBaseS = impl::resolveSymLinks(pBase);
-			Expects(sfs::exists(pBaseS));
-
-			// Find any hdf5 files underneath the current base location (recursive)
-			// and create a key/value map showing where to mount these files.
-			impl::CollectedFilesRet_Type mountFilesCands = impl::collectDatasetFiles(pBaseS);
-			impl::CollectedFilesRet_Type mountFiles;
-			// Ensure that the candidate files are actually HDF5 files
-			for (const auto & cand : mountFilesCands) {
-				// Returns >0 if a valid HDF5 file. = 0 if not. -1 on error (nonexistent file).
-				htri_t isval = H5Fis_hdf5(cand.first.string().c_str());
-				Expects(isval >= 0 && "File should exist at this point." && cand.first.string().c_str());
-				if (isval > 0)
-					mountFiles.insert(cand);
-			}
-
-			// Check the number of detected hdf5 / netCDF files. If only one, then this is
-			// the root file and is the entire dataset. If more than one, then open
-			// a virtual file hierarchy, and mount each hdf5 file into the corresponding
-			// mount point.
-
-			unsigned int Hflags = 0; // HDF5 flags
-			if (flags == IOopenFlags::READ_ONLY) Hflags = H5F_ACC_RDONLY;
-			else if (flags == IOopenFlags::READ_WRITE) Hflags = H5F_ACC_RDWR;
-			else if (flags == IOopenFlags::TRUNCATE) Hflags = H5F_ACC_TRUNC;
-			else if (flags == IOopenFlags::CREATE) Hflags = H5F_ACC_CREAT;
-
-			Expects(mountFiles.size() > 0);
-			if (mountFiles.size() == 1) {
-				res._impl->hFile = std::make_shared<H5::H5File>(
-					mountFiles.begin()->first.string().c_str(), Hflags, H5P_DEFAULT);
-			}
-			else {
-				constexpr size_t virt_mem_size = 10 * 1024 * 1024; // 10 MB
-				res._impl->hFileImage = std::make_shared<impl::file_image>("VIRTUAL-ROOT",virt_mem_size);
-				res._impl->hFile = res._impl->hFileImage->getHFile();
-				for (const auto &toMount : mountFiles) {
-					// Check for the existence of the appropriate groups in the relative path tree
-					// Create any missing groups in the relative path tree
-					std::string mountStr = toMount.second;
-					std::replace(mountStr.begin(), mountStr.end(), '\\', '/');
-					if (mountStr == "index.hdf5") continue;
-					H5::Group grp = icedb::fs::hdf5::createGroupStructure(mountStr, *(res._impl->hFile.get()));
-					// Open files and mount in the relative path tree
-					std::shared_ptr<H5::H5File> newHfile = std::make_shared<H5::H5File>(toMount.first.string(), Hflags);
-					//res._impl->mappedFiles[toMount.second] = newHfile;
-					res._impl->hFile->mount(toMount.second, *(newHfile.get()), H5P_DEFAULT);
-				}
-			}
-
-
-			return std::move(res);
-		}
-
 		Database Database::createDatabase(
 			const std::string &location)
 		{
+			const auto flag_truncate = fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE);
+			
 			sfs::path pBase(location);
 			sfs::create_directories(pBase);
 			Expects(sfs::exists(pBase));
@@ -185,30 +108,81 @@ namespace icedb {
 			sfs::create_directory(pBase / "Extended_Scattering_Variables");
 			sfs::create_directory(pBase / "Essential_Scattering_Variables");
 
-			std::shared_ptr<H5::H5File> f3D1(new H5::H5File((pBase / "3d_Structures" / "3dS-1.hdf5").string(), H5F_ACC_TRUNC));
-			std::shared_ptr<H5::H5File> f3D2(new H5::H5File((pBase / "3d_Structures" / "3dS-2.hdf5").string(), H5F_ACC_TRUNC));
-			std::shared_ptr<H5::H5File> f3D3(new H5::H5File((pBase / "3d_Structures" / "3dS-3.hdf5").string(), H5F_ACC_TRUNC));
-			H5::H5File fPPP((pBase / "Physical_Particle_Properties" / "ppp.hdf5").string(), H5F_ACC_TRUNC);
-			H5::H5File fESV1((pBase / "Extended_Scattering_Variables" / "esv1.hdf5").string(), H5F_ACC_TRUNC);
-			H5::H5File fESV2((pBase / "Essential_Scattering_Variables" / "esv2.hdf5").string(), H5F_ACC_TRUNC);
-			//H5::H5File fMeta((pBase / "metadata.hdf5").string(), H5F_ACC_TRUNC);
-			std::shared_ptr<H5::H5File> fMeta(new H5::H5File((pBase / "metadata.hdf5").string(), H5F_ACC_TRUNC));
-			
-			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(f3D1, "Version", 1);
-			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(f3D2, "Version", 1);
-			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(f3D3, "Version", 1);
-			icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(fMeta, "Version", 1);
-			//fMeta.createAttribute("version", H)
+			Database_impl::makeDatabaseFileStandard((pBase / "3d_Structures" / "3dS-1.hdf5").string());
+			Database_impl::makeDatabaseFileStandard((pBase / "3d_Structures" / "3dS-2.hdf5").string());
+			Database_impl::makeDatabaseFileStandard((pBase / "3d_Structures" / "3dS-3.hdf5").string());
+			Database_impl::makeDatabaseFileStandard((pBase / "Physical_Particle_Properties" / "ppp.hdf5").string());
+			Database_impl::makeDatabaseFileStandard((pBase / "Essential_Scattering_Variables" / "esv1.hdf5").string());
+			Database_impl::makeDatabaseFileStandard((pBase / "Essential_Scattering_Variables" / "esv2.hdf5").string());
+			Database_impl::makeDatabaseFileStandard((pBase / "metadata.hdf5").string());
 
 			return openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE);
 		}
 
-		/*
-		Database Database::copyDatabase(
-			const Database &source, const std::string &location)
+		void Database::indexDatabase(const std::string &location)
 		{
-			//source._impl->hFile->cl
+			sfs::path pBaseS = Database_impl::resolveSymlinkPathandForceExists(location);
+			fs::impl::CollectedFilesRet_Type mountFiles = Database_impl::collectActualHDF5files(pBaseS);
+			Expects(mountFiles.size() > 0);
+			if (mountFiles.size() == 1) return;
+
+			Database res;
+			res._impl->hFile = Database_impl::makeDatabaseFileStandard(location + "/index.hdf5");
+
+			// Check for the existence of the appropriate groups in the relative path tree
+			// Create any missing groups in the relative path tree, and then make the link.
+			for (const auto &toMount : mountFiles) {
+				std::string mountStr = toMount.second;
+				if (mountStr == "index.hdf5") continue;
+				auto explodedPath = fs::hdf5::explodeHDF5groupPath(mountStr);
+				std::string linkName = *(explodedPath.rbegin());
+				explodedPath.pop_back();
+
+				/// \todo createGroupStructure cannot currently handle passing back an H5File
+				/// (in the no groups case). It is a bug in HDF5. Once fixed, the if-else cases
+				/// should be collapsed into one.
+				if (explodedPath.size()) {
+					auto grp = fs::hdf5::createGroupStructure(explodedPath, *(res._impl->hFile.get()));
+					H5Lcreate_external(toMount.second.c_str(), "/", grp.getLocId(), linkName.c_str(), H5P_DEFAULT, H5P_DEFAULT);
+				} else {
+					H5Lcreate_external(toMount.second.c_str(), "/", res._impl->hFile->getLocId(), linkName.c_str(), H5P_DEFAULT, H5P_DEFAULT);
+				}
+			}
+
 		}
-		*/
+
+		Database Database::openDatabase(
+			const std::string &location, fs::IOopenFlags flags)
+		{
+			sfs::path pBaseS = Database_impl::resolveSymlinkPathandForceExists(location);
+			fs::impl::CollectedFilesRet_Type mountFiles = Database_impl::collectActualHDF5files(pBaseS);
+			unsigned int Hflags = fs::hdf5::getHDF5IOflags(flags);
+			Database res;
+			Expects(mountFiles.size() > 0);
+			if (mountFiles.size() == 1) {
+				res._impl->hFile = std::make_shared<H5::H5File>(
+					mountFiles.begin()->first.string().c_str(), Hflags, H5P_DEFAULT);
+			} else {
+				constexpr size_t virt_mem_size = 10 * 1024 * 1024; // 10 MB
+				res._impl->hFileImage = std::make_shared<impl::file_image>(Database_impl::getUniqueVROOTname(), virt_mem_size);
+				res._impl->hFile = res._impl->hFileImage->getHFile();
+
+				// Check for the existence of the appropriate groups in the relative path tree
+				// Create any missing groups in the relative path tree
+				for (const auto &toMount : mountFiles) {
+					std::string mountStr = toMount.second;
+					if (mountStr == "index.hdf5") continue;
+					H5::Group grp = icedb::fs::hdf5::createGroupStructure(mountStr, *(res._impl->hFile.get()));
+					// Open files and mount in the relative path tree
+					std::shared_ptr<H5::H5File> newHfile = std::make_shared<H5::H5File>(toMount.first.string(), Hflags);
+					//res._impl->mappedFiles[toMount.second] = newHfile;
+					res._impl->hFile->mount(toMount.second, *(newHfile.get()), H5P_DEFAULT);
+				}
+			}
+
+			return std::move(res);
+		}
+
+
 	}
 }

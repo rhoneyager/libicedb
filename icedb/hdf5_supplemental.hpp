@@ -5,9 +5,8 @@
 #include <vector>
 #include <functional>
 
-#include <hdf5.h>
-#include <H5Cpp.h>
-
+#include "compat/hdf5_load.h"
+#include "fs.hpp"
 
 namespace icedb {
 	namespace fs {
@@ -312,8 +311,12 @@ namespace icedb {
 			std::set<std::string> getGroupMembers(const H5::Group &base);
 
 			std::vector<std::string> explode(std::string const & s, char delim);
+			std::vector<std::string> explodeHDF5groupPath(const std::string &s);
 
 			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base);
+			H5::Group createGroupStructure(const std::vector<std::string> &groupNames, H5::Group &base);
+
+			unsigned int getHDF5IOflags(enum class fs::IOopenFlags flag);
 		}
 	}
 }

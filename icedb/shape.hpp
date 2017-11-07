@@ -1,12 +1,11 @@
 #pragma once
 #include "fs.hpp"
+#include "Table.hpp"
+#include "Attribute.hpp"
+//#include "Groups.hpp"
 
 namespace icedb {
 	namespace shapes {
-		namespace impl {
-			class Shape_impl;
-		}
-
 		// Common table and attribute names
 		struct ShapeObjectNamed {
 			std::string name;
@@ -16,13 +15,14 @@ namespace icedb {
 		extern const std::vector<ShapeObjectNamed> knownShapeTables;
 		extern const std::vector<ShapeObjectNamed> knownShapeAttributes;
 
-		class Shape : public fs::CanHaveAttributes, fs::CanHaveTables
+		class Shape : public Attributes::CanHaveAttributes, Tables::CanHaveTables
 		{
-			std::unique_ptr<impl::Shape_impl> _impl;
+			class Shape_impl;
+			std::shared_ptr<Shape_impl> _impl;
 		public:
 			const std::string name;
 			size_t getNumScatteringElements() const;
-			Shape(fs::Group &owner, const std::string &name);
+			Shape(Groups::Group &owner, const std::string &name);
 		};
 	}
 }

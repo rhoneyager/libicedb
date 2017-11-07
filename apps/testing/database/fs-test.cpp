@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "../../../icedb/shape.hpp"
 #include "../../../icedb/fs.hpp"
 #include "../../../icedb/hdf5_supplemental.hpp"
 #include "../../../private/fs_backend.hpp"
+#include "../../../icedb/Database.hpp"
 
 int main(int argc, char** argv) {
 	using namespace std;
@@ -39,14 +39,14 @@ int main(int argc, char** argv) {
 	if (vm.count("create")) {
 		if (sfs::exists(sfs::path(dbpath))) doHelp(
 			"Cannot create a database where one already exists.");
-		icedb::fs::Database::createDatabase(dbpath);
+		icedb::Databases::Database::createDatabase(dbpath);
 	} else {
 		icedb::fs::IOopenFlags flags = icedb::fs::IOopenFlags::READ_ONLY;
 		if (vm.count("rw")) flags = icedb::fs::IOopenFlags::READ_WRITE;
-		auto db = icedb::fs::Database::openDatabase(dbpath, flags);
+		auto db = icedb::Databases::Database::openDatabase(dbpath, flags);
 	}
 	if (vm.count("index"))
-		icedb::fs::Database::indexDatabase(dbpath);
+		icedb::Databases::Database::indexDatabase(dbpath);
 
 	return 0;
 }
