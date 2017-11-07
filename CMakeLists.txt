@@ -36,6 +36,12 @@ configure_file (
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 addBoostUniform(program_options )
+find_package(HDF5 REQUIRED)
+include_directories(${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
+add_definitions(${HDF5_DEFINITIONS})
+if(DEFINED HDF5_C_LIBRARIES)
+	set (h5libs ${HDF5_C_LIBRARIES} ${HDF5_CXX_LIBRARIES})
+endif()
 #find_package(Eigen3 REQUIRED)
 
 set(gsl_objs
@@ -76,6 +82,7 @@ SET(libsrcs ${libsrcs}
 ENDIF()
 
 add_library(libicedb STATIC ${libsrcs})
+target_link_libraries(libicedb ${h5libs})
 addlib(libicedb STATIC)
 storebin(libicedb)
 
