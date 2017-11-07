@@ -4,14 +4,4 @@
 #define libicedb_REVISION @REVISION@
 #define libicedb_GitHash "@GITHASHVAR@"
 #define libicedb_GitBranch "@GITREFSPECVAR@"
-#define COMPRESS_ZLIB 0
-#define COMPRESS_GZIP 0
-#define COMPRESS_BZIP2 0
-#define COMPRESS_SZIP 0
-//#define COMPRESS_ZLIB @COMPRESS_ZLIB@
-//#define COMPRESS_GZIP @COMPRESS_GZIP@
-//#define COMPRESS_BZIP2 0
-//@COMPRESS_BZIP2@
-//#define COMPRESS_SZIP @COMPRESS_SZIP@
-
 
