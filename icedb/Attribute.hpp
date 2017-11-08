@@ -9,11 +9,7 @@ namespace H5 {
 }
 namespace icedb {
 	namespace Attributes {
-		struct Attribute_impl;
-		class CanHaveAttributes;
 		template <class DataType> class Attribute {
-			friend class CanHaveAttributes;
-			std::shared_ptr<Attribute_impl> _impl;
 		protected:
 			Attribute() {
 				static_assert(icedb::Data_Types::Is_Valid_Data_Type<DataType>() == true,
@@ -23,6 +19,7 @@ namespace icedb {
 			typedef DataType type;
 			std::vector<DataType> data;
 			std::string name;
+			std::vector<size_t> dimensionality;
 
 			Attribute(const std::string &name) : name{ name }, Attribute() {}
 		};
@@ -31,7 +28,8 @@ namespace icedb {
 			class CanHaveAttributes_impl;
 			std::shared_ptr<CanHaveAttributes_impl> _impl;
 			void readAttributeData(const std::string &attributeName, std::vector<Data_Types::All_Variant_type> &data);
-			void writeAttributeData(const std::string &attributeName, const std::vector<Data_Types::All_Variant_type> &data);
+			void writeAttributeData(const std::string &attributeName, const std::vector<size_t> &dimensionality, const std::vector<Data_Types::All_Variant_type> &data);
+			std::vector<size_t> getAttributeDimensionality(const std::string &attributeName) const;
 		protected:
 			CanHaveAttributes(std::shared_ptr<H5::H5Object>);
 		public:
@@ -45,8 +43,9 @@ namespace icedb {
 			}
 			template<class DataType> Attribute<DataType> readAttribute(const std::string &attributeName) {
 				std::vector<Data_Types::All_Variant_type> vdata;
-				readAttributeData(attributeName, vdata);
 				Attribute<DataType> res(attributeName);
+				res.dimensionality = getAttributeDimensionality(attributeName);
+				readAttributeData(attributeName, vdata);
 				res.data.resize(vdata.size());
 				std::copy_n(vdata.cbegin(), vdata.cend(), res.data.begin());
 				return res;
@@ -54,7 +53,7 @@ namespace icedb {
 			template<class DataType> void writeAttribute(const Attribute<DataType> &attribute) {
 				std::vector<Data_Types::All_Variant_type> vdata(attribute.data.size());
 				std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
-				writeAttributeData(attribute.name, vdata);
+				writeAttributeData(attribute.name, attribute.dimensionality, vdata);
 			}
 			void deleteAttribute(const std::string &attributeName);
 		};

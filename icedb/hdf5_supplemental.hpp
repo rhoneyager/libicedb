@@ -127,6 +127,42 @@ namespace icedb {
 				delete[] sz;
 			}
 
+
+			/// Reads an array (or vector) of objects
+			template <class DataType, class Container>
+			void readAttrVector(std::shared_ptr<Container> obj, const char* attname,
+				std::vector<DataType> &value)
+			{
+				H5::Attribute attr = obj->openAttribute(attname);
+				int dimensionality = attr.getArrayType().getArrayNDims();
+				hsize_t *sz = new hsize_t[dimensionality];
+				attr.getArrayType().getArrayDims(sz);
+				hsize_t numElems = 1;
+				for (size_t i = 0; i < dimensionality; ++i) numElems *= sz[i];
+				value.resize(numElems);
+
+				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				//H5::IntType ftype(H5::PredType::NATIVE_FLOAT);
+				H5::ArrayType vls_type(*ftype, dimensionality, sz);
+
+				//H5::DataSpace att_space(H5S_SCALAR);
+				//H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
+				attr.read(vls_type, value.data());
+				delete[] sz;
+			}
+
+			template <class Container>
+			std::vector<hsize_t> getAttrDimensionality(
+				std::shared_ptr<Container> obj, const char* attname)
+			{
+				std::vector<hsize_t> dims;
+				H5::Attribute attr = obj->openAttribute(attname);
+				int dimensionality = attr.getArrayType().getArrayNDims();
+				dims.resize(dimensionality);
+				attr.getArrayType().getArrayDims(dims.data());
+				return dims;
+			}
+
 			bool attrExists(std::shared_ptr<H5::H5Object> obj, const char* attname);
 
 			/// Convenience function to either open or create a group
@@ -317,6 +353,17 @@ namespace icedb {
 			H5::Group createGroupStructure(const std::vector<std::string> &groupNames, H5::Group &base);
 
 			unsigned int getHDF5IOflags(enum class fs::IOopenFlags flag);
+
+			/// Functions to detect the _type_ of data
+			template <class DataType>
+			bool isType(hid_t) { return false; }
+
+			template <class DataType, class Container>
+			bool isType(std::shared_ptr<Container> obj, const std::string &attributeName) {
+				H5::Attribute attr = obj->openAttribute(attributeName);
+				return isType<DataType>(attr.getDataType().getId());
+			}
+
 		}
 	}
 }

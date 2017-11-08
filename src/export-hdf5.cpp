@@ -231,6 +231,16 @@ namespace icedb {
 				else if (flags == fs::IOopenFlags::CREATE) Hflags = H5F_ACC_CREAT;
 				return Hflags;
 			}
+
+
+			template<> bool isType<uint64_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_UINT64) > 0) ? true : false; }
+			template<> bool isType<int64_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_INT64) > 0) ? true : false; }
+			template<> bool isType<float>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_FLOAT) > 0) ? true : false; }
+			template<> bool isType<double>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_DOUBLE) > 0) ? true : false; }
+			template<> bool isType<char>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_CHAR) > 0) ? true : false; }
+
+
+
 		}
 	}
 }
