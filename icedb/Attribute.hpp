@@ -27,8 +27,15 @@ namespace icedb {
 		class CanHaveAttributes {
 			class CanHaveAttributes_impl;
 			std::shared_ptr<CanHaveAttributes_impl> _impl;
-			void readAttributeData(const std::string &attributeName, std::vector<Data_Types::All_Variant_type> &data);
-			void writeAttributeData(const std::string &attributeName, const std::vector<size_t> &dimensionality, const std::vector<Data_Types::All_Variant_type> &data);
+			void readAttributeData(
+				const std::string &attributeName,
+				std::vector<Data_Types::All_Variant_type> &data);
+			// Extent to support specifying attribute datatype here
+			void writeAttributeData(
+				const std::string &attributeName,
+				const type_info &type_id,
+				const std::vector<size_t> &dimensionality,
+				const std::vector<Data_Types::All_Variant_type> &data);
 			std::vector<size_t> getAttributeDimensionality(const std::string &attributeName) const;
 		protected:
 			CanHaveAttributes(std::shared_ptr<H5::H5Object>);
@@ -51,9 +58,9 @@ namespace icedb {
 				return res;
 			}
 			template<class DataType> void writeAttribute(const Attribute<DataType> &attribute) {
-				std::vector<Data_Types::All_Variant_type> vdata(attribute.data.size());
-				std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
-				writeAttributeData(attribute.name, attribute.dimensionality, vdata);
+				//std::vector<Data_Types::All_Variant_type> vdata(attribute.data.size());
+				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
+				writeAttributeData(attribute.name, typeid(DataType), attribute.dimensionality, attribute.data);
 			}
 			void deleteAttribute(const std::string &attributeName);
 		};

@@ -48,25 +48,49 @@ namespace icedb {
 			// variant structure of data.
 			if (icedb::fs::hdf5::isType<uint64_t, H5::H5Object>(_impl->parent, attributeName))
 				pullData<uint64_t, H5::H5Object>(numElems, attributeName, data, _impl->parent);
-			if (icedb::fs::hdf5::isType<int64_t, H5::H5Object>(_impl->parent, attributeName))
+			else if (icedb::fs::hdf5::isType<int64_t, H5::H5Object>(_impl->parent, attributeName))
 				pullData<int64_t, H5::H5Object>(numElems, attributeName, data, _impl->parent);
-			if (icedb::fs::hdf5::isType<float, H5::H5Object>(_impl->parent, attributeName))
+			else if (icedb::fs::hdf5::isType<float, H5::H5Object>(_impl->parent, attributeName))
 				pullData<float, H5::H5Object>(numElems, attributeName, data, _impl->parent);
-			if (icedb::fs::hdf5::isType<double, H5::H5Object>(_impl->parent, attributeName))
+			else if (icedb::fs::hdf5::isType<double, H5::H5Object>(_impl->parent, attributeName))
 				pullData<double, H5::H5Object>(numElems, attributeName, data, _impl->parent);
-			if (icedb::fs::hdf5::isType<char, H5::H5Object>(_impl->parent, attributeName))
+			else if (icedb::fs::hdf5::isType<char, H5::H5Object>(_impl->parent, attributeName))
 				pullData<char, H5::H5Object>(numElems, attributeName, data, _impl->parent);
+			else throw(std::exception("Unhandled data type"));
+		}
+
+		template <class DataType, class ObjectType>
+		void pushData(
+			const std::string &attributeName,
+			const std::vector<size_t> &dimensionality,
+			std::shared_ptr<ObjectType> obj,
+			const std::vector<Data_Types::All_Variant_type> &indata
+			)
+		{
+			size_t numElems = 1;
+			for (const auto &s : dimensionality) numElems *= s;
+			std::vector<DataType> data(numElems);
+			for (size_t i = 0; i < numElems; ++i)
+				data[i] = std::get<DataType>(indata[i]);
+
+			icedb::fs::hdf5::addAttrVector(obj, attributeName.c_str(), dimensionality, data);
 		}
 
 		void CanHaveAttributes::writeAttributeData(
 			const std::string &attributeName,
+			const type_info &type_id,
 			const std::vector<size_t> &dimensionality,
 			const std::vector<Data_Types::All_Variant_type> &data)
 		{
 			if (doesAttributeExist(attributeName)) deleteAttribute(attributeName);
-			//icedb::fs::hdf5::addAttr
-			//icedb::fs::hdf5::addAttrArray
-			//_impl->parent->createAttribute
+			// Need to copy from the variant structure into an array of the exact data type
+			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
+			else if (type_id == typeid(int64_t))pushData<int64_t, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
+			else if (type_id == typeid(float))pushData<float, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
+			else if (type_id == typeid(double))pushData<double, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
+			else if (type_id == typeid(char))pushData<char, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
+			else throw(std::exception("Unhandled data type"));
+			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
 		}
 
 		void CanHaveAttributes::deleteAttribute(const std::string &attributeName)

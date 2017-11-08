@@ -72,6 +72,23 @@ namespace icedb {
 				attr.write(vls_type, value);
 			}
 
+
+			/// Writes an array (or vector) of objects
+			template <class DataType, class Container>
+			void addAttrVector(
+				std::shared_ptr<Container> obj, 
+				const char* attname,
+				const std::vector<size_t> &dimensionality,
+				const std::vector<DataType> &value)
+			{
+				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				H5::ArrayType vls_type(*ftype, (int) dimensionality.size(), (hsize_t*) dimensionality.data());
+
+				H5::DataSpace att_space(H5S_SCALAR);
+				H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
+				attr.write(vls_type, value.data());
+			}
+
 			
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
