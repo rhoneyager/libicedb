@@ -72,9 +72,13 @@ set(lib_objs
 	icedb/compat/hdf5_load.h
 	private/fs_backend.hpp
 	private/resource.h
+	src/Attributes.cpp
 	src/databases.cpp
 	src/export-hdf5.cpp
 	src/fs_backend.cpp
+	src/Groups.cpp
+	src/Shapes.cpp
+	src/Tables.cpp
 	)
 
 generaterc("libicedb" "dll"

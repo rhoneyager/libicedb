@@ -18,13 +18,12 @@ namespace icedb {
 			static void indexDatabase(const std::string &location);
 			static Database openDatabase(const std::string &location, fs::IOopenFlags flags = fs::IOopenFlags::READ_ONLY);
 			//static Database copyDatabase(const Database& sourceDB, const std::string &location);
-			//Group openPath(const std::string &location);
-			//Group openBasePath();
-
-			// Search functions
-			// Get all objects that match a set of object identifiers, under a certain base object.
-			typedef std::map<std::string, fs::ObjectTypes> ObjectIdPathSet_Type;
+			Groups::Group openPath(const std::string &path);
 			//ObjectIdPathSet_Type findObjects(ObjectTypes type, const std::string &base, bool recurse = true);
 		};
 	}
+
+	// Search functions
+	// Get all objects that match a set of object identifiers, under a certain base object.
+	typedef std::map<std::string, fs::ObjectTypes> ObjectIdPathSet_Type;
 }

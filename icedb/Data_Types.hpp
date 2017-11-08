@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <typeinfo>
+#include <variant>
 
 namespace icedb {
 	namespace Data_Types {
@@ -18,5 +19,7 @@ namespace icedb {
 			else if (type_id == typeid(char)) return true;
 			return false;
 		}
+
+		typedef std::variant<uint64_t, int64_t, float, double, char> All_Variant_type;
 	}
 }
