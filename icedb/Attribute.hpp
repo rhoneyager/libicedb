@@ -47,10 +47,15 @@ namespace icedb {
 				std::vector<Data_Types::All_Variant_type> vdata;
 				readAttributeData(attributeName, vdata);
 				Attribute<DataType> res(attributeName);
-				res.data;
-				
+				res.data.resize(vdata.size());
+				std::copy_n(vdata.cbegin(), vdata.cend(), res.data.begin());
+				return res;
 			}
-			template<class DataType> void writeAttribute(const Attribute<DataType> &attribute) {}
+			template<class DataType> void writeAttribute(const Attribute<DataType> &attribute) {
+				std::vector<Data_Types::All_Variant_type> vdata(attribute.data.size());
+				std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
+				writeAttributeData(attribute.name, vdata);
+			}
 			void deleteAttribute(const std::string &attributeName);
 		};
 
