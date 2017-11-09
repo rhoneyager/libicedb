@@ -94,6 +94,10 @@ namespace icedb {
 			_impl = std::make_shared<Database_impl>();
 		}
 
+		Groups::Group Database::openPath(const std::string &path) {
+			return std::move(Groups::Group(path, _impl->hFile));
+		}
+
 		Database Database::createDatabase(
 			const std::string &location)
 		{

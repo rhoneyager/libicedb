@@ -162,6 +162,18 @@ namespace icedb {
 				return res;
 			}
 
+			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const H5::Group &base) {
+				std::map<std::string, H5G_obj_t> res;
+				hsize_t numObjs = base.getNumObjs();
+				for (hsize_t i = 0; i < numObjs; ++i)
+				{
+					std::string name = base.getObjnameByIdx(i);
+					H5G_obj_t gtype = base.getObjTypeByIdx(i);
+					res[name] = gtype;
+				}
+				return res;
+			}
+
 			std::vector<std::string> explode(std::string const & s, char delim)
 			{
 				std::vector<std::string> result;

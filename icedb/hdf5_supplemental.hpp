@@ -15,6 +15,8 @@ namespace icedb {
 #			define ARRAYOFFSET(TYPE, INDEX) [](){TYPE a; return (size_t) &a[INDEX] - (size_t) &a; }()
 
 			std::set<std::string> getGroupMembers(const H5::Group &base);
+			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const H5::Group &base);
+
 			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base);
 
 			std::shared_ptr<H5::Group> openOrCreateGroup(std::shared_ptr<H5::H5Location> base, const char* name);
@@ -359,9 +361,6 @@ namespace icedb {
 
 			/// Creates a property list with the compression + chunking as specified
 			std::shared_ptr<H5::DSetCreatPropList> make_plist(size_t rows, size_t cols, bool compress = true);
-
-
-			std::set<std::string> getGroupMembers(const H5::Group &base);
 
 			std::vector<std::string> explode(std::string const & s, char delim);
 			std::vector<std::string> explodeHDF5groupPath(const std::string &s);

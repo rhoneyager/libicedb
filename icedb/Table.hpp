@@ -1,5 +1,7 @@
 #pragma once
 #include "Attribute.hpp"
+#include "gsl/gsl_assert"
+#include "gsl/span"
 namespace icedb {
 	namespace Groups {
 		class Group;
@@ -31,7 +33,7 @@ namespace icedb {
 
 		class CanHaveTables {
 		public:
-			std::vector<std::string> getTableNames() const;
+			std::set<std::string> getTableNames() const;
 			bool doesTableExist(const std::string &tableName) const;
 			void deleteTable(const std::string &tableName);
 			template<class Type> bool isTableOfType(const std::string &tableName) const {
