@@ -37,8 +37,11 @@ namespace icedb {
 				const std::vector<size_t> &dimensionality,
 				const std::vector<Data_Types::All_Variant_type> &data);
 			std::vector<size_t> getAttributeDimensionality(const std::string &attributeName) const;
+			bool valid() const;
 		protected:
 			CanHaveAttributes(std::shared_ptr<H5::H5Object>);
+			CanHaveAttributes();
+			void _setAttributeParent(std::shared_ptr<H5::H5Object> obj);
 		public:
 			std::vector<std::string> getAttributeNames() const;
 			bool doesAttributeExist(const std::string &attributeName) const;

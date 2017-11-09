@@ -13,13 +13,31 @@ namespace icedb {
 			CanHaveAttributes_impl(std::shared_ptr<H5::H5Object> parent) : parent(parent) {}
 		};
 
-		CanHaveAttributes::CanHaveAttributes(std::shared_ptr<H5::H5Object> obj) {
+		bool CanHaveAttributes::valid() const {
+			if (!_impl) return false;
+			if (!_impl->parent) return false;
+			return true;
+		}
+
+		void CanHaveAttributes::_setAttributeParent(std::shared_ptr<H5::H5Object> obj)
+		{
+			_impl->parent = obj;
+		}
+
+		CanHaveAttributes::CanHaveAttributes(std::shared_ptr<H5::H5Object> obj)
+		{
+			_impl = std::make_shared<CanHaveAttributes_impl>(obj);
+		}
+
+		CanHaveAttributes::CanHaveAttributes() {
 			_impl = std::make_shared<CanHaveAttributes_impl>();
 		}
 
 		std::vector<size_t> CanHaveAttributes::getAttributeDimensionality(const std::string &attributeName) const
 		{
+			Expects(valid());
 			Expects(doesAttributeExist(attributeName));
+
 			return icedb::fs::hdf5::getAttrDimensionality(_impl->parent, attributeName.c_str());
 		}
 
@@ -39,6 +57,7 @@ namespace icedb {
 			const std::string &attributeName,
 			std::vector<Data_Types::All_Variant_type> &data)
 		{
+			Expects(valid());
 			Expects(doesAttributeExist(attributeName));
 			auto sz = getAttributeDimensionality(attributeName);
 			size_t numElems = 1;
@@ -82,6 +101,7 @@ namespace icedb {
 			const std::vector<size_t> &dimensionality,
 			const std::vector<Data_Types::All_Variant_type> &data)
 		{
+			Expects(valid());
 			if (doesAttributeExist(attributeName)) deleteAttribute(attributeName);
 			// Need to copy from the variant structure into an array of the exact data type
 			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
@@ -95,15 +115,18 @@ namespace icedb {
 
 		void CanHaveAttributes::deleteAttribute(const std::string &attributeName)
 		{
+			Expects(valid());
 			_impl->parent->removeAttr(attributeName);
 		}
 
 		bool CanHaveAttributes::doesAttributeExist(const std::string &attributeName) const 
 		{
+			Expects(valid());
 			return _impl->parent->attrExists(attributeName);
 		}
 
 		std::vector<std::string> CanHaveAttributes::getAttributeNames() const {
+			Expects(valid());
 			//icedb::fs::hdf5::
 			std::vector<std::string> anames;
 			int numAttrs = _impl->parent->getNumAttrs();
