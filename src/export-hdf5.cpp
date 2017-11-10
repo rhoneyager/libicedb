@@ -12,8 +12,9 @@ namespace icedb {
 	{
 		namespace hdf5
 		{
-			template <class DataType>
-			MatchAttributeTypeType MatchAttributeType() { throw("Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."); }
+			//template <class DataType>
+			//MatchAttributeTypeType MatchAttributeType() {
+			//	static_assert(false, "Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."); }
 			template<> MatchAttributeTypeType MatchAttributeType<std::string>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
 			template<> MatchAttributeTypeType MatchAttributeType<const char*>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
 			template<> MatchAttributeTypeType MatchAttributeType<char>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, 1)); }
@@ -253,6 +254,10 @@ namespace icedb {
 			template<> bool isType<float>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_FLOAT) > 0) ? true : false; }
 			template<> bool isType<double>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_DOUBLE) > 0) ? true : false; }
 			template<> bool isType<char>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_CHAR) > 0) ? true : false; }
+			template<> bool isType<std::string>(hid_t type_id) {
+				std::shared_ptr<H5::AtomType> a(new H5::StrType(0, H5T_VARIABLE));
+				return (H5Tequal(type_id, a->getId()) > 0) ? true : false;
+			}
 
 
 

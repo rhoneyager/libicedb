@@ -18,7 +18,7 @@ namespace icedb {
 			static void indexDatabase(const std::string &location);
 			static Database openDatabase(const std::string &location, fs::IOopenFlags flags = fs::IOopenFlags::READ_ONLY);
 			//static Database copyDatabase(const Database& sourceDB, const std::string &location);
-			Groups::Group openPath(const std::string &path);
+			Groups::Group openGroup(const std::string &path);
 			//ObjectIdPathSet_Type findObjects(ObjectTypes type, const std::string &base, bool recurse = true);
 		};
 	}

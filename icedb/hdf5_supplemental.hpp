@@ -27,12 +27,29 @@ namespace icedb {
 			/// \returns A pair of (the matching type, a flag indicating passing by pointer or reference)
 			typedef std::shared_ptr<H5::AtomType> MatchAttributeTypeType;
 			template <class DataType>
-			MatchAttributeTypeType MatchAttributeType();
+			MatchAttributeTypeType MatchAttributeType() {
+				static_assert(false, 
+					"Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType.");
+			}
+			extern template MatchAttributeTypeType MatchAttributeType<std::string>();
+			extern template MatchAttributeTypeType MatchAttributeType<const char*>();
+			extern template MatchAttributeTypeType MatchAttributeType<char>();
+
+			extern template MatchAttributeTypeType MatchAttributeType<uint8_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<uint16_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<uint32_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<uint64_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<int8_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<int16_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<int32_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<int64_t>();
+			extern template MatchAttributeTypeType MatchAttributeType<float>();
+			extern template MatchAttributeTypeType MatchAttributeType<double>();
 
 			/// Check to see if output type is for a string
 			template <class DataType> bool isStrType() { return false; }
-			template<> bool isStrType<std::string>();
-			template<> bool isStrType<const char*>();
+			extern template bool isStrType<std::string>();
+			extern template bool isStrType<const char*>();
 
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
@@ -52,32 +69,9 @@ namespace icedb {
 				insertAttr<DataType>(attr, vls_type, value);
 			}
 
-			/// Writes an array (or vector) of objects
+			/// Writes an array of objects
 			template <class DataType, class Container>
-			void addAttrArray(std::shared_ptr<Container> obj, const char* attname, 
-					const DataType *value, size_t rows, size_t cols)
-			{
-				hsize_t sz[] = { (hsize_t) rows, (hsize_t) cols };
-				if (sz[0] == 1)
-				{
-					sz[0] = sz[1];
-					sz[1] = 1;
-				}
-				int dimensionality = (sz[1] == 1) ? 1 : 2;
-
-				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
-				//H5::IntType ftype(H5::PredType::NATIVE_FLOAT);
-				H5::ArrayType vls_type(*ftype, dimensionality, sz);
-
-				H5::DataSpace att_space(H5S_SCALAR);
-				H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
-				attr.write(vls_type, value);
-			}
-
-
-			/// Writes an array (or vector) of objects
-			template <class DataType, class Container>
-			void addAttrVector(
+			void addAttrArray(
 				std::shared_ptr<Container> obj, 
 				const char* attname,
 				const std::vector<size_t> &dimensionality,
@@ -91,7 +85,20 @@ namespace icedb {
 				attr.write(vls_type, value.data());
 			}
 
-			
+			/// Writes a vector of objects
+			template <class DataType, class Container>
+			void addAttrVector(
+				std::shared_ptr<Container> obj,
+				const char* attname,
+				const std::vector<DataType> &data)
+			{
+				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				hsize_t dsize = (hsize_t) data.size();
+				H5::DataSpace att_space(1, &dsize);
+				H5::Attribute attr = obj->createAttribute(attname, *(ftype.get()), att_space);
+				attr.write(*ftype, data.data());
+			}
+
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
 			void loadAttr(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, DataType& value)
@@ -99,7 +106,6 @@ namespace icedb {
 				attr.read(*vls_type, &value);
 			}
 			template <> void loadAttr<std::string>(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, std::string& value);
-
 
 			/// Convenient template to read an attribute of a variable
 			template <class DataType, class Container>
@@ -114,64 +120,84 @@ namespace icedb {
 			/// Reads an array (or vector) of objects
 			template <class DataType, class Container>
 			void readAttrArray(std::shared_ptr<Container> obj, const char* attname,
-				DataType *value, size_t rows, size_t cols)
+				std::vector<size_t> &dims,
+				std::vector<DataType> &value)
 			{
 				H5::Attribute attr = obj->openAttribute(attname);
 				int dimensionality = attr.getArrayType().getArrayNDims();
-				hsize_t *sz = new hsize_t[dimensionality];
-				attr.getArrayType().getArrayDims(sz);
+				Expects(dimensionality > 0);
+				std::vector<hsize_t> sz((size_t)dimensionality);
+				attr.getArrayType().getArrayDims(sz.data());
 
-				if (dimensionality == 1)
-				{
-					if (sz[0] != rows && sz[0] != cols) throw("Row/column mismatch in readAttrArray");
+				dims.resize((size_t)dimensionality);
+				size_t numElems = 1;
+				for (size_t i = 0; i < dimensionality; ++i) {
+					dims[i] = (size_t)(sz[i]);
+					numElems *= dims[i];
 				}
-				else {
-					if (sz[0] != rows) throw("Rows mismatch in readAttrArray");
-					if (sz[1] != cols) throw("Cols mismatch in readAttrArray");
-				}
-				
-
-				//if (dimensionality == 2)
-				//	value.resize(sz[0], sz[1]);
-				//else if (dimensionality == 1)
-				//	value.resize(sz[0]);
+				value.resize(numElems);
 
 				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
 				//H5::IntType ftype(H5::PredType::NATIVE_FLOAT);
-				H5::ArrayType vls_type(*ftype, dimensionality, sz);
+				H5::ArrayType vls_type(*ftype, dimensionality, sz.data());
 
 				//H5::DataSpace att_space(H5S_SCALAR);
 				//H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
-				attr.read(vls_type, value);
-				delete[] sz;
+				attr.read(vls_type, value.data());
 			}
-
 
 			/// Reads an array (or vector) of objects
 			template <class DataType, class Container>
 			void readAttrVector(std::shared_ptr<Container> obj, const char* attname,
 				std::vector<DataType> &value)
 			{
-				H5::Attribute attr = obj->openAttribute(attname);
-				int dimensionality = attr.getArrayType().getArrayNDims();
-				hsize_t *sz = new hsize_t[dimensionality];
-				attr.getArrayType().getArrayDims(sz);
-				hsize_t numElems = 1;
-				for (size_t i = 0; i < dimensionality; ++i) numElems *= sz[i];
-				value.resize(numElems);
-
+				/*
 				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
-				//H5::IntType ftype(H5::PredType::NATIVE_FLOAT);
-				H5::ArrayType vls_type(*ftype, dimensionality, sz);
+				hsize_t dsize = (hsize_t) data.size();
+				H5::DataSpace att_space(1, &dsize);
+				H5::Attribute attr = obj->createAttribute(attname, *(ftype.get()), att_space);
+				attr.write(*ftype, data.data());
+				*/
+				H5::Attribute attr = obj->openAttribute(attname);
+				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				H5::DataSpace dspace = attr.getSpace();
+				value.resize(dspace.getSimpleExtentNdims());
+				attr.read(*(ftype.get()), value.data());
+			}
 
-				//H5::DataSpace att_space(H5S_SCALAR);
-				//H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
-				attr.read(vls_type, value.data());
-				delete[] sz;
+			enum class DataContainerType {
+				BASIC,
+				ARRAY,
+				COMPOUND,
+				ENUM,
+				OPAQUE,
+				VLEN,
+				STRING,
+				UNKNOWN
+			};
+
+			template <class Container>
+			DataContainerType getAttributeGroupingType(std::shared_ptr<Container> obj, const char* attname)
+			{
+				H5::Attribute attr = obj->openAttribute(attname);
+				hid_t attrid = attr.getId();
+				H5::DataType dtype = attr.getDataType().getId();
+				hid_t dtypeid = dtype.getId();
+				H5T_class_t class_type = H5Tget_class(dtypeid);
+				if (class_type == H5T_class_t::H5T_ARRAY) return DataContainerType::ARRAY;
+				else if (class_type == H5T_class_t::H5T_COMPOUND) return DataContainerType::COMPOUND;
+				else if (class_type == H5T_class_t::H5T_ENUM) return DataContainerType::ENUM;
+				else if (class_type == H5T_class_t::H5T_OPAQUE) return DataContainerType::OPAQUE;
+				else if (class_type == H5T_class_t::H5T_INTEGER) return DataContainerType::BASIC;
+				else if (class_type == H5T_class_t::H5T_FLOAT) return DataContainerType::BASIC;
+				else if (class_type == H5T_class_t::H5T_VLEN) return DataContainerType::VLEN;
+				else if (class_type == H5T_class_t::H5T_STRING) return DataContainerType::STRING;
+
+				return DataContainerType::UNKNOWN;
 			}
 
 			template <class Container>
-			std::vector<hsize_t> getAttrDimensionality(
+			std::vector<hsize_t> getAttrArrayDimensionality(
 				std::shared_ptr<Container> obj, const char* attname)
 			{
 				std::vector<hsize_t> dims;
@@ -372,7 +398,7 @@ namespace icedb {
 
 			/// Functions to detect the _type_ of data
 			template <class DataType>
-			bool isType(hid_t) { return false; }
+			bool isType(hid_t) { static_assert(false, "Unsupported type."); return false; }
 
 			template <class DataType, class Container>
 			bool isType(std::shared_ptr<Container> obj, const std::string &attributeName) {
@@ -384,6 +410,7 @@ namespace icedb {
 			extern template bool isType<float>(hid_t type_id);
 			extern template bool isType<double>(hid_t type_id);
 			extern template bool isType<char>(hid_t type_id);
+			extern template bool isType<std::string>(hid_t type_id);
 
 		}
 	}

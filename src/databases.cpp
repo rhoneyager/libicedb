@@ -95,7 +95,7 @@ namespace icedb {
 			_impl = std::make_shared<Database_impl>();
 		}
 
-		Groups::Group Database::openPath(const std::string &path) {
+		Groups::Group Database::openGroup(const std::string &path) {
 			return std::move(Groups::Group(path, _impl->hFile));
 		}
 
@@ -112,6 +112,7 @@ namespace icedb {
 			sfs::create_directory(pBase / "Physical_Particle_Properties");
 			sfs::create_directory(pBase / "Extended_Scattering_Variables");
 			sfs::create_directory(pBase / "Essential_Scattering_Variables");
+			sfs::create_directory(pBase / "Testing");
 
 			Database_impl::makeDatabaseFileStandard((pBase / "3d_Structures" / "3dS-1.hdf5").string());
 			Database_impl::makeDatabaseFileStandard((pBase / "3d_Structures" / "3dS-2.hdf5").string());
@@ -119,6 +120,7 @@ namespace icedb {
 			Database_impl::makeDatabaseFileStandard((pBase / "Physical_Particle_Properties" / "ppp.hdf5").string());
 			Database_impl::makeDatabaseFileStandard((pBase / "Essential_Scattering_Variables" / "esv1.hdf5").string());
 			Database_impl::makeDatabaseFileStandard((pBase / "Essential_Scattering_Variables" / "esv2.hdf5").string());
+			Database_impl::makeDatabaseFileStandard((pBase / "Testing" / "scratch.hdf5").string());
 			Database_impl::makeDatabaseFileStandard((pBase / "metadata.hdf5").string());
 
 			return openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE);

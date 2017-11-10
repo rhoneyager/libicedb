@@ -31,7 +31,23 @@ namespace icedb {
 		}
 
 		Group Group::createGroup(const std::string &groupName) {
-			_impl->grp->createGroup(groupName);
+			//_impl->grp->createGroup(groupName); // Bad for NetCDF. See http://www.unidata.ucar.edu/software/netcdf/docs/file_format_specifications.html#creation_order
+			hid_t baseGrpID = _impl->grp->getId();
+			/* Create group, with link_creation_order set in the group
+			* creation property list. */
+			// No suitable C++ methods found.
+			//H5::ObjCreatPropList gprops;
+			//gprops.setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
+
+			hid_t gcpl_id = H5Pcreate(H5P_GROUP_CREATE);
+			if (gcpl_id < 0) throw;
+			if (H5Pset_link_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) < 0) throw;
+			if (H5Pset_attr_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) < 0) throw;
+			hid_t newGrp_id = H5Gcreate2(baseGrpID, groupName.c_str(), H5P_DEFAULT, gcpl_id, H5P_DEFAULT);
+			if (newGrp_id < 0) throw;
+			if (H5Gclose(newGrp_id) < 0) throw;
+			if (H5Pclose(gcpl_id) < 0) throw;
+
 			Group res(groupName, *this);
 			return std::move(res);
 		}
