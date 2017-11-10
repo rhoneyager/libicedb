@@ -16,6 +16,8 @@ namespace icedb {
 			MatchAttributeTypeType MatchAttributeType() { throw("Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."); }
 			template<> MatchAttributeTypeType MatchAttributeType<std::string>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
 			template<> MatchAttributeTypeType MatchAttributeType<const char*>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
+			template<> MatchAttributeTypeType MatchAttributeType<char>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, 1)); }
+
 			template<> MatchAttributeTypeType MatchAttributeType<uint8_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT8)); }
 			template<> MatchAttributeTypeType MatchAttributeType<uint16_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT16)); }
 			template<> MatchAttributeTypeType MatchAttributeType<uint32_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT32)); }
@@ -24,6 +26,7 @@ namespace icedb {
 			template<> MatchAttributeTypeType MatchAttributeType<int16_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT16)); }
 			template<> MatchAttributeTypeType MatchAttributeType<int32_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT32)); }
 			template<> MatchAttributeTypeType MatchAttributeType<int64_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT64)); }
+			//template<> MatchAttributeTypeType MatchAttributeType<char>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_CHAR)); }
 
 			template<> MatchAttributeTypeType MatchAttributeType<float>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_FLOAT)); }
 			template<> MatchAttributeTypeType MatchAttributeType<double>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_DOUBLE)); }

@@ -1,3 +1,5 @@
+// Boost bug with C++17 requires this define. See https://stackoverflow.com/questions/41972522/c2143-c2518-when-trying-to-compile-project-using-boost-multiprecision
+#define _HAS_AUTO_PTR_ETC 1
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <string>
@@ -36,7 +38,7 @@ int main(int argc, char** argv) {
 	if (vm.count("help")) doHelp("");
 
 	string dbpath = vm["dbpath"].as<string>();
-	if (vm.count("create")) {
+	if (vm.count("create") || !sfs::exists(sfs::path(dbpath))) {
 		if (sfs::exists(sfs::path(dbpath))) doHelp(
 			"Cannot create a database where one already exists.");
 		icedb::Databases::Database::createDatabase(dbpath);

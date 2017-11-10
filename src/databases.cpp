@@ -80,6 +80,7 @@ namespace icedb {
 					H5P_DEFAULT);
 				constexpr uint64_t dbverno = 1;
 				icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res, "Version", dbverno);
+				icedb::fs::hdf5::addAttr<std::string, H5::H5File>(res, "Software", "libicedb");
 				return res;
 			}
 			static std::string getUniqueVROOTname() {

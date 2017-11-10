@@ -8,7 +8,8 @@ namespace H5 {
 }
 namespace icedb {
 	namespace Groups {
-		class Group : public Attributes::CanHaveAttributes, Tables::CanHaveTables {
+		class Group : public Attributes::CanHaveAttributes //, Tables::CanHaveTables
+		{
 			class Group_impl;
 			std::shared_ptr<Group_impl> _impl;
 			Group();

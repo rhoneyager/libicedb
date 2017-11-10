@@ -379,6 +379,11 @@ namespace icedb {
 				H5::Attribute attr = obj->openAttribute(attributeName);
 				return isType<DataType>(attr.getDataType().getId());
 			}
+			extern template bool isType<uint64_t>(hid_t type_id);
+			extern template bool isType<int64_t>(hid_t type_id);
+			extern template bool isType<float>(hid_t type_id);
+			extern template bool isType<double>(hid_t type_id);
+			extern template bool isType<char>(hid_t type_id);
 
 		}
 	}
