@@ -15,12 +15,24 @@ namespace icedb {
 			typedef std::vector<size_t> Dimensions_Type;
 			const std::string name;
 			Dimensions_Type getDimensions() const;
-			void setDimensions(const Dimensions_Type& newDimensions);
+			void attachDimensions(const Dimensions_Type& newDimensions);
+			void attachDimensionScale(size_t DimensionNumber, const Table &scale);
+			Table readDimensionScale(size_t DimensionNumber) const;
+			bool hasDimensionScale(size_t DimensionNumber) const;
+
+			bool isDimensionScale() const;
+			bool setDimensionScale(const std::string &dimensionName);
+			void setDimensionScaleAxisLabel(size_t DimensionNumber, const std::string &label);
+			std::string getDimensionScaleAxisLabel(size_t DimensionNumber) const;
+			std::string getDimensionScaleLabel() const;
 
 			void readAll(gsl::span<DataType> &inData) const;
 			void writeAll(const gsl::span<DataType> &outData);
 			void readAll(std::vector<DataType> &inData) const;
 			void writeAll(const std::vector<DataType> &outData);
+
+			Table(Groups::Group &owner, const std::string &name);
+			Table();
 
 			//Table(Groups::Group &owner, const std::string &name) : name(name) {
 			//	static_assert(icedb::Data_Types::Is_Valid_Data_Type<DataType>() == true,
@@ -44,7 +56,7 @@ namespace icedb {
 
 			}
 			template<class DataType> Table<DataType> createTable(const std::string &tableName) {
-
+				/// \todo Ensure netCDF4 compatability.
 			}
 		};
 	}
