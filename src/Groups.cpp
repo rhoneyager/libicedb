@@ -10,30 +10,20 @@ namespace icedb {
 		Group::Group(const std::string &name) : name{ name } {}
 		Group_impl::Group_impl() : Group() {}
 
-		Group_impl::Group_impl(const std::string &name, std::shared_ptr<H5::Group> parent)
+		Group_impl::Group_impl(const std::string &name, gsl::not_null<H5::Group*> parent)
 			: Group{ name }
 		{
-			auto oldg = fs::hdf5::openGroup(parent, name.c_str());
-			grp.reset()
+			auto ugrp = fs::hdf5::openGroup(parent.get(), name.c_str());
+			grp = std::shared_ptr<H5::Group>(ugrp.release(), mem::icedb_delete<H5::Group>());
+			this->_setAttributeParent(grp);
 		}
+
 		Group_impl::Group_impl(const std::string &name, gsl::not_null<const Group*> parent)
 			: Group{ name }
 		{
-
-		}
-
-		Group::Group(const std::string &name, std::shared_ptr<H5::Group> parent) : name(name)
-		{
-			_impl = std::make_shared<Group_impl>();
-			_impl->grp = fs::hdf5::openGroup(parent, name.c_str());
-			this->_setAttributeParent(_impl->grp);
-		}
-
-		Group::Group(const std::string &name, const Group& pgrp) : name(name)
-		{
-			_impl = std::make_shared<Group_impl>();
-			_impl->grp = fs::hdf5::openGroup(pgrp.getHDF5Group(), name.c_str());
-			this->_setAttributeParent(_impl->grp);
+			auto ugrp = fs::hdf5::openGroup(parent->getHDF5Group().get(), name.c_str());
+			grp = std::shared_ptr<H5::Group>(ugrp.release(), mem::icedb_delete<H5::Group>());
+			this->_setAttributeParent(grp);
 		}
 
 		std::shared_ptr<H5::Group> Group_impl::getHDF5Group() const {
@@ -42,7 +32,7 @@ namespace icedb {
 
 		Group::Group_ptr Group_impl::createGroup(const std::string &groupName) {
 			//_impl->grp->createGroup(groupName); // Bad for NetCDF. See http://www.unidata.ucar.edu/software/netcdf/docs/file_format_specifications.html#creation_order
-			hid_t baseGrpID = _impl->grp->getId();
+			hid_t baseGrpID = grp->getId();
 			/* Create group, with link_creation_order set in the group
 			* creation property list. */
 			// No suitable C++ methods found.
@@ -50,25 +40,23 @@ namespace icedb {
 			//gprops.setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
 
 			hid_t gcpl_id = H5Pcreate(H5P_GROUP_CREATE);
-			if (gcpl_id < 0) throw;
+			assert(gcpl_id >= 0);
 			if (H5Pset_link_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) < 0) throw;
 			if (H5Pset_attr_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) < 0) throw;
 			hid_t newGrp_id = H5Gcreate2(baseGrpID, groupName.c_str(), H5P_DEFAULT, gcpl_id, H5P_DEFAULT);
-			if (newGrp_id < 0) throw;
-			if (H5Gclose(newGrp_id) < 0) throw;
-			if (H5Pclose(gcpl_id) < 0) throw;
+			assert(newGrp_id >= 0);
+			assert(H5Gclose(newGrp_id) >= 0);
+			assert(H5Pclose(gcpl_id) >= 0);
 
-			Group res(groupName, *this);
-			return std::move(res);
+			return std::move(Group::Group_ptr(new Group_impl(groupName, this)));
 		}
 
 		Group::Group_ptr Group_impl::openGroup(const std::string &groupName) const {
-			Group res(groupName, _impl->grp);
-			return res;
+			return std::move(Group::Group_ptr(new Group_impl(groupName, grp.get())));
 		}
 
 		void Group_impl::deleteGroup(const std::string &groupName) {
-			_impl->grp->unlink(groupName);
+			grp->unlink(groupName);
 		}
 
 		bool Group_impl::doesGroupExist(const std::string &groupName) const {
