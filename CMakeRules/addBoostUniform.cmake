@@ -41,11 +41,11 @@ if (NOT WINBOOST_AUTOLINK)
 else()
 endif()
 
-include_directories(BEFORE SYSTEM ${Boost_INCLUDE_DIR})
+#include_directories(BEFORE SYSTEM ${Boost_INCLUDE_DIR})
 #message("boost ${Boost_LIBRARY_DIR}")
-link_directories(${Boost_LIBRARY_DIR})
-link_directories(${Boost_LIBRARY_DIR_DEBUG})
-link_directories(${Boost_LIBRARY_DIR_RELEASE})
+#link_directories(${Boost_LIBRARY_DIR})
+#link_directories(${Boost_LIBRARY_DIR_DEBUG})
+#link_directories(${Boost_LIBRARY_DIR_RELEASE})
 
 
 

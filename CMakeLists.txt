@@ -6,6 +6,8 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+set(CMAKE_CXX_EXTENSIONS OFF)
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(addBaseProject)
 include(addBoostUniform)
@@ -36,9 +38,14 @@ configure_file (
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 addBoostUniform(program_options )
+#include_directories(BEFORE SYSTEM ${Boost_INCLUDE_DIR})
+#link_directories(${Boost_LIBRARY_DIR})
+#link_directories(${Boost_LIBRARY_DIR_DEBUG})
+#link_directories(${Boost_LIBRARY_DIR_RELEASE})
+
 find_package(HDF5 REQUIRED COMPONENTS C CXX)
-include_directories(${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
-add_definitions(${HDF5_DEFINITIONS})
+#include_directories(${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
+#add_definitions(${HDF5_DEFINITIONS})
 if(DEFINED HDF5_C_LIBRARIES)
 	#set (h5libs ${HDF5_C_LIBRARIES} ${HDF5_CXX_LIBRARIES})
 	set (h5libs ${HDF5_LIBRARIES})
@@ -95,7 +102,14 @@ SET(libsrcs ${libsrcs}
 ENDIF()
 
 add_library(libicedb STATIC ${libsrcs})
-target_link_libraries(libicedb ${h5libs})
+set_target_properties(libicedb PROPERTIES CXX_STANDARD 17)
+target_include_directories(libicedb SYSTEM
+	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
+	)
+
+target_compile_definitions(libicedb
+	PRIVATE ${HDF5_DEFINITIONS})
+target_link_libraries(libicedb ${HDF5_LIBRARIES})
 addlib(libicedb STATIC)
 storebin(libicedb)
 
