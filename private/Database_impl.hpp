@@ -24,7 +24,7 @@ namespace icedb {
 		public:
 			Database_impl();
 			virtual ~Database_impl();
-			Groups::Group openGroup(const std::string &path) override;
+			Groups::Group::Group_ptr openGroup(const std::string &path) override;
 			//ObjectIdPathSet_Type findObjects(ObjectTypes type, const std::string &base, bool recurse = true);
 		};
 	}

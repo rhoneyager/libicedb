@@ -40,38 +40,45 @@ namespace icedb {
 		};
 
 		class CanHaveAttributes {
-			class CanHaveAttributes_impl;
-			std::shared_ptr<CanHaveAttributes_impl> _impl;
-			void readAttributeData(
-				const std::string &attributeName,
-				std::vector<size_t> &dims,
-				std::vector<Data_Types::All_Variant_type> &data);
-			// Extent to support specifying attribute datatype here
-			void writeAttributeData(
-				const std::string &attributeName,
-				const type_info &type_id,
-				const std::vector<size_t> &dimensionality,
-				const std::vector<Data_Types::All_Variant_type> &data);
-			//std::vector<size_t> getAttributeDimensionality(const std::string &attributeName) const;
-			bool valid() const;
+			virtual bool valid() const = 0;
 		protected:
 			CanHaveAttributes(std::shared_ptr<H5::H5Object>);
 			CanHaveAttributes();
-			void _setAttributeParent(std::shared_ptr<H5::H5Object> obj);
+			virtual void _setAttributeParent(std::shared_ptr<H5::H5Object> obj) = 0;
 		public:
-			std::vector<std::string> getAttributeNames() const;
-			bool doesAttributeExist(const std::string &attributeName) const;
-			std::type_index getAttributeTypeId(const std::string &attributeName) const;
+			virtual bool doesAttributeExist(const std::string &attributeName) const = 0;
+			virtual std::type_index getAttributeTypeId(const std::string &attributeName) const = 0;
 			template<class Type> bool isAttributeOfType(const std::string &attributeName) const {
 				std::type_index atype = getAttributeTypeId(attributeName);
 				if (atype == typeid(Type)) return true;
 				return false;
 			}
+
+			virtual size_t getNumAttributes(const std::string &attributeName) const = 0;
+			virtual std::unique_ptr<std::string, mem::icedb_delete<std::string> > getAttributeName(size_t attributeIndex) const = 0;
+			inline std::vector<std::string> getAttributeNames() const {
+				std::vector<std::string> res;
+
+				return res;
+			}
+
+			virtual size_t readAttributeNumDims(const std::string &attributeName) = 0;
+			virtual void readAttributeDims(const std::string &attributeName, gsl::span<size_t> &dims) = 0;
+			virtual void readAttributeData(
+				const std::string &attributeName,
+				gsl::span<Data_Types::All_Variant_type> &data) = 0;
+			virtual void writeAttributeData(
+				const std::string &attributeName,
+				const type_info &type_id,
+				const gsl::span<size_t> &dimensionality,
+				const gsl::span<Data_Types::All_Variant_type> &data) = 0;
+
+			/// \todo Fix CALL RESIZING ACROSS MODULE BOUNDARIES
 			template<class DataType> Attribute<DataType> readAttribute(const std::string &attributeName) {
 				std::vector<Data_Types::All_Variant_type> vdata;
 				Attribute<DataType> res(attributeName);
 				//res.dimensionality = getAttributeDimensionality(attributeName);
-				readAttributeData(attributeName, res.dimensionality, vdata);
+				readAttributeData(attributeName, res.dimensionality, vdata); ////// CALL RESIZING ACROSS MODULE BOUNDARIES
 				res.data.resize(vdata.size());
 				for (size_t i = 0; i < vdata.size(); ++i)
 					res.data[i] = std::get<DataType>(vdata[i]);
@@ -90,7 +97,7 @@ namespace icedb {
 				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
 				writeAttributeData(attribute.name, typeid(DataType), attribute.dimensionality, vdata);
 			}
-			void deleteAttribute(const std::string &attributeName);
+			virtual void deleteAttribute(const std::string &attributeName) = 0;
 		};
 
 	}

@@ -1,7 +1,7 @@
 #include "../icedb/Attribute.hpp"
 #include "../icedb/compat/hdf5_load.h"
 #include "../icedb/hdf5_supplemental.hpp"
-#include "../icedb/gsl/gsl_assert"
+#include <gsl/gsl_assert>
 
 namespace icedb {
 	namespace Attributes {

@@ -5,8 +5,10 @@
 #include <vector>
 #include <functional>
 
+#include <gsl/gsl>
 #include "compat/hdf5_load.h"
 #include "fs.hpp"
+#include "util.hpp"
 
 namespace icedb {
 	namespace fs {
@@ -19,13 +21,15 @@ namespace icedb {
 
 			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base);
 
-			std::shared_ptr<H5::Group> openOrCreateGroup(std::shared_ptr<H5::H5Location> base, const char* name);
-			std::shared_ptr<H5::Group> openGroup(std::shared_ptr<H5::H5Location> base, const char* name);
-			bool groupExists(std::shared_ptr<H5::H5Location> base, const char* name);
+			typedef std::unique_ptr<H5::Group, mem::icedb_delete<H5::Group> > HDFgroup_t;
+
+			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
+			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
+			bool groupExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
 			/// \param std::shared_ptr<H5::AtomType> is a pointer to a newly-constructed matching type
 			/// \returns A pair of (the matching type, a flag indicating passing by pointer or reference)
-			typedef std::shared_ptr<H5::AtomType> MatchAttributeTypeType;
+			typedef std::unique_ptr<H5::AtomType, mem::icedb_delete<H5::AtomType> > MatchAttributeTypeType;
 			template <class DataType>
 			MatchAttributeTypeType MatchAttributeType() {
 				static_assert(false, 
@@ -53,17 +57,17 @@ namespace icedb {
 
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
-			void insertAttr(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, const DataType& value)
+			void insertAttr(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const DataType& value)
 			{
 				attr.write(*vls_type, &value);
 			}
-			template <> void insertAttr<std::string>(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, const std::string& value);
+			template <> void insertAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const std::string& value);
 
 			/// Convenient template to add an attribute of a variable type to a group or dataset
 			template <class DataType, class Container>
-			void addAttr(std::shared_ptr<Container> obj, const char* attname, const DataType &value)
+			void addAttr(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname, const DataType &value)
 			{
-				std::shared_ptr<H5::AtomType> vls_type = MatchAttributeType<DataType>();
+				auto vls_type = MatchAttributeType<DataType>();
 				H5::DataSpace att_space(H5S_SCALAR);
 				H5::Attribute attr = obj->createAttribute(attname, *vls_type, att_space);
 				insertAttr<DataType>(attr, vls_type, value);
@@ -72,12 +76,12 @@ namespace icedb {
 			/// Writes an array of objects
 			template <class DataType, class Container>
 			void addAttrArray(
-				std::shared_ptr<Container> obj, 
-				const char* attname,
+				gsl::not_null<Container*> obj,
+				gsl::not_null<const char*> attname,
 				const std::vector<size_t> &dimensionality,
 				const std::vector<DataType> &value)
 			{
-				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				auto ftype = MatchAttributeType<DataType>();
 				H5::ArrayType vls_type(*ftype, (int) dimensionality.size(), (hsize_t*) dimensionality.data());
 
 				H5::DataSpace att_space(H5S_SCALAR);
@@ -88,11 +92,11 @@ namespace icedb {
 			/// Writes a vector of objects
 			template <class DataType, class Container>
 			void addAttrVector(
-				std::shared_ptr<Container> obj,
-				const char* attname,
+				gsl::not_null<Container*> obj,
+				gsl::not_null<const char*> attname,
 				const std::vector<DataType> &data)
 			{
-				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				auto ftype = MatchAttributeType<DataType>();
 				hsize_t dsize = (hsize_t) data.size();
 				H5::DataSpace att_space(1, &dsize);
 				H5::Attribute attr = obj->createAttribute(attname, *(ftype.get()), att_space);
@@ -101,17 +105,17 @@ namespace icedb {
 
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
-			void loadAttr(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, DataType& value)
+			void loadAttr(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, DataType& value)
 			{
 				attr.read(*vls_type, &value);
 			}
-			template <> void loadAttr<std::string>(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, std::string& value);
+			template <> void loadAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, std::string& value);
 
 			/// Convenient template to read an attribute of a variable
 			template <class DataType, class Container>
-			void readAttr(std::shared_ptr<Container> obj, const char* attname, DataType &value)
+			void readAttr(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname, DataType &value)
 			{
-				std::shared_ptr<H5::AtomType> vls_type = MatchAttributeType<DataType>();
+				auto vls_type = MatchAttributeType<DataType>();
 				H5::DataSpace att_space(H5S_SCALAR);
 				H5::Attribute attr = obj->openAttribute(attname); //, *vls_type, att_space);
 				loadAttr<DataType>(attr, vls_type, value);
@@ -119,7 +123,7 @@ namespace icedb {
 
 			/// Reads an array (or vector) of objects
 			template <class DataType, class Container>
-			void readAttrArray(std::shared_ptr<Container> obj, const char* attname,
+			void readAttrArray(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname,
 				std::vector<size_t> &dims,
 				std::vector<DataType> &value)
 			{
@@ -137,7 +141,7 @@ namespace icedb {
 				}
 				value.resize(numElems);
 
-				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				auto ftype = MatchAttributeType<DataType>();
 				//H5::IntType ftype(H5::PredType::NATIVE_FLOAT);
 				H5::ArrayType vls_type(*ftype, dimensionality, sz.data());
 
@@ -148,7 +152,7 @@ namespace icedb {
 
 			/// Reads an array (or vector) of objects
 			template <class DataType, class Container>
-			void readAttrVector(std::shared_ptr<Container> obj, const char* attname,
+			void readAttrVector(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname,
 				std::vector<DataType> &value)
 			{
 				/*
@@ -159,7 +163,7 @@ namespace icedb {
 				attr.write(*ftype, data.data());
 				*/
 				H5::Attribute attr = obj->openAttribute(attname);
-				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				auto ftype = MatchAttributeType<DataType>();
 				H5::DataSpace dspace = attr.getSpace();
 				value.resize(dspace.getSimpleExtentNdims());
 				attr.read(*(ftype.get()), value.data());
@@ -177,7 +181,7 @@ namespace icedb {
 			};
 
 			template <class Container>
-			DataContainerType getAttributeGroupingType(std::shared_ptr<Container> obj, const char* attname)
+			DataContainerType getAttributeGroupingType(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname)
 			{
 				H5::Attribute attr = obj->openAttribute(attname);
 				hid_t attrid = attr.getId();
@@ -198,7 +202,7 @@ namespace icedb {
 
 			template <class Container>
 			std::vector<hsize_t> getAttrArrayDimensionality(
-				std::shared_ptr<Container> obj, const char* attname)
+				gsl::not_null<Container*> obj, gsl::not_null<const char*> attname)
 			{
 				std::vector<hsize_t> dims;
 				H5::Attribute attr = obj->openAttribute(attname);
@@ -208,38 +212,42 @@ namespace icedb {
 				return dims;
 			}
 
-			bool attrExists(std::shared_ptr<H5::H5Object> obj, const char* attname);
+			bool attrExists(gsl::not_null<H5::H5Object*> obj, gsl::not_null<const char*> attname);
 
 			/// Convenience function to either open or create a group
-			std::shared_ptr<H5::Group> openOrCreateGroup(
-				std::shared_ptr<H5::H5Location> base, const char* name);
+			HDFgroup_t openOrCreateGroup(
+				gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
 			/// Convenience function to check if a given group exists
-			bool groupExists(std::shared_ptr<H5::H5Location> base, const char* name);
+			bool groupExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
 			/// Convenience function to check if a symbolic link exists, and if the object being 
 			/// pointed to also exists.
 			/// \returns std::pair<bool,bool> refers to, respectively, if a symbolic link is found and 
 			/// if the symbolic link is good.
-			std::pair<bool, bool> symLinkExists(std::shared_ptr<H5::H5Location> base, const char* name);
+			std::pair<bool, bool> symLinkExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
 			/// \brief Convenience function to open a group, if it exists
 			/// \returns nullptr is the group does not exist.
-			std::shared_ptr<H5::Group> openGroup(std::shared_ptr<H5::H5Location> base, const char* name);
+			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
 			/// Convenience function to check if a given dataset exists
-			bool datasetExists(std::shared_ptr<H5::H5Location> base, const char* name);
+			bool datasetExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
+
+			typedef std::unique_ptr<H5::DataSet, mem::icedb_delete<H5::DataSet> > HDFdataset_t;
+
 
 			template <class DataType, class Container>
-			std::shared_ptr<H5::DataSet> addDatasetArray(std::shared_ptr<Container> obj, const char* name, size_t rows, size_t cols, 
-				const DataType *values, std::shared_ptr<H5::DSetCreatPropList> iplist = nullptr)
+			HDFdataset_t addDatasetArray(
+				gsl::not_null<Container*> obj, gsl::not_null<const char*> name, size_t rows, size_t cols,
+				gsl::not_null<const DataType*> values, H5::DSetCreatPropList* iplist = nullptr)
 			{
 				using namespace H5;
-				hsize_t sz[] = { (hsize_t) rows, (hsize_t) cols };
+				std::vector<hsize_t> sz{ (hsize_t)rows, (hsize_t)cols };
 				int dimensionality = 2;
 				if (cols == 1) dimensionality = 1;
 				DataSpace fspace(dimensionality, sz);
-				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				auto ftype = MatchAttributeType<DataType>();
 				std::shared_ptr<DSetCreatPropList> plist;
 				if (iplist) plist = iplist;
 				else
@@ -256,77 +264,68 @@ namespace icedb {
 					}
 				}
 
-				std::shared_ptr<DataSet> dataset(new DataSet(obj->createDataSet(name, *(ftype.get()), 
+				HDFdataset_t dataset(new DataSet(obj->createDataSet(name, *(ftype.get()),
 					fspace, *(plist.get()))));
 				dataset->write(values, *(ftype.get()));
 				return dataset;
 			}
 
 			template <class DataType, class Container>
-			std::shared_ptr<H5::DataSet> addDatasetArray(std::shared_ptr<Container> obj, const char* name, size_t rows, 
-				const DataType *values, std::shared_ptr<H5::DSetCreatPropList> iplist = nullptr)
+			HDFdataset_t addDatasetArray(
+				gsl::not_null<Container*> obj, gsl::not_null<const char*> name, size_t rows,
+				gsl::not_null<const DataType*> values, H5::DSetCreatPropList* iplist = nullptr)
 			{
-				return addDatasetArray(obj, name, rows, 1, values, iplist);
+				return std::move(addDatasetArray(obj, name, rows, 1, values, iplist));
 			}
 			
 			template <class Container>
-			std::shared_ptr<H5::DataSet> readDatasetDimensions(std::shared_ptr<Container> obj, const char* name, std::vector<size_t> &out)
+			HDFdataset_t readDatasetDimensions(
+				gsl::not_null<Container*> obj,
+				gsl::not_null<const char*> name,
+				std::vector<size_t> &out)
 			{
 				using namespace H5;
 
-				std::shared_ptr<H5::DataSet> dataset(new H5::DataSet(obj->openDataSet(name)));
+				HDFdataset_t dataset(new H5::DataSet(obj->openDataSet(name)));
 				H5T_class_t type_class = dataset->getTypeClass();
 				DataSpace fspace = dataset->getSpace();
 				int rank = fspace.getSimpleExtentNdims();
 
-				hsize_t *sz = new hsize_t[rank];
+				std::vector<hsize_t> sz(rank);
 				int dimensionality = fspace.getSimpleExtentDims( sz, NULL);
 				for (size_t i = 0; i < rank; ++i)
 					out.push_back(sz[i]);
 
-				delete[] sz;
 				return dataset;
 			}
 
 			template <class DataType, class Container>
-			std::shared_ptr<H5::DataSet> readDatasetArray(std::shared_ptr<Container> obj, const char* name,
-				DataType *values)
+			HDFdataset_t readDatasetArray(
+				gsl::not_null<Container*> obj, gsl::not_null<const char*> name,
+				gsl::not_null<DataType*> values)
 			{
 				using namespace H5;
 
-				std::shared_ptr<H5::DataSet> dataset(new H5::DataSet(obj->openDataSet(name)));
+				HDFdataset_t dataset(new H5::DataSet(obj->openDataSet(name)));
 				H5T_class_t type_class = dataset->getTypeClass();
 				DataSpace fspace = dataset->getSpace();
-				/*
-				int rank = fspace.getSimpleExtentNdims();
-
-				hsize_t *sz = new hsize_t[rank];
-				int dimensionality = fspace.getSimpleExtentDims( sz, NULL);
-
-				if (dimensionality == 2)
-				value.resize(sz[0], sz[1]);
-				else if (dimensionality == 1)
-				{
-				// Odd, but it keeps row and column-vectors separate.
-				if (value.cols() == 1)
-				value.resize(sz[0], 1);
-				else value.resize(1, sz[0]);
-				}
-				*/
 
 				//DataSpace fspace(dimensionality, sz);
-				std::shared_ptr<H5::AtomType> ftype = MatchAttributeType<DataType>();
+				auto ftype = MatchAttributeType<DataType>();
 
 				dataset->read(values, *(ftype.get()));
-				//delete[] sz;
-				return dataset;
+				return std::move(dataset);
 			}
 
 			/// \brief Add column names to table.
 			/// \param num is the number of columns
 			/// \param stride allows name duplication (for vectors)
 			template <class Container>
-			void addNames(std::shared_ptr<Container> obj, const std::string &prefix, size_t num, const std::function<std::string(int)> &s, size_t stride = 0, size_t mCols = 0)
+			void addNames(
+				gsl::not_null<Container*> obj,
+				const std::string &prefix,
+				size_t num,
+				const std::function<std::string(int)> &s, size_t stride = 0, size_t mCols = 0)
 			{
 				size_t nstride = stride;
 				if (!nstride) nstride = 1;
@@ -349,7 +348,7 @@ namespace icedb {
 			/// \param num is the number of columns
 			/// \param stride allows name duplication (for vectors)
 			template <class Container>
-			void addColNames(std::shared_ptr<Container> obj, size_t num, const std::function<std::string(int)> &s, size_t stride = 0, size_t mCols = 0)
+			void addColNames(gsl::not_null<Container*> obj, size_t num, const std::function<std::string(int)> &s, size_t stride = 0, size_t mCols = 0)
 			{
 				size_t nstride = stride;
 				if (!nstride) nstride = 1;
@@ -401,7 +400,7 @@ namespace icedb {
 			bool isType(hid_t) { static_assert(false, "Unsupported type."); return false; }
 
 			template <class DataType, class Container>
-			bool isType(std::shared_ptr<Container> obj, const std::string &attributeName) {
+			bool isType(gsl::not_null<Container*> obj, const std::string &attributeName) {
 				H5::Attribute attr = obj->openAttribute(attributeName);
 				return isType<DataType>(attr.getDataType().getId());
 			}

@@ -1,5 +1,5 @@
 #include "../icedb/hdf5_supplemental.hpp"
-#include "../icedb/gsl/gsl_assert"
+#include <gsl/gsl_assert>
 #include "../icedb/fs.hpp"
 #include "../icedb/defs.h"
 #include <string>
@@ -15,33 +15,33 @@ namespace icedb {
 			//template <class DataType>
 			//MatchAttributeTypeType MatchAttributeType() {
 			//	static_assert(false, "Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."); }
-			template<> MatchAttributeTypeType MatchAttributeType<std::string>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
-			template<> MatchAttributeTypeType MatchAttributeType<const char*>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, H5T_VARIABLE)); }
-			template<> MatchAttributeTypeType MatchAttributeType<char>() { return std::shared_ptr<H5::AtomType>(new H5::StrType(0, 1)); }
+			template<> MatchAttributeTypeType MatchAttributeType<std::string>() { return MatchAttributeTypeType(new H5::StrType(0, H5T_VARIABLE)); }
+			template<> MatchAttributeTypeType MatchAttributeType<const char*>() { return MatchAttributeTypeType(new H5::StrType(0, H5T_VARIABLE)); }
+			template<> MatchAttributeTypeType MatchAttributeType<char>() { return MatchAttributeTypeType(new H5::StrType(0, 1)); }
 
-			template<> MatchAttributeTypeType MatchAttributeType<uint8_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT8)); }
-			template<> MatchAttributeTypeType MatchAttributeType<uint16_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT16)); }
-			template<> MatchAttributeTypeType MatchAttributeType<uint32_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT32)); }
-			template<> MatchAttributeTypeType MatchAttributeType<uint64_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_UINT64)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int8_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT8)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int16_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT16)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int32_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT32)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int64_t>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_INT64)); }
-			//template<> MatchAttributeTypeType MatchAttributeType<char>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_CHAR)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint8_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT8)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint16_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT16)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint32_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT32)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint64_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT64)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int8_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT8)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int16_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT16)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int32_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT32)); }
+			template<> MatchAttributeTypeType MatchAttributeType<int64_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT64)); }
+			//template<> MatchAttributeTypeType MatchAttributeType<char>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_CHAR)); }
 
-			template<> MatchAttributeTypeType MatchAttributeType<float>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_FLOAT)); }
-			template<> MatchAttributeTypeType MatchAttributeType<double>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_DOUBLE)); }
+			template<> MatchAttributeTypeType MatchAttributeType<float>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_FLOAT)); }
+			template<> MatchAttributeTypeType MatchAttributeType<double>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_DOUBLE)); }
 			// \note bools are not recommended in HDF5. This type may be switched later on.
 			//template<> MatchAttributeTypeType MatchAttributeType<bool>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_HBOOL)); }
 
 			template<> bool isStrType<std::string>() { return true; }
 			template<> bool isStrType<const char*>() { return true; }
 
-			template <> void insertAttr<std::string>(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, const std::string& value)
+			template <> void insertAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const std::string& value)
 			{
 				attr.write(*vls_type, value);
 			}
-			template <> void loadAttr<std::string>(H5::Attribute &attr, std::shared_ptr<H5::AtomType> vls_type, std::string& value)
+			template <> void loadAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, std::string& value)
 			{
 				attr.read(*vls_type, value);
 				//attr.write(*vls_type, value);
@@ -55,33 +55,33 @@ namespace icedb {
 			template <> void insertAttr<double>(H5::Attribute &, std::shared_ptr<H5::AtomType>, const double&);
 			*/
 
-			std::shared_ptr<H5::Group> openOrCreateGroup(std::shared_ptr<H5::H5Location> base, const char* name)
+			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
 			{
-				std::shared_ptr<H5::Group> res;
+				HDFgroup_t res;
 				try {
-					res = std::shared_ptr<H5::Group>(new H5::Group( base->openGroup( name )));
+					res.swap(HDFgroup_t(new H5::Group( base->openGroup( name ))));
 				} catch( H5::GroupIException not_found_error ) {
-					res = std::shared_ptr<H5::Group>(new H5::Group( base->createGroup( name )));
+					res.swap(HDFgroup_t(new H5::Group( base->createGroup( name ))));
 				} catch( H5::FileIException not_found_error ) {
-					res = std::shared_ptr<H5::Group>(new H5::Group( base->createGroup( name )));
+					res.swap(HDFgroup_t(new H5::Group( base->createGroup( name ))));
 				}
-				return res;
+				return std::move(res);
 			}
 
-			std::shared_ptr<H5::Group> openGroup(std::shared_ptr<H5::H5Location> base, const char* name)
+			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
 			{
-				std::shared_ptr<H5::Group> res;
+				HDFgroup_t res;
 				try {
-					res = std::shared_ptr<H5::Group>(new H5::Group( base->openGroup( name )));
+					res.swap(HDFgroup_t(new H5::Group( base->openGroup( name ))));
 				} catch( H5::GroupIException not_found_error ) {
 					return nullptr;
 				} catch( H5::FileIException not_found_error ) {
 					return nullptr;
 				}
-				return res;
+				return std::move(res);
 			}
 
-			bool attrExists(std::shared_ptr<H5::H5Object> base, const char* name)
+			bool attrExists(gsl::not_null<H5::H5Object*> base, gsl::not_null<const char*> name)
 			{
 				try {
 					H5::Attribute(base->openAttribute(name));
@@ -98,7 +98,7 @@ namespace icedb {
 				}
 			}
 
-			bool groupExists(std::shared_ptr<H5::H5Location> base, const char* name)
+			bool groupExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
 			{
 				try {
 					H5::Group( base->openGroup( name ));
@@ -111,7 +111,7 @@ namespace icedb {
 				}
 			}
 
-			std::pair<bool,bool> symLinkExists(std::shared_ptr<H5::H5Location> base, const char* name)
+			std::pair<bool,bool> symLinkExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
 			{
 				bool linkexists = false;
 				bool linkgood = false;
@@ -130,7 +130,7 @@ namespace icedb {
 				return std::pair<bool,bool>(linkexists,linkgood);
 			}
 
-			bool datasetExists(std::shared_ptr<H5::H5Location> base, const char* name)
+			bool datasetExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
 			{
 				try {
 					H5::DataSet(base->openDataSet(name));

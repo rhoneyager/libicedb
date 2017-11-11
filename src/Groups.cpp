@@ -1,16 +1,26 @@
 #include "../icedb/Group.hpp"
 #include "../icedb/compat/hdf5_load.h"
 #include "../icedb/hdf5_supplemental.hpp"
-#include "../icedb/gsl/gsl_assert"
+#include "../private/Group_impl.hpp"
+#include <gsl/gsl_assert>
 
 namespace icedb {
 	namespace Groups {
-		class Group::Group_impl {
-			friend class Group;
-			std::shared_ptr<H5::Group> grp;
-		};
+		Group::Group() : name{} {}
+		Group::Group(const std::string &name) : name{ name } {}
+		Group_impl::Group_impl() : Group() {}
 
-		Group::Group() {}
+		Group_impl::Group_impl(const std::string &name, std::shared_ptr<H5::Group> parent)
+			: Group{ name }
+		{
+			auto oldg = fs::hdf5::openGroup(parent, name.c_str());
+			grp.reset()
+		}
+		Group_impl::Group_impl(const std::string &name, gsl::not_null<const Group*> parent)
+			: Group{ name }
+		{
+
+		}
 
 		Group::Group(const std::string &name, std::shared_ptr<H5::Group> parent) : name(name)
 		{
@@ -26,11 +36,11 @@ namespace icedb {
 			this->_setAttributeParent(_impl->grp);
 		}
 
-		std::shared_ptr<H5::Group> Group::getHDF5Group() const {
-			return _impl->grp;
+		std::shared_ptr<H5::Group> Group_impl::getHDF5Group() const {
+			return grp;
 		}
 
-		Group Group::createGroup(const std::string &groupName) {
+		Group::Group_ptr Group_impl::createGroup(const std::string &groupName) {
 			//_impl->grp->createGroup(groupName); // Bad for NetCDF. See http://www.unidata.ucar.edu/software/netcdf/docs/file_format_specifications.html#creation_order
 			hid_t baseGrpID = _impl->grp->getId();
 			/* Create group, with link_creation_order set in the group
@@ -52,22 +62,22 @@ namespace icedb {
 			return std::move(res);
 		}
 
-		Group Group::openGroup(const std::string &groupName) const {
+		Group::Group_ptr Group_impl::openGroup(const std::string &groupName) const {
 			Group res(groupName, _impl->grp);
 			return res;
 		}
 
-		void Group::deleteGroup(const std::string &groupName) {
+		void Group_impl::deleteGroup(const std::string &groupName) {
 			_impl->grp->unlink(groupName);
 		}
 
-		bool Group::doesGroupExist(const std::string &groupName) const {
+		bool Group_impl::doesGroupExist(const std::string &groupName) const {
 			auto gnames = getGroupNames();
 			if (gnames.count(groupName)) return true;
 			return false;
 		}
 
-		std::set<std::string> Group::getGroupNames() const {
+		std::set<std::string> Group_impl::getGroupNames() const {
 			auto objs = fs::hdf5::getGroupMembersTypes(*(_impl->grp.get()));
 			std::set<std::string> res;
 			for (const auto &o : objs)

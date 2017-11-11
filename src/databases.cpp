@@ -40,8 +40,8 @@ namespace icedb {
 				return res;
 			}
 		
-		Groups::Group Database_impl::openGroup(const std::string &path) {
-			return std::move(Groups::Group(path, hFile));
+		Groups::Group::Group_ptr Database_impl::openGroup(const std::string &path) {
+			return Groups::Group::createGroup(path, hFile);
 		}
 
 		Database_impl::Database_impl() : hFileImage(fs::impl::getUniqueVROOTname(), 10 * 1024 * 1024)
@@ -53,7 +53,7 @@ namespace icedb {
 
 		Database::Database() {}
 
-		std::unique_ptr<Database> Database::createDatabase(
+		Database::Database_ptr Database::createDatabase(
 			const std::string &location)
 		{
 			const auto flag_truncate = fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE);
@@ -80,13 +80,14 @@ namespace icedb {
 			return std::move(openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE));
 		}
 
-		std::unique_ptr<Database> Database::openDatabase(
+		Database::Database_ptr Database::openDatabase(
 			const std::string &location, fs::IOopenFlags flags)
 		{
 			sfs::path pBaseS = fs::impl::resolveSymlinkPathandForceExists(location);
 			fs::impl::CollectedFilesRet_Type mountFiles = fs::impl::collectActualHDF5files(pBaseS);
 			unsigned int Hflags = fs::hdf5::getHDF5IOflags(flags);
-			std::unique_ptr<Database_impl> res = std::make_unique<Database_impl>();
+			std::unique_ptr<Database_impl, mem::icedb_delete<Database_impl> > res(new Database_impl);
+				//= std::make_unique(<Database_impl, mem::icedb_delete<Database_impl> >();
 
 			Expects(mountFiles.size() > 0);
 			if (mountFiles.size() == 1) {

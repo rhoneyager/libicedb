@@ -95,7 +95,9 @@ set(hdf_objs
 set(lib_objs
 	icedb/Data_Types.hpp
 	icedb/defs.h
+	icedb/util.hpp
 	private/resource.h
+	src/util.cpp
 	)
 
 generaterc("libicedb" "dll"
