@@ -35,8 +35,8 @@ namespace icedb {
 					fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE),
 					H5P_DEFAULT);
 				constexpr uint64_t dbverno = 1;
-				icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res, "Version", dbverno);
-				icedb::fs::hdf5::addAttr<std::string, H5::H5File>(res, "Software", "libicedb");
+				icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res.get(), "Version", dbverno);
+				icedb::fs::hdf5::addAttr<std::string, H5::H5File>(res.get(), "Software", "libicedb");
 				return res;
 			}
 		

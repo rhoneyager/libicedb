@@ -70,7 +70,7 @@ namespace icedb {
 				auto vls_type = MatchAttributeType<DataType>();
 				H5::DataSpace att_space(H5S_SCALAR);
 				H5::Attribute attr = obj->createAttribute(attname, *vls_type, att_space);
-				insertAttr<DataType>(attr, vls_type, value);
+				insertAttr<DataType>(attr, vls_type.get(), value);
 			}
 
 			/// Writes an array of objects
