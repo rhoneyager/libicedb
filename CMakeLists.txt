@@ -54,38 +54,48 @@ endif()
 #find_package(Eigen3 REQUIRED)
 
 set(gsl_objs
-	icedb/gsl/gsl
-	icedb/gsl/gsl_algorithm
-	icedb/gsl/gsl_assert
-	icedb/gsl/gsl_byte
-	icedb/gsl/gsl_util
-	icedb/gsl/multi_span
-	icedb/gsl/pointers
-	icedb/gsl/span
-	icedb/gsl/string_span
+	related_includes/gsl/gsl
+	related_includes/gsl/gsl_algorithm
+	related_includes/gsl/gsl_assert
+	related_includes/gsl/gsl_byte
+	related_includes/gsl/gsl_util
+	related_includes/gsl/multi_span
+	related_includes/gsl/pointers
+	related_includes/gsl/span
+	related_includes/gsl/string_span
 	)
-
-set(lib_objs
-	icedb/Attribute.hpp
-	icedb/Data_Types.hpp
-	icedb/Database.hpp
-	icedb/defs.h
-	icedb/fs.hpp
-	icedb/Group.hpp
-	icedb/hdf5_supplemental.hpp
+set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
+	private/Shape_impl.hpp
+	src/Shapes.cpp)
+set(grp_objs
+	icedb/Group.hpp
+	private/Group_impl.hpp
+	src/Groups.cpp)
+set(att_objs
+	icedb/Attribute.hpp
+	private/Attribute_impl.hpp
+	src/Attributes.cpp)
+set(tbl_objs
 	icedb/Table.hpp
-	icedb/compat/hdf5_load.h
-	private/fs_backend.hpp
-	private/resource.h
-	src/Attributes.cpp
+	private/Table_impl.hpp
+	src/Tables.cpp)
+set(db_objs
+	icedb/Database.hpp
+	private/Database_impl.hpp
 	src/databases.cpp
-	src/export-hdf5.cpp
+	private/fs_backend.hpp
 	src/fs_backend.cpp
-	src/Groups.cpp
-	src/Shapes.cpp
-	src/Tables.cpp
+	icedb/fs.hpp)
+set(hdf_objs
+	icedb/hdf5_supplemental.hpp
+	icedb/compat/hdf5_load.h
+	src/export-hdf5.cpp)
+set(lib_objs
+	icedb/Data_Types.hpp
+	icedb/defs.h
+	private/resource.h
 	)
 
 generaterc("libicedb" "dll"
@@ -93,18 +103,28 @@ generaterc("libicedb" "dll"
 	"Scattering utility library"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
-set(libsrcs ${lib_objs} ${gsl_objs})
 source_group("GSL" FILES ${gsl_objs})
 source_group("Lib" FILES ${lib_objs})
+source_group("Shapes" FILES ${shp_objs})
+source_group("Groups" FILES ${grp_objs})
+source_group("Attributes" FILES ${att_objs})
+source_group("Tables" FILES ${tbl_objs})
+source_group("Databases" FILES ${db_objs})
+source_group("HDF5" FILES ${hdf_objs})
+set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
+	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs})
 IF (WIN32 AND NOT CYGWIN)
 SET(libsrcs ${libsrcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
+source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
 add_library(libicedb STATIC ${libsrcs})
 set_target_properties(libicedb PROPERTIES CXX_STANDARD 17)
+# related_includes contains the GSL.
 target_include_directories(libicedb SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
+	PUBLIC ${CMAKE_SOURCE_DIR}/related_includes
 	)
 
 target_compile_definitions(libicedb

@@ -1,17 +1,16 @@
 #pragma once
 #include "Attribute.hpp"
-#include "gsl/gsl_assert"
-#include "gsl/span"
+#include <gsl/gsl_assert>
+#include <gsl/span>
 namespace icedb {
 	namespace Groups {
 		class Group;
 	}
 	namespace Tables {
-		template <class DataType> class Table {
+		class Table {
 			class Table_impl;
 			std::shared_ptr<Table_impl> _impl;
 		public:
-			typedef DataType Type;
 			typedef std::vector<size_t> Dimensions_Type;
 			const std::string name;
 			Dimensions_Type getDimensions() const;
@@ -26,9 +25,13 @@ namespace icedb {
 			std::string getDimensionScaleAxisLabel(size_t DimensionNumber) const;
 			std::string getDimensionScaleLabel() const;
 
+			template <class DataType>
 			void readAll(gsl::span<DataType> &inData) const;
+			template <class DataType>
 			void writeAll(const gsl::span<DataType> &outData);
+			template <class DataType>
 			void readAll(std::vector<DataType> &inData) const;
+			template <class DataType>
 			void writeAll(const std::vector<DataType> &outData);
 
 			Table(Groups::Group &owner, const std::string &name);
@@ -44,6 +47,17 @@ namespace icedb {
 		};
 
 		class CanHaveTables {
+			class CanHaveTables_impl;
+			std::shared_ptr<CanHaveTables_impl> _impl;
+			bool valid() const;
+			/// \todo Ensure netCDF4 compatability.
+			void _createTable(const std::string &tableName, const type_info& type);
+			// Open table
+			// Check table type
+		protected:
+			CanHaveTables(std::shared_ptr<H5::Group>);
+			CanHaveTables();
+			void _setTablesParent(std::shared_ptr<H5::Group> obj);
 		public:
 			std::set<std::string> getTableNames() const;
 			bool doesTableExist(const std::string &tableName) const;
@@ -51,12 +65,15 @@ namespace icedb {
 			template<class Type> bool isTableOfType(const std::string &tableName) const {
 				return false;
 			}
-			type_info getTableTypeId(const std::string &tableName) const;
-			template<class DataType> Table<DataType> openTable(const std::string &tableName) {
+			std::type_index getTableTypeId(const std::string &tableName) const;
+			Table openTable(const std::string &tableName) {
 
 			}
-			template<class DataType> Table<DataType> createTable(const std::string &tableName) {
-				/// \todo Ensure netCDF4 compatability.
+			template <class DataType>
+			Table createTable(const std::string &tableName) {
+				Expects(!doesTableExist(tableName));
+				_createTable(tableName, Data_Types::getType<DataType>());
+				return std::move(openTable(tableName));
 			}
 		};
 	}

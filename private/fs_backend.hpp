@@ -36,6 +36,12 @@ namespace icedb {
 			CollectedFilesRet_Type collectDatasetFiles(
 				const sfs::path &base,
 				const ExtensionsMatching_Type &fileExtensionsToMatch = common_hdf5_extensions);
+
+			sfs::path resolveSymlinkPathandForceExists(const std::string &location);
+
+			CollectedFilesRet_Type collectActualHDF5files(const sfs::path &pBaseS);
+
+			std::string getUniqueVROOTname();
 		}
 	}
 }

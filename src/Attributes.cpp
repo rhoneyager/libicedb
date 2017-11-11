@@ -33,6 +33,15 @@ namespace icedb {
 			_impl = std::make_shared<CanHaveAttributes_impl>();
 		}
 
+		std::type_index CanHaveAttributes::getAttributeTypeId(const std::string &attributeName) const {
+			if (fs::hdf5::isType<uint64_t>(_impl->parent, attributeName)) return (typeid(uint64_t));
+			if (fs::hdf5::isType<int64_t>(_impl->parent, attributeName)) return (typeid(int64_t));
+			if (fs::hdf5::isType<double>(_impl->parent, attributeName)) return (typeid(double));
+			if (fs::hdf5::isType<float>(_impl->parent, attributeName)) return (typeid(float));
+			if (fs::hdf5::isType<char>(_impl->parent, attributeName)) return (typeid(char));
+			if (fs::hdf5::isType<std::string>(_impl->parent, attributeName)) return (typeid(std::string));
+			throw;
+		}
 
 		void CanHaveAttributes::deleteAttribute(const std::string &attributeName)
 		{

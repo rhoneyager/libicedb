@@ -2,11 +2,12 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "gsl/gsl_assert"
+#include <gsl/gsl_assert>
 #include "Data_Types.hpp"
 
 namespace H5 {
 	class H5Object;
+	class Group;
 }
 namespace icedb {
 	namespace Attributes {
@@ -60,9 +61,9 @@ namespace icedb {
 		public:
 			std::vector<std::string> getAttributeNames() const;
 			bool doesAttributeExist(const std::string &attributeName) const;
-			type_info getAttributeTypeId(const std::string &attributeName) const {}
+			std::type_index getAttributeTypeId(const std::string &attributeName) const;
 			template<class Type> bool isAttributeOfType(const std::string &attributeName) const {
-				type_info atype = getAttributeTypeId(attributeName);
+				std::type_index atype = getAttributeTypeId(attributeName);
 				if (atype == typeid(Type)) return true;
 				return false;
 			}

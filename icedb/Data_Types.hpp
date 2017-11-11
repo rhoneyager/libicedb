@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <typeinfo>
+#include <typeindex>
 #include <variant>
 
 namespace icedb {
@@ -23,5 +24,7 @@ namespace icedb {
 		}
 
 		typedef std::variant<uint64_t, int64_t, float, double, char, std::string> All_Variant_type;
+
+		template <class T> const type_info getType() { return typeid(T); }
 	}
 }
