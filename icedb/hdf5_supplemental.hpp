@@ -30,7 +30,7 @@ namespace icedb {
 
 			/// \param std::shared_ptr<H5::AtomType> is a pointer to a newly-constructed matching type
 			/// \returns A pair of (the matching type, a flag indicating passing by pointer or reference)
-			typedef std::unique_ptr<H5::AtomType, mem::icedb_delete<H5::AtomType> > MatchAttributeTypeType;
+			typedef std::unique_ptr<H5::AtomType> MatchAttributeTypeType;
 			template <class DataType>
 			MatchAttributeTypeType MatchAttributeType() {
 				static_assert(false, 
@@ -58,11 +58,11 @@ namespace icedb {
 
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
-			void insertAttr(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const DataType& value)
+			void insertAttr(const H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const DataType& value)
 			{
 				attr.write(*vls_type, &value);
 			}
-			template <> void insertAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const std::string& value);
+			template <> void insertAttr<std::string>(const H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const std::string& value);
 
 			/// Convenient template to add an attribute of a variable type to a group or dataset
 			template <class DataType, class Container>
@@ -83,7 +83,7 @@ namespace icedb {
 				const std::vector<DataType> &value)
 			{
 				auto ftype = MatchAttributeType<DataType>();
-				H5::ArrayType vls_type(*ftype, (int) dimensionality.size(), (hsize_t*) dimensionality.data());
+				H5::ArrayType vls_type(*ftype, static_cast<int>(dimensionality.size()), static_cast<const hsize_t*>(dimensionality.data()));
 
 				H5::DataSpace att_space(H5S_SCALAR);
 				H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
@@ -98,7 +98,7 @@ namespace icedb {
 				const std::vector<DataType> &data)
 			{
 				auto ftype = MatchAttributeType<DataType>();
-				hsize_t dsize = (hsize_t) data.size();
+				hsize_t dsize = static_cast<hsize_t>(data.size());
 				H5::DataSpace att_space(1, &dsize);
 				H5::Attribute attr = obj->createAttribute(attname, *(ftype.get()), att_space);
 				attr.write(*ftype, data.data());
@@ -106,11 +106,11 @@ namespace icedb {
 
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
-			void loadAttr(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, DataType& value)
+			void loadAttr(const H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, DataType& value)
 			{
 				attr.read(*vls_type, &value);
 			}
-			template <> void loadAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, std::string& value);
+			template <> void loadAttr<std::string>(const H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, std::string& value);
 
 			/// Convenient template to read an attribute of a variable
 			template <class DataType, class Container>
@@ -131,13 +131,13 @@ namespace icedb {
 				H5::Attribute attr = obj->openAttribute(attname);
 				int dimensionality = attr.getArrayType().getArrayNDims();
 				Expects(dimensionality > 0);
-				std::vector<hsize_t> sz((size_t)dimensionality);
+				std::vector<hsize_t> sz(static_cast<size_t>(dimensionality));
 				attr.getArrayType().getArrayDims(sz.data());
 
-				dims.resize((size_t)dimensionality);
+				dims.resize(static_cast<size_t>(dimensionality));
 				size_t numElems = 1;
 				for (size_t i = 0; i < dimensionality; ++i) {
-					dims[i] = (size_t)(sz[i]);
+					dims[i] = static_cast<size_t>(sz[i]);
 					numElems *= dims[i];
 				}
 				value.resize(numElems);
@@ -185,10 +185,10 @@ namespace icedb {
 			DataContainerType getAttributeGroupingType(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname)
 			{
 				H5::Attribute attr = obj->openAttribute(attname);
-				hid_t attrid = attr.getId();
+				const hid_t attrid = attr.getId();
 				H5::DataType dtype = attr.getDataType().getId();
-				hid_t dtypeid = dtype.getId();
-				H5T_class_t class_type = H5Tget_class(dtypeid);
+				const hid_t dtypeid = dtype.getId();
+				const H5T_class_t class_type = H5Tget_class(dtypeid);
 				if (class_type == H5T_class_t::H5T_ARRAY) return DataContainerType::ARRAY;
 				else if (class_type == H5T_class_t::H5T_COMPOUND) return DataContainerType::COMPOUND;
 				else if (class_type == H5T_class_t::H5T_ENUM) return DataContainerType::ENUM;
@@ -293,12 +293,16 @@ namespace icedb {
 				int rank = fspace.getSimpleExtentNdims();
 
 				std::vector<hsize_t> sz(rank);
-				int dimensionality = fspace.getSimpleExtentDims( sz, NULL);
+				int dimensionality = fspace.getSimpleExtentDims( sz.data(), NULL);
 				for (size_t i = 0; i < rank; ++i)
 					out.push_back(sz[i]);
 
 				return dataset;
 			}
+
+			void readDatasetDimensions(gsl::not_null<H5::DataSet*> dataset, std::vector<size_t> &dims);
+
+			size_t readDatasetNumDimensions(gsl::not_null<H5::DataSet*> dataset);
 
 			template <class DataType, class Container>
 			HDFdataset_t readDatasetArray(

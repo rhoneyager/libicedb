@@ -16,10 +16,10 @@ namespace icedb {
 			Group_HDF_shared_ptr grp;
 
 			friend class Group;
+		public:
 			Group_impl();
 			Group_impl(const std::string &name, gsl::not_null<H5::Group*> parent);
 			Group_impl(const std::string &name, gsl::not_null<const Group*> parent);
-		public:
 			virtual ~Group_impl();
 			Group_ptr createGroup(const std::string &groupName) override;
 			Group_ptr openGroup(const std::string &groupName) const override;

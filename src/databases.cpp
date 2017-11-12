@@ -19,7 +19,7 @@ namespace icedb {
 					propertyList(-1), hFile(nullptr)
 				{
 					propertyList = H5Pcreate(H5P_FILE_ACCESS);
-					auto h5Result = H5Pset_fapl_core(propertyList, buffer.size(), false);
+					const auto h5Result = H5Pset_fapl_core(propertyList, buffer.size(), false);
 					Expects(h5Result >= 0 && "H5Pset_fapl_core failed");
 					// This new memory-only dataset needs to always be writable. The flags parameter
 					// has little meaning in this context.
@@ -90,7 +90,8 @@ namespace icedb {
 			sfs::path pBaseS = fs::impl::resolveSymlinkPathandForceExists(location);
 			fs::impl::CollectedFilesRet_Type mountFiles = fs::impl::collectActualHDF5files(pBaseS);
 			unsigned int Hflags = fs::hdf5::getHDF5IOflags(flags);
-			std::unique_ptr<Database_impl, mem::icedb_delete<Database_impl> > res(new Database_impl);
+			auto res = std::make_unique<Database_impl>();
+			//std::unique_ptr<Database_impl, mem::icedb_delete<Database_impl> > res(new Database_impl);
 				//= std::make_unique(<Database_impl, mem::icedb_delete<Database_impl> >();
 
 			Expects(mountFiles.size() > 0);
@@ -114,7 +115,7 @@ namespace icedb {
 				}
 			}
 
-			return std::move(res);
+			return res;
 		}
 
 		void Database::indexDatabase(const std::string &location)

@@ -5,13 +5,16 @@
 
 namespace icedb {
 	namespace mem {
-		void delete_single(void *ptr) noexcept {
-			delete ptr;
+		[[gsl::suppress(i.11)]]
+		void delete_single(gsl::owner<void *> ptr) noexcept {
+			[[gsl::suppress(r.11)]] delete ptr;
 		}
-		void delete_array(void *ptr) noexcept {
-			delete[] ptr;
+		[[gsl::suppress(i.11)]]
+		void delete_array(gsl::owner<void *>ptr) noexcept {
+			[[gsl::suppress(r.11)]] delete[] ptr;
 		}
 
+		[[gsl::suppress(r.11)]]
 		void test() {
 			auto p = std::unique_ptr<std::string, icedb::mem::icedb_delete<std::string> >(new std::string);
 			p->append("Test");

@@ -1,5 +1,6 @@
 #pragma once
 #include "Attribute.hpp"
+#include <gsl/gsl>
 #include <gsl/gsl_assert>
 #include <gsl/span>
 namespace icedb {
@@ -7,48 +8,55 @@ namespace icedb {
 		class Group;
 	}
 	namespace Tables {
-		class Table {
-			class Table_impl;
-			std::shared_ptr<Table_impl> _impl;
+		class CanHaveTables;
+
+		class Table : virtual public Attributes::CanHaveAttributes {
+			friend class CanHaveTables;
+		protected:
+			virtual void _setTableSelf(std::shared_ptr<H5::DataSet> obj) = 0;
+			virtual std::shared_ptr<H5::DataSet> _getTableSelf() const = 0;
+			bool valid() const;
 		public:
+			virtual ~Table();
+			Table(const std::string &name = "");
+			const std::string name; // Constant, and in a base class, so no need to change.
 			typedef std::vector<size_t> Dimensions_Type;
-			const std::string name;
-			Dimensions_Type getDimensions() const;
-			void attachDimensions(const Dimensions_Type& newDimensions);
-			void attachDimensionScale(size_t DimensionNumber, const Table &scale);
-			Table readDimensionScale(size_t DimensionNumber) const;
-			bool hasDimensionScale(size_t DimensionNumber) const;
-
-			bool isDimensionScale() const;
-			bool setDimensionScale(const std::string &dimensionName);
-			void setDimensionScaleAxisLabel(size_t DimensionNumber, const std::string &label);
-			std::string getDimensionScaleAxisLabel(size_t DimensionNumber) const;
-			std::string getDimensionScaleLabel() const;
-
-			template <class DataType>
-			void readAll(gsl::span<DataType> &inData) const;
-			template <class DataType>
-			void writeAll(const gsl::span<DataType> &outData);
-			template <class DataType>
-			void readAll(std::vector<DataType> &inData) const;
-			template <class DataType>
-			void writeAll(const std::vector<DataType> &outData);
-
-			Table(Groups::Group &owner, const std::string &name);
-			Table();
-
-			//Table(Groups::Group &owner, const std::string &name) : name(name) {
-			//	static_assert(icedb::Data_Types::Is_Valid_Data_Type<DataType>() == true,
-			//		"Tables must be a valid data type");
-			//}
+			typedef std::unique_ptr<Table> Table_Type;
 
 			/// \todo Need to ensure that tables have dimension scales attached in all cases.
 			/// Required for netCDF compatibility.
+
+			size_t getNumDimensions() const;
+			Dimensions_Type getDimensions() const;
+			void attachDimensionScale(size_t DimensionNumber, gsl::not_null<const Table *> scale); ///< Attach a dimension scale to this table.
+			void detachDimensionScale(size_t DimensionNumber, gsl::not_null<const Table *> scale);
+			Table_Type readDimensionScale(size_t DimensionNumber) const;
+			bool hasDimensionScaleAttached(size_t DimensionNumber) const;
+			bool hasDimensionScaleAttached(size_t DimensionNumber, gsl::not_null<const Table *> scale) const;
+			bool hasDimensionScalesAttached() const;
+
+			bool isDimensionScale() const;
+			void setDimensionScale(const std::string &dimensionScaleName); ///< Make this table a dimension scale with name dimensionScaleName.
+			void setDimensionScaleAxisLabel(size_t DimensionNumber, const std::string &label);
+			std::string getDimensionScaleAxisLabel(size_t DimensionNumber) const;
+			std::string getDimensionScaleName() const;
+
+			template<class Type> bool isTableOfType() const {
+				return false;
+			}
+			std::type_index getTableTypeId() const;
+
+			template <class DataType>
+			void readAll(std::vector<DataType> &inData) const {
+				assert(isTableOfType<DataType>());
+			}
+			template <class DataType>
+			void writeAll(const std::vector<DataType> &outData) {
+				assert(isTableOfType<DataType>());
+			}
 		};
 
 		class CanHaveTables {
-			class CanHaveTables_impl;
-			std::shared_ptr<CanHaveTables_impl> _impl;
 			bool valid() const;
 			/// \todo Ensure netCDF4 compatability.
 			void _createTable(const std::string &tableName, const type_info& type);
@@ -59,6 +67,7 @@ namespace icedb {
 			CanHaveTables();
 			void _setTablesParent(std::shared_ptr<H5::Group> obj);
 		public:
+			/*
 			std::set<std::string> getTableNames() const;
 			bool doesTableExist(const std::string &tableName) const;
 			void deleteTable(const std::string &tableName);
@@ -75,6 +84,7 @@ namespace icedb {
 				_createTable(tableName, Data_Types::getType<DataType>());
 				return std::move(openTable(tableName));
 			}
+			*/
 		};
 	}
 }

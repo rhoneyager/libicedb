@@ -2,11 +2,12 @@
 #include <memory>
 #include <type_traits>
 #include <new>
+#include <gsl/gsl>
 
 namespace icedb {
 	namespace mem {
-		void delete_single(void *ptr) noexcept;
-		void delete_array(void *ptr) noexcept;
+		void delete_single(gsl::owner<void *>ptr) noexcept;
+		void delete_array(gsl::owner<void *> ptr) noexcept;
 
 		template <class _Ty>
 		struct icedb_delete

@@ -56,7 +56,8 @@ namespace icedb {
 			assert(H5Gclose(newGrp_id) >= 0);
 			assert(H5Pclose(gcpl_id) >= 0);
 
-			return std::move(Group::Group_ptr(new Group_impl(groupName, parent)));
+			return std::make_unique<Group_impl>(groupName, parent);
+			//return Group::Group_ptr(new Group_impl(groupName, parent));
 		}
 		
 		Group::Group_ptr Group::createGroup(const std::string &name, gsl::not_null<const Group*> parent) {
@@ -64,11 +65,13 @@ namespace icedb {
 		}
 
 		Group::Group_ptr Group_impl::openGroup(const std::string &groupName) const {
-			return std::move(Group::Group_ptr(new Group_impl(groupName, grp.get())));
+			return std::make_unique<Group_impl>(groupName, grp.get());
+			//return std::move(Group::Group_ptr(new Group_impl(groupName, grp.get())));
 		}
 		
 		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::Group*> parent) {
-			return std::move(Group::Group_ptr( new Group_impl(name, parent)));
+			return std::make_unique<Group_impl>(name, parent);
+			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
 		}
 
 		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<const Group*> parent) {

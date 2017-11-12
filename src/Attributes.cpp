@@ -87,7 +87,7 @@ namespace icedb {
 
 			std::vector<DataType> tdata;
 
-			icedb::fs::hdf5::DataContainerType datatype = icedb::fs::hdf5::getAttributeGroupingType(obj, attributeName.c_str());
+			const icedb::fs::hdf5::DataContainerType datatype = icedb::fs::hdf5::getAttributeGroupingType(obj, attributeName.c_str());
 			if (datatype == icedb::fs::hdf5::DataContainerType::BASIC) {
 				icedb::fs::hdf5::readAttrVector(obj, attributeName.c_str(), tdata);
 				dims.resize(1, tdata.size());

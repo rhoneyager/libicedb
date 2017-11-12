@@ -15,7 +15,8 @@ namespace icedb {
 		protected:
 			Database();
 		public:
-			typedef std::unique_ptr<Database, mem::icedb_delete<Database> > Database_ptr;
+			typedef std::unique_ptr<Database> Database_ptr;
+			//typedef std::unique_ptr<Database, mem::icedb_delete<Database> > Database_ptr;
 			virtual ~Database();
 			static Database_ptr createDatabase(const std::string &location);
 			static Database_ptr openDatabase(const std::string &location, fs::IOopenFlags flags = fs::IOopenFlags::READ_ONLY);

@@ -8,6 +8,7 @@
 namespace H5 {
 	class H5Object;
 	class Group;
+	class DataSet;
 }
 namespace icedb {
 

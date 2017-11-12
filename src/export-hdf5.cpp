@@ -15,33 +15,33 @@ namespace icedb {
 			//template <class DataType>
 			//MatchAttributeTypeType MatchAttributeType() {
 			//	static_assert(false, "Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."); }
-			template<> MatchAttributeTypeType MatchAttributeType<std::string>() { return MatchAttributeTypeType(new H5::StrType(0, H5T_VARIABLE)); }
-			template<> MatchAttributeTypeType MatchAttributeType<const char*>() { return MatchAttributeTypeType(new H5::StrType(0, H5T_VARIABLE)); }
-			template<> MatchAttributeTypeType MatchAttributeType<char>() { return MatchAttributeTypeType(new H5::StrType(0, 1)); }
+			template<> MatchAttributeTypeType MatchAttributeType<std::string>() { return std::make_unique<H5::StrType>(0, H5T_VARIABLE); }
+			template<> MatchAttributeTypeType MatchAttributeType<const char*>() { return std::make_unique<H5::StrType>(0, H5T_VARIABLE); }
+			template<> MatchAttributeTypeType MatchAttributeType<char>() { return std::make_unique<H5::StrType>(0, 1); }
 
-			template<> MatchAttributeTypeType MatchAttributeType<uint8_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT8)); }
-			template<> MatchAttributeTypeType MatchAttributeType<uint16_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT16)); }
-			template<> MatchAttributeTypeType MatchAttributeType<uint32_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT32)); }
-			template<> MatchAttributeTypeType MatchAttributeType<uint64_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_UINT64)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int8_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT8)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int16_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT16)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int32_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT32)); }
-			template<> MatchAttributeTypeType MatchAttributeType<int64_t>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_INT64)); }
-			//template<> MatchAttributeTypeType MatchAttributeType<char>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_CHAR)); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint8_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_UINT8); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint16_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_UINT16); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint32_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_UINT32); }
+			template<> MatchAttributeTypeType MatchAttributeType<uint64_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_UINT64); }
+			template<> MatchAttributeTypeType MatchAttributeType<int8_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_INT8); }
+			template<> MatchAttributeTypeType MatchAttributeType<int16_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_INT16); }
+			template<> MatchAttributeTypeType MatchAttributeType<int32_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_INT32); }
+			template<> MatchAttributeTypeType MatchAttributeType<int64_t>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_INT64); }
+			//template<> MatchAttributeTypeType MatchAttributeType<char>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_CHAR)); }
 
-			template<> MatchAttributeTypeType MatchAttributeType<float>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_FLOAT)); }
-			template<> MatchAttributeTypeType MatchAttributeType<double>() { return MatchAttributeTypeType(new H5::IntType(H5::PredType::NATIVE_DOUBLE)); }
+			template<> MatchAttributeTypeType MatchAttributeType<float>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_FLOAT); }
+			template<> MatchAttributeTypeType MatchAttributeType<double>() { return std::make_unique<H5::IntType>(H5::PredType::NATIVE_DOUBLE); }
 			// \note bools are not recommended in HDF5. This type may be switched later on.
 			//template<> MatchAttributeTypeType MatchAttributeType<bool>() { return std::shared_ptr<H5::AtomType>(new H5::IntType(H5::PredType::NATIVE_HBOOL)); }
 
 			template<> bool isStrType<std::string>() { return true; }
 			template<> bool isStrType<const char*>() { return true; }
 
-			template <> void insertAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const std::string& value)
+			template <> void insertAttr<std::string>(const H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, const std::string& value)
 			{
 				attr.write(*vls_type, value);
 			}
-			template <> void loadAttr<std::string>(H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, std::string& value)
+			template <> void loadAttr<std::string>(const H5::Attribute &attr, gsl::not_null<H5::AtomType*> vls_type, std::string& value)
 			{
 				attr.read(*vls_type, value);
 				//attr.write(*vls_type, value);
@@ -59,26 +59,26 @@ namespace icedb {
 			{
 				HDFgroup_t res;
 				try {
-					res.swap(HDFgroup_t(new H5::Group( base->openGroup( name ))));
+					res.swap(std::make_unique<H5::Group>( base->openGroup( name )));
 				} catch( H5::GroupIException not_found_error ) {
-					res.swap(HDFgroup_t(new H5::Group( base->createGroup( name ))));
+					res.swap(std::make_unique<H5::Group>(base->createGroup( name )));
 				} catch( H5::FileIException not_found_error ) {
-					res.swap(HDFgroup_t(new H5::Group( base->createGroup( name ))));
+					res.swap(std::make_unique<H5::Group>(base->createGroup( name )));
 				}
-				return std::move(res);
+				return res;
 			}
 
 			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
 			{
 				HDFgroup_t res;
 				try {
-					res.swap(HDFgroup_t(new H5::Group( base->openGroup( name ))));
+					res.swap(std::make_unique<H5::Group>(base->openGroup( name )));
 				} catch( H5::GroupIException not_found_error ) {
 					return nullptr;
 				} catch( H5::FileIException not_found_error ) {
 					return nullptr;
 				}
-				return std::move(res);
+				return res;
 			}
 
 			bool attrExists(gsl::not_null<H5::H5Object*> base, gsl::not_null<const char*> name)
@@ -147,8 +147,8 @@ namespace icedb {
 			std::shared_ptr<H5::DSetCreatPropList> make_plist(size_t rows, size_t cols, bool compress)
 			{
 				using namespace H5;
-				hsize_t chunk[2] = { (hsize_t)rows, (hsize_t)cols };
-				auto plist = std::shared_ptr<DSetCreatPropList>(new DSetCreatPropList);
+				const hsize_t chunk[2] = { static_cast<hsize_t>(rows), static_cast<hsize_t>(cols) };
+				auto plist = std::make_shared<H5::DSetCreatPropList>();
 				plist->setChunk(2, chunk);
 				if (compress)
 					plist->setDeflate(6);
@@ -157,7 +157,7 @@ namespace icedb {
 
 			std::set<std::string> getGroupMembers(const H5::Group &base) {
 				std::set<std::string> res;
-				hsize_t numObjs = base.getNumObjs();
+				const hsize_t numObjs = base.getNumObjs();
 				for (hsize_t i = 0; i < numObjs; ++i)
 				{
 					std::string name = base.getObjnameByIdx(i);
@@ -168,7 +168,7 @@ namespace icedb {
 
 			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const H5::Group &base) {
 				std::map<std::string, H5G_obj_t> res;
-				hsize_t numObjs = base.getNumObjs();
+				const hsize_t numObjs = base.getNumObjs();
 				for (hsize_t i = 0; i < numObjs; ++i)
 				{
 					std::string name = base.getObjnameByIdx(i);
@@ -255,11 +255,31 @@ namespace icedb {
 			template<> bool isType<double>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_DOUBLE) > 0) ? true : false; }
 			template<> bool isType<char>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_CHAR) > 0) ? true : false; }
 			template<> bool isType<std::string>(hid_t type_id) {
-				std::shared_ptr<H5::AtomType> a(new H5::StrType(0, H5T_VARIABLE));
+				std::shared_ptr<H5::AtomType> a = std::make_shared<H5::StrType>(0, H5T_VARIABLE);
 				return (H5Tequal(type_id, a->getId()) > 0) ? true : false;
 			}
 
 
+			void readDatasetDimensions(gsl::not_null<H5::DataSet*> dataset, std::vector<size_t> &dims) {
+				using namespace H5;
+				const H5T_class_t type_class = dataset->getTypeClass();
+				DataSpace fspace = dataset->getSpace();
+				int rank = fspace.getSimpleExtentNdims();
+				assert(rank >= 0);
+				std::vector<hsize_t> sz(rank);
+				const int dimensionality = fspace.getSimpleExtentDims(sz.data(), NULL);
+				for (size_t i = 0; i < rank; ++i)
+					dims.push_back((size_t)sz[i]);
+			}
+
+			size_t readDatasetNumDimensions(gsl::not_null<H5::DataSet*> dataset) {
+				using namespace H5;
+				const H5T_class_t type_class = dataset->getTypeClass();
+				DataSpace fspace = dataset->getSpace();
+				int rank = fspace.getSimpleExtentNdims();
+				assert(rank >= 0);
+				return (size_t)rank;
+			}
 
 		}
 	}
