@@ -235,7 +235,8 @@ namespace icedb {
 			/// Convenience function to check if a given dataset exists
 			bool datasetExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
-			typedef std::unique_ptr<H5::DataSet, mem::icedb_delete<H5::DataSet> > HDFdataset_t;
+			//typedef std::unique_ptr<H5::DataSet, mem::icedb_delete<H5::DataSet> > HDFdataset_t;
+			typedef std::unique_ptr<H5::DataSet > HDFdataset_t;
 
 
 			template <class DataType, class Container>
@@ -279,6 +280,24 @@ namespace icedb {
 				return std::move(addDatasetArray(obj, name, rows, 1, values, iplist));
 			}
 			
+			template <class DataType, class Container>
+			gsl::not_null<Container*> addDatasetArray(
+				const std::vector<size_t> &dimensions,
+				gsl::not_null<Container*> obj,
+				gsl::not_null<const DataType*> values)
+			{
+				using namespace H5;
+				std::vector<hsize_t> sz(dimensions.size());
+				for (size_t i = 0; i < sz.size(); ++i)
+					sz[i] = static_cast<hsize_t>(dimensions[i]);
+				//DataSpace fspace(static_cast<int>(sz.size()), sz);
+				auto ftype = MatchAttributeType<DataType>();
+
+				obj->write(values, *(ftype.get()));
+				return obj;
+			}
+
+
 			template <class Container>
 			HDFdataset_t readDatasetDimensions(
 				gsl::not_null<Container*> obj,
@@ -320,6 +339,23 @@ namespace icedb {
 
 				dataset->read(values, *(ftype.get()));
 				return std::move(dataset);
+			}
+
+			template <class DataType, class Container>
+			gsl::not_null<Container*> readDatasetArray(
+				gsl::not_null<Container*> dataset,
+				gsl::not_null<DataType*> values)
+			{
+				using namespace H5;
+
+				H5T_class_t type_class = dataset->getTypeClass();
+				DataSpace fspace = dataset->getSpace();
+
+				//DataSpace fspace(dimensionality, sz);
+				auto ftype = MatchAttributeType<DataType>();
+
+				dataset->read(values, *(ftype.get()));
+				return dataset;
 			}
 
 			/// \brief Add column names to table.
@@ -408,6 +444,10 @@ namespace icedb {
 			bool isType(gsl::not_null<Container*> obj, const std::string &attributeName) {
 				H5::Attribute attr = obj->openAttribute(attributeName);
 				return isType<DataType>(attr.getDataType().getId());
+			}
+			template <class DataType, class Container>
+			bool isType(gsl::not_null<Container*> obj) {
+				return isType<DataType>(obj->getDataType().getId());
 			}
 			extern template bool isType<uint64_t>(hid_t type_id);
 			extern template bool isType<int64_t>(hid_t type_id);
