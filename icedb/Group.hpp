@@ -16,10 +16,12 @@ namespace icedb {
 			Group();
 			Group(const std::string &name);
 		public:
-			typedef std::unique_ptr<Groups::Group, mem::icedb_delete<Groups::Group> > Group_ptr;
+			typedef std::unique_ptr<Groups::Group> Group_ptr;
+			//typedef std::unique_ptr<Groups::Group, mem::icedb_delete<Groups::Group> > Group_ptr;
 			typedef std::shared_ptr<H5::Group> Group_HDF_shared_ptr;
 			const std::string name;
 
+			virtual ~Group();
 			virtual Group_ptr createGroup(const std::string &groupName) = 0;
 			virtual Group_ptr openGroup(const std::string &groupName) const = 0;
 			virtual bool doesGroupExist(const std::string &groupName) const = 0;

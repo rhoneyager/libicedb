@@ -21,7 +21,8 @@ namespace icedb {
 
 			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base);
 
-			typedef std::unique_ptr<H5::Group, mem::icedb_delete<H5::Group> > HDFgroup_t;
+			typedef std::unique_ptr<H5::Group > HDFgroup_t;
+			//typedef std::unique_ptr<H5::Group, mem::icedb_delete<H5::Group> > HDFgroup_t;
 
 			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);

@@ -41,8 +41,11 @@ int main(int argc, char** argv) {
 	string dbpath = vm["dbpath"].as<string>();
 	if (vm.count("test")) {
 		auto db = icedb::Databases::Database::createDatabase(dbpath);
-		auto grpMain = db->openGroup("Testing")->openGroup("scratch.hdf5");
-		auto grpTest1 = grpMain->createGroup("Obj_1");
+		
+		auto grpMain = db->openGroup("Testing");
+		
+		auto grpScratch = grpMain->openGroup("scratch.hdf5");
+		auto grpTest1 = grpScratch->createGroup("Obj_1");
 		icedb::Attributes::Attribute<float> attrFloat1(
 			"TestFloat1",
 			{ 4 },
@@ -75,7 +78,7 @@ int main(int argc, char** argv) {
 		icedb::Attributes::Attribute<std::string> vTS1 = grpTest1->readAttribute<std::string>("TestString1");
 		std::cout << vTS1.data[0] << std::endl;
 
-
+		
 
 		icedb::Databases::Database::indexDatabase(dbpath);
 	} else if (vm.count("create") || !sfs::exists(sfs::path(dbpath))) {

@@ -24,6 +24,7 @@ namespace icedb {
 			{	// delete a pointer
 				static_assert(0 < sizeof(_Ty),
 					"can't delete an incomplete type");
+				//delete _Ptr;
 				::icedb::mem::delete_single(_Ptr);
 			}
 		};

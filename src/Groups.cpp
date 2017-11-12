@@ -10,10 +10,15 @@ namespace icedb {
 		Group::Group(const std::string &name) : name{ name } {}
 		Group_impl::Group_impl() : Group() {}
 
+		Group::~Group() {}
+
+		Group_impl::~Group_impl() {}
+
 		Group_impl::Group_impl(const std::string &name, gsl::not_null<H5::Group*> parent)
 			: Group{ name }
 		{
 			auto ugrp = fs::hdf5::openGroup(parent.get(), name.c_str());
+			//grp = std::shared_ptr<H5::Group>(ugrp.release());
 			grp = std::shared_ptr<H5::Group>(ugrp.release(), mem::icedb_delete<H5::Group>());
 			this->_setAttributeParent(grp);
 		}
@@ -22,6 +27,7 @@ namespace icedb {
 			: Group{ name }
 		{
 			auto ugrp = fs::hdf5::openGroup(parent->getHDF5Group().get(), name.c_str());
+			//grp = std::shared_ptr<H5::Group>(ugrp.release());
 			grp = std::shared_ptr<H5::Group>(ugrp.release(), mem::icedb_delete<H5::Group>());
 			this->_setAttributeParent(grp);
 		}
