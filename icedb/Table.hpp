@@ -17,9 +17,9 @@ namespace icedb {
 			virtual void _setTableSelf(std::shared_ptr<H5::DataSet> obj) = 0;
 			virtual std::shared_ptr<H5::DataSet> _getTableSelf() const = 0;
 			bool valid() const;
+			Table(const std::string &name = "");
 		public:
 			virtual ~Table();
-			Table(const std::string &name = "");
 			const std::string name; // Constant, and in a base class, so no need to change.
 			typedef std::vector<size_t> Dimensions_Type;
 			typedef std::unique_ptr<Table> Table_Type;
@@ -37,7 +37,6 @@ namespace icedb {
 			void detachDimensionScale(size_t DimensionNumber, gsl::not_null<const Table *> scale);
 			//Table_Type readDimensionScale(size_t DimensionNumber) const;
 			
-
 			bool isDimensionScale() const;
 			void setDimensionScale(const std::string &dimensionScaleName); ///< Make this table a dimension scale with name dimensionScaleName.
 			void setDimensionScaleAxisLabel(size_t DimensionNumber, const std::string &label);
@@ -89,33 +88,23 @@ namespace icedb {
 
 		class CanHaveTables {
 			bool valid() const;
-			/// \todo Ensure netCDF4 compatability.
-			void _createTable(const std::string &tableName, const type_info& type);
-			// Open table
-			// Check table type
+			void _createTable(const std::string &tableName, const type_info& type, const std::vector<size_t> &dims);
 		protected:
-			CanHaveTables(std::shared_ptr<H5::Group>);
 			CanHaveTables();
-			void _setTablesParent(std::shared_ptr<H5::Group> obj);
+			virtual void _setTablesParent(std::shared_ptr<H5::Group> obj) = 0;
+			virtual std::shared_ptr<H5::Group> _getTablesParent() const = 0;
 		public:
-			/*
+			~CanHaveTables();
 			std::set<std::string> getTableNames() const;
 			bool doesTableExist(const std::string &tableName) const;
-			void deleteTable(const std::string &tableName);
-			template<class Type> bool isTableOfType(const std::string &tableName) const {
-				return false;
-			}
-			std::type_index getTableTypeId(const std::string &tableName) const;
-			Table openTable(const std::string &tableName) {
-
-			}
+			void unlinkTable(const std::string &tableName);
+			Table::Table_Type openTable(const std::string &tableName);
 			template <class DataType>
-			Table createTable(const std::string &tableName) {
+			Table::Table_Type createTable(const std::string &tableName, const std::vector<size_t> &dims) {
 				Expects(!doesTableExist(tableName));
-				_createTable(tableName, Data_Types::getType<DataType>());
-				return std::move(openTable(tableName));
+				_createTable(tableName, Data_Types::getType<DataType>(), dims);
+				return openTable(tableName);
 			}
-			*/
 		};
 	}
 }

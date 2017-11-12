@@ -213,7 +213,7 @@ namespace icedb {
 			for (size_t i = 0; i < numElems; ++i)
 				data[i] = std::get<DataType>(indata[i]);
 
-			icedb::fs::hdf5::addDatasetArray<DataType, ObjectType>(dims, obj, data.data());
+			icedb::fs::hdf5::writeDatasetArray<DataType, ObjectType>(dims, obj, data.data());
 			//icedb::fs::hdf5::addAttrArray<DataType, ObjectType>(obj.get(), attributeName.c_str(), dimensionality, data);
 		}
 
@@ -235,5 +235,89 @@ namespace icedb {
 			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
 		}
 
+
+
+
+		CanHaveTables::CanHaveTables() {}
+		CanHaveTables::~CanHaveTables() {}
+		bool CanHaveTables::valid() const { if (_getTablesParent()) return true; return false; }
+
+		/// \note Must ensure NetCDF-4 compatability.
+		void CanHaveTables::_createTable(const std::string &tableName, const type_info& type_id, const std::vector<size_t> &dims) {
+			Expects(valid());
+			std::vector<hsize_t> hdata;
+			for (const auto &d : dims) hdata.push_back(static_cast<hsize_t>(d));
+
+			//fs::hdf5::addDatasetArray
+			/* Turn on creation order tracking. */
+			//assert(H5Pset_attr_creation_order(plistid, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) >= 0);
+			std::shared_ptr<H5::DSetCreatPropList> plist = std::make_shared<H5::DSetCreatPropList>();
+			int fillvalue = -1;
+			plist->setFillValue(H5::PredType::NATIVE_INT, &fillvalue);
+			if (fs::hdf5::useZLIB()) {
+				plist->setChunk(static_cast<int>(hdata.size()), hdata.data());
+				plist->setDeflate(6);
+			}
+			plist->setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
+
+			if (type_id == typeid(uint64_t))fs::hdf5::createDatasetRaw<uint64_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(int64_t))fs::hdf5::createDatasetRaw<int64_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(float))fs::hdf5::createDatasetRaw<float, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(double))fs::hdf5::createDatasetRaw<double, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(char))fs::hdf5::createDatasetRaw<char, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(std::string))fs::hdf5::createDatasetRaw<std::string, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else throw(std::exception("Unhandled data type"));
+		}
+
+		std::set<std::string> CanHaveTables::getTableNames() const {
+			Expects(valid());
+			auto base = _getTablesParent();
+			auto objs = fs::hdf5::getGroupMembersTypes(*(base.get()));
+			std::set<std::string> res;
+			for (const auto &o : objs)
+			{
+				if (o.second == H5G_obj_t::H5G_DATASET) res.insert(o.first);
+			}
+			return res;
+		}
+
+		bool CanHaveTables::doesTableExist(const std::string &tableName) const {
+			const auto tnames = getTableNames();
+			if (tnames.count(tableName)) return true;
+			return false;
+		}
+
+		void CanHaveTables::unlinkTable(const std::string &tableName) {
+			Expects(valid());
+			auto base = _getTablesParent();
+			base->unlink(tableName.c_str());
+		}
+
+		Table::Table_Type CanHaveTables::openTable(const std::string &tableName) {
+			Expects(valid());
+			const auto base = _getTablesParent();
+			const auto tbl = std::make_shared<H5::DataSet>(base->openDataSet(tableName));
+			Table::Table_Type res = std::make_unique<Table_impl>(tbl,tableName);
+			return res;
+		}
+
+
+
+
+		void Table_impl::_setTableSelf(std::shared_ptr<H5::DataSet> obj) { this->obj = obj; }
+		std::shared_ptr<H5::DataSet> Table_impl::_getTableSelf() const { return obj; }
+		Table_impl::~Table_impl() {}
+		Table_impl::Table_impl(std::shared_ptr<H5::DataSet> obj, const std::string &name) : Table{ name }, obj(obj) {
+			this->_setAttributeParent(obj);
+		}
+
+
+
+
+
+		void CanHaveTables_impl::_setTablesParent(std::shared_ptr<H5::Group> newobj) { this->obj = newobj; }
+		std::shared_ptr<H5::Group> CanHaveTables_impl::_getTablesParent() const { return obj; }
+		CanHaveTables_impl::~CanHaveTables_impl() {}
+		CanHaveTables_impl::CanHaveTables_impl() {}
 	}
 }

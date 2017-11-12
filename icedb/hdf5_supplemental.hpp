@@ -13,6 +13,8 @@
 namespace icedb {
 	namespace fs {
 		namespace hdf5 {
+			bool useZLIB();
+
 			/// Provides a method for calculating the offsets from std::arrays of data
 #			define ARRAYOFFSET(TYPE, INDEX) [](){TYPE a; return (size_t) &a[INDEX] - (size_t) &a; }()
 
@@ -242,7 +244,7 @@ namespace icedb {
 			template <class DataType, class Container>
 			HDFdataset_t addDatasetArray(
 				gsl::not_null<Container*> obj, gsl::not_null<const char*> name, size_t rows, size_t cols,
-				gsl::not_null<const DataType*> values, H5::DSetCreatPropList* iplist = nullptr)
+				gsl::not_null<const DataType*> values, std::shared_ptr<H5::DSetCreatPropList> iplist = nullptr)
 			{
 				using namespace H5;
 				std::vector<hsize_t> sz{ (hsize_t)rows, (hsize_t)cols };
@@ -260,7 +262,7 @@ namespace icedb {
 						int fillvalue = -1;
 						plist->setFillValue(PredType::NATIVE_INT, &fillvalue);
 						if (useZLIB()) {
-							plist->setChunk(2, sz);
+							plist->setChunk(static_cast<int>(sz.size()), sz.data());
 							plist->setDeflate(6);
 						}
 					}
@@ -275,15 +277,15 @@ namespace icedb {
 			template <class DataType, class Container>
 			HDFdataset_t addDatasetArray(
 				gsl::not_null<Container*> obj, gsl::not_null<const char*> name, size_t rows,
-				gsl::not_null<const DataType*> values, H5::DSetCreatPropList* iplist = nullptr)
+				gsl::not_null<const DataType*> values, std::shared_ptr<H5::DSetCreatPropList> iplist = nullptr)
 			{
 				return std::move(addDatasetArray(obj, name, rows, 1, values, iplist));
 			}
 			
 			template <class DataType, class Container>
-			gsl::not_null<Container*> addDatasetArray(
+			gsl::not_null<H5::DataSet*> writeDatasetArray(
 				const std::vector<size_t> &dimensions,
-				gsl::not_null<Container*> obj,
+				gsl::not_null<H5::DataSet*> dset,
 				gsl::not_null<const DataType*> values)
 			{
 				using namespace H5;
@@ -293,8 +295,43 @@ namespace icedb {
 				//DataSpace fspace(static_cast<int>(sz.size()), sz);
 				auto ftype = MatchAttributeType<DataType>();
 
-				obj->write(values, *(ftype.get()));
-				return obj;
+				dset->write(values, *(ftype.get()));
+				return dset;
+			}
+
+			template <class DataType, class Container>
+			HDFdataset_t createDatasetRaw(
+				gsl::not_null<Container*> parent, 
+				gsl::not_null<const char*> name, 
+				const std::vector<size_t> &dims, 
+				std::shared_ptr<H5::DSetCreatPropList> iplist = nullptr)
+			{
+				using namespace H5;
+				std::vector<hsize_t> sz(dims.size());
+				for (size_t i = 0; i < sz.size(); ++i)
+					sz[i] = static_cast<hsize_t>(dims[i]);
+
+				DataSpace fspace(static_cast<int>(sz.size()), sz.data());
+				auto ftype = MatchAttributeType<DataType>();
+				std::shared_ptr<DSetCreatPropList> plist;
+				if (iplist) plist = iplist;
+				else
+				{
+					plist = std::shared_ptr<DSetCreatPropList>(new DSetCreatPropList);
+					if (!isStrType<DataType>())
+					{
+						int fillvalue = -1;
+						plist->setFillValue(PredType::NATIVE_INT, &fillvalue);
+						if (useZLIB()) {
+							plist->setChunk(static_cast<int>(sz.size()), sz.data());
+							plist->setDeflate(6);
+						}
+					}
+				}
+
+				HDFdataset_t dataset(new DataSet(parent->createDataSet(name, *(ftype.get()),
+					fspace, *(plist.get()))));
+				return dataset;
 			}
 
 

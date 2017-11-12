@@ -12,6 +12,7 @@ namespace icedb {
 	{
 		namespace hdf5
 		{
+			bool useZLIB() { return true; }
 			//template <class DataType>
 			//MatchAttributeTypeType MatchAttributeType() {
 			//	static_assert(false, "Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."); }

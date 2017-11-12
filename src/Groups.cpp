@@ -97,17 +97,5 @@ namespace icedb {
 			}
 			return res;
 		}
-
-		/*
-		std::set<std::string> Group::getTableNames() const {
-			auto objs = fs::hdf5::getGroupMembersTypes(*(_impl->grp.get()));
-			std::set<std::string> res;
-			for (const auto &o : objs)
-			{
-				if (o.second == H5G_obj_t::H5G_DATASET) res.insert(o.first);
-			}
-			return res;
-		}
-		*/
 	}
 }
