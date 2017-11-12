@@ -32,6 +32,6 @@ namespace icedb {
 
 		typedef std::variant<uint64_t, int64_t, float, double, char, std::string> All_Variant_type;
 
-		template <class T> const type_info getType() { return typeid(T); }
+		template <class T> const std::type_index getType() { return typeid(T); }
 	}
 }

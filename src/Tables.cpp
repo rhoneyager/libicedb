@@ -243,7 +243,7 @@ namespace icedb {
 		bool CanHaveTables::valid() const { if (_getTablesParent()) return true; return false; }
 
 		/// \note Must ensure NetCDF-4 compatability.
-		void CanHaveTables::_createTable(const std::string &tableName, const type_info& type_id, const std::vector<size_t> &dims) {
+		void CanHaveTables::_createTable(const std::string &tableName, const std::type_index& type_id, const std::vector<size_t> &dims) {
 			Expects(valid());
 			std::vector<hsize_t> hdata;
 			for (const auto &d : dims) hdata.push_back(static_cast<hsize_t>(d));

@@ -78,7 +78,17 @@ int main(int argc, char** argv) {
 		icedb::Attributes::Attribute<std::string> vTS1 = grpTest1->readAttribute<std::string>("TestString1");
 		std::cout << vTS1.data[0] << std::endl;
 
+		auto tblDims1 = grpTest1->createTable<int64_t>("X_axis", { 3 }, { 9, 10, 11 });
+		auto tblDims2 = grpTest1->createTable<int64_t>("Y_axis", { 2 }, { 4, 6 });
+		tblDims1->setDimensionScale("X_axis");
+		tblDims2->setDimensionScale("Y_axis");
+		auto tblTest = grpTest1->createTable<int64_t>("Test_table_1", { 2, 3 }, { -2, -1, 0, 1, 2, 3 });
+		tblTest->attachDimensionScale(0, tblDims2.get());
+		tblTest->attachDimensionScale(1, tblDims1.get());
 		
+		tblTest->writeAttribute<int64_t>(icedb::Attributes::Attribute<int64_t>("Test5", 5));
+		tblTest->writeAttribute<int64_t>(icedb::Attributes::Attribute<int64_t>("Test6", { 4 }, { 1, -1, 2, -2 }));
+
 
 		icedb::Databases::Database::indexDatabase(dbpath);
 	} else if (vm.count("create") || !sfs::exists(sfs::path(dbpath))) {

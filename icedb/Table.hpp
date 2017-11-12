@@ -77,9 +77,9 @@ namespace icedb {
 				for (const auto &d : getDimensions()) sz *= d;
 				Expects(outData.size() == sz);
 
-				std::vector<Data_Types::All_Variant_type> vdata(attribute.data.size());
-				for (size_t i = 0; i < attribute.data.size(); ++i)
-					vdata[i] = outdata[i];
+				std::vector<Data_Types::All_Variant_type> vdata(outData.size());
+				for (size_t i = 0; i < outData.size(); ++i)
+					vdata[i] = outData[i];
 				// copy_n will not work here...
 				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
 				writeAll(typeid(DataType), vdata);
@@ -88,7 +88,7 @@ namespace icedb {
 
 		class CanHaveTables {
 			bool valid() const;
-			void _createTable(const std::string &tableName, const type_info& type, const std::vector<size_t> &dims);
+			void _createTable(const std::string &tableName, const std::type_index& type, const std::vector<size_t> &dims);
 		protected:
 			CanHaveTables();
 			virtual void _setTablesParent(std::shared_ptr<H5::Group> obj) = 0;
@@ -104,6 +104,26 @@ namespace icedb {
 				Expects(!doesTableExist(tableName));
 				_createTable(tableName, Data_Types::getType<DataType>(), dims);
 				return openTable(tableName);
+			}
+			template <class DataType>
+			Table::Table_Type createTable(
+				const std::string &tableName,
+				std::initializer_list<size_t> dims)
+			{
+				std::vector<size_t> vdims{ dims };
+				auto tbl = createTable<typename DataType>(tableName, vdims);
+				return tbl;
+			}
+			template <class DataType>
+			Table::Table_Type createTable(
+				const std::string &tableName,
+				std::initializer_list<size_t> dims,
+				std::initializer_list<DataType> data)
+			{
+				auto tbl = createTable<typename DataType>(tableName, dims);
+				std::vector<DataType> vdata{ data };
+				tbl->writeAll<typename DataType>(vdata);
+				return tbl;
 			}
 		};
 	}
