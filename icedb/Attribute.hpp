@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 #include <gsl/gsl_assert>
@@ -37,13 +38,13 @@ namespace icedb {
 		};
 
 		class CanHaveAttributes {
-			virtual bool valid() const;
+			bool valid() const;
 		protected:
-			CanHaveAttributes(std::shared_ptr<H5::H5Object>);
 			CanHaveAttributes();
 			virtual void _setAttributeParent(std::shared_ptr<H5::H5Object> obj) = 0;
 			virtual std::shared_ptr<H5::H5Object> _getAttributeParent() const = 0;
 		public:
+			~CanHaveAttributes();
 			bool doesAttributeExist(const std::string &attributeName) const;
 			std::type_index getAttributeTypeId(const std::string &attributeName) const;
 			template<class Type> bool isAttributeOfType(const std::string &attributeName) const {
@@ -52,7 +53,6 @@ namespace icedb {
 				return false;
 			}
 
-			size_t getNumAttributes(const std::string &attributeName) const;
 			std::set<std::string> getAttributeNames() const;
 			virtual void deleteAttribute(const std::string &attributeName);
 

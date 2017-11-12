@@ -10,7 +10,7 @@ namespace H5 {
 }
 namespace icedb {
 	namespace Groups {
-		class Group : public Attributes::CanHaveAttributes //, Tables::CanHaveTables
+		class Group : virtual public Attributes::CanHaveAttributes //, Tables::CanHaveTables
 		{
 		protected:
 			Group();

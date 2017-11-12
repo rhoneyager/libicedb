@@ -1,4 +1,5 @@
 #include "../icedb/Attribute.hpp"
+#include "../private/Attribute_impl.hpp"
 #include "../icedb/compat/hdf5_load.h"
 #include "../icedb/hdf5_supplemental.hpp"
 #include <gsl/gsl_assert>
@@ -6,63 +7,60 @@
 namespace icedb {
 	namespace Attributes {
 
-		class CanHaveAttributes::CanHaveAttributes_impl{
-		public:
-			std::shared_ptr<H5::H5Object> parent;
-			CanHaveAttributes_impl() {}
-			CanHaveAttributes_impl(std::shared_ptr<H5::H5Object> parent) : parent(parent) {}
-		};
+		CanHaveAttributes::CanHaveAttributes() {}
+		CanHaveAttributes::~CanHaveAttributes() {}
+
+
+		CanHaveAttributes_impl::CanHaveAttributes_impl() {}
+		CanHaveAttributes_impl::CanHaveAttributes_impl(std::shared_ptr<H5::H5Object> parent) : parent(parent) {}
+		CanHaveAttributes_impl::~CanHaveAttributes_impl() {}
 
 		bool CanHaveAttributes::valid() const {
-			if (!_impl) return false;
-			if (!_impl->parent) return false;
+			if (!_getAttributeParent()) return false;
 			return true;
 		}
 
-		void CanHaveAttributes::_setAttributeParent(std::shared_ptr<H5::H5Object> obj)
+		void CanHaveAttributes_impl::_setAttributeParent(std::shared_ptr<H5::H5Object> obj)
 		{
-			_impl->parent = obj;
+			parent = obj;
 		}
 
-		CanHaveAttributes::CanHaveAttributes(std::shared_ptr<H5::H5Object> obj)
+		std::shared_ptr<H5::H5Object> CanHaveAttributes_impl::_getAttributeParent() const
 		{
-			_impl = std::make_shared<CanHaveAttributes_impl>(obj);
-		}
-
-		CanHaveAttributes::CanHaveAttributes() {
-			_impl = std::make_shared<CanHaveAttributes_impl>();
+			return parent;
 		}
 
 		std::type_index CanHaveAttributes::getAttributeTypeId(const std::string &attributeName) const {
-			if (fs::hdf5::isType<uint64_t>(_impl->parent, attributeName)) return (typeid(uint64_t));
-			if (fs::hdf5::isType<int64_t>(_impl->parent, attributeName)) return (typeid(int64_t));
-			if (fs::hdf5::isType<double>(_impl->parent, attributeName)) return (typeid(double));
-			if (fs::hdf5::isType<float>(_impl->parent, attributeName)) return (typeid(float));
-			if (fs::hdf5::isType<char>(_impl->parent, attributeName)) return (typeid(char));
-			if (fs::hdf5::isType<std::string>(_impl->parent, attributeName)) return (typeid(std::string));
+			auto parent = _getAttributeParent();
+			if (fs::hdf5::isType<uint64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(uint64_t));
+			if (fs::hdf5::isType<int64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(int64_t));
+			if (fs::hdf5::isType<double, H5::H5Object>(parent.get(), attributeName)) return (typeid(double));
+			if (fs::hdf5::isType<float, H5::H5Object>(parent.get(), attributeName)) return (typeid(float));
+			if (fs::hdf5::isType<char, H5::H5Object>(parent.get(), attributeName)) return (typeid(char));
+			if (fs::hdf5::isType<std::string, H5::H5Object>(parent.get(), attributeName)) return (typeid(std::string));
 			throw;
 		}
 
 		void CanHaveAttributes::deleteAttribute(const std::string &attributeName)
 		{
 			Expects(valid());
-			_impl->parent->removeAttr(attributeName);
+			_getAttributeParent()->removeAttr(attributeName);
 		}
 
 		bool CanHaveAttributes::doesAttributeExist(const std::string &attributeName) const
 		{
 			Expects(valid());
-			return _impl->parent->attrExists(attributeName);
+			return _getAttributeParent()->attrExists(attributeName);
 		}
 
-		std::vector<std::string> CanHaveAttributes::getAttributeNames() const {
+		std::set<std::string> CanHaveAttributes::getAttributeNames() const {
 			Expects(valid());
 			//icedb::fs::hdf5::
-			std::vector<std::string> anames;
-			int numAttrs = _impl->parent->getNumAttrs();
+			std::set<std::string> anames;
+			int numAttrs = _getAttributeParent()->getNumAttrs();
 			for (int i = 0; i < numAttrs; ++i) {
-				H5::Attribute attr = _impl->parent->openAttribute(i);
-				anames.push_back(attr.getName());
+				H5::Attribute attr = _getAttributeParent()->openAttribute(i);
+				anames.insert(attr.getName());
 			}
 			return anames;
 		}
@@ -83,7 +81,7 @@ namespace icedb {
 			const std::string &attributeName, 
 			std::vector<size_t> &dims,
 			std::vector<Data_Types::All_Variant_type> &data, 
-			std::shared_ptr<ObjectType> obj)
+			gsl::not_null<ObjectType*> obj)
 		{
 			// Already assuming that the attribute exists (see calling function).
 
@@ -119,24 +117,25 @@ namespace icedb {
 		{
 			Expects(valid());
 			Expects(doesAttributeExist(attributeName));
+			auto parent = _getAttributeParent();
 			//auto sz = getAttributeDimensionality(attributeName);
 			//size_t numElems = 1;
 			//for (const auto &s : sz) numElems *= s;
 			
 			// Need to read into an array of the exact data type, then copy into the
 			// variant structure of data.
-			if (icedb::fs::hdf5::isType<uint64_t, H5::H5Object>(_impl->parent, attributeName))
-				pullData<uint64_t, H5::H5Object>(attributeName, dims, data, _impl->parent);
-			else if (icedb::fs::hdf5::isType<int64_t, H5::H5Object>(_impl->parent, attributeName))
-				pullData<int64_t, H5::H5Object>(attributeName, dims, data, _impl->parent);
-			else if (icedb::fs::hdf5::isType<float, H5::H5Object>(_impl->parent, attributeName))
-				pullData<float, H5::H5Object>(attributeName, dims, data, _impl->parent);
-			else if (icedb::fs::hdf5::isType<double, H5::H5Object>(_impl->parent, attributeName))
-				pullData<double, H5::H5Object>(attributeName, dims, data, _impl->parent);
-			else if (icedb::fs::hdf5::isType<char, H5::H5Object>(_impl->parent, attributeName))
-				pullData<char, H5::H5Object>(attributeName, dims, data, _impl->parent);
-			else if (icedb::fs::hdf5::isType<std::string, H5::H5Object>(_impl->parent, attributeName))
-				pullData<std::string, H5::H5Object>(attributeName, dims, data, _impl->parent);
+			if (icedb::fs::hdf5::isType<uint64_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<uint64_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<int64_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<int64_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<float, H5::H5Object>(parent.get(), attributeName))
+				pullData<float, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<double, H5::H5Object>(parent.get(), attributeName))
+				pullData<double, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<char, H5::H5Object>(parent.get(), attributeName))
+				pullData<char, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<std::string, H5::H5Object>(parent.get(), attributeName))
+				pullData<std::string, H5::H5Object>(attributeName, dims, data, parent.get());
 			else throw(std::exception("Unhandled data type"));
 		}
 
@@ -161,12 +160,12 @@ namespace icedb {
 				/// \todo Re-work the internal logic to allow multiple string writes into a single attribute.
 				Expects(dimensionality.size() == 1);
 				Expects(dimensionality[0] == 1);
-				icedb::fs::hdf5::addAttr(obj, attributeName.c_str(), data[0]);
+				icedb::fs::hdf5::addAttr<DataType, ObjectType>(obj.get(), attributeName.c_str(), data[0]);
 			}
 			else {
 				if ((dimensionality.size() == 1) && !forceArray)
-					icedb::fs::hdf5::addAttrVector(obj, attributeName.c_str(), data);
-				else icedb::fs::hdf5::addAttrArray(obj, attributeName.c_str(), dimensionality, data);
+					icedb::fs::hdf5::addAttrVector<DataType, ObjectType>(obj.get(), attributeName.c_str(), data);
+				else icedb::fs::hdf5::addAttrArray<DataType, ObjectType>(obj.get(), attributeName.c_str(), dimensionality, data);
 			}
 		}
 
@@ -178,13 +177,14 @@ namespace icedb {
 		{
 			Expects(valid());
 			if (doesAttributeExist(attributeName)) deleteAttribute(attributeName);
+			auto parent = _getAttributeParent();
 			// Need to copy from the variant structure into an array of the exact data type
-			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
-			else if (type_id == typeid(int64_t))pushData<int64_t, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
-			else if (type_id == typeid(float))pushData<float, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
-			else if (type_id == typeid(double))pushData<double, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
-			else if (type_id == typeid(char))pushData<char, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
-			else if (type_id == typeid(std::string))pushData<std::string, H5::H5Object>(attributeName, dimensionality, _impl->parent, data);
+			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(int64_t))pushData<int64_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(float))pushData<float, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(double))pushData<double, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(char))pushData<char, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(std::string))pushData<std::string, H5::H5Object>(attributeName, dimensionality, parent, data);
 			else throw(std::exception("Unhandled data type"));
 			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
 		}

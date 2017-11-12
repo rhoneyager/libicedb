@@ -2,9 +2,10 @@
 #include <memory>
 #include <set>
 #include "../icedb/Group.hpp"
+#include "../private/Attribute_impl.hpp"
 namespace icedb {
 	namespace Groups {
-		class Group_impl : public Group
+		class Group_impl : virtual public Group, virtual public Attributes::CanHaveAttributes_impl
 		{
 			/// \note This shared pointer has a custom deallocator, to ensure that it is freed in the correct module.
 			Group_HDF_shared_ptr grp;

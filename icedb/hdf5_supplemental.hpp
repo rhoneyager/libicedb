@@ -118,7 +118,7 @@ namespace icedb {
 				auto vls_type = MatchAttributeType<DataType>();
 				H5::DataSpace att_space(H5S_SCALAR);
 				H5::Attribute attr = obj->openAttribute(attname); //, *vls_type, att_space);
-				loadAttr<DataType>(attr, vls_type, value);
+				loadAttr<DataType>(attr, vls_type.get(), value);
 			}
 
 			/// Reads an array (or vector) of objects
