@@ -41,38 +41,38 @@ int main(int argc, char** argv) {
 	string dbpath = vm["dbpath"].as<string>();
 	if (vm.count("test")) {
 		auto db = icedb::Databases::Database::createDatabase(dbpath);
-		auto grpMain = db.openGroup("Testing").openGroup("scratch.hdf5");
-		auto grpTest1 = grpMain.createGroup("Obj_1");
+		auto grpMain = db->openGroup("Testing")->openGroup("scratch.hdf5");
+		auto grpTest1 = grpMain->createGroup("Obj_1");
 		icedb::Attributes::Attribute<float> attrFloat1(
 			"TestFloat1",
 			{ 4 },
 			{ 1.0f, 2.0f, 2.5f, 3.0f });
-		grpTest1.writeAttribute(attrFloat1);
+		grpTest1->writeAttribute(attrFloat1);
 		icedb::Attributes::Attribute<float> attrFloat2(
 			"TestFloat2",
 			{ 2, 3 },
 			{ 1.0f, 2.0f, 3.1f, 4.2f, 5.3f, 6.0f});
-		//grpTest1.writeAttribute(attrFloat2);
+		//grpTest1->writeAttribute(attrFloat2);
 
 		icedb::Attributes::Attribute<float> attrFloat3(
 			"TestFloat3",
 			{ 1, 3 },
 			{ 4.2f, 5.3f, 6.0f });
-		//grpTest1.writeAttribute(attrFloat3);
+		//grpTest1->writeAttribute(attrFloat3);
 
-		//grpTest1.writeAttribute(icedb::Attributes::Attribute<uint64_t>("TestInt1", { 1 }, { 65536 }));
+		//grpTest1->writeAttribute(icedb::Attributes::Attribute<uint64_t>("TestInt1", { 1 }, { 65536 }));
 
-		grpTest1.writeAttribute(icedb::Attributes::Attribute<std::string>("TestString1", "Test string 1"));
-		//grpTest1.writeAttribute(icedb::Attributes::Attribute<std::string>("TestStringSet2", { 2 }, { "Test string 2", "TS 3" }));
+		grpTest1->writeAttribute(icedb::Attributes::Attribute<std::string>("TestString1", "Test string 1"));
+		//grpTest1->writeAttribute(icedb::Attributes::Attribute<std::string>("TestStringSet2", { 2 }, { "Test string 2", "TS 3" }));
 
-		auto grpTest1HDFobj = grpTest1.getHDF5Group();
+		auto grpTest1HDFobj = grpTest1->getHDF5Group();
 
 		//H5::Attribute attr = grpTest1HDFobj->createAttribute(0)
-		icedb::fs::hdf5::addAttr<double>(grpTest1HDFobj, "TestDoubleSingle1", 3.14159);
-		icedb::fs::hdf5::addAttr<std::string>(grpTest1HDFobj, "TestString4", "TS4");
+		icedb::fs::hdf5::addAttr<double, H5::Group>(grpTest1HDFobj.get(), "TestDoubleSingle1", 3.14159);
+		icedb::fs::hdf5::addAttr<std::string, H5::Group>(grpTest1HDFobj.get(), "TestString4", "TS4");
 
 
-		icedb::Attributes::Attribute<std::string> vTS1 = grpTest1.readAttribute<std::string>("TestString1");
+		icedb::Attributes::Attribute<std::string> vTS1 = grpTest1->readAttribute<std::string>("TestString1");
 		std::cout << vTS1.data[0] << std::endl;
 
 
