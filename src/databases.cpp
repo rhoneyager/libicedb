@@ -41,7 +41,7 @@ namespace icedb {
 			}
 		
 		Groups::Group::Group_ptr Database_impl::openGroup(const std::string &path) {
-			return Groups::Group::createGroup(path, hFile);
+			return Groups::Group::createGroup(path, hFile.get());
 		}
 
 		Database_impl::Database_impl() : hFileImage(fs::impl::getUniqueVROOTname(), 10 * 1024 * 1024)

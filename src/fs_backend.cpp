@@ -1,5 +1,5 @@
 #include "../private/fs_backend.hpp"
-#include "../icedb/gsl/gsl_assert"
+#include <gsl/gsl_assert>
 #include "../icedb/compat/hdf5_load.h"
 #include <atomic>
 #include <sstream>
