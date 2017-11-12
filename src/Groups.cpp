@@ -31,24 +31,30 @@ namespace icedb {
 		}
 
 		Group::Group_ptr Group_impl::createGroup(const std::string &groupName) {
+			return std::move(Group::createGroup(groupName, this->grp.get()));
+		}
+
+		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::Group*> parent) {
 			//_impl->grp->createGroup(groupName); // Bad for NetCDF. See http://www.unidata.ucar.edu/software/netcdf/docs/file_format_specifications.html#creation_order
-			hid_t baseGrpID = grp->getId();
+			hid_t baseGrpID = parent->getId();
 			/* Create group, with link_creation_order set in the group
 			* creation property list. */
 			// No suitable C++ methods found.
-			//H5::ObjCreatPropList gprops;
-			//gprops.setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
-
+			
 			hid_t gcpl_id = H5Pcreate(H5P_GROUP_CREATE);
 			assert(gcpl_id >= 0);
-			if (H5Pset_link_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) < 0) throw;
-			if (H5Pset_attr_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) < 0) throw;
+			assert(H5Pset_link_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) >= 0);
+			assert(H5Pset_attr_creation_order(gcpl_id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED) >= 0);
 			hid_t newGrp_id = H5Gcreate2(baseGrpID, groupName.c_str(), H5P_DEFAULT, gcpl_id, H5P_DEFAULT);
 			assert(newGrp_id >= 0);
 			assert(H5Gclose(newGrp_id) >= 0);
 			assert(H5Pclose(gcpl_id) >= 0);
 
-			return std::move(Group::Group_ptr(new Group_impl(groupName, this)));
+			return std::move(Group::Group_ptr(new Group_impl(groupName, parent)));
+		}
+		
+		Group::Group_ptr Group::createGroup(const std::string &name, gsl::not_null<const Group*> parent) {
+			return std::move(Group::createGroup(name, parent->getHDF5Group().get()));
 		}
 
 		Group::Group_ptr Group_impl::openGroup(const std::string &groupName) const {
@@ -66,7 +72,7 @@ namespace icedb {
 		}
 
 		std::set<std::string> Group_impl::getGroupNames() const {
-			auto objs = fs::hdf5::getGroupMembersTypes(*(_impl->grp.get()));
+			auto objs = fs::hdf5::getGroupMembersTypes(*(grp.get()));
 			std::set<std::string> res;
 			for (const auto &o : objs)
 			{

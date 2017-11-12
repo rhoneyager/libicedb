@@ -1,10 +1,16 @@
 #pragma once
 #include <cstdint>
+#include <memory>
 #include <typeinfo>
 #include <typeindex>
 #include <variant>
 
+namespace H5 {
+	class H5Object;
+	class Group;
+}
 namespace icedb {
+
 	namespace Data_Types {
 		template <class T> constexpr bool Is_Valid_Data_Type() { return false; }
 		template<> constexpr bool Is_Valid_Data_Type<uint64_t>() { return true; }

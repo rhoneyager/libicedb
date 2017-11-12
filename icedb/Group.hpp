@@ -10,7 +10,7 @@ namespace H5 {
 }
 namespace icedb {
 	namespace Groups {
-		class Group //: public Attributes::CanHaveAttributes //, Tables::CanHaveTables
+		class Group : public Attributes::CanHaveAttributes //, Tables::CanHaveTables
 		{
 		protected:
 			Group();
@@ -23,8 +23,7 @@ namespace icedb {
 			virtual Group_ptr createGroup(const std::string &groupName) = 0;
 			virtual Group_ptr openGroup(const std::string &groupName) const = 0;
 			virtual bool doesGroupExist(const std::string &groupName) const = 0;
-			/// \note Gets a custom deallocator. Need a custom deallocator for the strings, also.
-			virtual std::shared_ptr<std::set<std::string> > getGroupNames() const = 0;
+			virtual std::set<std::string> getGroupNames() const = 0;
 			virtual void deleteGroup(const std::string &groupName) = 0;
 			virtual Group_HDF_shared_ptr getHDF5Group() const = 0;
 

@@ -18,7 +18,7 @@ namespace icedb {
 			Group_ptr openGroup(const std::string &groupName) const override;
 			bool doesGroupExist(const std::string &groupName) const override;
 			/// \note This shared pointer gets a custom deallocator. TODO: Add deallocator for strings.
-			std::shared_ptr<std::set<std::string> > getGroupNames() const override;
+			std::set<std::string> getGroupNames() const override;
 			void deleteGroup(const std::string &groupName) override;
 			Group_HDF_shared_ptr getHDF5Group() const override;
 		};
