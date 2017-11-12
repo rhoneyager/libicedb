@@ -23,6 +23,7 @@ namespace icedb {
 
 			//static Database copyDatabase(const Database& sourceDB, const std::string &location);
 			virtual Groups::Group::Group_ptr openGroup(const std::string &path) = 0;
+			virtual Groups::Group::Group_ptr createGroup(const std::string &path) = 0;
 			//ObjectIdPathSet_Type findObjects(ObjectTypes type, const std::string &base, bool recurse = true);
 		};
 	}

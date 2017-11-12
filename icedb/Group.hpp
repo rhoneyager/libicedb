@@ -29,6 +29,8 @@ namespace icedb {
 
 			static Group_ptr createGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
 			static Group_ptr createGroup(const std::string &name, gsl::not_null<const Group*> parent);
+			static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
+			static Group_ptr openGroup(const std::string &name, gsl::not_null<const Group*> parent);
 		};
 	}
 }

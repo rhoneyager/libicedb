@@ -60,6 +60,14 @@ namespace icedb {
 		Group::Group_ptr Group_impl::openGroup(const std::string &groupName) const {
 			return std::move(Group::Group_ptr(new Group_impl(groupName, grp.get())));
 		}
+		
+		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::Group*> parent) {
+			return std::move(Group::Group_ptr( new Group_impl(name, parent)));
+		}
+
+		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<const Group*> parent) {
+			return std::move(Group::openGroup(name, parent->getHDF5Group().get()));
+		}
 
 		void Group_impl::deleteGroup(const std::string &groupName) {
 			grp->unlink(groupName);

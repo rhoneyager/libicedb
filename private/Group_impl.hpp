@@ -5,6 +5,11 @@
 #include "../private/Attribute_impl.hpp"
 namespace icedb {
 	namespace Groups {
+
+#ifdef _MSC_FULL_VER
+#pragma warning( push )
+#pragma warning(disable:4250)
+#endif
 		class Group_impl : virtual public Group, virtual public Attributes::CanHaveAttributes_impl
 		{
 			/// \note This shared pointer has a custom deallocator, to ensure that it is freed in the correct module.
@@ -23,6 +28,9 @@ namespace icedb {
 			void deleteGroup(const std::string &groupName) override;
 			Group_HDF_shared_ptr getHDF5Group() const override;
 		};
+#ifdef _MSC_FULL_VER
+#pragma warning( pop )
+#endif
 
 	}
 }
