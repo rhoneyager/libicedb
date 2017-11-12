@@ -4,6 +4,11 @@
 
 namespace icedb {
 	namespace Tables {
+#ifdef _MSC_FULL_VER
+#pragma warning( push )
+#pragma warning(disable:4250)
+#endif
+
 		class Table_impl : virtual public Table, virtual public Attributes::CanHaveAttributes_impl {
 			std::shared_ptr<H5::DataSet> obj;
 		protected:
@@ -23,5 +28,9 @@ namespace icedb {
 			virtual ~CanHaveTables_impl();
 			CanHaveTables_impl();
 		};
+
+#ifdef _MSC_FULL_VER
+#pragma warning( pop )
+#endif
 	}
 }

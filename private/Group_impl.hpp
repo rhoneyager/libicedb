@@ -2,7 +2,8 @@
 #include <memory>
 #include <set>
 #include "../icedb/Group.hpp"
-#include "../private/Attribute_impl.hpp"
+#include "Attribute_impl.hpp"
+#include "Table_impl.hpp"
 namespace icedb {
 	namespace Groups {
 
@@ -10,7 +11,7 @@ namespace icedb {
 #pragma warning( push )
 #pragma warning(disable:4250)
 #endif
-		class Group_impl : virtual public Group, virtual public Attributes::CanHaveAttributes_impl
+		class Group_impl : virtual public Group, virtual public Attributes::CanHaveAttributes_impl, virtual public Tables::CanHaveTables_impl
 		{
 			/// \note This shared pointer has a custom deallocator, to ensure that it is freed in the correct module.
 			Group_HDF_shared_ptr grp;

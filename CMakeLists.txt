@@ -43,7 +43,7 @@ addBoostUniform(program_options )
 #link_directories(${Boost_LIBRARY_DIR_DEBUG})
 #link_directories(${Boost_LIBRARY_DIR_RELEASE})
 
-find_package(HDF5 REQUIRED COMPONENTS C CXX)
+find_package(HDF5 REQUIRED COMPONENTS C CXX HL)
 #include_directories(${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
 #add_definitions(${HDF5_DEFINITIONS})
 if(DEFINED HDF5_C_LIBRARIES)
@@ -131,7 +131,7 @@ target_include_directories(libicedb SYSTEM
 
 target_compile_definitions(libicedb
 	PRIVATE ${HDF5_DEFINITIONS})
-target_link_libraries(libicedb ${HDF5_LIBRARIES})
+target_link_libraries(libicedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
 addlib(libicedb STATIC)
 storebin(libicedb)
 

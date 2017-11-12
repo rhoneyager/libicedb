@@ -21,6 +21,7 @@ namespace icedb {
 			//grp = std::shared_ptr<H5::Group>(ugrp.release());
 			grp = std::shared_ptr<H5::Group>(ugrp.release(), mem::icedb_delete<H5::Group>());
 			this->_setAttributeParent(grp);
+			this->_setTablesParent(grp);
 		}
 
 		Group_impl::Group_impl(const std::string &name, gsl::not_null<const Group*> parent)

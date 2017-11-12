@@ -10,7 +10,12 @@ namespace H5 {
 }
 namespace icedb {
 	namespace Groups {
-		class Group : virtual public Attributes::CanHaveAttributes //, Tables::CanHaveTables
+#ifdef _MSC_FULL_VER
+#pragma warning( push )
+#pragma warning(disable:4250)
+#endif
+
+		class Group : virtual public Attributes::CanHaveAttributes, virtual public Tables::CanHaveTables
 		{
 		protected:
 			Group();
@@ -34,5 +39,9 @@ namespace icedb {
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<const Group*> parent);
 		};
+
+#ifdef _MSC_FULL_VER
+#pragma warning( pop )
+#endif
 	}
 }
