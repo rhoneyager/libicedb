@@ -89,6 +89,14 @@ namespace icedb {
 				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
 				writeAttributeData(attribute.name, typeid(DataType), attribute.dimensionality, vdata);
 			}
+			template<class DataType> void writeAttribute(
+				const std::string &name,
+				std::initializer_list<size_t> dims,
+				std::initializer_list<DataType> data) {
+				Attribute<DataType> attr(name, dims, data);
+				writeAttribute(attr);
+			}
+
 
 		};
 

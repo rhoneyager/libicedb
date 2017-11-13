@@ -57,7 +57,7 @@ namespace icedb {
 
 		Database::Database() {}
 
-		Database::Database_ptr Database::createDatabase(
+		Database::Database_ptr Database::createSampleDatabase(
 			const std::string &location)
 		{
 			const auto flag_truncate = fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE);
