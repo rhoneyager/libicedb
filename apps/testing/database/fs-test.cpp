@@ -9,6 +9,7 @@
 #include "../../../icedb/hdf5_supplemental.hpp"
 #include "../../../private/fs_backend.hpp"
 #include "../../../icedb/Database.hpp"
+#include "../../../icedb/shape.hpp"
 
 int main(int argc, char** argv) {
 	using namespace std;
@@ -183,9 +184,48 @@ int main(int argc, char** argv) {
 
 		// SHAPE FILES AND DATA STRUCTURES
 		// --------------------------------
+		{
+			// Shapes are special collections of tables and attributes. Let's make a naive shape,
+			// with only a few dipoles and a single substance.
+			auto grpTest2 = grpScratch->createGroup("Obj_Shape_2");
+			// Shapes have required and optional objects
+			icedb::Shapes::NewShapeRequiredProperties shpRequired;
+			icedb::Shapes::NewShapeCommonOptionalProperties shpCommonOptional;
 
-		// TODO
+			constexpr uint64_t numPoints = 8;
+			constexpr uint64_t numSubstances = 1;
+			constexpr uint64_t numAxes = 3;
+			constexpr std::array<uint64_t,numPoints> point_ids = { 0, 1, 2, 3, 4, 5, 6, 7 }; // eight points
+			constexpr std::array<uint64_t,numSubstances> composition_ids = { 0 };
+			constexpr std::array<float, numPoints * numAxes> points = {
+			//const std::vector<float> points = {
+				1, 1, 1,
+				1, 1, 2,
+				1, 1, 3,
+				2, 2, 2,
+				2, 2, 3,
+				3, 2, 2,
+				3, 2, 3,
+				3, 3, 2
+			};
+			constexpr std::array<float, numPoints * numSubstances> point_compositions = { 1, 1, 1, 1, 1, 1, 1, 1 };
+			
+			// Required attributes
+			shpRequired.particle_id = "000001";
+			// Required dimensions
+			shpRequired.particle_scattering_element_number = point_ids;
+			shpRequired.particle_constituent_number = composition_ids;
+			// Required variables
+			shpRequired.particle_scattering_element_coordinates = points;
+			shpRequired.particle_scattering_element_composition = point_compositions;
 
+			shpCommonOptional.particle_scattering_element_spacing = static_cast<float>(40. * 1e-6);
+
+			auto shp = icedb::Shapes::Shape::createShape(
+				*(grpTest2.get()), "Test_shape", shpRequired.particle_id,
+				&shpRequired, &shpCommonOptional);
+			//icedb::Shapes::Shape::createShape(grpTest2,)
+		}
 		
 		// INDEXING THE DATABASE OBJECTS
 		// -------------------------------

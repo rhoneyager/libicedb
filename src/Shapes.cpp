@@ -88,7 +88,8 @@ namespace icedb {
 			return good;
 		}
 
-
+		Shape_impl::Shape_impl(const std::string &id, Groups::Group::Group_HDF_shared_ptr grp)
+			: Shape{ id }, Groups::Group_impl{ grp } {}
 		Shape_impl::~Shape_impl() {}
 		Shape::~Shape() {}
 		Shape::Shape(const std::string &uid) : particle_unique_id{ uid } {}

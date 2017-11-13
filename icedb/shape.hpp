@@ -10,19 +10,19 @@ namespace icedb {
 			// The DIMENSIONS
 
 			/// DIMENSION: The id number for each scattering element. Single dimension.
-			gsl::span<uint64_t> particle_scattering_element_number;
+			gsl::span<const uint64_t> particle_scattering_element_number;
 			/// DIMENSION: The id number of each particle's constituent. Single dimension.
-			gsl::span<uint64_t> particle_constituent_number;
+			gsl::span<const uint64_t> particle_constituent_number;
 
 			// The VARIABLES
 
 			/// VARIABLE: Cartesian coordinates of the center of each scattering element
 			/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
 			/// Dimensions of [particle_scattering_element_number][axis]
-			gsl::span<float> particle_scattering_element_coordinates;
+			gsl::span<const float> particle_scattering_element_coordinates;
 			/// VARIABLE: Mass fractions of each constituent for each scattering element.
 			/// Dimensions of [particle_scattering_element_number][particle_constituent_number]
-			gsl::span<float> particle_scattering_element_composition;
+			gsl::span<const float> particle_scattering_element_composition;
 
 			// The ATTRIBUTES
 
@@ -37,13 +37,13 @@ namespace icedb {
 		struct NewShapeCommonOptionalProperties {
 			/// OPTIONAL VARIABLE: Physical radius of the scattering sphere, in meters.
 			/// Dimensions: [particle_scattering_element_number]
-			gsl::span<float> particle_scattering_element_radius;
+			gsl::span<const float> particle_scattering_element_radius;
 
 			/// VARIABLE: The name of each particle's constituent. Single dimension.
 			/// Dimensions of [particle_constituent_number]
 			/// \note Currently ignored because I have to redo the HDF5 string writing functions.
 			/// \todo Make this required.
-			gsl::span<std::string> particle_constituent_name;
+			gsl::span<const std::string> particle_constituent_name;
 
 			/// OPTIONAL ATTRIBUTE: Physical spacing between adjacent grid points. Used in DDA.
 			float particle_scattering_element_spacing = -1;
