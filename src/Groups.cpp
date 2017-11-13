@@ -10,6 +10,8 @@ namespace icedb {
 		Group::Group(const std::string &name) : name{ name } {}
 		Group_impl::Group_impl() : Group() {}
 
+		std::string Group::_icedb_obj_type_identifier = { "_icedb_obj_type" };
+
 		Group::~Group() {}
 
 		Group_impl::~Group_impl() {}
@@ -19,7 +21,7 @@ namespace icedb {
 		{
 			auto ugrp = fs::hdf5::openGroup(parent.get(), name.c_str());
 			//grp = std::shared_ptr<H5::Group>(ugrp.release());
-			grp = std::shared_ptr<H5::Group>(ugrp.release(), mem::icedb_delete<H5::Group>());
+			grp = std::shared_ptr<H5::Group>(ugrp.release()); // , mem::icedb_delete<H5::Group>());
 			this->_setAttributeParent(grp);
 			this->_setTablesParent(grp);
 		}
@@ -29,8 +31,17 @@ namespace icedb {
 		{
 			auto ugrp = fs::hdf5::openGroup(parent->getHDF5Group().get(), name.c_str());
 			//grp = std::shared_ptr<H5::Group>(ugrp.release());
-			grp = std::shared_ptr<H5::Group>(ugrp.release(), mem::icedb_delete<H5::Group>());
+			grp = std::shared_ptr<H5::Group>(ugrp.release()); // , mem::icedb_delete<H5::Group>());
 			this->_setAttributeParent(grp);
+			this->_setTablesParent(grp);
+		}
+
+		Group_impl::Group_impl(Group_HDF_shared_ptr grp)
+			: Group{ "UNKNOWN" }
+		{
+			this->grp = grp;
+			this->_setAttributeParent(grp);
+			this->_setTablesParent(grp);
 		}
 
 		std::shared_ptr<H5::Group> Group_impl::getHDF5Group() const {
@@ -73,6 +84,10 @@ namespace icedb {
 		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::Group*> parent) {
 			return std::make_unique<Group_impl>(name, parent);
 			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
+		}
+
+		Group::Group_ptr Group::openGroup(Group_HDF_shared_ptr parent) {
+			return std::make_unique<Group_impl>(parent);
 		}
 
 		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<const Group*> parent) {

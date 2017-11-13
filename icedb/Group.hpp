@@ -21,6 +21,7 @@ namespace icedb {
 			Group();
 			Group(const std::string &name);
 		public:
+			static std::string _icedb_obj_type_identifier;
 			typedef std::unique_ptr<Groups::Group> Group_ptr;
 			//typedef std::unique_ptr<Groups::Group, mem::icedb_delete<Groups::Group> > Group_ptr;
 			typedef std::shared_ptr<H5::Group> Group_HDF_shared_ptr;
@@ -38,6 +39,7 @@ namespace icedb {
 			static Group_ptr createGroup(const std::string &name, gsl::not_null<const Group*> parent);
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<const Group*> parent);
+			static Group_ptr openGroup(Group_HDF_shared_ptr group);
 		};
 
 #ifdef _MSC_FULL_VER

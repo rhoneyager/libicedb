@@ -30,8 +30,7 @@ namespace icedb {
 			return parent;
 		}
 
-		std::type_index CanHaveAttributes::getAttributeTypeId(const std::string &attributeName) const {
-			auto parent = _getAttributeParent();
+		std::type_index getAttributeTypeId(gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName) {
 			if (fs::hdf5::isType<uint64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(uint64_t));
 			if (fs::hdf5::isType<int64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(int64_t));
 			if (fs::hdf5::isType<double, H5::H5Object>(parent.get(), attributeName)) return (typeid(double));
@@ -39,6 +38,11 @@ namespace icedb {
 			if (fs::hdf5::isType<char, H5::H5Object>(parent.get(), attributeName)) return (typeid(char));
 			if (fs::hdf5::isType<std::string, H5::H5Object>(parent.get(), attributeName)) return (typeid(std::string));
 			throw;
+		}
+
+		std::type_index CanHaveAttributes::getAttributeTypeId(const std::string &attributeName) const {
+			auto parent = _getAttributeParent();
+			return getAttributeTypeId(parent.get(), attributeName);
 		}
 
 		void CanHaveAttributes::deleteAttribute(const std::string &attributeName)
@@ -51,6 +55,12 @@ namespace icedb {
 		{
 			Expects(valid());
 			return _getAttributeParent()->attrExists(attributeName);
+		}
+
+		bool CanHaveAttributes::doesAttributeExist(
+			gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName)
+		{
+			return parent->attrExists(attributeName);
 		}
 
 		std::set<std::string> CanHaveAttributes::getAttributeNames() const {
@@ -81,7 +91,7 @@ namespace icedb {
 			const std::string &attributeName, 
 			std::vector<size_t> &dims,
 			std::vector<Data_Types::All_Variant_type> &data, 
-			gsl::not_null<ObjectType*> obj)
+			gsl::not_null<const ObjectType*> obj)
 		{
 			// Already assuming that the attribute exists (see calling function).
 
@@ -111,13 +121,12 @@ namespace icedb {
 		}
 
 		void CanHaveAttributes::readAttributeData(
+			gsl::not_null<const H5::H5Object*> parent,
 			const std::string &attributeName,
 			std::vector<size_t> &dims,
 			std::vector<Data_Types::All_Variant_type> &data)
 		{
-			Expects(valid());
-			Expects(doesAttributeExist(attributeName));
-			auto parent = _getAttributeParent();
+			Expects(doesAttributeExist(parent,attributeName));
 			//auto sz = getAttributeDimensionality(attributeName);
 			//size_t numElems = 1;
 			//for (const auto &s : sz) numElems *= s;
@@ -137,6 +146,18 @@ namespace icedb {
 			else if (icedb::fs::hdf5::isType<std::string, H5::H5Object>(parent.get(), attributeName))
 				pullData<std::string, H5::H5Object>(attributeName, dims, data, parent.get());
 			else throw(std::exception("Unhandled data type"));
+		}
+
+		void CanHaveAttributes::readAttributeData(
+			const std::string &attributeName,
+			std::vector<size_t> &dims,
+			std::vector<Data_Types::All_Variant_type> &data) const
+		{
+			Expects(valid());
+			Expects(doesAttributeExist(attributeName));
+			auto parent = _getAttributeParent();
+
+			readAttributeData(parent.get(), attributeName, dims, data);
 		}
 
 		

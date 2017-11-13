@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <gsl/gsl_assert>
+#include <gsl/gsl>
 #include "Data_Types.hpp"
 
 
@@ -46,7 +47,9 @@ namespace icedb {
 		public:
 			~CanHaveAttributes();
 			bool doesAttributeExist(const std::string &attributeName) const;
+			static bool doesAttributeExist(gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName);
 			std::type_index getAttributeTypeId(const std::string &attributeName) const;
+			static std::type_index getAttributeTypeId(gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName);
 			template<class Type> bool isAttributeOfType(const std::string &attributeName) const {
 				std::type_index atype = getAttributeTypeId(attributeName);
 				if (atype == typeid(Type)) return true;
@@ -54,19 +57,38 @@ namespace icedb {
 			}
 
 			std::set<std::string> getAttributeNames() const;
-			virtual void deleteAttribute(const std::string &attributeName);
+			void deleteAttribute(const std::string &attributeName);
 
-			virtual void readAttributeData(
+
+			static void readAttributeData(
+				gsl::not_null<const H5::H5Object*> parent,
 				const std::string &attributeName,
 				std::vector<size_t> &dimensions,
 				std::vector<Data_Types::All_Variant_type> &data);
-			virtual void writeAttributeData(
+			void readAttributeData(
+				const std::string &attributeName,
+				std::vector<size_t> &dimensions,
+				std::vector<Data_Types::All_Variant_type> &data) const;
+			void writeAttributeData(
 				const std::string &attributeName,
 				const type_info &type_id,
 				const std::vector<size_t> &dimensionas,
 				const std::vector<Data_Types::All_Variant_type> &data);
 
-			template<class DataType> Attribute<DataType> readAttribute(const std::string &attributeName) {
+			template <class DataType> static Attribute<DataType> readAttribute(
+					gsl::not_null<const H5::H5Object*> obj, const std::string &attributeName)
+			{
+				std::vector<Data_Types::All_Variant_type> vdata;
+				Attribute<DataType> res(attributeName);
+				//res.dimensionality = getAttributeDimensionality(attributeName);
+				readAttributeData(obj, attributeName, res.dimensionality, vdata);
+				res.data.resize(vdata.size());
+				for (size_t i = 0; i < vdata.size(); ++i)
+					res.data[i] = std::get<DataType>(vdata[i]);
+				//std::copy_n(vdata.cbegin(), vdata.cend(), res.data.begin());
+				return res;
+			}
+			template<class DataType> Attribute<DataType> readAttribute(const std::string &attributeName) const {
 				std::vector<Data_Types::All_Variant_type> vdata;
 				Attribute<DataType> res(attributeName);
 				//res.dimensionality = getAttributeDimensionality(attributeName);

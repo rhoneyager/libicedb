@@ -478,12 +478,12 @@ namespace icedb {
 			bool isType(hid_t) { static_assert(false, "Unsupported type."); return false; }
 
 			template <class DataType, class Container>
-			bool isType(gsl::not_null<Container*> obj, const std::string &attributeName) {
+			bool isType(gsl::not_null<const Container*> obj, const std::string &attributeName) {
 				H5::Attribute attr = obj->openAttribute(attributeName);
 				return isType<DataType>(attr.getDataType().getId());
 			}
 			template <class DataType, class Container>
-			bool isType(gsl::not_null<Container*> obj) {
+			bool isType(gsl::not_null<const Container*> obj) {
 				return isType<DataType>(obj->getDataType().getId());
 			}
 			extern template bool isType<uint64_t>(hid_t type_id);
