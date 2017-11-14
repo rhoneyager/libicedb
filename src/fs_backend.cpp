@@ -1,4 +1,4 @@
-#include "../private/fs_backend.hpp"
+#include "../icedb/fs_backend.hpp"
 #include <gsl/gsl_assert>
 #include "../icedb/compat/hdf5_load.h"
 #include <algorithm>

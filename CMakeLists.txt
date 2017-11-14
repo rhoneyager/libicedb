@@ -97,7 +97,7 @@ set(db_objs
 	icedb/Database.hpp
 	private/Database_impl.hpp
 	src/databases.cpp
-	private/fs_backend.hpp
+	icedb/fs_backend.hpp
 	src/fs_backend.cpp
 	icedb/fs.hpp)
 set(hdf_objs

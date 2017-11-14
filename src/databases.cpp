@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include "../icedb/fs.hpp"
 #include <gsl/gsl_assert>
-#include "../private/fs_backend.hpp"
+#include "../icedb/fs_backend.hpp"
 #include "../private/hdf5_supplemental.hpp"
 #include "../icedb/Database.hpp"
 #include "../private/Database_impl.hpp"

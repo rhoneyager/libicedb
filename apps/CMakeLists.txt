@@ -1,1 +1,2 @@
+add_subdirectory(3d_structures)
 add_subdirectory(testing)
