@@ -30,7 +30,7 @@ namespace icedb {
 			return parent;
 		}
 
-		std::type_index getAttributeTypeId(gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName) {
+		std::type_index CanHaveAttributes::getAttributeTypeId(gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName) {
 			if (fs::hdf5::isType<uint64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(uint64_t));
 			if (fs::hdf5::isType<int64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(int64_t));
 			if (fs::hdf5::isType<double, H5::H5Object>(parent.get(), attributeName)) return (typeid(double));
