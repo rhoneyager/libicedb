@@ -28,37 +28,37 @@ namespace icedb {
 			typedef std::unique_ptr<H5::Group > HDFgroup_t;
 			//typedef std::unique_ptr<H5::Group, mem::icedb_delete<H5::Group> > HDFgroup_t;
 
-			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
-			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
-			bool groupExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
+			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name);
+			HDFgroup_t openGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name);
+			bool groupExists(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name);
 
 			/// \param std::shared_ptr<H5::AtomType> is a pointer to a newly-constructed matching type
 			/// \returns A pair of (the matching type, a flag indicating passing by pointer or reference)
 			typedef std::unique_ptr<H5::AtomType> MatchAttributeTypeType;
 			template <class DataType>
-			MatchAttributeTypeType MatchAttributeType();
-			//{
-			//	throw(std::invalid_argument("Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."));
-			//}
-			extern template MatchAttributeTypeType MatchAttributeType<std::string>();
-			extern template MatchAttributeTypeType MatchAttributeType<const char*>();
-			extern template MatchAttributeTypeType MatchAttributeType<char>();
+			MatchAttributeTypeType MatchAttributeType()
+			{
+				throw(std::invalid_argument("Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."));
+			}
+			template<> MatchAttributeTypeType MatchAttributeType<std::string>();
+			template<> MatchAttributeTypeType MatchAttributeType<const char*>();
+			template<> MatchAttributeTypeType MatchAttributeType<char>();
 
-			extern template MatchAttributeTypeType MatchAttributeType<uint8_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<uint16_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<uint32_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<uint64_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<int8_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<int16_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<int32_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<int64_t>();
-			extern template MatchAttributeTypeType MatchAttributeType<float>();
-			extern template MatchAttributeTypeType MatchAttributeType<double>();
+			template<> MatchAttributeTypeType MatchAttributeType<uint8_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<uint16_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<uint32_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<uint64_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<int8_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<int16_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<int32_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<int64_t>();
+			template<> MatchAttributeTypeType MatchAttributeType<float>();
+			template<> MatchAttributeTypeType MatchAttributeType<double>();
 
 			/// Check to see if output type is for a string
 			template <class DataType> bool isStrType() { return false; }
-			extern template bool isStrType<std::string>();
-			extern template bool isStrType<const char*>();
+			template<> bool isStrType<std::string>();
+			template<> bool isStrType<const char*>();
 
 			/// Handles proper insertion of strings versus other data types
 			template <class DataType>
@@ -235,9 +235,9 @@ namespace icedb {
 			/// if the symbolic link is good.
 			std::pair<bool, bool> symLinkExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
-			/// \brief Convenience function to open a group, if it exists
-			/// \returns nullptr is the group does not exist.
-			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
+			// \brief Convenience function to open a group, if it exists
+			// \returns nullptr is the group does not exist.
+			//HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
 			/// Convenience function to check if a given dataset exists
 			bool datasetExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
@@ -492,12 +492,12 @@ namespace icedb {
 			bool isType(gsl::not_null<const Container*> obj) {
 				return isType<DataType>(obj->getDataType().getId());
 			}
-			extern template bool isType<uint64_t>(hid_t type_id);
-			extern template bool isType<int64_t>(hid_t type_id);
-			extern template bool isType<float>(hid_t type_id);
-			extern template bool isType<double>(hid_t type_id);
-			extern template bool isType<char>(hid_t type_id);
-			extern template bool isType<std::string>(hid_t type_id);
+			template<> bool isType<uint64_t>(hid_t type_id);
+			template<> bool isType<int64_t>(hid_t type_id);
+			template<> bool isType<float>(hid_t type_id);
+			template<> bool isType<double>(hid_t type_id);
+			template<> bool isType<char>(hid_t type_id);
+			template<> bool isType<std::string>(hid_t type_id);
 
 		}
 	}

@@ -53,6 +53,19 @@ if(DEFINED HDF5_C_LIBRARIES)
 endif()
 #find_package(Eigen3 REQUIRED)
 
+add_executable(h5tests related/h5tests/h5tests.cpp)
+set_target_properties(h5tests PROPERTIES CXX_STANDARD 17)
+target_include_directories(h5tests SYSTEM
+	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
+	)
+
+add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
+	COMMAND h5tests
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMENT "Generate HDF5 definitions for function matching"
+	)
+
+
 set(gsl_objs
 	related_includes/gsl/gsl
 	related_includes/gsl/gsl_algorithm
@@ -132,6 +145,7 @@ target_include_directories(libicedb SYSTEM
 target_compile_definitions(libicedb
 	PRIVATE ${HDF5_DEFINITIONS})
 target_link_libraries(libicedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
+add_dependencies(libicedb ${CMAKE_BINARY_DIR}/icedb_h5.h)
 addlib(libicedb STATIC)
 storebin(libicedb)
 

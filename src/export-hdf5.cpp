@@ -56,7 +56,7 @@ namespace icedb {
 			template <> void insertAttr<double>(H5::Attribute &, std::shared_ptr<H5::AtomType>, const double&);
 			*/
 
-			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
+			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name)
 			{
 				HDFgroup_t res;
 				try {
@@ -69,7 +69,7 @@ namespace icedb {
 				return res;
 			}
 
-			HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
+			HDFgroup_t openGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name)
 			{
 				HDFgroup_t res;
 				try {
@@ -99,7 +99,7 @@ namespace icedb {
 				}
 			}
 
-			bool groupExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
+			bool groupExists(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name)
 			{
 				try {
 					H5::Group( base->openGroup( name ));
