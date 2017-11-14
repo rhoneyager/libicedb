@@ -52,6 +52,9 @@ namespace icedb {
 		Database_impl::Database_impl() : hFileImage(fs::impl::getUniqueVROOTname(), 10 * 1024 * 1024)
 		{ }
 
+		Database_impl::Database_impl(size_t virtualMemSizeInBytes) : hFileImage(fs::impl::getUniqueVROOTname(), virtualMemSizeInBytes)
+		{ }
+
 		Database_impl::~Database_impl() {}
 
 		Database::~Database() {}
@@ -84,6 +87,17 @@ namespace icedb {
 
 			return std::move(openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE));
 		}
+
+		Database::Database_ptr Database::openVirtualDatabase(size_t memSizeInBytes)
+		{
+			auto res = std::make_unique<Database_impl>();
+			//std::unique_ptr<Database_impl, mem::icedb_delete<Database_impl> > res(new Database_impl);
+			//= std::make_unique(<Database_impl, mem::icedb_delete<Database_impl> >();
+			res->hFile = res->hFileImage.getHFile();
+
+			return res;
+		}
+
 
 		Database::Database_ptr Database::openDatabase(
 			const std::string &location, fs::IOopenFlags flags)

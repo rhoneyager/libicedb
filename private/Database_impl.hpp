@@ -23,6 +23,7 @@ namespace icedb {
 			static std::shared_ptr<H5::H5File> makeDatabaseFileStandard(const std::string &p);
 		public:
 			Database_impl();
+			Database_impl(size_t virtualMemSizeInBytes);
 			virtual ~Database_impl();
 			Groups::Group::Group_ptr openGroup(const std::string &path) override;
 			Groups::Group::Group_ptr createGroup(const std::string &path) override;

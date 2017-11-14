@@ -37,6 +37,7 @@ namespace icedb {
 			virtual void deleteGroup(const std::string &groupName) = 0;
 			virtual Group_HDF_shared_ptr getHDF5Group() const = 0;
 
+
 #if ICEDB_H5_UNIFIED_GROUP_FILE == 1
 			static Group_ptr createGroup(const std::string &name, gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> parent);
 #else
@@ -53,6 +54,8 @@ namespace icedb {
 #endif
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<const Group*> parent);
 			static Group_ptr openGroup(Group_HDF_shared_ptr group);
+
+			static Group_ptr mount(const std::string &subdirname, gsl::not_null<const Group*> containingParent, gsl::not_null<H5::H5File*> pointsTo);
 		};
 
 #ifdef _MSC_FULL_VER

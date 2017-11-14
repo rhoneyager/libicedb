@@ -3,7 +3,17 @@ generaterc("3d_structures" "exe"
 	"Program to read and write 3d structures to and from a database"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
 	 )
-set(srcs shapes-main.cpp)
+set(srcs shapes-main.cpp
+	shape.cpp
+	shape.hpp
+	shapeAlgs.hpp
+	shapeBackend.hpp
+	shapeForwards.hpp
+	shapeIO.cpp
+	shapeIO.hpp
+	shapeIOtext.cpp
+	shapeIOtext.hpp
+	shapeIOtextParsers.cpp)
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")

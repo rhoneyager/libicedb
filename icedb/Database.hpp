@@ -20,6 +20,7 @@ namespace icedb {
 			virtual ~Database();
 			static Database_ptr createSampleDatabase(const std::string &location);
 			static Database_ptr openDatabase(const std::string &location, fs::IOopenFlags flags = fs::IOopenFlags::READ_ONLY);
+			static Database_ptr openVirtualDatabase(size_t memSizeInBytes);
 			static void indexDatabase(const std::string &location);
 
 			//static Database copyDatabase(const Database& sourceDB, const std::string &location);

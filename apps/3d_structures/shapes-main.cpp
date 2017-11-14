@@ -16,7 +16,7 @@
 const std::set<std::string> valid_file_formats = { "ddscat", "raw", "icedb" };
 const std::map<std::string, std::set<std::string> > file_formats = {
 	{"ddscat", {".dat", ".shp"} },
-	{"icedb", {".hdf5", ".nc"}}
+	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} }
 };
 
 struct SplitPath {
@@ -77,6 +77,10 @@ int main(int argc, char** argv) {
 		// For input files, check the base input type.
 		// If database, call openDatabase and collect shape objects under sub path.
 		// If not a database, collect valid files and open each separately.
+
+		Databases::Database::Database_ptr db;
+		if (isDB(inFormat)) { db = Databases::Database::openDatabase(splitFrom.base.string()); }
+		else { db = Databases::Database::openVirtualDatabase(1024 * 1024 * 100); }
 
 		//Databases::Database::openDatabase(splitFrom.base.string());
 		//auto files = icedb::fs::impl::collectDatasetFiles()

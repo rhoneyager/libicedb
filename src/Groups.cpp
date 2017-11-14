@@ -154,5 +154,13 @@ namespace icedb {
 			}
 			return res;
 		}
+
+		Group::Group_ptr Group::mount(const std::string &subdirname, 
+			gsl::not_null<const Group*> containingParent, 
+			gsl::not_null<H5::H5File*> pointsTo)
+		{
+			containingParent->getHDF5Group()->mount(subdirname, *(pointsTo.get()), H5P_DEFAULT);
+			return openGroup(subdirname, containingParent);
+		}
 	}
 }
