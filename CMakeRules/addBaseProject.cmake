@@ -14,6 +14,7 @@ ENDIF()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
 	SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++1z -stdlib=libc++")
+	add_definitions("-DGSL_USE_STD_BYTE=0")
 endif()
 IF(DEFINED MSVC)
     # MSVC parallel builds by default

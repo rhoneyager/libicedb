@@ -211,7 +211,11 @@ namespace icedb {
 			Expects(numElems > 0);
 			std::vector<DataType> data(numElems);
 			for (size_t i = 0; i < numElems; ++i)
-				data[i] = std::get<DataType>(indata[i]);
+#if (have_stdcpplib_variant==1)
+					data[i] = std::get<DataType>(indata[i]);
+#else
+					data[i] = mpark::get<DataType>(indata[i]);
+#endif
 
 			icedb::fs::hdf5::writeDatasetArray<DataType, ObjectType>(dims, obj, data.data());
 			//icedb::fs::hdf5::addAttrArray<DataType, ObjectType>(obj.get(), attributeName.c_str(), dimensionality, data);

@@ -84,7 +84,11 @@ namespace icedb {
 				readAttributeData(obj, attributeName, res.dimensionality, vdata);
 				res.data.resize(vdata.size());
 				for (size_t i = 0; i < vdata.size(); ++i)
+#if (have_stdcpplib_variant==1)
 					res.data[i] = std::get<DataType>(vdata[i]);
+#else
+					res.data[i] = mpark::get<DataType>(vdata[i]);
+#endif
 				//std::copy_n(vdata.cbegin(), vdata.cend(), res.data.begin());
 				return res;
 			}
@@ -95,7 +99,11 @@ namespace icedb {
 				readAttributeData(attributeName, res.dimensionality, vdata);
 				res.data.resize(vdata.size());
 				for (size_t i = 0; i < vdata.size(); ++i)
+#if (have_stdcpplib_variant==1)
 					res.data[i] = std::get<DataType>(vdata[i]);
+#else
+					res.data[i] = mpark::get<DataType>(vdata[i]);
+#endif
 				//std::copy_n(vdata.cbegin(), vdata.cend(), res.data.begin());
 				return res;
 			}

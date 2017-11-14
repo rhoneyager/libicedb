@@ -3,7 +3,7 @@
 #include <memory>
 #include <typeinfo>
 #include <typeindex>
-#include <variant>
+#include "compat/variant_backend.hpp"
 
 namespace H5 {
 	class H5Object;
@@ -30,7 +30,7 @@ namespace icedb {
 			return false;
 		}
 
-		typedef std::variant<uint64_t, int64_t, float, double, char, std::string> All_Variant_type;
+		typedef variant<uint64_t, int64_t, float, double, char, std::string> All_Variant_type;
 
 		template <class T> const std::type_index getType() { return typeid(T); }
 	}
