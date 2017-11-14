@@ -3,6 +3,7 @@
 #include "../icedb/compat/hdf5_load.h"
 #include "../icedb/hdf5_supplemental.hpp"
 #include <gsl/gsl_assert>
+#include <stdexcept>
 
 namespace icedb {
 	namespace Attributes {
@@ -145,7 +146,7 @@ namespace icedb {
 				pullData<char, H5::H5Object>(attributeName, dims, data, parent.get());
 			else if (icedb::fs::hdf5::isType<std::string, H5::H5Object>(parent.get(), attributeName))
 				pullData<std::string, H5::H5Object>(attributeName, dims, data, parent.get());
-			else throw(std::exception("Unhandled data type"));
+			else throw(std::invalid_argument("Unhandled data type"));
 		}
 
 		void CanHaveAttributes::readAttributeData(
@@ -192,7 +193,7 @@ namespace icedb {
 
 		void CanHaveAttributes::writeAttributeData(
 			const std::string &attributeName,
-			const type_info &type_id,
+			const std::type_info &type_id,
 			const std::vector<size_t> &dimensionality,
 			const std::vector<Data_Types::All_Variant_type> &data)
 		{
@@ -206,7 +207,7 @@ namespace icedb {
 			else if (type_id == typeid(double))pushData<double, H5::H5Object>(attributeName, dimensionality, parent, data);
 			else if (type_id == typeid(char))pushData<char, H5::H5Object>(attributeName, dimensionality, parent, data);
 			else if (type_id == typeid(std::string))pushData<std::string, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else throw(std::exception("Unhandled data type"));
+			else throw(std::invalid_argument("Unhandled data type"));
 			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
 		}
 

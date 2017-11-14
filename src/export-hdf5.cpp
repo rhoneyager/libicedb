@@ -1,6 +1,6 @@
 #include "../icedb/hdf5_supplemental.hpp"
 #include <gsl/gsl_assert>
-#include "../icedb/fs.hpp"
+//#include "../icedb/fs.hpp"
 #include "../icedb/defs.h"
 #include <string>
 #include <sstream>
@@ -199,7 +199,7 @@ namespace icedb {
 				return explode(mountStr, '/');
 			}
 
-			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base) {
+			H5::Group createGroupStructure(const std::string &groupName, H5::H5Location &base) {
 				// Using the '/' specifier, pop off the group names and 
 				// create groups if necessary in the tree. Return the final group.
 				Expects(groupName.size() > 0);
@@ -210,7 +210,7 @@ namespace icedb {
 				return std::move(createGroupStructure(groups, base));
 			}
 
-			H5::Group createGroupStructure(const std::vector<std::string> &groups, H5::Group &base) {
+			H5::Group createGroupStructure(const std::vector<std::string> &groups, H5::H5Location &base) {
 
 				/// \note This is really awkwardly stated because of an MSVC2017 bug.
 				/// The HDF5 group copy constructor fails to update its id field, even though

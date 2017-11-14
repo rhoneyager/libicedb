@@ -2,10 +2,11 @@
 #include <memory>
 #include <type_traits>
 #include <new>
-#include <gsl/gsl>
+//#include <gsl/gsl>
 
 namespace icedb {
 	namespace mem {
+		/*
 		void delete_single(gsl::owner<void *>ptr) noexcept;
 		void delete_array(gsl::owner<void *> ptr) noexcept;
 
@@ -16,7 +17,7 @@ namespace icedb {
 
 			template<
 				class _Ty2,
-				class = std::enable_if<std::is_convertible<_Ty2 *, _Ty *>::value>::type
+				class = typename std::enable_if<std::is_convertible<_Ty2 *, _Ty *>::value>::type
 			>
 			icedb_delete(const icedb_delete<_Ty2>&) noexcept
 			{}	// construct from another icedb_delete
@@ -36,13 +37,13 @@ namespace icedb {
 			constexpr icedb_delete() noexcept = default;
 
 			template<class _Uty,
-				class = std::enable_if<std::is_convertible<_Uty(*)[], _Ty(*)[]>::value>::type>
+				class = typename std::enable_if<std::is_convertible<_Uty(*)[], _Ty(*)[]>::value>::type>
 				icedb_delete(const icedb_delete<_Uty[]>&) noexcept
 			{	// construct from another icedb_delete
 			}
 
 			template<class _Uty,
-				class = std::enable_if<std::is_convertible<_Uty(*)[], _Ty(*)[]>::value>::type>
+				class = typename std::enable_if<std::is_convertible<_Uty(*)[], _Ty(*)[]>::value>::type>
 				void operator()(_Uty *_Ptr) const noexcept
 			{	// delete a pointer
 				static_assert(0 < sizeof(_Uty),
@@ -50,5 +51,6 @@ namespace icedb {
 				::icedb::mem::delete_array(_Ptr);
 			}
 		};
+		*/
 	}
 }

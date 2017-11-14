@@ -71,7 +71,7 @@ namespace icedb {
 				std::vector<Data_Types::All_Variant_type> &data) const;
 			void writeAttributeData(
 				const std::string &attributeName,
-				const type_info &type_id,
+				const std::type_info &type_id,
 				const std::vector<size_t> &dimensionas,
 				const std::vector<Data_Types::All_Variant_type> &data);
 

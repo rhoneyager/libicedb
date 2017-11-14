@@ -5,26 +5,31 @@
 
 namespace icedb {
 	namespace mem {
+		/*
+#ifdef _MSC_FULL_VER
 		[[gsl::suppress(i.11)]]
+#endif
 		void delete_single(gsl::owner<void *> ptr) noexcept {
-			[[gsl::suppress(r.11)]] delete ptr;
+#ifdef _MSC_FULL_VER
+			[[gsl::suppress(r.11)]]
+#endif
+				delete ptr;
 		}
+#ifdef _MSC_FULL_VER
 		[[gsl::suppress(i.11)]]
+#endif
 		void delete_array(gsl::owner<void *>ptr) noexcept {
-			[[gsl::suppress(r.11)]] delete[] ptr;
+#ifdef _MSC_FULL_VER
+			[[gsl::suppress(r.11)]]
+#endif
+				delete[] ptr;
 		}
-
-		[[gsl::suppress(r.11)]]
-		void test() {
-			auto p = std::unique_ptr<std::string, icedb::mem::icedb_delete<std::string> >(new std::string);
-			p->append("Test");
-		}
-
 		//void operator delete(void* ptr, std::size_t size) noexcept;
 		//void operator delete(void* ptr, std::align_val_t alignment) noexcept;
 		//void operator delete(void* ptr, std::size_t size, std::align_val_t alignment) noexcept;
 		//void operator delete(void* ptr, const std::nothrow_t&) noexcept;
 		//void operator delete(void* ptr, std::align_val_t alignment,
 		//	const std::nothrow_t&) noexcept;
+		*/
 	}
 }

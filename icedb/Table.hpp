@@ -61,12 +61,12 @@ namespace icedb {
 				readAll(dims, vdata);
 				data.resize(vdata.size());
 				for (size_t i = 0; i < vdata.size(); ++i)
-					res.data[i] = std::get<DataType>(vdata[i]);
-				return res;
+					data[i] = std::get<DataType>(vdata[i]);
+				//return res;
 			}
 
 			void writeAll(
-				const type_info &type_id,
+				const std::type_info &type_id,
 				const std::vector<Data_Types::All_Variant_type> &data) const;
 			/// Fixed size of data. Cannot resize without re-creating the dataset, for now.
 			/// Eventually, will support unlimited dimensions.
@@ -139,7 +139,7 @@ namespace icedb {
 				std::initializer_list<size_t> dims)
 			{
 				std::vector<size_t> vdims{ dims };
-				auto tbl = createTable<typename DataType>(tableName, vdims);
+				auto tbl = createTable<DataType>(tableName, vdims);
 				return tbl;
 			}
 			template <class DataType>
@@ -148,9 +148,9 @@ namespace icedb {
 				std::initializer_list<size_t> dims,
 				std::initializer_list<DataType> data)
 			{
-				auto tbl = createTable<typename DataType>(tableName, dims);
+				auto tbl = createTable<DataType>(tableName, dims);
 				std::vector<DataType> vdata{ data };
-				tbl->writeAll<typename DataType>(vdata);
+				tbl->template writeAll<DataType>(vdata);
 				return tbl;
 			}
 			template <class DataType>
@@ -159,8 +159,8 @@ namespace icedb {
 				std::initializer_list<size_t> dims,
 				const std::vector<DataType> &data)
 			{
-				auto tbl = createTable<typename DataType>(tableName, dims);
-				tbl->writeAll<typename DataType>(data);
+				auto tbl = createTable<DataType>(tableName, dims);
+				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}
 			template <class DataType>
@@ -169,8 +169,8 @@ namespace icedb {
 				std::initializer_list<size_t> dims,
 				const gsl::span<DataType> &data)
 			{
-				auto tbl = createTable<typename DataType>(tableName, dims);
-				tbl->writeAll<typename DataType>(data);
+				auto tbl = createTable<DataType>(tableName, dims);
+				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}
 			template <class DataType>
@@ -179,8 +179,8 @@ namespace icedb {
 				std::initializer_list<size_t> dims,
 				const gsl::span<const DataType> &data)
 			{
-				auto tbl = createTable<typename DataType>(tableName, dims);
-				tbl->writeAll<typename DataType>(data);
+				auto tbl = createTable<DataType>(tableName, dims);
+				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}
 		};

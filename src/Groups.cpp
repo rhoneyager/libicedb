@@ -25,6 +25,16 @@ namespace icedb {
 			this->_setAttributeParent(grp);
 			this->_setTablesParent(grp);
 		}
+		Group_impl::Group_impl(const std::string &name, gsl::not_null<H5::H5File*> parent)
+			: Group{ name }
+		{
+			auto ugrp = fs::hdf5::openGroup(parent.get(), name.c_str());
+			//grp = std::shared_ptr<H5::Group>(ugrp.release());
+			grp = std::shared_ptr<H5::Group>(ugrp.release()); // , mem::icedb_delete<H5::Group>());
+			this->_setAttributeParent(grp);
+			this->_setTablesParent(grp);
+		}
+
 
 		Group_impl::Group_impl(const std::string &name, gsl::not_null<const Group*> parent)
 			: Group{ name }
@@ -52,7 +62,9 @@ namespace icedb {
 			return std::move(Group::createGroup(groupName, this->grp.get()));
 		}
 
-		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::Group*> parent) {
+		/// This exists because HDF5's API changed.
+		template<class HPointerType>
+		Group::Group_ptr _Impl_createGroup(const std::string &groupName, gsl::not_null<HPointerType*> parent) {
 			//_impl->grp->createGroup(groupName); // Bad for NetCDF. See http://www.unidata.ucar.edu/software/netcdf/docs/file_format_specifications.html#creation_order
 			hid_t baseGrpID = parent->getId();
 			/* Create group, with link_creation_order set in the group
@@ -71,7 +83,14 @@ namespace icedb {
 			return std::make_unique<Group_impl>(groupName, parent);
 			//return Group::Group_ptr(new Group_impl(groupName, parent));
 		}
-		
+		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::Group*> parent) {
+			return _Impl_createGroup<H5::Group>(groupName, parent);
+		}
+		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::H5File*> parent) {
+			return _Impl_createGroup<H5::H5File>(groupName, parent);
+		}
+
+	
 		Group::Group_ptr Group::createGroup(const std::string &name, gsl::not_null<const Group*> parent) {
 			return std::move(Group::createGroup(name, parent->getHDF5Group().get()));
 		}
@@ -85,6 +104,11 @@ namespace icedb {
 			return std::make_unique<Group_impl>(name, parent);
 			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
 		}
+		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::H5File*> parent) {
+			return std::make_unique<Group_impl>(name, parent);
+			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
+		}
+
 
 		Group::Group_ptr Group::openGroup(Group_HDF_shared_ptr parent) {
 			return std::make_unique<Group_impl>(parent);

@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <stdexcept>
+#include <sstream>
 
 #include <gsl/gsl>
 #include "compat/hdf5_load.h"
@@ -34,10 +36,10 @@ namespace icedb {
 			/// \returns A pair of (the matching type, a flag indicating passing by pointer or reference)
 			typedef std::unique_ptr<H5::AtomType> MatchAttributeTypeType;
 			template <class DataType>
-			MatchAttributeTypeType MatchAttributeType() {
-				static_assert(false, 
-					"Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType.");
-			}
+			MatchAttributeTypeType MatchAttributeType();
+			//{
+			//	throw(std::invalid_argument("Unsupported type during attribute conversion in rtmath::plugins::hdf5::MatchAttributeType."));
+			//}
 			extern template MatchAttributeTypeType MatchAttributeType<std::string>();
 			extern template MatchAttributeTypeType MatchAttributeType<const char*>();
 			extern template MatchAttributeTypeType MatchAttributeType<char>();
@@ -85,7 +87,10 @@ namespace icedb {
 				const std::vector<DataType> &value)
 			{
 				auto ftype = MatchAttributeType<DataType>();
-				H5::ArrayType vls_type(*ftype, static_cast<int>(dimensionality.size()), static_cast<const hsize_t*>(dimensionality.data()));
+				std::vector<hsize_t> hdims;
+				for (const auto &d : dimensionality)
+					hdims.push_back(static_cast<hsize_t>(d));
+				H5::ArrayType vls_type(*ftype, static_cast<int>(dimensionality.size()), (hdims.data()));
 
 				H5::DataSpace att_space(H5S_SCALAR);
 				H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
@@ -250,7 +255,7 @@ namespace icedb {
 				std::vector<hsize_t> sz{ (hsize_t)rows, (hsize_t)cols };
 				int dimensionality = 2;
 				if (cols == 1) dimensionality = 1;
-				DataSpace fspace(dimensionality, sz);
+				H5::DataSpace fspace(dimensionality, sz.data());
 				auto ftype = MatchAttributeType<DataType>();
 				std::shared_ptr<DSetCreatPropList> plist;
 				if (iplist) plist = iplist;
@@ -412,7 +417,7 @@ namespace icedb {
 					size_t j = i / nstride;
 					std::string lbl = s((int)j);
 					std::ostringstream fldname;
-					fldname << prefix;
+					fldname << std::string(prefix);
 					fldname.width(2);
 					fldname.fill('0');
 					fldname << std::right << i << "_NAME";
@@ -468,14 +473,15 @@ namespace icedb {
 			std::vector<std::string> explode(std::string const & s, char delim);
 			std::vector<std::string> explodeHDF5groupPath(const std::string &s);
 
-			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base);
-			H5::Group createGroupStructure(const std::vector<std::string> &groupNames, H5::Group &base);
+			H5::Group createGroupStructure(const std::string &groupName, H5::H5Location &base);
+			H5::Group createGroupStructure(const std::vector<std::string> &groupNames, H5::H5Location &base);
 
-			unsigned int getHDF5IOflags(enum class fs::IOopenFlags flag);
+
+			unsigned int getHDF5IOflags(fs::IOopenFlags flag);
 
 			/// Functions to detect the _type_ of data
 			template <class DataType>
-			bool isType(hid_t) { static_assert(false, "Unsupported type."); return false; }
+			bool isType(hid_t) { throw(std::invalid_argument("Unsupported type.")); return false; }
 
 			template <class DataType, class Container>
 			bool isType(gsl::not_null<const Container*> obj, const std::string &attributeName) {

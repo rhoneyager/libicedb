@@ -20,7 +20,7 @@ namespace icedb {
 		template<> constexpr bool Is_Valid_Data_Type<double>() { return true; }
 		template<> constexpr bool Is_Valid_Data_Type<char>() { return true; }
 		template<> constexpr bool Is_Valid_Data_Type<std::string>() { return true; }
-		inline bool Is_Valid_Data_Type(const type_info &type_id) {
+		inline bool Is_Valid_Data_Type(const std::type_info &type_id) {
 			if (type_id == typeid(uint64_t)) return true;
 			else if (type_id == typeid(int64_t)) return true;
 			else if (type_id == typeid(float)) return true;

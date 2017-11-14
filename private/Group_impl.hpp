@@ -20,6 +20,7 @@ namespace icedb {
 		public:
 			Group_impl();
 			Group_impl(const std::string &name, gsl::not_null<H5::Group*> parent);
+			Group_impl(const std::string &name, gsl::not_null<H5::H5File*> parent);
 			Group_impl(const std::string &name, gsl::not_null<const Group*> parent);
 			Group_impl(Group_HDF_shared_ptr grp);
 			virtual ~Group_impl();

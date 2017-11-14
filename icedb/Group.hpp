@@ -7,6 +7,7 @@
 #include "util.hpp"
 namespace H5 {
 	class Group;
+	class H5File;
 }
 namespace icedb {
 	namespace Groups {
@@ -36,8 +37,12 @@ namespace icedb {
 			virtual Group_HDF_shared_ptr getHDF5Group() const = 0;
 
 			static Group_ptr createGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
+			static Group_ptr createGroup(const std::string &name, gsl::not_null<H5::H5File*> parent);
+
 			static Group_ptr createGroup(const std::string &name, gsl::not_null<const Group*> parent);
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
+			static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::H5File*> parent);
+
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<const Group*> parent);
 			static Group_ptr openGroup(Group_HDF_shared_ptr group);
 		};

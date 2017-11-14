@@ -106,7 +106,7 @@ namespace icedb {
 			
 			Attributes::Attribute<std::string> obj_type
 				= Attributes::CanHaveAttributes::readAttribute<std::string>(group, Group::_icedb_obj_type_identifier);
-			if (!obj_type.data.size() == 1) return false;
+			if (obj_type.data.size() != 1) return false;
 			if (obj_type.data[0] != Shape::_icedb_obj_type_shape_identifier) return false;
 			return true;
 		}

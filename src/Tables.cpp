@@ -197,7 +197,7 @@ namespace icedb {
 				pullData<char, H5::DataSet>(dims, data, selfptr.get());
 			else if (icedb::fs::hdf5::isType<std::string, H5::DataSet>(selfptr.get()))
 				pullData<std::string, H5::DataSet>(dims, data, selfptr.get());
-			else throw(std::exception("Unhandled data type"));
+			else throw(std::invalid_argument("Unhandled data type"));
 		}
 
 		template <class DataType, class ObjectType>
@@ -218,7 +218,7 @@ namespace icedb {
 		}
 
 		void Table::writeAll(
-			const type_info &type_id,
+			const std::type_info &type_id,
 			const std::vector<Data_Types::All_Variant_type> &data) const
 		{
 			Expects(valid());
@@ -231,7 +231,7 @@ namespace icedb {
 			else if (type_id == typeid(double))pushData<double, H5::DataSet>(dimensionality, selfptr.get(), data);
 			else if (type_id == typeid(char))pushData<char, H5::DataSet>(dimensionality, selfptr.get(), data);
 			else if (type_id == typeid(std::string))pushData<std::string, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else throw(std::exception("Unhandled data type"));
+			else throw(std::invalid_argument("Unhandled data type"));
 			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
 		}
 
@@ -266,7 +266,7 @@ namespace icedb {
 			else if (type_id == typeid(double))fs::hdf5::createDatasetRaw<double, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
 			else if (type_id == typeid(char))fs::hdf5::createDatasetRaw<char, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
 			else if (type_id == typeid(std::string))fs::hdf5::createDatasetRaw<std::string, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
-			else throw(std::exception("Unhandled data type"));
+			else throw(std::invalid_argument("Unhandled data type"));
 		}
 
 		std::set<std::string> CanHaveTables::getTableNames() const {
