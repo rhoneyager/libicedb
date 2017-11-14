@@ -5,6 +5,7 @@
 #include "Attribute.hpp"
 #include "Table.hpp"
 #include "util.hpp"
+#include "icedb_h5.h"
 namespace H5 {
 	class Group;
 	class H5File;
@@ -36,13 +37,14 @@ namespace icedb {
 			virtual void deleteGroup(const std::string &groupName) = 0;
 			virtual Group_HDF_shared_ptr getHDF5Group() const = 0;
 
-			static Group_ptr createGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
-			static Group_ptr createGroup(const std::string &name, gsl::not_null<H5::H5File*> parent);
-
+			static Group_ptr createGroup(const std::string &name, gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> parent);
+			//static Group_ptr createGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
+			//static Group_ptr createGroup(const std::string &name, gsl::not_null<H5::H5File*> parent);
 			static Group_ptr createGroup(const std::string &name, gsl::not_null<const Group*> parent);
-			static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
-			static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::H5File*> parent);
 
+			static Group_ptr openGroup(const std::string &name, gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> parent);
+			//static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::Group*> parent);
+			//static Group_ptr openGroup(const std::string &name, gsl::not_null<H5::H5File*> parent);
 			static Group_ptr openGroup(const std::string &name, gsl::not_null<const Group*> parent);
 			static Group_ptr openGroup(Group_HDF_shared_ptr group);
 		};

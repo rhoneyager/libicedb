@@ -155,7 +155,7 @@ namespace icedb {
 				return plist;
 			}
 
-			std::set<std::string> getGroupMembers(const ICEDB_H5_GROUP_OWNER &base) {
+			std::set<std::string> getGroupMembers(const ICEDB_H5_GETNUMOBJS_OWNER &base) {
 				std::set<std::string> res;
 				const hsize_t numObjs = base.getNumObjs();
 				for (hsize_t i = 0; i < numObjs; ++i)
@@ -166,7 +166,7 @@ namespace icedb {
 				return res;
 			}
 
-			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const ICEDB_H5_GROUP_OWNER &base) {
+			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const ICEDB_H5_GETNUMOBJS_OWNER &base) {
 				std::map<std::string, H5G_obj_t> res;
 				const hsize_t numObjs = base.getNumObjs();
 				for (hsize_t i = 0; i < numObjs; ++i)

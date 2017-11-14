@@ -21,8 +21,8 @@ namespace icedb {
 			/// Provides a method for calculating the offsets from std::arrays of data
 #			define ARRAYOFFSET(TYPE, INDEX) [](){TYPE a; return (size_t) &a[INDEX] - (size_t) &a; }()
 
-			std::set<std::string> getGroupMembers(const ICEDB_H5_GROUP_OWNER &base);
-			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const ICEDB_H5_GROUP_OWNER &base);
+			std::set<std::string> getGroupMembers(const ICEDB_H5_GETNUMOBJS_OWNER &base);
+			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const ICEDB_H5_GETNUMOBJS_OWNER &base);
 
 
 			typedef std::unique_ptr<H5::Group > HDFgroup_t;

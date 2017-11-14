@@ -83,12 +83,14 @@ namespace icedb {
 			return std::make_unique<Group_impl>(groupName, parent);
 			//return Group::Group_ptr(new Group_impl(groupName, parent));
 		}
-		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::Group*> parent) {
-			return _Impl_createGroup<H5::Group>(groupName, parent);
+		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> parent) {
+			return _Impl_createGroup<ICEDB_H5_GROUP_OWNER>(groupName, parent);
 		}
+		/*
 		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::H5File*> parent) {
 			return _Impl_createGroup<H5::H5File>(groupName, parent);
 		}
+		*/
 
 	
 		Group::Group_ptr Group::createGroup(const std::string &name, gsl::not_null<const Group*> parent) {
@@ -100,11 +102,7 @@ namespace icedb {
 			//return std::move(Group::Group_ptr(new Group_impl(groupName, grp.get())));
 		}
 		
-		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::Group*> parent) {
-			return std::make_unique<Group_impl>(name, parent);
-			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
-		}
-		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::H5File*> parent) {
+		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> parent) {
 			return std::make_unique<Group_impl>(name, parent);
 			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
 		}
