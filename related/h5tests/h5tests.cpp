@@ -72,6 +72,9 @@ int main() {
 
 	// 1.10.0	H5::CommonFG has getNumObjs.
 	// 1.10.1	H5::Group has getNumObjs.
+	//
+	// 1.10.0	H5::Location has getId. H5::CommonFG does not. Need separate defs for H5::Group and H5::H5File.
+	// 1.10.1	
 	if (hasDeprecatedCommonFG) {
 		out << "#define ICEDB_H5_OPENGROUP_IN_H5LOCATION 1\n";
 		out << "#define ICEDB_H5_GROUP_OWNER_PTR H5::Group*\n";
@@ -84,12 +87,14 @@ int main() {
 		// It's okay, as H5::Group is a child of H5::Location.
 		out << "#define ICEDB_H5_GETNUMOBJS_OWNER H5::Group\n";
 		out << "#define ICEDB_H5_GETNUMOBJS_OWNER_PTR H5::Group*\n";
+		out << "#define ICEDB_H5_UNIFIED_GROUP_FILE 1\n";
 	} else {
 		out << "#define ICEDB_H5_OPENGROUP_IN_H5LOCATION 0\n";
 		out << "#define ICEDB_H5_GROUP_OWNER_PTR H5::CommonFG*\n";
 		out << "#define ICEDB_H5_GROUP_OWNER H5::CommonFG\n";
 		out << "#define ICEDB_H5_GETNUMOBJS_OWNER H5::CommonFG\n";
 		out << "#define ICEDB_H5_GETNUMOBJS_OWNER_PTR H5::CommonFG*\n";
+		out << "#define ICEDB_H5_UNIFIED_GROUP_FILE 0\n";
 	}
 
 

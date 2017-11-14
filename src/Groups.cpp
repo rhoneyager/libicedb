@@ -83,30 +83,49 @@ namespace icedb {
 			return std::make_unique<Group_impl>(groupName, parent);
 			//return Group::Group_ptr(new Group_impl(groupName, parent));
 		}
+#if ICEDB_H5_UNIFIED_GROUP_FILE == 1
 		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> parent) {
 			return _Impl_createGroup<ICEDB_H5_GROUP_OWNER>(groupName, parent);
 		}
-		/*
+#else
+		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::Group*> parent) {
+			return _Impl_createGroup<H5::Group>(groupName, parent);
+		}
+	
 		Group::Group_ptr Group::createGroup(const std::string &groupName, gsl::not_null<H5::H5File*> parent) {
 			return _Impl_createGroup<H5::H5File>(groupName, parent);
 		}
-		*/
+#endif	
 
 	
 		Group::Group_ptr Group::createGroup(const std::string &name, gsl::not_null<const Group*> parent) {
 			return std::move(Group::createGroup(name, parent->getHDF5Group().get()));
 		}
 
+
+
 		Group::Group_ptr Group_impl::openGroup(const std::string &groupName) const {
 			return std::make_unique<Group_impl>(groupName, grp.get());
 			//return std::move(Group::Group_ptr(new Group_impl(groupName, grp.get())));
 		}
-		
+	
+
+#if ICEDB_H5_UNIFIED_GROUP_FILE == 1	
 		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> parent) {
 			return std::make_unique<Group_impl>(name, parent);
 			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
 		}
+#else
+		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::Group*> parent) {
+			return std::make_unique<Group_impl>(name, parent);
+			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
+		}
+		Group::Group_ptr Group::openGroup(const std::string &name, gsl::not_null<H5::H5File*> parent) {
+			return std::make_unique<Group_impl>(name, parent);
+			//return std::move(Group::Group_ptr( new Group_impl(name, parent)));
+		}
 
+#endif
 
 		Group::Group_ptr Group::openGroup(Group_HDF_shared_ptr parent) {
 			return std::make_unique<Group_impl>(parent);
