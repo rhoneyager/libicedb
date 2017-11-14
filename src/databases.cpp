@@ -1,6 +1,7 @@
 #include <set>
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include "../icedb/fs.hpp"
 #include <gsl/gsl_assert>
 #include "../private/fs_backend.hpp"
@@ -87,7 +88,10 @@ namespace icedb {
 		Database::Database_ptr Database::openDatabase(
 			const std::string &location, fs::IOopenFlags flags)
 		{
-			sfs::path pBaseS = fs::impl::resolveSymlinkPathandForceExists(location);
+			sfs::path pBaseS = fs::impl::resolveSymLinks(location);
+			if (!sfs::exists(pBaseS)) {
+				throw(std::invalid_argument("Attempting to open a database root that does not exist. Did you mean to first create this database?"));
+			}
 			fs::impl::CollectedFilesRet_Type mountFiles = fs::impl::collectActualHDF5files(pBaseS);
 			unsigned int Hflags = fs::hdf5::getHDF5IOflags(flags);
 			auto res = std::make_unique<Database_impl>();

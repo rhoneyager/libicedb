@@ -22,6 +22,9 @@ macro(addlib libname libshared )
 			target_link_libraries(${libname} dl stdc++fs)
 		endif()
 	endif()
+	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		target_link_libraries(${libname} dl stdc++fs)
+	endif()
 	INSTALL(TARGETS ${libname} 
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
 		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}

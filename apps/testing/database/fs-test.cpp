@@ -234,6 +234,9 @@ int main(int argc, char** argv) {
 		icedb::Databases::Database::indexDatabase(dbpath);
 	} else {
 		std::cout << "Trying to open the database at " << dbpath << std::endl;
+		std::cout << "Note: This will fail if the path does not exist. "
+		       "If this is the case, either run with --create as an option, "
+		       "or check that the database path (--dbpath) is correct." << std::endl;
 		icedb::fs::IOopenFlags flags = icedb::fs::IOopenFlags::READ_ONLY;
 		if (vm.count("rw")) flags = icedb::fs::IOopenFlags::READ_WRITE;
 		auto db = icedb::Databases::Database::openDatabase(dbpath, flags);
