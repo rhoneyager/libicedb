@@ -27,6 +27,8 @@ namespace icedb {
 			virtual ~Database_impl();
 			Groups::Group::Group_ptr openGroup(const std::string &path) override;
 			Groups::Group::Group_ptr createGroup(const std::string &path) override;
+			Groups::Group::Group_ptr createGroupStructure(const std::string &groupName) override;
+			Groups::Group::Group_ptr createGroupStructure(const std::vector<std::string> &groupNames) override;
 			//ObjectIdPathSet_Type findObjects(ObjectTypes type, const std::string &base, bool recurse = true);
 		};
 	}

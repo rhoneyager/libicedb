@@ -41,8 +41,8 @@ int main(int argc, char** argv) {
 			("help,h", "produce help message")
 			("from", po::value<string>(), "The path where shapes are read from")
 			("to", po::value<string>(), "The path where shapes are written to")
-			("input-format", po::value<string>()->default_value("ddscat"), "Specifies the input format");
-			("output-format", po::value<string>()->default_value("ddscat"), "Specifies the output format");
+			//("input-format", po::value<string>()->default_value("ddscat"), "Specifies the input format");
+			//("output-format", po::value<string>()->default_value("ddscat"), "Specifies the output format");
 			;
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);

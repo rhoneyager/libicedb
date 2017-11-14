@@ -168,7 +168,19 @@ namespace icedb {
 
 		}
 
-		
+		Groups::Group::Group_ptr Database_impl::createGroupStructure(const std::string &groupName)
+		{
+			H5::Group grp = icedb::fs::hdf5::createGroupStructure(groupName, *(hFile.get()));
+			std::shared_ptr<H5::Group> ngrp = std::make_shared<H5::Group>(grp);
+			return Groups::Group::openGroup(ngrp);
+		}
+		Groups::Group::Group_ptr Database_impl::createGroupStructure(const std::vector<std::string> &groupNames)
+		{
+			H5::Group grp = icedb::fs::hdf5::createGroupStructure(groupNames, *(hFile.get()));
+			std::shared_ptr<H5::Group> ngrp = std::make_shared<H5::Group>(grp);
+			return Groups::Group::openGroup(ngrp);
+		}
+
 
 	}
 }
