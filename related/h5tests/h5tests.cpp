@@ -5,6 +5,7 @@
 
 #include <hdf5.h>
 #include <iostream>
+#include <fstream>
 
 struct version {
 	int maj = 0;
@@ -55,7 +56,7 @@ struct version {
 	bool operator!=(const version &rhs) {return !operator==(rhs);}
 };
 int main() {
-	using std::cout;
+	std::ofstream out("icedb_h5.h");
 
 	std::string strVersion(H5_VERSION);
 	version v(strVersion);
@@ -63,17 +64,20 @@ int main() {
 
 	bool hasDeprecatedCommonFG = (vLocation <= v);
 
-	cout << "#pragma once\n"
+	out << "#pragma once\n"
 		"#ifndef ICEDB_H5_TESTS_HDR\n"
 		"#define ICEDB_H5_TESTS_HDR\n\n";
 
 	if (hasDeprecatedCommonFG) {
-		cout << "#define ICEDB_H5_OPENGROUP_IN_H5LOCATION 1\n";
-		cout << "#define ICEDB_H5_GROUP_OWNER_PTR H5::H5Location*\n";
+		out << "#define ICEDB_H5_OPENGROUP_IN_H5LOCATION 1\n";
+		out << "#define ICEDB_H5_GROUP_OWNER_PTR H5::H5Location*\n";
+		out << "#define ICEDB_H5_GROUP_OWNER H5::H5Location\n";
+
 	} else {
-		cout << "#define ICEDB_H5_OPENGROUP_IN_H5LOCATION 0\n";
-		cout << "#define ICEDB_H5_GROUP_OWNER_PTR H5::CommonFG*\n";
+		out << "#define ICEDB_H5_OPENGROUP_IN_H5LOCATION 0\n";
+		out << "#define ICEDB_H5_GROUP_OWNER_PTR H5::CommonFG*\n";
+		out << "#define ICEDB_H5_GROUP_OWNER H5::CommonFG\n";
 	}
 
-	cout << "\n#endif // End ICEDB_H5_TESTS_HDR\n";
+	out << "\n#endif // End ICEDB_H5_TESTS_HDR\n";
 }

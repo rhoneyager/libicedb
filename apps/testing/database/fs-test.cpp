@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "../../../icedb/fs.hpp"
-#include "../../../icedb/hdf5_supplemental.hpp"
-#include "../../../private/fs_backend.hpp"
+//#include "../../../private/hdf5_supplemental.hpp"
+//#include "../../../private/fs_backend.hpp"
 #include "../../../icedb/Database.hpp"
 #include "../../../icedb/shape.hpp"
 

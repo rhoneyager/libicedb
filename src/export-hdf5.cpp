@@ -1,6 +1,5 @@
-#include "../icedb/hdf5_supplemental.hpp"
+#include "../private/hdf5_supplemental.hpp"
 #include <gsl/gsl_assert>
-//#include "../icedb/fs.hpp"
 #include "../icedb/defs.h"
 #include <string>
 #include <sstream>
@@ -56,24 +55,24 @@ namespace icedb {
 			template <> void insertAttr<double>(H5::Attribute &, std::shared_ptr<H5::AtomType>, const double&);
 			*/
 
-			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name)
+			HDFgroup_t openOrCreateGroup(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name)
 			{
 				HDFgroup_t res;
 				try {
-					res.swap(std::make_unique<H5::Group>( base->openGroup( name )));
+					res=std::make_unique<H5::Group>( base->openGroup( name ));
 				} catch( H5::GroupIException not_found_error ) {
-					res.swap(std::make_unique<H5::Group>(base->createGroup( name )));
+					res=std::make_unique<H5::Group>(base->createGroup( name ));
 				} catch( H5::FileIException not_found_error ) {
-					res.swap(std::make_unique<H5::Group>(base->createGroup( name )));
+					res=std::make_unique<H5::Group>(base->createGroup( name ));
 				}
 				return res;
 			}
 
-			HDFgroup_t openGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name)
+			HDFgroup_t openGroup(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name)
 			{
 				HDFgroup_t res;
 				try {
-					res.swap(std::make_unique<H5::Group>(base->openGroup( name )));
+					res=(std::make_unique<H5::Group>(base->openGroup( name )));
 				} catch( H5::GroupIException not_found_error ) {
 					return nullptr;
 				} catch( H5::FileIException not_found_error ) {
@@ -99,7 +98,7 @@ namespace icedb {
 				}
 			}
 
-			bool groupExists(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name)
+			bool groupExists(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name)
 			{
 				try {
 					H5::Group( base->openGroup( name ));
@@ -112,7 +111,7 @@ namespace icedb {
 				}
 			}
 
-			std::pair<bool,bool> symLinkExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
+			std::pair<bool,bool> symLinkExists(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name)
 			{
 				bool linkexists = false;
 				bool linkgood = false;
@@ -131,7 +130,7 @@ namespace icedb {
 				return std::pair<bool,bool>(linkexists,linkgood);
 			}
 
-			bool datasetExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name)
+			bool datasetExists(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name)
 			{
 				try {
 					H5::DataSet(base->openDataSet(name));
@@ -156,7 +155,7 @@ namespace icedb {
 				return plist;
 			}
 
-			std::set<std::string> getGroupMembers(const H5::Group &base) {
+			std::set<std::string> getGroupMembers(const ICEDB_H5_GROUP_OWNER &base) {
 				std::set<std::string> res;
 				const hsize_t numObjs = base.getNumObjs();
 				for (hsize_t i = 0; i < numObjs; ++i)
@@ -167,7 +166,7 @@ namespace icedb {
 				return res;
 			}
 
-			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const H5::Group &base) {
+			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const ICEDB_H5_GROUP_OWNER &base) {
 				std::map<std::string, H5G_obj_t> res;
 				const hsize_t numObjs = base.getNumObjs();
 				for (hsize_t i = 0; i < numObjs; ++i)
@@ -199,7 +198,7 @@ namespace icedb {
 				return explode(mountStr, '/');
 			}
 
-			H5::Group createGroupStructure(const std::string &groupName, H5::H5Location &base) {
+			H5::Group createGroupStructure(const std::string &groupName, ICEDB_H5_GROUP_OWNER &base) {
 				// Using the '/' specifier, pop off the group names and 
 				// create groups if necessary in the tree. Return the final group.
 				Expects(groupName.size() > 0);
@@ -210,13 +209,13 @@ namespace icedb {
 				return std::move(createGroupStructure(groups, base));
 			}
 
-			H5::Group createGroupStructure(const std::vector<std::string> &groups, H5::H5Location &base) {
+			H5::Group createGroupStructure(const std::vector<std::string> &groups, ICEDB_H5_GROUP_OWNER &base) {
 
 				/// \note This is really awkwardly stated because of an MSVC2017 bug.
 				/// The HDF5 group copy constructor fails to update its id field, even though
 				/// the hid_t is a uint64 and the copy is trivial. These 'relocatable references'
 				/// allow me to avoid these copies through liberal use of std::move.
-				std::shared_ptr<H5::Group> current(&base, [](H5::Group*) {});
+				std::shared_ptr<ICEDB_H5_GROUP_OWNER> current(&base, [](ICEDB_H5_GROUP_OWNER*) {});
 				std::vector<H5::Group> vgrps;
 				//vgrps.push_back(current);
 
@@ -240,7 +239,7 @@ namespace icedb {
 
 
 			/// \todo Candidate for constexpr inlining
-			unsigned int getHDF5IOflags(enum class fs::IOopenFlags flags) {
+			unsigned int getHDF5IOflags(fs::IOopenFlags flags) {
 				unsigned int Hflags = 0; // HDF5 flags
 				if (flags == fs::IOopenFlags::READ_ONLY) Hflags = H5F_ACC_RDONLY;
 				else if (flags == fs::IOopenFlags::READ_WRITE) Hflags = H5F_ACC_RDWR;

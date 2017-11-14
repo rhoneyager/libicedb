@@ -1,6 +1,6 @@
 #pragma once
 #include "../icedb/Database.hpp"
-#include "../icedb/hdf5_supplemental.hpp"
+#include "../private/hdf5_supplemental.hpp"
 
 namespace icedb {
 	namespace Databases {

@@ -19,7 +19,7 @@ macro(addlib libname libshared )
 
 	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
 		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-			target_link_libraries(${libname} dl)
+			target_link_libraries(${libname} dl stdc++fs)
 		endif()
 	endif()
 	INSTALL(TARGETS ${libname} 

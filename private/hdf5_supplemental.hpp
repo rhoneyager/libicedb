@@ -8,9 +8,10 @@
 #include <sstream>
 
 #include <gsl/gsl>
-#include "compat/hdf5_load.h"
-#include "fs.hpp"
-#include "util.hpp"
+#include "icedb_h5.h" // Auto-generated. Gets installed in the correct location.
+#include "../icedb/compat/hdf5_load.h"
+#include "../icedb/fs.hpp"
+#include "../icedb/util.hpp"
 
 namespace icedb {
 	namespace fs {
@@ -20,17 +21,16 @@ namespace icedb {
 			/// Provides a method for calculating the offsets from std::arrays of data
 #			define ARRAYOFFSET(TYPE, INDEX) [](){TYPE a; return (size_t) &a[INDEX] - (size_t) &a; }()
 
-			std::set<std::string> getGroupMembers(const H5::Group &base);
-			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const H5::Group &base);
+			std::set<std::string> getGroupMembers(const ICEDB_H5_GROUP_OWNER &base);
+			std::map<std::string, H5G_obj_t> getGroupMembersTypes(const ICEDB_H5_GROUP_OWNER &base);
 
-			H5::Group createGroupStructure(const std::string &groupName, H5::Group &base);
 
 			typedef std::unique_ptr<H5::Group > HDFgroup_t;
 			//typedef std::unique_ptr<H5::Group, mem::icedb_delete<H5::Group> > HDFgroup_t;
 
-			HDFgroup_t openOrCreateGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name);
-			HDFgroup_t openGroup(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name);
-			bool groupExists(gsl::not_null<H5::Group*> base, gsl::not_null<const char*> name);
+			HDFgroup_t openOrCreateGroup(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name);
+			HDFgroup_t openGroup(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name);
+			bool groupExists(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name);
 
 			/// \param std::shared_ptr<H5::AtomType> is a pointer to a newly-constructed matching type
 			/// \returns A pair of (the matching type, a flag indicating passing by pointer or reference)
@@ -222,25 +222,18 @@ namespace icedb {
 
 			bool attrExists(gsl::not_null<H5::H5Object*> obj, gsl::not_null<const char*> attname);
 
-			/// Convenience function to either open or create a group
-			HDFgroup_t openOrCreateGroup(
-				gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
-
-			/// Convenience function to check if a given group exists
-			bool groupExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
-
 			/// Convenience function to check if a symbolic link exists, and if the object being 
 			/// pointed to also exists.
 			/// \returns std::pair<bool,bool> refers to, respectively, if a symbolic link is found and 
 			/// if the symbolic link is good.
-			std::pair<bool, bool> symLinkExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
+			std::pair<bool, bool> symLinkExists(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name);
 
 			// \brief Convenience function to open a group, if it exists
 			// \returns nullptr is the group does not exist.
 			//HDFgroup_t openGroup(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
 
 			/// Convenience function to check if a given dataset exists
-			bool datasetExists(gsl::not_null<H5::H5Location*> base, gsl::not_null<const char*> name);
+			bool datasetExists(gsl::not_null<ICEDB_H5_GROUP_OWNER_PTR> base, gsl::not_null<const char*> name);
 
 			//typedef std::unique_ptr<H5::DataSet, mem::icedb_delete<H5::DataSet> > HDFdataset_t;
 			typedef std::unique_ptr<H5::DataSet > HDFdataset_t;
@@ -473,8 +466,8 @@ namespace icedb {
 			std::vector<std::string> explode(std::string const & s, char delim);
 			std::vector<std::string> explodeHDF5groupPath(const std::string &s);
 
-			H5::Group createGroupStructure(const std::string &groupName, H5::H5Location &base);
-			H5::Group createGroupStructure(const std::vector<std::string> &groupNames, H5::H5Location &base);
+			H5::Group createGroupStructure(const std::string &groupName, ICEDB_H5_GROUP_OWNER &base);
+			H5::Group createGroupStructure(const std::vector<std::string> &groupNames, ICEDB_H5_GROUP_OWNER &base);
 
 
 			unsigned int getHDF5IOflags(fs::IOopenFlags flag);

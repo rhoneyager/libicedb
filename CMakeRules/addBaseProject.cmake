@@ -7,9 +7,12 @@ macro(getMSVCappend)
 endmacro(getMSVCappend)
 macro(addBaseProject)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
 	#SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
+	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++fs")
+	#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lstdc++fs")
+
 ENDIF()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang

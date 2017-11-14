@@ -2,7 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include "../icedb/shape.hpp"
-#include "../icedb/hdf5_supplemental.hpp"
+#include "../private/hdf5_supplemental.hpp"
 #include "../private/Shape_impl.hpp"
 
 namespace icedb {

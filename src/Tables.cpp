@@ -3,7 +3,7 @@
 #include "../icedb/Group.hpp"
 #include "../private/Table_impl.hpp"
 #include "../private/Attribute_impl.hpp"
-#include "../icedb/hdf5_supplemental.hpp"
+#include "../private/hdf5_supplemental.hpp"
 
 namespace icedb {
 	namespace Tables {

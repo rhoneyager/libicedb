@@ -65,7 +65,6 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
 	COMMENT "Generate HDF5 definitions for function matching"
 	)
 
-
 set(gsl_objs
 	related_includes/gsl/gsl
 	related_includes/gsl/gsl_algorithm
@@ -102,7 +101,7 @@ set(db_objs
 	src/fs_backend.cpp
 	icedb/fs.hpp)
 set(hdf_objs
-	icedb/hdf5_supplemental.hpp
+	private/hdf5_supplemental.hpp
 	icedb/compat/hdf5_load.h
 	src/export-hdf5.cpp)
 set(lib_objs
@@ -127,7 +126,8 @@ source_group("Tables" FILES ${tbl_objs})
 source_group("Databases" FILES ${db_objs})
 source_group("HDF5" FILES ${hdf_objs})
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
-	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs})
+	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
+	${CMAKE_BINARY_DIR}/icedb_h5.h)
 IF (WIN32 AND NOT CYGWIN)
 SET(libsrcs ${libsrcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
@@ -145,7 +145,6 @@ target_include_directories(libicedb SYSTEM
 target_compile_definitions(libicedb
 	PRIVATE ${HDF5_DEFINITIONS})
 target_link_libraries(libicedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
-add_dependencies(libicedb ${CMAKE_BINARY_DIR}/icedb_h5.h)
 addlib(libicedb STATIC)
 storebin(libicedb)
 
