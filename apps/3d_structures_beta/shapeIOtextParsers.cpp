@@ -1,3 +1,4 @@
+// This is REALLY rough. Mostly to serve as an example / get the test shape ingest program running.
 #pragma warning( disable : 4996 ) // -D_SCL_SECURE_NO_WARNINGS
 #pragma warning( disable : 4244 ) // 'argument': conversion from 'std::streamsize' to 'int', possible loss of data - boost::copy
 #include <iostream>
@@ -29,7 +30,7 @@ namespace {
 	/** \brief Parses space-separated shapefile entries.
 	**/
 	template <typename Iterator>
-	bool parse_shapefile_entries(Iterator first, Iterator last, std::vector<long>& v)
+	bool parse_shapefile_entries(Iterator first, Iterator last, std::vector<float>& v)
 	{
 		using qi::double_;
 		using qi::long_;
@@ -104,30 +105,7 @@ namespace {
 namespace icedb {
 	namespace Examples {
 		namespace Shapes {
-			ShapeDataBasic readDDSCAT(const char* in)
-			{
-				std::shared_ptr<::scatdb::shape::shape> s = ::scatdb::shape::shape::generate();
-				std::string str(in);
-				std::string desc;
-				std::shared_ptr<::scatdb::shape::shapeStorage_t> data(
-					new ::scatdb::shape::shapeStorage_t);
-				std::shared_ptr<::scatdb::shape::shapeHeaderStorage_t> hdr
-				(new ::scatdb::shape::shapeHeaderStorage_t);
-				size_t headerEnd = 0, numPoints = 0;
-				readHeader(str.c_str(), desc, numPoints, hdr, headerEnd);
-				data->resize((int)numPoints, ::scatdb::shape::backends::NUM_SHAPECOLS);
-				readTextContents(str.c_str(), headerEnd, data);
-				//auto ing = scatdb::generateIngest();
-				/// \todo Change ingest to show absolute path
-				//ing->sources.push_back(opts->getVal<std::string>("filename", "Unknown file"));
-				//s->setIngestInformation(ing);
-				s->setDescription(desc);
-				s->setHeader(hdr);
-				s->setPoints(data);
-				return s;
-			}
 			void readHeader(const char* in, std::string &desc, size_t &np,
-				std::shared_ptr<::scatdb::shape::shapeHeaderStorage_t> hdr,
 				size_t &headerEnd)
 			{
 				using namespace std;
@@ -150,7 +128,7 @@ namespace icedb {
 					//std::getline(in,lin);
 
 					size_t posa = 0, posb = 0;
-					Eigen::Array3f *v = nullptr;
+					//Eigen::Array3f *v = nullptr;
 					switch (i)
 					{
 					case 0: // Title line
@@ -176,6 +154,7 @@ namespace icedb {
 					case 4: // d
 					case 5: // x0
 							// These all have the same structure. Read in three doubles, then assign.
+						/*
 					{
 						Eigen::Array3f v;
 						for (size_t j = 0; j < 3; j++)
@@ -192,14 +171,15 @@ namespace icedb {
 						hdr->block<3, 1>(0, i - 2) = v;
 
 					}
+					*/
 					break;
 					}
 				}
 
 				headerEnd = (pend - in) / sizeof(char);
 			}
-			void readTextContents(const char *iin, size_t headerEnd,
-				std::shared_ptr<::scatdb::shape::shapeStorage_t> data)
+			/// Read ddscat text contents
+			void readTextContents(const char *iin, size_t headerEnd, ShapeDataBasic& p)
 			{
 				using namespace std;
 
@@ -207,37 +187,59 @@ namespace icedb {
 				const char* pa = &iin[headerEnd];
 				const char* pb = strchr(pa + 1, '\0');
 
-				std::vector<long> parser_vals; //(numPoints*8);
-				size_t numPoints = (size_t)data->rows();
-				parser_vals.reserve(numPoints * 8);
+				std::vector<float> parser_vals; //(numPoints*8);
 				parse_shapefile_entries(pa, pb, parser_vals);
-
-				if (numPoints == 0) SDBR_throw(error::error_types::xBadInput)
-					.add<std::string>("Reason", "Header indicates no dipoles.");
-				if (parser_vals.size() == 0) SDBR_throw(error::error_types::xBadInput)
-					.add<std::string>("Reason", "Unable to parse dipoles.");
-				if (parser_vals.size() < (size_t)((data->rows() - 1) * 7))
-					SDBR_throw(error::error_types::xBadInput)
-					.add<std::string>("Reason", "When reading shapefile, "
-						"header dipoles do not match the number in the file.");
+				assert(parser_vals.size() % 7 == 0);
+				size_t numPoints = parser_vals.size() / 7;
+				p.required.particle_scattering_element_number.resize(numPoints);
+				p.required.particle_scattering_element_coordinates.resize(numPoints * 3);
+				std::set<uint64_t> constituents;
 
 				for (size_t i = 0; i < numPoints; ++i)
 				{
-					// First field truly is a dummy variable. No correclation with point ordering at all.
-					//size_t pIndex = parser_vals[index].at(7 * i) - 1;
 					size_t pIndex = 7 * i;
-					auto crdsm = data->block<1, scatdb::shape::backends::NUM_SHAPECOLS>(i, 0);
-					for (size_t j = 0; j < 7; j++) // TODO: rewrite using eigen?
-					{
-						float val = (float)parser_vals.at(pIndex + j);
-						crdsm(j) = val;
-					}
+					p.required.particle_scattering_element_number[i] = static_cast<uint64_t>(parser_vals[pIndex]);
+					p.required.particle_scattering_element_coordinates[3*i] = parser_vals[pIndex+1];
+					p.required.particle_scattering_element_coordinates[(3 * i)+1] = parser_vals[pIndex + 2];
+					p.required.particle_scattering_element_coordinates[(3 * i)+2] = parser_vals[pIndex + 3];
+					
+					constituents.emplace(static_cast<uint64_t>(parser_vals[pIndex + 4]));
+					//p.required.particle_scattering_element_composition[i] = parser_vals[pIndex + 4]; //! Redo pass later and map
+					
 				}
-
+				p.required.particle_constituent_number = IntData_t(constituents.begin(), constituents.end());
+				p.required.particle_scattering_element_composition.resize(constituents.size()*numPoints);
+				
+				for (size_t i = 0; i < numPoints; ++i)
+				{
+					size_t pIndex = 7 * i;
+					uint64_t substance_id = static_cast<uint64_t>(parser_vals[pIndex + 4]);
+					size_t offset = 0;
+					for (auto it = constituents.cbegin(); it != constituents.cend(); ++it, ++offset) {
+						if ((*it) == substance_id) break;
+					}
+					p.required.particle_scattering_element_composition[(numPoints*constituents.size()) + offset] = 1;
+				}
 			}
 			
 
+			ShapeDataBasic readDDSCAT(const char* in, ShapeDataBasic& p)
+			{
+				using namespace std;
+				ShapeDataBasic res;
+
+				std::string str(in);
+				std::string desc; // Currently unused
+				size_t headerEnd = 0, numPoints = 0;
+				readHeader(str.c_str(), desc, numPoints, headerEnd);
+				//res.required.particle_id = desc;
+				//data->resize((int)numPoints, ::scatdb::shape::backends::NUM_SHAPECOLS);
+				readTextContents(str.c_str(), headerEnd, res);
+				return res;
+			}
 			
+
+
 			void writeDDSCAT(const std::string &filename, const ShapeDataBasic& p)
 			{
 				using namespace std;

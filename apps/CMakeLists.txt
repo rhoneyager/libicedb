@@ -1,2 +1,3 @@
-add_subdirectory(3d_structures_beta)
+# Disabled for meeting participants
+#add_subdirectory(3d_structures_beta)
 add_subdirectory(testing)
