@@ -23,7 +23,7 @@ INCLUDE(CTest)
 
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
-set(MINOR 3)
+set(MINOR 4)
 set(REVISION 1)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -127,7 +127,8 @@ source_group("Databases" FILES ${db_objs})
 source_group("HDF5" FILES ${hdf_objs})
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
 	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
-	${CMAKE_BINARY_DIR}/icedb_h5.h)
+	${CMAKE_BINARY_DIR}/icedb_h5.h
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake-settings.h")
 IF (WIN32 AND NOT CYGWIN)
 SET(libsrcs ${libsrcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")

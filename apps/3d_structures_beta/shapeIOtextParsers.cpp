@@ -1,6 +1,7 @@
 // This is REALLY rough. Mostly to serve as an example / get the test shape ingest program running.
 #pragma warning( disable : 4996 ) // -D_SCL_SECURE_NO_WARNINGS
 #pragma warning( disable : 4244 ) // 'argument': conversion from 'std::streamsize' to 'int', possible loss of data - boost::copy
+#define _HAS_AUTO_PTR_ETC 1
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -34,6 +35,7 @@ namespace {
 	{
 		using qi::double_;
 		using qi::long_;
+		using qi::float_;
 		using qi::phrase_parse;
 		using qi::_1;
 		using ascii::space;
@@ -61,6 +63,7 @@ namespace {
 	bool print_shapefile_entries(OutputIterator& sink, Container const& v)
 	{
 		using boost::spirit::karma::long_;
+		using boost::spirit::karma::float_;
 		using boost::spirit::karma::repeat;
 		using boost::spirit::karma::generate;
 		//using boost::spirit::karma::generate_delimited;
@@ -84,6 +87,7 @@ namespace {
 	bool print_shapefile_pts(OutputIterator& sink, Container const& v)
 	{
 		using boost::spirit::karma::long_;
+		using boost::spirit::karma::float_;
 		using boost::spirit::karma::repeat;
 		using boost::spirit::karma::generate;
 		//using boost::spirit::karma::generate_delimited;
@@ -223,7 +227,7 @@ namespace icedb {
 			}
 			
 
-			ShapeDataBasic readDDSCAT(const char* in, ShapeDataBasic& p)
+			ShapeDataBasic readDDSCAT(const char* in)
 			{
 				using namespace std;
 				ShapeDataBasic res;
@@ -296,7 +300,7 @@ namespace icedb {
 				const char* firstLineEnd = strchr(pa + 1, '\n');
 				// Attempt to guess the number of points based on the number of lines in the file.
 				int guessNumPoints = std::count(pa, pb, '\n');
-				std::vector<long> parser_vals, firstLineVals; //(numPoints*8);
+				std::vector<float> parser_vals, firstLineVals; //(numPoints*8);
 				parser_vals.reserve(guessNumPoints * 8);
 				parse_shapefile_entries(pa, pb, parser_vals);
 				parse_shapefile_entries(pa, firstLineEnd, firstLineVals);

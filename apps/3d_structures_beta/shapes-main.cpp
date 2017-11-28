@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
 		sfs::path pFromRaw(vm["from"].as<string>());
 		sfs::path pToRaw(vm["to"].as<string>());
-		string dbfolder = vm["db-folder"].as<string>;
+		string dbfolder = vm["db-folder"].as<string>();
 
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), fs::IOopenFlags::TRUNCATE);
 		auto basegrp = db->createGroupStructure(dbfolder);
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 		for (const auto &f : files) {
 			auto data = icedb::Examples::Shapes::readTextFile(f.first.string());
 			data.required.particle_id = f.first.filename().string();
-			auto shp = data.toShape(f.first.filename().string(), basegrp.get());
+			auto shp = data.toShape(f.first.filename().string(), basegrp->getHDF5Group());
 		}
 	}
 	catch (const std::exception &e) {
