@@ -186,8 +186,6 @@ namespace icedb {
 			}
 		}
 
-
-
 		Shape::Shape_Type Shape::createShape(Groups::Group::Group_HDF_shared_ptr newShapeLocation,
 			const std::string &uid,
 			gsl::not_null<const NewShapeRequiredProperties*> required,

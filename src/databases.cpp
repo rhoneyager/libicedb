@@ -85,7 +85,19 @@ namespace icedb {
 			Database_impl::makeDatabaseFileStandard((pBase / "Testing" / "scratch.hdf5").string());
 			Database_impl::makeDatabaseFileStandard((pBase / "metadata.hdf5").string());
 
-			return std::move(openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE));
+			return (openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE));
+		}
+
+		Database::Database_ptr Database::createSingleFileDatabase(
+			const std::string &location) {
+			const auto flag_truncate = fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE);
+
+			//sfs::path pBase(location);
+			//sfs::create_directories(pBase);
+			//Expects(sfs::exists(pBase));
+			Database_impl::makeDatabaseFileStandard(location);
+
+			return (openDatabase(location, icedb::fs::IOopenFlags::READ_WRITE));
 		}
 
 		Database::Database_ptr Database::openVirtualDatabase(size_t memSizeInBytes)
@@ -104,7 +116,9 @@ namespace icedb {
 		{
 			sfs::path pBaseS = fs::impl::resolveSymLinks(location);
 			if (!sfs::exists(pBaseS)) {
-				throw(std::invalid_argument("Attempting to open a database root that does not exist. Did you mean to first create this database?"));
+				if (flags == fs::IOopenFlags::TRUNCATE || flags == fs::IOopenFlags::CREATE) {
+					return createSingleFileDatabase(location);
+				} else throw(std::invalid_argument("Attempting to open a database root that does not exist. Did you mean to first create this database?"));
 			}
 			fs::impl::CollectedFilesRet_Type mountFiles = fs::impl::collectActualHDF5files(pBaseS);
 			unsigned int Hflags = fs::hdf5::getHDF5IOflags(flags);

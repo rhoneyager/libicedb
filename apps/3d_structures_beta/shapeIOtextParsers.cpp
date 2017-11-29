@@ -222,7 +222,8 @@ namespace icedb {
 					for (auto it = constituents.cbegin(); it != constituents.cend(); ++it, ++offset) {
 						if ((*it) == substance_id) break;
 					}
-					p.required.particle_scattering_element_composition[(numPoints*constituents.size()) + offset] = 1;
+					size_t idx = (i*constituents.size()) + offset;
+					p.required.particle_scattering_element_composition[idx] = 1;
 				}
 			}
 			
@@ -357,7 +358,8 @@ namespace icedb {
 				std::string s = so.str();
 
 				auto end = s.find_first_of("\n\0");
-				if (std::string::npos == s.find_first_not_of("0123456789. \t\n", 0, end)) {
+				auto spos = s.find_first_not_of("0123456789. \t\n", 0, end);
+				if ((std::string::npos == spos) || (spos < end)) {
 					return readDDSCAT(s.c_str());
 				}
 				else {

@@ -33,6 +33,7 @@ int main(int argc, char** argv) {
 			("from", po::value<string>(), "The path where shapes are read from")
 			("to", po::value<string>(), "The path where shapes are written to")
 			("db-folder", po::value<string>()->default_value("shapes"), "The path within the database to write to")
+			("create", "Create the output database if it does not exist")
 			;
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
@@ -49,18 +50,24 @@ int main(int argc, char** argv) {
 		
 		using namespace icedb;
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
-		sfs::path pFromRaw(vm["from"].as<string>());
-		sfs::path pToRaw(vm["to"].as<string>());
+		string sFromRaw = vm["from"].as<string>();
+		string sToRaw = vm["to"].as<string>();
+		sfs::path pFromRaw(sFromRaw);
+		sfs::path pToRaw(sToRaw);
 		string dbfolder = vm["db-folder"].as<string>();
 
-		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), fs::IOopenFlags::TRUNCATE);
+		// Create the output database if it does not exist
+		auto iof = fs::IOopenFlags::READ_WRITE;
+		if (vm.count("create")) iof = fs::IOopenFlags::CREATE;
+		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		auto basegrp = db->createGroupStructure(dbfolder);
 		auto files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at("ddscat"));
 
 		for (const auto &f : files) {
 			auto data = icedb::Examples::Shapes::readTextFile(f.first.string());
 			data.required.particle_id = f.first.filename().string();
-			auto shp = data.toShape(f.first.filename().string(), basegrp->getHDF5Group());
+			auto sgrp = basegrp->createGroup(f.second);
+			auto shp = data.toShape(f.first.filename().string(), sgrp->getHDF5Group());
 		}
 	}
 	catch (const std::exception &e) {
