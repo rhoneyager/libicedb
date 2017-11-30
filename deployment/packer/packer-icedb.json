@@ -1,0 +1,51 @@
+{
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "lxd-icedb-artful",
+      "image": "ubuntu:artful",
+      "output_image": "icedb-ubuntu-artful",
+      "publish_properties": {
+        "description": "Trivial repackage with Packer"
+      }
+    }
+
+  ],
+  "provisioners": [
+	  {
+		  "type": "shell",
+		  "inline": [
+			  "sleep 15",
+			  "sudo apt-get -y update",
+			  "sudo apt-get -y upgrade",
+			  "sudo apt-get -y install cmake-curses-gui doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev libboost-program-options-dev libboost-system-dev g++-7 build-essential"
+		  ]
+	  },
+	  {
+		  "type": "shell-local",
+		  "command": [
+			  "git clone -b master ../../.git libicedb",
+			  "cd libicedb",
+			  "git remote remove origin",
+			  "git remote add origin git@github.com:rhoneyager/libicedb.git",
+			  "git branch --set-upstream-to=origin/master master",
+			  "cd .."
+		  ]
+	  },
+	  {
+		  "type": "file",
+		  "source": "libicedb",
+		  "destination": "/etc/skel/libicedb"
+	  },
+	  {
+		  "type": "file",
+		  "source": "README-user",
+		  "destination": "/etc/skel/README"
+	  },
+	  {
+		  "type": "file",
+		  "source": "README-root",
+		  "destination": "/root/README"
+	  }
+  ]
+}

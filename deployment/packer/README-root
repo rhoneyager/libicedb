@@ -1,0 +1,9 @@
+This LXD image provides the libicedb package and all of its dependencies.
+You should create a user acount using the `adduser' command. A base copy
+of the libicedb package will automatically be copied into the user's
+home directory.
+
+This copied git repository should be probably updated by the end user.
+Instructions to do this are copied into each user's home directory, in
+the 'README' file.
+
