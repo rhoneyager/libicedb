@@ -15,6 +15,12 @@ Requirements:
 - git (used to checkout the code; it provided some information to the build system)
 - Doxygen (optional; generates html documentation of the library functions)
 
+
+NEW: An easy-to-create development environment using LXD on Ubuntu can be spawned
+by following the instructions [HERE](./deployment/packer/README.md).
+
+If you instead want to create the build environment manually:
+
 On Debian-based systems (e.g. Ubuntu), the necessary dependencies may be installed using this command:
 ```
 sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev libboost-all-dev

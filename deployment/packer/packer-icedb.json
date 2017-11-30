@@ -14,12 +14,12 @@
   "provisioners": [
 	  {
 		  "type": "file",
-		  "source": "README-user",
+		  "source": "deploy-README-user.md",
 		  "destination": "/etc/skel/README.md"
 	  },
 	  {
 		  "type": "file",
-		  "source": "README-root",
+		  "source": "deploy-README-root",
 		  "destination": "/root/README"
 	  },
 	  {
