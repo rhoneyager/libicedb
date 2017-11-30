@@ -267,3 +267,4 @@ paket-files/
 __pycache__/
 *.pyc
 /CMakeSettings.json
+/build2

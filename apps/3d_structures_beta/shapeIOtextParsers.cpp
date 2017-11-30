@@ -322,8 +322,8 @@ namespace icedb {
 				// Just one dielectric
 				res.required.particle_scattering_element_number.resize(actualNumPoints);
 				res.required.particle_scattering_element_composition.resize(actualNumPoints);
-				for (size_t i = 1; i <= actualNumPoints; ++i) {
-					res.required.particle_scattering_element_number[i] = static_cast<uint64_t>(i);
+				for (size_t i = 0; i < actualNumPoints; ++i) {
+					res.required.particle_scattering_element_number[i] = static_cast<uint64_t>(i+1);
 					res.required.particle_scattering_element_composition[i] = 1;
 				}
 				res.required.particle_constituent_number.resize(1);
