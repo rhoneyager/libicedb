@@ -15,9 +15,8 @@
 #include "shapeIOtext.hpp"
 
 /// A list of valid shapefile output formats
-const std::set<std::string> valid_file_formats = { "ddscat", "raw", "icedb" };
 const std::map<std::string, std::set<sfs::path> > file_formats = {
-	{"ddscat", {".dat", ".shp", ".txt"} },
+	{"text", {".dat", ".shp", ".txt", ".shape"} },
 	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} }
 };
 
@@ -34,6 +33,7 @@ int main(int argc, char** argv) {
 			("to", po::value<string>(), "The path where shapes are written to")
 			("db-folder", po::value<string>()->default_value("shapes"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
+			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			;
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
@@ -55,17 +55,22 @@ int main(int argc, char** argv) {
 		sfs::path pFromRaw(sFromRaw);
 		sfs::path pToRaw(sToRaw);
 		string dbfolder = vm["db-folder"].as<string>();
+		float resolution_um = 0;
+		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 
 		// Create the output database if it does not exist
 		auto iof = fs::IOopenFlags::READ_WRITE;
 		if (vm.count("create")) iof = fs::IOopenFlags::CREATE;
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		auto basegrp = db->createGroupStructure(dbfolder);
-		auto files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at("ddscat"));
+		auto files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at("text"));
 
 		for (const auto &f : files) {
+			cout << "Creating from " << f.first << "\t" << f.second << endl;
 			auto data = icedb::Examples::Shapes::readTextFile(f.first.string());
 			data.required.particle_id = f.first.filename().string();
+			if (resolution_um)
+				data.optional.particle_scattering_element_spacing = resolution_um / 1.e6;
 			auto sgrp = basegrp->createGroup(f.second);
 			auto shp = data.toShape(f.first.filename().string(), sgrp->getHDF5Group());
 		}

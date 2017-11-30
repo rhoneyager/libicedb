@@ -302,7 +302,7 @@ namespace icedb {
 				// Attempt to guess the number of points based on the number of lines in the file.
 				int guessNumPoints = std::count(pa, pb, '\n');
 				std::vector<float> parser_vals, firstLineVals; //(numPoints*8);
-				parser_vals.reserve(guessNumPoints * 8);
+				parser_vals.reserve(guessNumPoints * 3);
 				parse_shapefile_entries(pa, pb, parser_vals);
 				parse_shapefile_entries(pa, firstLineEnd, firstLineVals);
 
@@ -358,13 +358,19 @@ namespace icedb {
 				std::string s = so.str();
 
 				auto end = s.find_first_of("\n\0");
-				auto spos = s.find_first_not_of("0123456789. \t\n", 0, end);
-				if ((std::string::npos == spos) || (spos < end)) {
-					return readDDSCAT(s.c_str());
-				}
-				else {
+				Expects(end != std::string::npos);
+				std::string ssub = s.substr(0,end);
+				auto spos = ssub.find_first_not_of("0123456789. \t\n");
+
+				if (std::string::npos == spos) // This is a raw text file
 					return readTextRaw(s.c_str());
-				}
+				else return readDDSCAT(s.c_str()); // This is a DDSCAT file
+				//if ((std::string::npos != spos) && (spos < end)) {
+				//	return readDDSCAT(s.c_str());
+				//}
+				//else {
+				//	return readTextRaw(s.c_str());
+				//}
 			}
 
 		}
