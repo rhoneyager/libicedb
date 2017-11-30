@@ -23,7 +23,7 @@ namespace icedb {
 				p.particle_scattering_element_spacing = this->particle_scattering_element_spacing;
 			}
 			icedb::Shapes::Shape::Shape_Type ShapeDataBasic::toShape(
-				std::string &name, std::shared_ptr<H5::Group> grp) const
+				const std::string &name, std::shared_ptr<H5::Group> grp) const
 			{
 				icedb::Shapes::NewShapeRequiredProperties nreq;
 				required.apply(nreq);

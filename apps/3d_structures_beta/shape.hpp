@@ -33,7 +33,7 @@ namespace icedb {
 				ShapeRequiredData required;
 				ShapeCommonOptionalData optional;
 				/// Make a new shape under the group
-				icedb::Shapes::Shape::Shape_Type toShape(std::string &name, std::shared_ptr<H5::Group>) const;
+				icedb::Shapes::Shape::Shape_Type toShape(const std::string &name, std::shared_ptr<H5::Group>) const;
 				//void fromShape(icedb::Groups::Group::Group_ptr);
 			};
 		}
