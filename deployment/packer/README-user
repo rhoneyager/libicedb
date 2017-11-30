@@ -10,6 +10,8 @@ new SSH key on this VM and associate it with your GitHub account.
 	
 ```
 cd libicedb
+git fetch
+git branch --set-upstream-to=origin/master master
 git pull
 ```
 
