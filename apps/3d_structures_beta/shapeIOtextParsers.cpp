@@ -200,7 +200,7 @@ namespace icedb {
 				assert(numPoints == numExpectedPoints);
 				p.optional.particle_scattering_element_number.resize(numPoints);
 				p.required.particle_scattering_element_coordinates.resize(numPoints * 3);
-				std::set<uint64_t> constituents;
+				std::set<uint8_t> constituents;
 
 				for (size_t i = 0; i < numPoints; ++i)
 				{
@@ -210,11 +210,11 @@ namespace icedb {
 					p.required.particle_scattering_element_coordinates[(3 * i)+1] = parser_vals[pIndex + 2];
 					p.required.particle_scattering_element_coordinates[(3 * i)+2] = parser_vals[pIndex + 3];
 					
-					constituents.emplace(static_cast<uint64_t>(parser_vals[pIndex + 4]));
+					constituents.emplace(static_cast<uint8_t>(parser_vals[pIndex + 4]));
 					//p.required.particle_scattering_element_composition[i] = parser_vals[pIndex + 4]; //! Redo pass later and map
 					
 				}
-				p.optional.particle_constituent_number = IntData_t(constituents.begin(), constituents.end());
+				p.optional.particle_constituent_number = Int8Data_t(constituents.begin(), constituents.end());
 				p.optional.particle_scattering_element_composition_whole.resize(numPoints);
 				
 				for (size_t i = 0; i < numPoints; ++i)

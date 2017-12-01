@@ -297,11 +297,11 @@ namespace icedb {
 
 			std::unique_ptr<icedb::Tables::Table> tblPCN;
 			if (createTblPCN) {
-				tblPCN = res->createTable<uint64_t>("particle_constituent_number",
+				tblPCN = res->createTable<uint8_t>("particle_constituent_number",
 				{ static_cast<size_t>(required->number_of_particle_constituents) });
 				if (optional) {
 					if (!optional->particle_constituent_number.empty()) {
-						tblPCN->writeAll<uint64_t>(optional->particle_constituent_number);
+						tblPCN->writeAll<uint8_t>(optional->particle_constituent_number);
 					}
 				}
 				tblPCN->setDimensionScale("particle_constituent_number");
@@ -309,7 +309,7 @@ namespace icedb {
 
 			std::unique_ptr<icedb::Tables::Table> tblXYZ;
 			if (required->NC4_compat) {
-				tblXYZ = res->createTable<uint64_t>("particle_axis", { 3 }, { 0, 1, 2 });
+				tblXYZ = res->createTable<uint8_t>("particle_axis", { 3 }, { 0, 1, 2 });
 				tblXYZ->setDimensionScale("particle_axis");
 			}
 
@@ -381,7 +381,7 @@ namespace icedb {
 				}
 
 				if (optional->particle_scattering_element_composition_whole.size()) {
-					auto tblPSEC2b = res->createTable<uint64_t>(
+					auto tblPSEC2b = res->createTable<uint8_t>(
 						"particle_scattering_element_composition_whole",
 						{ static_cast<size_t>(required->number_of_particle_scattering_elements) },
 						optional->particle_scattering_element_composition_whole, &chunks);

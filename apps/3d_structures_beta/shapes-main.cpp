@@ -23,7 +23,6 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 
 int main(int argc, char** argv) {
 	try {
-		icedb::fs::hdf5::useZLIB(0);
 		using namespace std;
 		// Read program options
 		
@@ -36,6 +35,8 @@ int main(int argc, char** argv) {
 			("db-folder", po::value<string>()->default_value("shapes"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
 			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
+			("compression-level", po::value<int>()->default_value(6), "Compression level (0-9). 0 is no compression, 9 is max compression.")
+			("nc4-compat", po::value<bool>()->default_value(true), "Generate a NetCDF4-compatible file")
 			;
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
@@ -51,6 +52,11 @@ int main(int argc, char** argv) {
 		if (!vm.count("from") || !vm.count("to")) doHelp("Need to specify to/from locations.");
 		
 		using namespace icedb;
+		int clev = vm["compression-level"].as<int>();
+		bool nccompat = vm["nc4-compat"].as<bool>();
+		Expects(clev >= 0);
+		Expects(clev < 10);
+		icedb::fs::hdf5::useZLIB(clev);
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
 		string sFromRaw = vm["from"].as<string>();
 		string sToRaw = vm["to"].as<string>();
@@ -75,6 +81,7 @@ int main(int argc, char** argv) {
 			if (resolution_um)
 				data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
 			auto sgrp = basegrp->createGroup(f.second);
+			data.required.NC4_compat = nccompat;
 			auto shp = data.toShape(f.first.filename().string(), sgrp->getHDF5Group());
 		}
 	}
