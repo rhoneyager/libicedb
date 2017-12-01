@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
 			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			("compression-level", po::value<int>()->default_value(6), "Compression level (0-9). 0 is no compression, 9 is max compression.")
 			("nc4-compat", po::value<bool>()->default_value(true), "Generate a NetCDF4-compatible file")
+			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
@@ -67,8 +68,9 @@ int main(int argc, char** argv) {
 		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 
 		// Create the output database if it does not exist
-		auto iof = fs::IOopenFlags::TRUNCATE;
-		if (vm.count("create")) iof = fs::IOopenFlags::TRUNCATE;
+		auto iof = fs::IOopenFlags::READ_WRITE;
+		if (vm.count("create")) iof = fs::IOopenFlags::CREATE;
+		if (vm.count("truncate")) iof = fs::IOopenFlags::TRUNCATE;
 		if (!sfs::exists(pToRaw)) iof = fs::IOopenFlags::CREATE;
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		auto basegrp = db->createGroupStructure(dbfolder);
