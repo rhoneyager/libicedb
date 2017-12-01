@@ -316,6 +316,7 @@ namespace icedb {
 			const std::vector<size_t> chunks{ 
 				(max_x < required->number_of_particle_scattering_elements) ? 
 				max_x : required->number_of_particle_scattering_elements, 3 };
+			
 			// Determine if we can store the data as integers.
 			// If non-integral coordinates, no.
 			bool considerInts = (required->particle_scattering_element_coordinates_are_integral) ? true : false;
@@ -371,19 +372,28 @@ namespace icedb {
 				}
 
 				if (optional->particle_scattering_element_composition_fractional.size()) {
+					const std::vector<size_t> cs{
+						(max_x < required->number_of_particle_scattering_elements) ?
+						max_x : required->number_of_particle_scattering_elements,
+						static_cast<size_t>(required->number_of_particle_constituents)
+					};
 					auto tblPSEC2a = res->createTable<float>("particle_scattering_element_composition_fractional",
 					{ static_cast<size_t>(required->number_of_particle_scattering_elements),
 						static_cast<size_t>(required->number_of_particle_constituents) },
-						optional->particle_scattering_element_composition_fractional, &chunks);
+						optional->particle_scattering_element_composition_fractional, &cs);
 					if (tblPSEN) tblPSEC2a->attachDimensionScale(0, tblPSEN.get());
 					if (tblPCN) tblPSEC2a->attachDimensionScale(1, tblPCN.get());
 				}
 
 				if (optional->particle_scattering_element_composition_whole.size()) {
+					const std::vector<size_t> cs{
+						(max_x < required->number_of_particle_scattering_elements) ?
+						max_x : required->number_of_particle_scattering_elements
+					};
 					auto tblPSEC2b = res->createTable<uint8_t>(
 						"particle_scattering_element_composition_whole",
 						{ static_cast<size_t>(required->number_of_particle_scattering_elements) },
-						optional->particle_scattering_element_composition_whole, &chunks);
+						optional->particle_scattering_element_composition_whole, &cs);
 					if (tblPSEN) tblPSEC2b->attachDimensionScale(0, tblPSEN.get());
 				}
 

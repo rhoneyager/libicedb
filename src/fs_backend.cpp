@@ -26,6 +26,9 @@ namespace icedb {
 				const sfs::path &base,
 				const ExtensionsMatching_Type &valid_extensions)
 			{
+				std::string sBase = base.string();
+				std::replace(sBase.begin(), sBase.end(), '\\', '/');
+
 				std::map<sfs::path, std::string> res;
 				auto sbase = resolveSymlinkPathandForceExists(base.string());
 				if (sfs::is_regular_file(sbase)) {
@@ -40,18 +43,25 @@ namespace icedb {
 						if (!sfs::exists(sp)) continue;
 						if (sfs::is_regular_file(sp)) {
 							if (valid_extensions.count(sp.extension()) > 0) {
-								/// \todo Once Filesystem adds lexically_proximate to all 
+								std::string sP = p.path().string();
+								std::replace(sP.begin(), sP.end(), '\\', '/');
+								Expects(sP.find(sBase) == 0);
+								std::string relPath = sP.substr(sBase.length());
+								// Remove any '/'s from the beginning of the string
+								relPath = relPath.substr(relPath.find_first_not_of('/'));
+
+								/// \todo Once std::filesystem adds the lexically_proximate method to all 
 								/// compilers, change the path decomposition to the standard method.
+								/*
 								std::string sP = p.path().string();
 								std::replace(sP.begin(), sP.end(), '\\', '/');
 								std::string sBase = base.string();
-								sBase = sBase + "";
 								//Expects(sP.substr(0, sBase.size()) == sBase);
 								Expects(sP.size() >= sBase.size() + 1);
 								std::string relpath = sP.substr(sBase.size() + 1);
+								*/
 
-
-								res[p] = relpath;
+								res[p] = relPath;
 							}
 						}
 					}

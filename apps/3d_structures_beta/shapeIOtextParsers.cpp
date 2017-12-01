@@ -196,7 +196,8 @@ namespace icedb {
 				parser_vals.reserve(7 * numExpectedPoints);
 				parse_shapefile_entries(pa, pb, parser_vals);
 				assert(parser_vals.size() % 7 == 0);
-				size_t numPoints = parser_vals.size() / 7;
+				size_t &numPoints = p.required.number_of_particle_scattering_elements;
+				numPoints = parser_vals.size() / 7;
 				assert(numPoints == numExpectedPoints);
 				p.optional.particle_scattering_element_number.resize(numPoints);
 				p.required.particle_scattering_element_coordinates.resize(numPoints * 3);
@@ -216,6 +217,7 @@ namespace icedb {
 				}
 				p.optional.particle_constituent_number = Int8Data_t(constituents.begin(), constituents.end());
 				p.optional.particle_scattering_element_composition_whole.resize(numPoints);
+				p.required.number_of_particle_constituents = constituents.size();
 				
 				for (size_t i = 0; i < numPoints; ++i)
 				{

@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
 		// Create the output database if it does not exist
 		auto iof = fs::IOopenFlags::TRUNCATE;
-		if (vm.count("create")) iof = fs::IOopenFlags::CREATE;
+		if (vm.count("create")) iof = fs::IOopenFlags::TRUNCATE;
 		if (!sfs::exists(pToRaw)) iof = fs::IOopenFlags::CREATE;
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		auto basegrp = db->createGroupStructure(dbfolder);
