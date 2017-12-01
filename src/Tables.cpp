@@ -277,7 +277,7 @@ namespace icedb {
 			plist->setFillValue(H5::PredType::NATIVE_INT, &fillvalue);
 			if (fs::hdf5::useZLIB()) {
 				plist->setChunk(static_cast<int>(hdata.size()), hdata.data());
-				plist->setDeflate(6);
+				plist->setDeflate(fs::hdf5::useZLIB());
 			}
 			plist->setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
 
