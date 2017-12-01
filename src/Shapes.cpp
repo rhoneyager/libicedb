@@ -285,7 +285,6 @@ namespace icedb {
 					}
 				}
 				// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
-				// TODO: Test with netCDF.
 				tblPSEN->setDimensionScale("particle_scattering_element_number");
 			}
 
@@ -335,7 +334,7 @@ namespace icedb {
 					crds_ints[i] = static_cast<uint8_t>(required->particle_scattering_element_coordinates[i]);
 				}
 				auto tblPSEC = res->createTable<uint8_t>(
-					"particle_scattering_element_coordinates_uint8",
+					"particle_scattering_element_coordinates",
 					{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
 					crds_ints, &chunks);
 				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
@@ -347,13 +346,13 @@ namespace icedb {
 					crds_ints[i] = static_cast<uint16_t>(required->particle_scattering_element_coordinates[i]);
 				}
 				auto tblPSEC = res->createTable<uint16_t>(
-					"particle_scattering_element_coordinates_uint16",
+					"particle_scattering_element_coordinates",
 					{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
 					crds_ints, &chunks);
 				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
 				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
 			} else {
-				auto tblPSEC = res->createTable<float>("particle_scattering_element_coordinates_float",
+				auto tblPSEC = res->createTable<float>("particle_scattering_element_coordinates",
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
 					required->particle_scattering_element_coordinates, &chunks);
 				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
