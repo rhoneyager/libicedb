@@ -89,7 +89,7 @@ namespace icedb {
 			}
 			template <class DataType>
 			void writeAll(const std::vector<DataType> &outData) const {
-				this->template writeAll<DataType>(gsl::span<DataType>(outData.cbegin(), outData.cend()));
+				this->template writeAll<DataType>(gsl::span<const DataType>(outData.data(), outData.size()));
 			}
 
 			// These are the old definitions. They caused too many copies.
@@ -141,7 +141,7 @@ namespace icedb {
 
 		class CanHaveTables {
 			bool valid() const;
-			void _createTable(const std::string &tableName, const std::type_index& type, const std::vector<size_t> &dims);
+			void _createTable(const std::string &tableName, const std::type_index& type, const std::vector<size_t> &dims, const std::vector<size_t> &chunks);
 		protected:
 			CanHaveTables();
 			virtual void _setTablesParent(std::shared_ptr<H5::Group> obj) = 0;
@@ -152,28 +152,38 @@ namespace icedb {
 			bool doesTableExist(const std::string &tableName) const;
 			void unlinkTable(const std::string &tableName);
 			Table::Table_Type openTable(const std::string &tableName);
+			inline std::vector<size_t> getChunkStrategy(const std::vector<size_t> &dims) {
+				return dims;
+			}
 			template <class DataType>
-			Table::Table_Type createTable(const std::string &tableName, const std::vector<size_t> &dims) {
+			Table::Table_Type createTable(const std::string &tableName, const std::vector<size_t> &dims, const std::vector<size_t> *chunks = nullptr) {
 				Expects(!doesTableExist(tableName));
-				_createTable(tableName, Data_Types::getType<DataType>(), dims);
+				std::vector<size_t> chunksGuess;
+				if (!chunks) {
+					chunksGuess = getChunkStrategy(dims);
+					chunks = &chunksGuess;
+				}
+				_createTable(tableName, Data_Types::getType<DataType>(), dims, *chunks);
 				return openTable(tableName);
 			}
 			template <class DataType>
 			Table::Table_Type createTable(
 				const std::string &tableName,
-				std::initializer_list<size_t> dims)
+				std::initializer_list<size_t> dims,
+				const std::vector<size_t> *chunks = nullptr)
 			{
 				std::vector<size_t> vdims{ dims };
-				auto tbl = createTable<DataType>(tableName, vdims);
+				auto tbl = createTable<DataType>(tableName, vdims, chunks);
 				return tbl;
 			}
 			template <class DataType>
 			Table::Table_Type createTable(
 				const std::string &tableName,
 				std::initializer_list<size_t> dims,
-				std::initializer_list<DataType> data)
+				std::initializer_list<DataType> data,
+				const std::vector<size_t> *chunks = nullptr)
 			{
-				auto tbl = createTable<DataType>(tableName, dims);
+				auto tbl = createTable<DataType>(tableName, dims, chunks);
 				//std::vector<DataType> vdata{ data };
 				tbl->template writeAll<DataType>(gsl::span<const DataType>(data.begin(), data.end()));
 				return tbl;
@@ -182,9 +192,10 @@ namespace icedb {
 			Table::Table_Type createTable(
 				const std::string &tableName,
 				std::initializer_list<size_t> dims,
-				const std::vector<DataType> &data)
+				const std::vector<DataType> &data,
+				const std::vector<size_t> *chunks = nullptr)
 			{
-				auto tbl = createTable<DataType>(tableName, dims);
+				auto tbl = createTable<DataType>(tableName, dims, chunks);
 				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}
@@ -192,9 +203,10 @@ namespace icedb {
 			Table::Table_Type createTable(
 				const std::string &tableName,
 				std::initializer_list<size_t> dims,
-				const gsl::span<DataType> &data)
+				const gsl::span<DataType> &data,
+				const std::vector<size_t> *chunks = nullptr)
 			{
-				auto tbl = createTable<DataType>(tableName, dims);
+				auto tbl = createTable<DataType>(tableName, dims, chunks);
 				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}
@@ -202,9 +214,10 @@ namespace icedb {
 			Table::Table_Type createTable(
 				const std::string &tableName,
 				std::initializer_list<size_t> dims,
-				const gsl::span<const DataType> &data)
+				const gsl::span<const DataType> &data,
+				const std::vector<size_t> *chunks = nullptr)
 			{
-				auto tbl = createTable<DataType>(tableName, dims);
+				auto tbl = createTable<DataType>(tableName, dims, chunks);
 				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}

@@ -151,6 +151,12 @@ namespace icedb {
 			auto selfptr = _getTableSelf();
 			if (fs::hdf5::isType<uint64_t, H5::DataSet>(selfptr.get())) return (typeid(uint64_t));
 			if (fs::hdf5::isType<int64_t, H5::DataSet>(selfptr.get())) return (typeid(int64_t));
+			if (fs::hdf5::isType<uint32_t, H5::DataSet>(selfptr.get())) return (typeid(uint32_t));
+			if (fs::hdf5::isType<int32_t, H5::DataSet>(selfptr.get())) return (typeid(int32_t));
+			if (fs::hdf5::isType<uint16_t, H5::DataSet>(selfptr.get())) return (typeid(uint16_t));
+			if (fs::hdf5::isType<int16_t, H5::DataSet>(selfptr.get())) return (typeid(int16_t));
+			if (fs::hdf5::isType<uint8_t, H5::DataSet>(selfptr.get())) return (typeid(uint8_t));
+			if (fs::hdf5::isType<int8_t, H5::DataSet>(selfptr.get())) return (typeid(int8_t));
 			if (fs::hdf5::isType<double, H5::DataSet>(selfptr.get())) return (typeid(double));
 			if (fs::hdf5::isType<float, H5::DataSet>(selfptr.get())) return (typeid(float));
 			if (fs::hdf5::isType<char, H5::DataSet>(selfptr.get())) return (typeid(char));
@@ -189,6 +195,18 @@ namespace icedb {
 				pullData<uint64_t, H5::DataSet>(dims, data, selfptr.get());
 			else if (icedb::fs::hdf5::isType<int64_t, H5::DataSet>(selfptr.get()))
 				pullData<int64_t, H5::DataSet>(dims, data, selfptr.get());
+			else if (icedb::fs::hdf5::isType<uint32_t, H5::DataSet>(selfptr.get()))
+				pullData<uint32_t, H5::DataSet>(dims, data, selfptr.get());
+			else if (icedb::fs::hdf5::isType<int32_t, H5::DataSet>(selfptr.get()))
+				pullData<int32_t, H5::DataSet>(dims, data, selfptr.get());
+			else if (icedb::fs::hdf5::isType<uint16_t, H5::DataSet>(selfptr.get()))
+				pullData<uint16_t, H5::DataSet>(dims, data, selfptr.get());
+			else if (icedb::fs::hdf5::isType<int16_t, H5::DataSet>(selfptr.get()))
+				pullData<int16_t, H5::DataSet>(dims, data, selfptr.get());
+			else if (icedb::fs::hdf5::isType<uint8_t, H5::DataSet>(selfptr.get()))
+				pullData<uint8_t, H5::DataSet>(dims, data, selfptr.get());
+			else if (icedb::fs::hdf5::isType<int8_t, H5::DataSet>(selfptr.get()))
+				pullData<int8_t, H5::DataSet>(dims, data, selfptr.get());
 			else if (icedb::fs::hdf5::isType<float, H5::DataSet>(selfptr.get()))
 				pullData<float, H5::DataSet>(dims, data, selfptr.get());
 			else if (icedb::fs::hdf5::isType<double, H5::DataSet>(selfptr.get()))
@@ -231,6 +249,8 @@ namespace icedb {
 			// Need to copy from the variant structure into an array of the exact data type
 			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::DataSet>(dimensionality, selfptr.get(), data);
 			else if (type_id == typeid(int64_t))pushData<int64_t, H5::DataSet>(dimensionality, selfptr.get(), data);
+			else if (type_id == typeid(uint32_t))pushData<uint32_t, H5::DataSet>(dimensionality, selfptr.get(), data);
+			else if (type_id == typeid(int32_t))pushData<int32_t, H5::DataSet>(dimensionality, selfptr.get(), data);
 			else if (type_id == typeid(float))pushData<float, H5::DataSet>(dimensionality, selfptr.get(), data);
 			else if (type_id == typeid(double))pushData<double, H5::DataSet>(dimensionality, selfptr.get(), data);
 			else if (type_id == typeid(char))pushData<char, H5::DataSet>(dimensionality, selfptr.get(), data);
@@ -246,13 +266,19 @@ namespace icedb {
 			auto selfptr = _getTableSelf();
 			const auto dimensionality = getDimensions();
 			size_t sz = 1;
-			for (const auto &d : getDimensions()) sz *= d;
+			for (const auto &d : dimensionality) sz *= d;
 			Expects(outData.size() == sz);
 			icedb::fs::hdf5::writeDatasetArray<DataType, H5::DataSet>(dimensionality, selfptr.get(), outData.data());
 		}
 
 		template void Table::writeAllInner<uint64_t>(const gsl::span<const uint64_t> &outData) const;
 		template void Table::writeAllInner<int64_t>(const gsl::span<const int64_t> &outData) const;
+		template void Table::writeAllInner<uint32_t>(const gsl::span<const uint32_t> &outData) const;
+		template void Table::writeAllInner<int32_t>(const gsl::span<const int32_t> &outData) const;
+		template void Table::writeAllInner<uint16_t>(const gsl::span<const uint16_t> &outData) const;
+		template void Table::writeAllInner<int16_t>(const gsl::span<const int16_t> &outData) const;
+		template void Table::writeAllInner<uint8_t>(const gsl::span<const uint8_t> &outData) const;
+		template void Table::writeAllInner<int8_t>(const gsl::span<const int8_t> &outData) const;
 		template void Table::writeAllInner<double>(const gsl::span<const double> &outData) const;
 		template void Table::writeAllInner<float>(const gsl::span<const float> &outData) const;
 		template void Table::writeAllInner<char>(const gsl::span<const char> &outData) const;
@@ -264,10 +290,17 @@ namespace icedb {
 		bool CanHaveTables::valid() const { if (_getTablesParent()) return true; return false; }
 
 		/// \note Must ensure NetCDF-4 compatability.
-		void CanHaveTables::_createTable(const std::string &tableName, const std::type_index& type_id, const std::vector<size_t> &dims) {
+		void CanHaveTables::_createTable(
+			const std::string &tableName,
+			const std::type_index& type_id,
+			const std::vector<size_t> &dims,
+			const std::vector<size_t> &chunks)
+		{
 			Expects(valid());
 			std::vector<hsize_t> hdata;
 			for (const auto &d : dims) hdata.push_back(static_cast<hsize_t>(d));
+			std::vector<hsize_t> cdata;
+			for (const auto &c : chunks) cdata.push_back(static_cast<hsize_t>(c));
 
 			//fs::hdf5::addDatasetArray
 			/* Turn on creation order tracking. */
@@ -275,14 +308,20 @@ namespace icedb {
 			std::shared_ptr<H5::DSetCreatPropList> plist = std::make_shared<H5::DSetCreatPropList>();
 			int fillvalue = -1;
 			plist->setFillValue(H5::PredType::NATIVE_INT, &fillvalue);
+			plist->setChunk(static_cast<int>(cdata.size()), cdata.data());
 			if (fs::hdf5::useZLIB()) {
-				plist->setChunk(static_cast<int>(hdata.size()), hdata.data());
 				plist->setDeflate(fs::hdf5::useZLIB());
 			}
 			plist->setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
 
 			if (type_id == typeid(uint64_t))fs::hdf5::createDatasetRaw<uint64_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
 			else if (type_id == typeid(int64_t))fs::hdf5::createDatasetRaw<int64_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(uint32_t))fs::hdf5::createDatasetRaw<uint32_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(int32_t))fs::hdf5::createDatasetRaw<int32_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(uint16_t))fs::hdf5::createDatasetRaw<uint16_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(int16_t))fs::hdf5::createDatasetRaw<int16_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(uint8_t))fs::hdf5::createDatasetRaw<uint8_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
+			else if (type_id == typeid(int8_t))fs::hdf5::createDatasetRaw<int8_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
 			else if (type_id == typeid(float))fs::hdf5::createDatasetRaw<float, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
 			else if (type_id == typeid(double))fs::hdf5::createDatasetRaw<double, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
 			else if (type_id == typeid(char))fs::hdf5::createDatasetRaw<char, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);

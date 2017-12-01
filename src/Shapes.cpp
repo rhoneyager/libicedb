@@ -269,36 +269,96 @@ namespace icedb {
 			// Write required dimensions
 
 			// This table is created, but if it is trivial, then it is unset (i.e. internally set only to the fill value)
-			auto tblPSEN = res->createTable<uint64_t>("particle_scattering_element_number",
+			bool createTblPSEN = false;
+			if (optional) {
+				if (optional->particle_scattering_element_number.size()) createTblPSEN = true;
+			}
+			if (required->NC4_compat) createTblPSEN = true;
+
+			std::unique_ptr<icedb::Tables::Table> tblPSEN;
+			if (createTblPSEN) {
+				tblPSEN = res->createTable<uint64_t>("particle_scattering_element_number",
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements) });
-			if (optional) {
-				if (!optional->particle_scattering_element_number.empty()) {
-					tblPSEN->writeAll<uint64_t>(optional->particle_scattering_element_number);
+				if (optional) {
+					if (!optional->particle_scattering_element_number.empty()) {
+						tblPSEN->writeAll<uint64_t>(optional->particle_scattering_element_number);
+					}
 				}
+				// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
+				// TODO: Test with netCDF.
+				tblPSEN->setDimensionScale("particle_scattering_element_number");
 			}
-			// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
-			// TODO: Test with netCDF.
-			tblPSEN->setDimensionScale("particle_scattering_element_number");
 
-			auto tblPCN = res->createTable<uint64_t>("particle_constituent_number",
+			bool createTblPCN = false;
+			if (optional) {
+				if (optional->particle_constituent_number.size()) createTblPCN = true;
+			}
+			if (required->NC4_compat) createTblPCN = true;
+
+			std::unique_ptr<icedb::Tables::Table> tblPCN;
+			if (createTblPCN) {
+				tblPCN = res->createTable<uint64_t>("particle_constituent_number",
 				{ static_cast<size_t>(required->number_of_particle_constituents) });
-			if (optional) {
-				if (!optional->particle_constituent_number.empty()) {
-					tblPCN->writeAll<uint64_t>(optional->particle_constituent_number);
+				if (optional) {
+					if (!optional->particle_constituent_number.empty()) {
+						tblPCN->writeAll<uint64_t>(optional->particle_constituent_number);
+					}
+				}
+				tblPCN->setDimensionScale("particle_constituent_number");
+			}
+
+			std::unique_ptr<icedb::Tables::Table> tblXYZ;
+			if (required->NC4_compat) {
+				tblXYZ = res->createTable<uint64_t>("particle_axis", { 3 }, { 0, 1, 2 });
+				tblXYZ->setDimensionScale("particle_axis");
+			}
+
+			constexpr size_t max_x = 20000;
+			const std::vector<size_t> chunks{ 
+				(max_x < required->number_of_particle_scattering_elements) ? 
+				max_x : required->number_of_particle_scattering_elements, 3 };
+			// Determine if we can store the data as integers.
+			// If non-integral coordinates, no.
+			bool considerInts = (required->particle_scattering_element_coordinates_are_integral) ? true : false;
+			bool useUint16s = false, useUint8s = false;
+			if (considerInts) {
+				const auto bounds = std::minmax_element(required->particle_scattering_element_coordinates.cbegin(), required->particle_scattering_element_coordinates.cend());
+				if (*(bounds.first) > 0) {
+					if (*(bounds.second) < UINT8_MAX - 2) useUint8s = true;
+					else if (*(bounds.second) < UINT16_MAX - 2) useUint16s = true;
 				}
 			}
-			tblPCN->setDimensionScale("particle_constituent_number");
-
-			auto tblXYZ = res->createTable<uint64_t>("particle_axis", { 3 }, { 0, 1, 2 });
-			tblXYZ->setDimensionScale("particle_axis");
-
 			
-
-			auto tblPSEC = res->createTable<float>("particle_scattering_element_coordinates",
-			{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
-				required->particle_scattering_element_coordinates);
-			tblPSEC->attachDimensionScale(0, tblPSEN.get());
-			tblPSEC->attachDimensionScale(1, tblXYZ.get());
+			if (useUint8s) {
+				std::vector<uint8_t> crds_ints(required->number_of_particle_scattering_elements * 3);
+				for (size_t i = 0; i < crds_ints.size(); ++i) {
+					crds_ints[i] = static_cast<uint8_t>(required->particle_scattering_element_coordinates[i]);
+				}
+				auto tblPSEC = res->createTable<uint8_t>(
+					"particle_scattering_element_coordinates_uint8",
+					{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
+					crds_ints, &chunks);
+				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
+				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
+			}
+			else if (useUint16s) {
+				std::vector<uint16_t> crds_ints(required->number_of_particle_scattering_elements*3);
+				for (size_t i = 0; i < crds_ints.size(); ++i) {
+					crds_ints[i] = static_cast<uint16_t>(required->particle_scattering_element_coordinates[i]);
+				}
+				auto tblPSEC = res->createTable<uint16_t>(
+					"particle_scattering_element_coordinates_uint16",
+					{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
+					crds_ints, &chunks);
+				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
+				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
+			} else {
+				auto tblPSEC = res->createTable<float>("particle_scattering_element_coordinates_float",
+				{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
+					required->particle_scattering_element_coordinates, &chunks);
+				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
+				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
+			}
 
 
 			if (optional) {
@@ -315,17 +375,17 @@ namespace icedb {
 					auto tblPSEC2a = res->createTable<float>("particle_scattering_element_composition_fractional",
 					{ static_cast<size_t>(required->number_of_particle_scattering_elements),
 						static_cast<size_t>(required->number_of_particle_constituents) },
-						optional->particle_scattering_element_composition_fractional);
-					tblPSEC2a->attachDimensionScale(0, tblPSEN.get());
-					tblPSEC2a->attachDimensionScale(1, tblPCN.get());
+						optional->particle_scattering_element_composition_fractional, &chunks);
+					if (tblPSEN) tblPSEC2a->attachDimensionScale(0, tblPSEN.get());
+					if (tblPCN) tblPSEC2a->attachDimensionScale(1, tblPCN.get());
 				}
 
 				if (optional->particle_scattering_element_composition_whole.size()) {
 					auto tblPSEC2b = res->createTable<uint64_t>(
 						"particle_scattering_element_composition_whole",
 						{ static_cast<size_t>(required->number_of_particle_scattering_elements) },
-						optional->particle_scattering_element_composition_whole);
-					tblPSEC2b->attachDimensionScale(0, tblPSEN.get());
+						optional->particle_scattering_element_composition_whole, &chunks);
+					if (tblPSEN) tblPSEC2b->attachDimensionScale(0, tblPSEN.get());
 				}
 
 				
@@ -339,7 +399,7 @@ namespace icedb {
 					auto tblPSER = res->createTable<float>("particle_scattering_element_radius",
 					{ static_cast<size_t>(required->number_of_particle_scattering_elements) },
 						optional->particle_scattering_element_radius);
-					tblPSER->attachDimensionScale(0, tblPSEN.get());
+					if (tblPSEN) tblPSER->attachDimensionScale(0, tblPSEN.get());
 				}
 
 			}

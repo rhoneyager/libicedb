@@ -13,9 +13,11 @@ namespace icedb {
 			typedef std::vector<std::string> StringData_t;
 
 			struct ShapeRequiredData {
+				bool NC4_compat = false;
 				uint64_t number_of_particle_scattering_elements = 0;
 				uint64_t number_of_particle_constituents = 0;
 
+				uint64_t particle_scattering_element_coordinates_are_integral = 0;
 				FloatData_t particle_scattering_element_coordinates;
 				std::string particle_id;
 				void apply(icedb::Shapes::NewShapeRequiredProperties&) const;

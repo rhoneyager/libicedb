@@ -475,7 +475,7 @@ namespace icedb {
 
 			/// Functions to detect the _type_ of data
 			template <class DataType>
-			bool isType(hid_t) { throw(std::invalid_argument("Unsupported type.")); return false; }
+			bool isType(hid_t) { throw(std::invalid_argument("Unsupported type. (icedb::fs::hdf5::isType(hid_t))")); return false; }
 
 			template <class DataType, class Container>
 			bool isType(gsl::not_null<const Container*> obj, const std::string &attributeName) {
@@ -488,6 +488,12 @@ namespace icedb {
 			}
 			template<> bool isType<uint64_t>(hid_t type_id);
 			template<> bool isType<int64_t>(hid_t type_id);
+			template<> bool isType<uint32_t>(hid_t type_id);
+			template<> bool isType<int32_t>(hid_t type_id);
+			template<> bool isType<uint16_t>(hid_t type_id);
+			template<> bool isType<int16_t>(hid_t type_id);
+			template<> bool isType<uint8_t>(hid_t type_id);
+			template<> bool isType<int8_t>(hid_t type_id);
 			template<> bool isType<float>(hid_t type_id);
 			template<> bool isType<double>(hid_t type_id);
 			template<> bool isType<char>(hid_t type_id);

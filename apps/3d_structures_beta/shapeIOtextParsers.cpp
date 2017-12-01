@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/spirit/include/karma.hpp>
@@ -227,6 +228,7 @@ namespace icedb {
 					size_t idx = (i*constituents.size()) + offset;
 					p.optional.particle_scattering_element_composition_whole[idx] = 1;
 				}
+				p.required.particle_scattering_element_coordinates_are_integral = 1;
 			}
 			
 
@@ -322,6 +324,9 @@ namespace icedb {
 				std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
 				parser_vals.reserve(2 + (guessNumPoints * 3));
 				parse_shapefile_entries(pa, pb, parser_vals);
+				const void* floatloc = memchr(pa, '.', pb - pa);
+				res.required.particle_scattering_element_coordinates_are_integral = (floatloc) ? 0 : 1;
+
 				parse_shapefile_entries(pa, firstLineEnd, firstLineVals);
 
 				size_t numCols = firstLineVals.size();

@@ -7,6 +7,8 @@
 namespace icedb {
 	namespace Shapes {
 		struct NewShapeRequiredProperties {
+			bool NC4_compat = true;
+
 			// The DIMENSIONS
 
 			/// DIMENSION: The number of scattering elements.
@@ -28,6 +30,11 @@ namespace icedb {
 			/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
 			/// Dimensions of [number_of_particle_scattering_elements][axis]
 			gsl::span<const float> particle_scattering_element_coordinates;
+
+			/// Are the particle_scattering_element_coordinates integers?
+			/// This allows for optimization when writing.
+			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
+			uint64_t particle_scattering_element_coordinates_are_integral = 0;
 			
 
 			// The ATTRIBUTES

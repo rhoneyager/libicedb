@@ -34,6 +34,12 @@ namespace icedb {
 		std::type_index CanHaveAttributes::getAttributeTypeId(gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName) {
 			if (fs::hdf5::isType<uint64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(uint64_t));
 			if (fs::hdf5::isType<int64_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(int64_t));
+			if (fs::hdf5::isType<uint32_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(uint32_t));
+			if (fs::hdf5::isType<int32_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(int32_t));
+			if (fs::hdf5::isType<uint16_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(uint16_t));
+			if (fs::hdf5::isType<int16_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(int16_t));
+			if (fs::hdf5::isType<uint8_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(uint8_t));
+			if (fs::hdf5::isType<int8_t, H5::H5Object>(parent.get(), attributeName)) return (typeid(int8_t));
 			if (fs::hdf5::isType<double, H5::H5Object>(parent.get(), attributeName)) return (typeid(double));
 			if (fs::hdf5::isType<float, H5::H5Object>(parent.get(), attributeName)) return (typeid(float));
 			if (fs::hdf5::isType<char, H5::H5Object>(parent.get(), attributeName)) return (typeid(char));
@@ -138,6 +144,18 @@ namespace icedb {
 				pullData<uint64_t, H5::H5Object>(attributeName, dims, data, parent.get());
 			else if (icedb::fs::hdf5::isType<int64_t, H5::H5Object>(parent.get(), attributeName))
 				pullData<int64_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<uint32_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<uint32_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<int32_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<int32_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<uint16_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<uint16_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<int16_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<int16_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<uint8_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<uint8_t, H5::H5Object>(attributeName, dims, data, parent.get());
+			else if (icedb::fs::hdf5::isType<int8_t, H5::H5Object>(parent.get(), attributeName))
+				pullData<int8_t, H5::H5Object>(attributeName, dims, data, parent.get());
 			else if (icedb::fs::hdf5::isType<float, H5::H5Object>(parent.get(), attributeName))
 				pullData<float, H5::H5Object>(attributeName, dims, data, parent.get());
 			else if (icedb::fs::hdf5::isType<double, H5::H5Object>(parent.get(), attributeName))
@@ -207,6 +225,12 @@ namespace icedb {
 			// Need to copy from the variant structure into an array of the exact data type
 			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::H5Object>(attributeName, dimensionality, parent, data);
 			else if (type_id == typeid(int64_t))pushData<int64_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(uint32_t))pushData<uint32_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(int32_t))pushData<int32_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(uint16_t))pushData<uint16_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(int16_t))pushData<int16_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(uint8_t))pushData<uint8_t, H5::H5Object>(attributeName, dimensionality, parent, data);
+			else if (type_id == typeid(int8_t))pushData<int8_t, H5::H5Object>(attributeName, dimensionality, parent, data);
 			else if (type_id == typeid(float))pushData<float, H5::H5Object>(attributeName, dimensionality, parent, data);
 			else if (type_id == typeid(double))pushData<double, H5::H5Object>(attributeName, dimensionality, parent, data);
 			else if (type_id == typeid(char))pushData<char, H5::H5Object>(attributeName, dimensionality, parent, data);

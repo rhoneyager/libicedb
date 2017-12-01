@@ -11,10 +11,12 @@ namespace icedb {
 	namespace Examples {
 		namespace Shapes {
 			void ShapeRequiredData::apply(icedb::Shapes::NewShapeRequiredProperties& p) const {
+				p.NC4_compat = this->NC4_compat;
 				p.particle_id = particle_id;
 				p.number_of_particle_constituents = number_of_particle_constituents;
 				p.number_of_particle_scattering_elements = number_of_particle_scattering_elements;
 				p.particle_scattering_element_coordinates = this->particle_scattering_element_coordinates;
+				p.particle_scattering_element_coordinates_are_integral = this->particle_scattering_element_coordinates_are_integral;
 			}
 			void ShapeCommonOptionalData::apply(icedb::Shapes::NewShapeCommonOptionalProperties& p) const {
 				p.particle_scattering_element_number = this->particle_scattering_element_number;

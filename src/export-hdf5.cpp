@@ -255,6 +255,12 @@ namespace icedb {
 
 			template<> bool isType<uint64_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_UINT64) > 0) ? true : false; }
 			template<> bool isType<int64_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_INT64) > 0) ? true : false; }
+			template<> bool isType<uint32_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_UINT32) > 0) ? true : false; }
+			template<> bool isType<int32_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_INT32) > 0) ? true : false; }
+			template<> bool isType<uint16_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_UINT16) > 0) ? true : false; }
+			template<> bool isType<int16_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_INT16) > 0) ? true : false; }
+			template<> bool isType<uint8_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_UINT8) > 0) ? true : false; }
+			template<> bool isType<int8_t>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_INT8) > 0) ? true : false; }
 			template<> bool isType<float>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_FLOAT) > 0) ? true : false; }
 			template<> bool isType<double>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_DOUBLE) > 0) ? true : false; }
 			template<> bool isType<char>(hid_t type_id) { return (H5Tequal(type_id, H5T_NATIVE_CHAR) > 0) ? true : false; }
