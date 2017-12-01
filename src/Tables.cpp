@@ -239,6 +239,23 @@ namespace icedb {
 			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
 		}
 
+		template <class DataType>
+		void Table::writeAllInner(const gsl::span<const DataType> &outData) const {
+			Expects(valid());
+			Expects(isTableOfType<DataType>());
+			auto selfptr = _getTableSelf();
+			const auto dimensionality = getDimensions();
+			size_t sz = 1;
+			for (const auto &d : getDimensions()) sz *= d;
+			Expects(outData.size() == sz);
+			icedb::fs::hdf5::writeDatasetArray<DataType, H5::DataSet>(dimensionality, selfptr.get(), outData.data());
+		}
+
+		template void Table::writeAllInner<uint64_t>(const gsl::span<const uint64_t> &outData) const;
+		template void Table::writeAllInner<int64_t>(const gsl::span<const int64_t> &outData) const;
+		template void Table::writeAllInner<double>(const gsl::span<const double> &outData) const;
+		template void Table::writeAllInner<float>(const gsl::span<const float> &outData) const;
+		template void Table::writeAllInner<char>(const gsl::span<const char> &outData) const;
 
 
 

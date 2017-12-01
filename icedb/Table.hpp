@@ -65,14 +65,38 @@ namespace icedb {
 				//return res;
 			}
 
+			// Fixed size of data. Cannot resize without re-creating the dataset, for now.
+			// Eventually, will support unlimited dimensions.
+			// These all require that the data being written has the correct type for the table.
+		private:
+			template <class DataType>
+			void writeAllInner(const gsl::span<const DataType> &outData) const;
+		public:
+			/// \deprecated Too slow of a method
 			void writeAll(
 				const std::type_info &type_id,
 				const std::vector<Data_Types::All_Variant_type> &data) const;
-			/// Fixed size of data. Cannot resize without re-creating the dataset, for now.
-			/// Eventually, will support unlimited dimensions.
+			
+			template <class DataType>
+			void writeAll(const gsl::span<const DataType> &outData) const {
+				static_assert(icedb::Data_Types::Is_Valid_Data_Type<DataType>() == true,
+					"Data to be written must be a valid data type");
+				this->template writeAllInner<DataType>(outData);
+			}
+			template <class DataType>
+			void writeAll(const gsl::span<DataType> &outData) const {
+				this->template writeAll<DataType>(gsl::span<const DataType>(outData.cbegin(), outData.cend()));
+			}
 			template <class DataType>
 			void writeAll(const std::vector<DataType> &outData) const {
-				assert(isTableOfType<DataType>());
+				this->template writeAll<DataType>(gsl::span<DataType>(outData.cbegin(), outData.cend()));
+			}
+
+			// These are the old definitions. They caused too many copies.
+			/*
+			template <class DataType>
+			void writeAll(const std::vector<DataType> &outData) const {
+				Expects(isTableOfType<DataType>());
 				size_t sz = 1;
 				for (const auto &d : getDimensions()) sz *= d;
 				Expects(outData.size() == sz);
@@ -86,7 +110,7 @@ namespace icedb {
 			}
 			template <class DataType>
 			void writeAll(const gsl::span<DataType> &outData) const {
-				assert(isTableOfType<DataType>());
+				Expects(isTableOfType<DataType>());
 				size_t sz = 1;
 				for (const auto &d : getDimensions()) sz *= d;
 				Expects(outData.size() == sz);
@@ -100,7 +124,7 @@ namespace icedb {
 			}
 			template <class DataType>
 			void writeAll(const gsl::span<const DataType> &outData) const {
-				assert(isTableOfType<DataType>());
+				Expects(isTableOfType<DataType>());
 				size_t sz = 1;
 				for (const auto &d : getDimensions()) sz *= d;
 				Expects(outData.size() == sz);
@@ -112,6 +136,7 @@ namespace icedb {
 				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
 				writeAll(typeid(DataType), vdata);
 			}
+			*/
 		};
 
 		class CanHaveTables {
@@ -149,8 +174,8 @@ namespace icedb {
 				std::initializer_list<DataType> data)
 			{
 				auto tbl = createTable<DataType>(tableName, dims);
-				std::vector<DataType> vdata{ data };
-				tbl->template writeAll<DataType>(vdata);
+				//std::vector<DataType> vdata{ data };
+				tbl->template writeAll<DataType>(gsl::span<const DataType>(data.begin(), data.end()));
 				return tbl;
 			}
 			template <class DataType>

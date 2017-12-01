@@ -16,7 +16,8 @@
 namespace icedb {
 	namespace fs {
 		namespace hdf5 {
-			bool useZLIB();
+			int useZLIB();
+			void useZLIB(int);
 
 			/// Provides a method for calculating the offsets from std::arrays of data
 #			define ARRAYOFFSET(TYPE, INDEX) [](){TYPE a; return (size_t) &a[INDEX] - (size_t) &a; }()
@@ -261,7 +262,7 @@ namespace icedb {
 						plist->setFillValue(PredType::NATIVE_INT, &fillvalue);
 						if (useZLIB()) {
 							plist->setChunk(static_cast<int>(sz.size()), sz.data());
-							plist->setDeflate(6);
+							plist->setDeflate(useZLIB());
 						}
 					}
 				}
@@ -322,7 +323,7 @@ namespace icedb {
 						plist->setFillValue(PredType::NATIVE_INT, &fillvalue);
 						if (useZLIB()) {
 							plist->setChunk(static_cast<int>(sz.size()), sz.data());
-							plist->setDeflate(6);
+							plist->setDeflate(useZLIB());
 						}
 					}
 				}

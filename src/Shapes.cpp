@@ -211,8 +211,7 @@ namespace icedb {
 				required->particle_constituent_number);
 			tblPCN->setDimensionScale("particle_constituent_number");
 
-			auto tblXYZ = res->createTable<uint64_t>("particle_axis",
-			{ 3 }, { 0, 1, 2 });
+			auto tblXYZ = res->createTable<uint64_t>("particle_axis", { 3 }, { 0, 1, 2 });
 			tblXYZ->setDimensionScale("particle_axis");
 
 			// Write required variables

@@ -11,6 +11,7 @@
 #include <icedb/shape.hpp>
 #include <icedb/Database.hpp>
 #include <icedb/fs_backend.hpp>
+#include "../../private/hdf5_supplemental.hpp"
 #include "shape.hpp"
 #include "shapeIOtext.hpp"
 
@@ -22,6 +23,7 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 
 int main(int argc, char** argv) {
 	try {
+		icedb::fs::hdf5::useZLIB(0);
 		using namespace std;
 		// Read program options
 		
@@ -59,8 +61,9 @@ int main(int argc, char** argv) {
 		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 
 		// Create the output database if it does not exist
-		auto iof = fs::IOopenFlags::READ_WRITE;
+		auto iof = fs::IOopenFlags::TRUNCATE;
 		if (vm.count("create")) iof = fs::IOopenFlags::CREATE;
+		if (!sfs::exists(pToRaw)) iof = fs::IOopenFlags::CREATE;
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		auto basegrp = db->createGroupStructure(dbfolder);
 		auto files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at("text"));
@@ -70,7 +73,7 @@ int main(int argc, char** argv) {
 			auto data = icedb::Examples::Shapes::readTextFile(f.first.string());
 			data.required.particle_id = f.first.filename().string();
 			if (resolution_um)
-				data.optional.particle_scattering_element_spacing = resolution_um / 1.e6;
+				data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
 			auto sgrp = basegrp->createGroup(f.second);
 			auto shp = data.toShape(f.first.filename().string(), sgrp->getHDF5Group());
 		}

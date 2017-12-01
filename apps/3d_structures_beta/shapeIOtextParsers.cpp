@@ -183,7 +183,7 @@ namespace icedb {
 				headerEnd = (pend - in) / sizeof(char);
 			}
 			/// Read ddscat text contents
-			void readTextContents(const char *iin, size_t headerEnd, ShapeDataBasic& p)
+			void readTextContents(const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic& p)
 			{
 				using namespace std;
 
@@ -192,9 +192,11 @@ namespace icedb {
 				const char* pb = strchr(pa + 1, '\0');
 
 				std::vector<float> parser_vals; //(numPoints*8);
+				parser_vals.reserve(7 * numExpectedPoints);
 				parse_shapefile_entries(pa, pb, parser_vals);
 				assert(parser_vals.size() % 7 == 0);
 				size_t numPoints = parser_vals.size() / 7;
+				assert(numPoints == numExpectedPoints);
 				p.required.particle_scattering_element_number.resize(numPoints);
 				p.required.particle_scattering_element_coordinates.resize(numPoints * 3);
 				std::set<uint64_t> constituents;
@@ -239,7 +241,7 @@ namespace icedb {
 				readHeader(str.c_str(), desc, numPoints, headerEnd);
 				//res.required.particle_id = desc;
 				//data->resize((int)numPoints, ::scatdb::shape::backends::NUM_SHAPECOLS);
-				readTextContents(str.c_str(), headerEnd, res);
+				readTextContents(str.c_str(), numPoints, headerEnd, res);
 				return res;
 			}
 			
@@ -301,8 +303,9 @@ namespace icedb {
 				const char* firstLineEnd = strchr(pa + 1, '\n');
 				// Attempt to guess the number of points based on the number of lines in the file.
 				int guessNumPoints = std::count(pa, pb, '\n');
-				std::vector<float> parser_vals, firstLineVals; //(numPoints*8);
-				parser_vals.reserve(guessNumPoints * 3);
+				std::vector<float> firstLineVals; //(numPoints*8);
+				std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
+				parser_vals.reserve(2 + (guessNumPoints * 3));
 				parse_shapefile_entries(pa, pb, parser_vals);
 				parse_shapefile_entries(pa, firstLineEnd, firstLineVals);
 
@@ -315,10 +318,10 @@ namespace icedb {
 				size_t actualNumPoints = parser_vals.size() / numCols;
 				assert(actualNumPoints == guessNumPoints);
 
-				// Just copy parser_vals into the point array
-				res.required.particle_scattering_element_coordinates.resize(parser_vals.size());
-				for (size_t i = 0; i < parser_vals.size(); ++i)
-					res.required.particle_scattering_element_coordinates[i] = static_cast<float>(parser_vals[i]);
+				// Just copy parser_vals into the point array - now set in place
+				//res.required.particle_scattering_element_coordinates.resize(parser_vals.size());
+				//for (size_t i = 0; i < parser_vals.size(); ++i)
+				//	res.required.particle_scattering_element_coordinates[i] = static_cast<float>(parser_vals[i]);
 				// Just one dielectric
 				res.required.particle_scattering_element_number.resize(actualNumPoints);
 				res.required.particle_scattering_element_composition.resize(actualNumPoints);
