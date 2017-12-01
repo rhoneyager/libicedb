@@ -195,8 +195,8 @@ int main(int argc, char** argv) {
 			constexpr uint64_t numPoints = 8;
 			constexpr uint64_t numSubstances = 1;
 			constexpr uint64_t numAxes = 3;
-			constexpr std::array<uint64_t,numPoints> point_ids = { 0, 1, 2, 3, 4, 5, 6, 7 }; // eight points
-			constexpr std::array<uint64_t,numSubstances> composition_ids = { 0 };
+			//constexpr std::array<uint64_t,numPoints> point_ids = { 0, 1, 2, 3, 4, 5, 6, 7 }; // eight points
+			//constexpr std::array<uint64_t,numSubstances> composition_ids = { 0 };
 			constexpr std::array<float, numPoints * numAxes> points = {
 			//const std::vector<float> points = {
 				1, 1, 1,
@@ -208,18 +208,21 @@ int main(int argc, char** argv) {
 				3, 2, 3,
 				3, 3, 2
 			};
-			constexpr std::array<float, numPoints * numSubstances> point_compositions = { 1, 1, 1, 1, 1, 1, 1, 1 };
+			//constexpr std::array<float, numPoints * numSubstances> point_compositions = { 1, 1, 1, 1, 1, 1, 1, 1 };
 			
 			// Required attributes
 			shpRequired.particle_id = "000001";
 			// Required dimensions
-			shpRequired.particle_scattering_element_number = point_ids;
-			shpRequired.particle_constituent_number = composition_ids;
+			shpRequired.number_of_particle_scattering_elements = numPoints;
+			shpRequired.number_of_particle_constituents = numSubstances;
 			// Required variables
 			shpRequired.particle_scattering_element_coordinates = points;
-			shpRequired.particle_scattering_element_composition = point_compositions;
-
+			
 			shpCommonOptional.particle_scattering_element_spacing = static_cast<float>(40. * 1e-6);
+
+			// Validate and write out any errors.
+			shpRequired.isValid(&cerr);
+			shpCommonOptional.isValid(&shpRequired, &cerr);
 
 			auto shp = icedb::Shapes::Shape::createShape(
 				*(grpTest2.get()), "Test_shape", shpRequired.particle_id,

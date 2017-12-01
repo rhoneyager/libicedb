@@ -12,12 +12,12 @@ namespace icedb {
 			/// DIMENSION: The number of scattering elements.
 			/// If these have non-trivial ids (i.e. not 1, 2, 3, 4, ...), then define the
 			/// optional attribute particle_scattering_element_number.
-			uint64_t number_of_particle_scattering_elements;
+			uint64_t number_of_particle_scattering_elements = 0;
 
 			/// DIMENSION: The number of distinct constituents in the particle.
 			/// If these have non-trivial ids (i.e. not 1, 2, 3, 4, ...), then define the
 			/// optional attribute particle_constituent_number.
-			uint64_t number_of_particle_constituents;
+			uint64_t number_of_particle_constituents = 0;
 
 			// Each particle has three axes (X, Y and Z). As these are trivial, only the
 			// scale lables are written; the scale does not have an explicit dataset filled with values.

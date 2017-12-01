@@ -13,18 +13,24 @@ namespace icedb {
 			typedef std::vector<std::string> StringData_t;
 
 			struct ShapeRequiredData {
-				IntData_t particle_scattering_element_number;
-				IntData_t particle_constituent_number;
+				uint64_t number_of_particle_scattering_elements = 0;
+				uint64_t number_of_particle_constituents = 0;
+
 				FloatData_t particle_scattering_element_coordinates;
-				FloatData_t particle_scattering_element_composition;
 				std::string particle_id;
 				void apply(icedb::Shapes::NewShapeRequiredProperties&) const;
 				//void fromShapeObject(const icedb::Shapes::Shape&);
 			};
 
 			struct ShapeCommonOptionalData {
+				IntData_t particle_scattering_element_number;
+				IntData_t particle_constituent_number;
 				FloatData_t particle_scattering_element_radius;
 				StringData_t particle_constituent_name;
+				std::string particle_constituent_single_name;
+
+				FloatData_t particle_scattering_element_composition_fractional;
+				IntData_t particle_scattering_element_composition_whole;
 				float particle_scattering_element_spacing = -1;
 				void apply(icedb::Shapes::NewShapeCommonOptionalProperties&) const;
 				//void fromShapeObject(const icedb::Shapes::Shape&);

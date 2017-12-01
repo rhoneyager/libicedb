@@ -183,7 +183,7 @@ namespace icedb {
 				headerEnd = (pend - in) / sizeof(char);
 			}
 			/// Read ddscat text contents
-			void readTextContents(const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic& p)
+			void readDDSCATtextContents(const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic& p)
 			{
 				using namespace std;
 
@@ -197,14 +197,14 @@ namespace icedb {
 				assert(parser_vals.size() % 7 == 0);
 				size_t numPoints = parser_vals.size() / 7;
 				assert(numPoints == numExpectedPoints);
-				p.required.particle_scattering_element_number.resize(numPoints);
+				p.optional.particle_scattering_element_number.resize(numPoints);
 				p.required.particle_scattering_element_coordinates.resize(numPoints * 3);
 				std::set<uint64_t> constituents;
 
 				for (size_t i = 0; i < numPoints; ++i)
 				{
 					size_t pIndex = 7 * i;
-					p.required.particle_scattering_element_number[i] = static_cast<uint64_t>(parser_vals[pIndex]);
+					p.optional.particle_scattering_element_number[i] = static_cast<uint64_t>(parser_vals[pIndex]);
 					p.required.particle_scattering_element_coordinates[3*i] = parser_vals[pIndex+1];
 					p.required.particle_scattering_element_coordinates[(3 * i)+1] = parser_vals[pIndex + 2];
 					p.required.particle_scattering_element_coordinates[(3 * i)+2] = parser_vals[pIndex + 3];
@@ -213,8 +213,8 @@ namespace icedb {
 					//p.required.particle_scattering_element_composition[i] = parser_vals[pIndex + 4]; //! Redo pass later and map
 					
 				}
-				p.required.particle_constituent_number = IntData_t(constituents.begin(), constituents.end());
-				p.required.particle_scattering_element_composition.resize(constituents.size()*numPoints);
+				p.optional.particle_constituent_number = IntData_t(constituents.begin(), constituents.end());
+				p.optional.particle_scattering_element_composition_whole.resize(numPoints);
 				
 				for (size_t i = 0; i < numPoints; ++i)
 				{
@@ -225,7 +225,7 @@ namespace icedb {
 						if ((*it) == substance_id) break;
 					}
 					size_t idx = (i*constituents.size()) + offset;
-					p.required.particle_scattering_element_composition[idx] = 1;
+					p.optional.particle_scattering_element_composition_whole[idx] = 1;
 				}
 			}
 			
@@ -241,7 +241,7 @@ namespace icedb {
 				readHeader(str.c_str(), desc, numPoints, headerEnd);
 				//res.required.particle_id = desc;
 				//data->resize((int)numPoints, ::scatdb::shape::backends::NUM_SHAPECOLS);
-				readTextContents(str.c_str(), numPoints, headerEnd, res);
+				readDDSCATtextContents(str.c_str(), numPoints, headerEnd, res);
 				return res;
 			}
 			
@@ -253,7 +253,7 @@ namespace icedb {
 				std::ofstream out(filename.c_str());
 
 				out << p.required.particle_id << endl;
-				out << p.required.particle_scattering_element_number.size() << "\t= Number of lattice points" << endl;
+				out << p.required.number_of_particle_scattering_elements << "\t= Number of lattice points" << endl;
 				
 				out << "1.0\t1.0\t1.0\t= target vector a1 (in TF)" << endl;
 				out << "0.0\t1.0\t0.0\t= target vector a2 (in TF)" << endl;
@@ -264,7 +264,7 @@ namespace icedb {
 				out << "\tNo.\tix\tiy\tiz\tICOMP(x, y, z)" << endl;
 				//size_t i = 1;
 
-				const size_t numPoints = p.required.particle_scattering_element_number.size();
+				const size_t numPoints = p.required.number_of_particle_scattering_elements;
 				std::vector<float> oi(numPoints * 7);
 
 				for (size_t j = 0; j < numPoints; j++)
@@ -272,13 +272,28 @@ namespace icedb {
 					const float &x = p.required.particle_scattering_element_coordinates[j * 3+0];
 					const float &y = p.required.particle_scattering_element_coordinates[j * 3+1];
 					const float &z = p.required.particle_scattering_element_coordinates[j * 3+2];
-					oi[j * 7 + 0] = p.required.particle_scattering_element_number[j];
+					if (p.optional.particle_scattering_element_number.empty()) {
+						oi[j * 7 + 0] = j+1;
+					}
+					else {
+						oi[j * 7 + 0] = p.optional.particle_scattering_element_number[j];
+					}
 					oi[j * 7 + 1] = x;
 					oi[j * 7 + 2] = y;
 					oi[j * 7 + 3] = z;
-					oi[j * 7 + 4] = 1;
-					oi[j * 7 + 5] = 1;
-					oi[j * 7 + 6] = 1;
+
+					uint64_t comp = 1;
+					if (p.required.number_of_particle_constituents > 1) {
+						if (p.optional.particle_scattering_element_composition_whole.size()) {
+							comp = p.optional.particle_scattering_element_composition_whole[j];
+						}
+						if (p.optional.particle_scattering_element_composition_fractional.size()) {
+							throw(std::invalid_argument("Cannot write a DDSCAT shape file with this type of dielectric!"));
+						}
+					}
+					oi[j * 7 + 4] = comp;
+					oi[j * 7 + 5] = comp;
+					oi[j * 7 + 6] = comp;
 				}
 
 				std::string generated;
@@ -293,7 +308,7 @@ namespace icedb {
 			
 			
 			/// Simple file assuming one substance, with 3-column rows, each representing a single point.
-			ShapeDataBasic readTextRaw(const char *iin)
+			ShapeDataBasic readRawText(const char *iin)
 			{
 				using namespace std;
 				ShapeDataBasic res;
@@ -323,14 +338,9 @@ namespace icedb {
 				//for (size_t i = 0; i < parser_vals.size(); ++i)
 				//	res.required.particle_scattering_element_coordinates[i] = static_cast<float>(parser_vals[i]);
 				// Just one dielectric
-				res.required.particle_scattering_element_number.resize(actualNumPoints);
-				res.required.particle_scattering_element_composition.resize(actualNumPoints);
-				for (size_t i = 0; i < actualNumPoints; ++i) {
-					res.required.particle_scattering_element_number[i] = static_cast<uint64_t>(i+1);
-					res.required.particle_scattering_element_composition[i] = 1;
-				}
-				res.required.particle_constituent_number.resize(1);
-				res.required.particle_constituent_number[0] = 1;
+				res.required.number_of_particle_constituents = 1;
+				res.required.number_of_particle_scattering_elements = actualNumPoints;
+				//res.optional.particle_scattering_element_number.resize(actualNumPoints);
 
 				res.required.particle_id = "";
 
@@ -366,7 +376,7 @@ namespace icedb {
 				auto spos = ssub.find_first_not_of("0123456789. \t\n");
 
 				if (std::string::npos == spos) // This is a raw text file
-					return readTextRaw(s.c_str());
+					return readRawText(s.c_str());
 				else return readDDSCAT(s.c_str()); // This is a DDSCAT file
 				//if ((std::string::npos != spos) && (spos < end)) {
 				//	return readDDSCAT(s.c_str());
