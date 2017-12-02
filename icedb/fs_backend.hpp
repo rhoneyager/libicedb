@@ -32,7 +32,7 @@ namespace icedb {
 			sfs::path resolveSymLinks(const sfs::path &base);
 
 			/// File path, relative mount point
-			typedef std::map<sfs::path, std::string> CollectedFilesRet_Type;
+			typedef std::vector<std::pair<sfs::path, std::string> > CollectedFilesRet_Type;
 			CollectedFilesRet_Type collectDatasetFiles(
 				const sfs::path &base,
 				const ExtensionsMatching_Type &fileExtensionsToMatch = common_hdf5_extensions);

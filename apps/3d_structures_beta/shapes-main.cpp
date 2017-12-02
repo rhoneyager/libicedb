@@ -4,6 +4,8 @@
 #define _HAS_AUTO_PTR_ETC 1
 #include <boost/program_options.hpp>
 #include <atomic>
+#include <chrono>       // std::chrono::seconds
+#include <deque>
 #include <future>
 #include <iostream>
 #include <memory>
@@ -25,24 +27,25 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} }
 };
 
-std::mutex mHDF5; ///< Allows only one thread to write to the HDF5 file at a time.
-std::mutex mStack; ///< Allows synchronized access to the job stack
-std::stack<std::pair<sfs::path, std::string> > mystack;
+//std::mutex mHDF5; ///< Allows only one thread to write to the HDF5 file at a time.
+std::mutex mStack, mOutStack; ///< Allows synchronized access to the job stack
+std::deque<std::pair<sfs::path, std::string> > myreadstack;
+std::deque<std::tuple<icedb::Examples::Shapes::ShapeDataBasic, sfs::path, std::string> > mywritestack;
 std::vector<std::unique_ptr<std::thread> > pool;
 // These get set in main(int,char**).
 float resolution_um = 0;
 bool nccompat = true;
 icedb::Groups::Group::Group_ptr basegrp;
 
-void task() {
+void readtask() {
 	// Fetch from the pool
 	while (true) {
-		decltype(mystack)::value_type cur;
+		decltype(myreadstack)::value_type cur;
 		{
 			std::lock_guard<std::mutex> lStack(mStack);
-			if (mystack.empty()) return;
-			cur = mystack.top();
-			mystack.pop();
+			if (myreadstack.empty()) return;
+			cur = myreadstack.front();
+			myreadstack.pop_front();
 		}
 		auto data = icedb::Examples::Shapes::readTextFile(cur.first.string());
 		data.required.particle_id = cur.first.filename().string();
@@ -50,18 +53,20 @@ void task() {
 		if (resolution_um)
 			data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
 		{
-			std::lock_guard<std::mutex> lHDF5(mHDF5);
-			std::cout << "Processing " << cur.first << std::endl;
-			auto sgrp = basegrp->createGroup(cur.second);
-			auto shp = data.toShape(cur.first.filename().string(), sgrp->getHDF5Group());
+			std::lock_guard<std::mutex> lOutStack(mOutStack);
+			//std::cout << "." << std::endl;
+			mywritestack.push_back(
+				std::tuple<icedb::Examples::Shapes::ShapeDataBasic, sfs::path, std::string>
+				(std::move(data), cur.first, cur.second));
 		}
 	}
 }
 
 /// Build a pool of threads for parsing shapes and writing to the hdf5 file
 bool construct_thread_pool(int numThreads) {
+	if (numThreads > 1) numThreads-= 1;
 	for (int i = 0; i < numThreads; ++i)
-		pool.push_back(std::make_unique<std::thread>(task));
+		pool.push_back(std::make_unique<std::thread>(readtask));
 	//pool.resize(numThreads, std::thread(task));
 	return true;
 }
@@ -98,8 +103,7 @@ int main(int argc, char** argv) {
 		if (vm.count("help")) doHelp("");
 		if (!vm.count("from") || !vm.count("to")) doHelp("Need to specify to/from locations.");
 		const int Num_Threads = thread::hardware_concurrency();
-		std::future<bool> make_threads = std::async(
-			construct_thread_pool, Num_Threads);
+		
 
 
 		using namespace icedb;
@@ -124,14 +128,44 @@ int main(int argc, char** argv) {
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		basegrp = db->createGroupStructure(dbfolder);
 		auto files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at("text"));
-
-		bool threadPoolCreateRes = make_threads.get();
-		Expects(threadPoolCreateRes == true);
-
-		for (const auto &f : files) mystack.push(f);
+		//std::future<bool> make_threads = std::async(
+		//	construct_thread_pool, Num_Threads);
+		//bool threadPoolCreateRes = make_threads.get();
+		//Expects(threadPoolCreateRes == true);
+		
+		for (const auto &f : files) myreadstack.push_back(f);
+		construct_thread_pool(Num_Threads);
+		//std::cout << "Starting the i/o run." << std::endl;
 		mStack.unlock();
 
-		for (auto &t : pool) t->join();
+		while (true) {
+			decltype(mywritestack)::value_type cur;
+			{
+				// Awkward object encapsulation. I want RAII, but I want to
+				// explicitly free the lock before sleeping this thread.
+				std::unique_ptr<std::lock_guard<std::mutex> > lOutStack = make_unique<std::lock_guard<std::mutex>>(mOutStack);
+				if (myreadstack.empty() && mywritestack.empty()) {
+					//std::cout << "Writer finished and closing." << std::endl;
+					break;
+				}
+				if (mywritestack.empty()) {
+					lOutStack.reset();
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					//std::cout << "Writer sleeping." << std::endl;
+					continue;
+				}
+				cur = mywritestack.front();
+				mywritestack.pop_front();
+			}
+			{
+				//std::cout << "Writing " << std::get<2>(cur) << std::endl;
+				auto sgrp = basegrp->createGroup(std::get<2>(cur));
+				auto shp = std::get<0>(cur).toShape(
+					std::get<1>(cur).filename().string(), sgrp->getHDF5Group());
+			}
+		}
+
+		for (auto &t : pool) t->join(); // These are all completed by the time this line is reached.
 	}
 	catch (const std::exception &e) {
 		std::cerr << e.what() << std::endl;

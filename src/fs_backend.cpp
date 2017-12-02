@@ -29,12 +29,11 @@ namespace icedb {
 				std::string sBase = base.string();
 				std::replace(sBase.begin(), sBase.end(), '\\', '/');
 
-				std::map<sfs::path, std::string> res;
+				std::vector<std::pair<sfs::path, std::string> > res;
 				auto sbase = resolveSymlinkPathandForceExists(base.string());
 				if (sfs::is_regular_file(sbase)) {
 					if (valid_extensions.count(base.extension()) > 0) {
-
-						res[sbase] = "/";
+						res.push_back(std::pair<sfs::path, std::string>(sbase, "/"));
 					}
 				}
 				else {
@@ -61,7 +60,7 @@ namespace icedb {
 								std::string relpath = sP.substr(sBase.size() + 1);
 								*/
 
-								res[p] = relPath;
+								res.push_back(std::pair<sfs::path, std::string>(p, relPath));
 							}
 						}
 					}
@@ -90,7 +89,7 @@ namespace icedb {
 					htri_t isval = H5Fis_hdf5(cand.first.string().c_str());
 					Expects(isval >= 0 && "File should exist at this point." && cand.first.string().c_str());
 					if (isval > 0)
-						mountFiles.insert(cand);
+						mountFiles.push_back(cand);
 				}
 				return mountFiles;
 			}
