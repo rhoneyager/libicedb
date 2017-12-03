@@ -7,7 +7,8 @@ set(srcs shapes-main.cpp
 	shape.hpp
 	shapeIOtext.cpp
 	shapeIOtext.hpp
-	shapeIOtextParsers.cpp)
+	shapeIOtextParsers.cpp
+	README.md)
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
