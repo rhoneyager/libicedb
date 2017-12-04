@@ -217,7 +217,8 @@ namespace icedb {
 				}
 				p.optional.particle_constituent_number = Int8Data_t(constituents.begin(), constituents.end());
 				p.optional.particle_scattering_element_composition_whole.resize(numPoints);
-				p.required.number_of_particle_constituents = constituents.size();
+				if (constituents.size() >= UINT8_MAX) throw (std::invalid_argument("Shape has too many constituents."));
+				p.required.number_of_particle_constituents = static_cast<uint8_t>(constituents.size());
 				
 				for (size_t i = 0; i < numPoints; ++i)
 				{
@@ -312,42 +313,76 @@ namespace icedb {
 			
 			
 			/// Simple file assuming one substance, with 3-column rows, each representing a single point.
+			/// ADDA allows comment lines at the beginning of the file. Each line starts with a '#'.
 			ShapeDataBasic readRawText(const char *iin)
 			{
 				using namespace std;
 				ShapeDataBasic res;
 				//Eigen::Vector3f crdsm, crdsi; // point location and diel entries
-				const char* pa = iin;
-				const char* pb = strchr(pa + 1, '\0');
-				const char* firstLineEnd = strchr(pa + 1, '\n');
+				const char* pa = iin; // Start of the file
+				const char* pb = strchr(pa + 1, '\0'); // End of the file
+				const char* pNumStart = pa;
+				// Search for the first line that is not a comment.
+				// Nmat lines for ADDA are also ignored.
+				while ((pNumStart[0] == '#' || pNumStart[0] == 'N' || pNumStart[0] == 'n') && pNumStart < pb) {
+					const char* lineEnd = strchr(pNumStart + 1, 'n');
+					pNumStart = lineEnd + 1;
+				}
+				if (pNumStart >= pb) throw(std::invalid_argument("Cannot find any points in a shapefile."));
+
+				const char* firstLineEnd = strchr(pNumStart + 1, '\n'); // End of the first line containing numberic data.
 				// Attempt to guess the number of points based on the number of lines in the file.
-				int guessNumPoints = std::count(pa, pb, '\n');
+				int guessNumPoints = std::count(pNumStart, pb, '\n');
 				std::vector<float> firstLineVals; //(numPoints*8);
-				std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
-				parser_vals.reserve(2 + (guessNumPoints * 3));
-				parse_shapefile_entries(pa, pb, parser_vals);
-				const void* floatloc = memchr(pa, '.', pb - pa);
+				//std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
+				std::vector<float> parser_vals;
+				parser_vals.reserve(guessNumPoints * 4);
+				parse_shapefile_entries(pNumStart, pb, parser_vals);
+				const void* floatloc = memchr(pNumStart, '.', pb - pNumStart);
 				res.required.particle_scattering_element_coordinates_are_integral = (floatloc) ? 0 : 1;
 
-				parse_shapefile_entries(pa, firstLineEnd, firstLineVals);
+				parse_shapefile_entries(pNumStart, firstLineEnd, firstLineVals);
 
 				size_t numCols = firstLineVals.size();
 				bool good = false;
-				if (numCols == 3) good = true;
+				if (numCols == 3) good = true; // Three columns, x, y and z
+				if (numCols == 4) good = true; // Four columns, x, y, z and material
 				if (!good) throw (std::invalid_argument("Bad read"));
 				if (parser_vals.size() == 0) throw (std::invalid_argument("Bad read"));
 
 				size_t actualNumPoints = parser_vals.size() / numCols;
 				assert(actualNumPoints == guessNumPoints);
 
-				// Just copy parser_vals into the point array - now set in place
-				//res.required.particle_scattering_element_coordinates.resize(parser_vals.size());
-				//for (size_t i = 0; i < parser_vals.size(); ++i)
-				//	res.required.particle_scattering_element_coordinates[i] = static_cast<float>(parser_vals[i]);
-				// Just one dielectric
-				res.required.number_of_particle_constituents = 1;
 				res.required.number_of_particle_scattering_elements = actualNumPoints;
-				//res.optional.particle_scattering_element_number.resize(actualNumPoints);
+				if (numCols == 3) {
+					res.required.number_of_particle_constituents = 1;
+					res.required.particle_scattering_element_coordinates = parser_vals;
+				}
+				else if (numCols == 4) {
+					// Count the number of distinct materials
+					uint8_t max_constituent = 1;
+					for (size_t i = 0; i < actualNumPoints; ++i) {
+						auto constit = parser_vals[(4 * i) + 3];
+						assert(static_cast<uint8_t>(constit) < UINT8_MAX);
+						if (static_cast<uint8_t>(constit) > max_constituent)
+							max_constituent = static_cast<uint8_t>(constit);
+					}
+					res.required.number_of_particle_constituents = max_constituent;
+					res.optional.particle_constituent_number.resize(max_constituent);
+					for (size_t i = 0; i < max_constituent; ++i)
+						res.optional.particle_constituent_number[i] = static_cast<uint8_t>(i + 1); // assert-checked before
+
+					res.required.particle_scattering_element_coordinates.resize(actualNumPoints * 3);
+					res.optional.particle_scattering_element_composition_whole.resize(actualNumPoints);
+					for (size_t i = 0; i < actualNumPoints; ++i) {
+						size_t crdindex = (3 * i);
+						size_t parserindex = (4 * i);
+						res.required.particle_scattering_element_coordinates[crdindex + 0] = parser_vals[parserindex + 0];
+						res.required.particle_scattering_element_coordinates[crdindex + 1] = parser_vals[parserindex + 1];
+						res.required.particle_scattering_element_coordinates[crdindex + 2] = parser_vals[parserindex + 2];
+						res.optional.particle_scattering_element_composition_whole[i] = static_cast<uint8_t>(parser_vals[parserindex + 3]);
+					}
+				}
 
 				res.required.particle_id = "";
 
