@@ -1,6 +1,9 @@
 #pragma once
 #ifndef ICEDB_H_DEFS
 #define ICEDB_H_DEFS
+
+#include "cmake-settings.h"
+
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stddef.h>
 
@@ -39,7 +42,32 @@ ICEDB_BEGIN_DECL_C
 /* Detection of the operating system and compiler version. Used to declare symbol export / import. */
 
 /* Declare the feature sets that are supported */
+
+/// \deprecated This is going away.
 #define ICEDB_FEATURE_GZIP 0 /* Auto-detection of gzip. Needed for hdf5 file storage. */
+
+// Does the compiler support C++20 modules?
+
+#if defined(__INTELLISENSE__)
+#define ICEDB_USING_MODULES 0
+#endif
+#if !defined(ICEDB_USING_MODULES) && defined(_MSC_FULL_VER)
+#if (_MSVC_LANG > 201703) && (_MSC_FULL_VER > 150300000)
+#if ICEDB_ENABLE_MODULES == 1
+#define ICEDB_USING_MODULES 1
+#endif
+#endif
+#endif
+
+#ifndef ICEDB_USING_MODULES
+#define ICEDB_USING_MODULES 0
+#endif
+
+#ifdef ICEDB_USING_MODULES
+#define ICEDB_EXPORTING_MODULE export
+#else
+#define ICEDB_EXPORTING_MODULE
+#endif
 
 
 /* Symbol export / import macros */
@@ -152,6 +180,9 @@ ICEDB_BEGIN_DECL_C
 #define ICEDB_OUT
 /// Denotes an 'optional' parameter (one which can be replaced with a NULL or nullptr)
 #define ICEDB_OPTIONAL
+
+
+
 
 ICEDB_END_DECL_C
 

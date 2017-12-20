@@ -24,10 +24,18 @@ INCLUDE(CTest)
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
 set(MINOR 4)
-set(REVISION 1)
+set(REVISION 2)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
+
+option(ICEDB_EXPERIMENTAL_CPP20_MODULES
+	"Build the library interface using C++20 modules. Testing on Clang and MSVC 2017. Ignored on unsupported compilers." OFF)
+if(ICEDB_EXPERIMENTAL_CPP20_MODULES)
+	set(ICEDB_EXPERIMENTAL_CPP20_MODULES_FLAG 1)
+else()
+	set(ICEDB_EXPERIMENTAL_CPP20_MODULES_FLAG 0)
+endif()
 
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake-settings.h.in"
@@ -76,6 +84,12 @@ set(gsl_objs
 	related_includes/gsl/span
 	related_includes/gsl/string_span
 	)
+if(ICEDB_EXPERIMENTAL_CPP20_MODULES)
+	set(gsl_objs_ixx
+		modules/gsl.ixx)
+	set(gsl_objs ${gsl_objs} ${gsl_objs_ixx})
+	set_source_files_properties(${gsl_objs_ixx} PROPERTIES LANGUAGE CXX)
+endif()
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
@@ -104,6 +118,12 @@ set(hdf_objs
 	private/hdf5_supplemental.hpp
 	icedb/compat/hdf5_load.h
 	src/export-hdf5.cpp)
+if(0)
+	set(hdf_objs_ixx
+		modules/export-hdf5.ixx)
+	set(hdf_objs ${hdf_objs} ${hdf_objs_ixx})
+	set_source_files_properties(${hdf_objs_ixx} PROPERTIES LANGUAGE CXX)
+endif()
 set(lib_objs
 	icedb/Data_Types.hpp
 	icedb/defs.h

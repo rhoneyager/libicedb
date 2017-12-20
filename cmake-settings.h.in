@@ -4,4 +4,5 @@
 #define libicedb_REVISION @REVISION@
 #define libicedb_GitHash "@GITHASHVAR@"
 #define libicedb_GitBranch "@GITREFSPECVAR@"
+#define ICEDB_ENABLE_MODULES @ICEDB_EXPERIMENTAL_CPP20_MODULES_FLAG@
 

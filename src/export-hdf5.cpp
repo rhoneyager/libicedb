@@ -1,10 +1,13 @@
 #include "../private/hdf5_supplemental.hpp"
 #include <gsl/gsl_assert>
-#include "../icedb/defs.h"
+#if !ICEDB_USING_MODULES
 #include <string>
 #include <sstream>
 #include <utility>
 #include <algorithm>
+#else
+import std.core;
+#endif
 
 namespace icedb {
 	namespace fs

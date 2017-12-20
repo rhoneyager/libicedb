@@ -1,4 +1,6 @@
 #pragma once
+#include "../icedb/defs.h"
+#if !ICEDB_USING_MODULES
 #include <memory>
 #include <set>
 #include <string>
@@ -6,7 +8,10 @@
 #include <functional>
 #include <stdexcept>
 #include <sstream>
+#else
+import std.core;
 
+#endif
 #include <gsl/gsl>
 #include "icedb_h5.h" // Auto-generated. Gets installed in the correct location.
 #include "../icedb/compat/hdf5_load.h"
