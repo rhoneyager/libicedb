@@ -64,9 +64,13 @@ ICEDB_BEGIN_DECL_C
 #endif
 
 #ifdef ICEDB_USING_MODULES
-#define ICEDB_EXPORTING_MODULE export
-#else
+#ifndef ICEDB_EXPORTING_MODULE
 #define ICEDB_EXPORTING_MODULE
+#endif
+#else
+#ifndef ICEDB_EXPORTING_MODULE
+#define ICEDB_EXPORTING_MODULE
+#endif
 #endif
 
 

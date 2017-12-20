@@ -73,7 +73,7 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
 	COMMENT "Generate HDF5 definitions for function matching"
 	)
 
-set(gsl_objs
+set(gsl_raw_objs
 	related_includes/gsl/gsl
 	related_includes/gsl/gsl_algorithm
 	related_includes/gsl/gsl_assert
@@ -84,12 +84,32 @@ set(gsl_objs
 	related_includes/gsl/span
 	related_includes/gsl/string_span
 	)
+source_group(GSL\\Raw FILES ${gsl_raw_objs})
+set(gsl_objs ${gsl_raw_objs})
 if(ICEDB_EXPERIMENTAL_CPP20_MODULES)
 	set(gsl_objs_ixx
-		modules/gsl.ixx)
-	set(gsl_objs ${gsl_objs} ${gsl_objs_ixx})
+		modules/gsl.ixx
+		modules/gsl_assert.ixx
+		modules/gsl_pointers.ixx
+		modules/gsl_span.ixx
+		modules/gsl_util.ixx)
+	source_group(GSL\\Modules\\Impl FILES ${gsl_objs_ixx})
+	set(gsl_objs_modularized_headers
+		related_includes/modules/gsl/gsl
+		related_includes/modules/gsl/gsl_algorithm
+		related_includes/modules/gsl/gsl_assert
+		related_includes/modules/gsl/gsl_byte
+		related_includes/modules/gsl/gsl_util
+		related_includes/modules/gsl/multi_span
+		related_includes/modules/gsl/pointers
+		related_includes/modules/gsl/span
+		related_includes/modules/gsl/string_span
+		)
+	source_group(GSL\\Modules\\Headers FILES ${gsl_objs_modularized_headers})
+	set(gsl_objs ${gsl_objs} ${gsl_objs_ixx} ${gsl_objs_modularized_headers})
 	set_source_files_properties(${gsl_objs_ixx} PROPERTIES LANGUAGE CXX)
 endif()
+#source_group("GSL" FILES ${gsl_objs})
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
@@ -137,7 +157,6 @@ generaterc("libicedb" "dll"
 	"Scattering utility library"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
-source_group("GSL" FILES ${gsl_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
 source_group("Groups" FILES ${grp_objs})
@@ -145,7 +164,7 @@ source_group("Attributes" FILES ${att_objs})
 source_group("Tables" FILES ${tbl_objs})
 source_group("Databases" FILES ${db_objs})
 source_group("HDF5" FILES ${hdf_objs})
-set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
+set(libsrcs ${lib_objs} ${shp_objs} ${grp_objs}
 	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
 	${CMAKE_BINARY_DIR}/icedb_h5.h
     "${CMAKE_CURRENT_BINARY_DIR}/cmake-settings.h")
@@ -155,17 +174,37 @@ SET(libsrcs ${libsrcs}
 source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
+add_library(gsl STATIC ${gsl_objs})
+set_target_properties(gsl PROPERTIES CXX_STANDARD 17)
+
+
 add_library(libicedb STATIC ${libsrcs})
 set_target_properties(libicedb PROPERTIES CXX_STANDARD 17)
 # related_includes contains the GSL.
-target_include_directories(libicedb SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
-	PUBLIC ${CMAKE_SOURCE_DIR}/related_includes
-	)
+
+set(gsl_includes SYSTEM)
+if (ICEDB_EXPERIMENTAL_CPP20_MODULES)
+	set(gsl_includes ${gsl_includes}
+		PUBLIC ${CMAKE_SOURCE_DIR}/related_includes/modules)
+endif()
+set(gsl_includes ${gsl_includes}
+	PUBLIC ${CMAKE_SOURCE_DIR}/related_includes)
+target_include_directories(gsl ${gsl_includes})
+
+set(libicedb_includes SYSTEM
+	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
+if (ICEDB_EXPERIMENTAL_CPP20_MODULES)
+	set(libicedb_includes ${libicedb_includes}
+		PUBLIC ${CMAKE_SOURCE_DIR}/related_includes/modules)
+endif()
+set(libicedb_includes ${libicedb_includes}
+	PUBLIC ${CMAKE_SOURCE_DIR}/related_includes)
+
+target_include_directories(libicedb ${libicedb_includes})
 
 target_compile_definitions(libicedb
 	PRIVATE ${HDF5_DEFINITIONS})
-target_link_libraries(libicedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
+target_link_libraries(libicedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES} gsl)
 addlib(libicedb STATIC)
 storebin(libicedb)
 
