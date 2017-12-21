@@ -19,6 +19,14 @@
 #ifndef GSL_SPAN_H
 #define GSL_SPAN_H
 
+#include "../../icedb/defs.h"
+#if ICEDB_USING_MODULES == 1
+import std.core;
+import gsl.assert;
+//import gsl.byte;
+#include "gsl_byte"
+import gsl.util;
+#else
 #include "gsl_assert"
 #include "gsl_byte"
 #include "gsl_util"
@@ -30,6 +38,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#endif
 
 #ifdef _MSC_VER
 #pragma warning(push)
