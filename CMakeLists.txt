@@ -149,6 +149,7 @@ target_link_libraries(libicedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
 addlib(libicedb STATIC)
 storebin(libicedb)
 
+add_subdirectory(related/ddscat)
 add_subdirectory(apps)
 
 adddocs()
