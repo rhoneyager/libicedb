@@ -13,6 +13,8 @@ set(srcs ddscat_boost_parsers.cpp
 	ddscat_run.hpp
 	ddscat_shape.cpp
 	ddscat_shape.hpp
+	ddscat_versions.cpp
+	ddscat_versions.hpp
 	)
 set(srcs_rtmath
 	from_rtmath/ddOriData.cpp
@@ -30,13 +32,22 @@ set(srcs_rtmath
 	from_rtmath/shapefile_parsers.cpp
 	from_rtmath/shapefile_query.cpp
 	from_rtmath/shapefile_supplemental.h
+	from_rtmath/ddpar.cpp
+	from_rtmath/ddpar.h
+	from_rtmath/parids.h
+	from_rtmath/ddpar-keys.cpp
+	from_rtmath/ddpar-parsers.cpp
+	from_rtmath/ddVersions.cpp
+	from_rtmath/ddVersions.h
 	)
-add_library(io_ddscat STATIC ${srcs} ${srcs_rtmath})
-
+add_library(io_ddscat STATIC ${srcs})
 set_target_properties(io_ddscat PROPERTIES CXX_STANDARD 17)
 target_include_directories(io_ddscat SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
-#target_link_libraries(io_ddscat libicedb ${Boost_PROGRAM_OPTIONS_LIBRARY}) # ${HDF5_LIBRARIES})
-
 addlib(io_ddscat STATIC)
 
+add_library(io_ddscat_rtmath STATIC ${srcs_rtmath})
+set_target_properties(io_ddscat_rtmath PROPERTIES CXX_STANDARD 17)
+target_include_directories(io_ddscat_rtmath SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
+target_include_directories(io_ddscat_rtmath SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
+addlib(io_ddscat_rtmath STATIC)
