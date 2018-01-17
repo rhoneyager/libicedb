@@ -1,6 +1,6 @@
 #pragma once
 #ifdef __has_include
-#  if __has_include(<variant>)
+#  if __has_include(<variant>) && 0
 #    include <variant>
 #    define have_stdcpplib_variant 1
 	using std::variant;

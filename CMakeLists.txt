@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/CMakeRules"
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS OFF)
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -54,7 +54,7 @@ endif()
 #find_package(Eigen3 REQUIRED)
 
 add_executable(h5tests related/h5tests/h5tests.cpp)
-set_target_properties(h5tests PROPERTIES CXX_STANDARD 17)
+set_target_properties(h5tests PROPERTIES CXX_STANDARD 11)
 target_include_directories(h5tests SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
 	)
@@ -65,6 +65,16 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
 	COMMENT "Generate HDF5 definitions for function matching"
 	)
 
+set(related_cmake_objects
+	CMakeRules/addapp.cmake
+	CMakeRules/addBaseProject.cmake
+	CMakeRules/addBoostUniform.cmake
+	CMakeRules/adddocs.cmake
+	CMakeRules/addlib.cmake
+	CMakeRules/FindEigen3.cmake
+	CMakeRules/generaterc.cmake
+	CMakeRules/GetGitRevisionDescription.cmake
+	CMakeRules/signing.cmake)
 set(gsl_objs
 	related_includes/gsl/gsl
 	related_includes/gsl/gsl_algorithm
@@ -125,8 +135,10 @@ source_group("Attributes" FILES ${att_objs})
 source_group("Tables" FILES ${tbl_objs})
 source_group("Databases" FILES ${db_objs})
 source_group("HDF5" FILES ${hdf_objs})
+source_group("CMake" FILES ${related_cmake_objects})
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
 	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
+	${related_cmake_objects}
 	${CMAKE_BINARY_DIR}/icedb_h5.h
     "${CMAKE_CURRENT_BINARY_DIR}/cmake-settings.h")
 IF (WIN32 AND NOT CYGWIN)

@@ -60,51 +60,30 @@ namespace icedb {
 			void deleteAttribute(const std::string &attributeName);
 
 
-			static void readAttributeData(
+			template <class DataType> void readAttributeData(
 				gsl::not_null<const H5::H5Object*> parent,
 				const std::string &attributeName,
 				std::vector<size_t> &dimensions,
-				std::vector<Data_Types::All_Variant_type> &data);
-			void readAttributeData(
+				std::vector<DataType> &data) const;
+			template <class DataType> void readAttributeData(
 				const std::string &attributeName,
 				std::vector<size_t> &dimensions,
-				std::vector<Data_Types::All_Variant_type> &data) const;
-			void writeAttributeData(
+				std::vector<DataType> &data) const;
+			template <class DataType> void writeAttributeData(
 				const std::string &attributeName,
-				const std::type_info &type_id,
 				const std::vector<size_t> &dimensionas,
-				const std::vector<Data_Types::All_Variant_type> &data);
+				const std::vector<DataType> &data);
 
 			template <class DataType> static Attribute<DataType> readAttribute(
 					gsl::not_null<const H5::H5Object*> obj, const std::string &attributeName)
 			{
-				std::vector<Data_Types::All_Variant_type> vdata;
 				Attribute<DataType> res(attributeName);
-				//res.dimensionality = getAttributeDimensionality(attributeName);
-				readAttributeData(obj, attributeName, res.dimensionality, vdata);
-				res.data.resize(vdata.size());
-				for (size_t i = 0; i < vdata.size(); ++i)
-#if (have_stdcpplib_variant==1)
-					res.data[i] = std::get<DataType>(vdata[i]);
-#else
-					res.data[i] = mpark::get<DataType>(vdata[i]);
-#endif
-				//std::copy_n(vdata.cbegin(), vdata.cend(), res.data.begin());
+				readAttributeData(obj, attributeName, res.dimensionality, res.data);
 				return res;
 			}
 			template<class DataType> Attribute<DataType> readAttribute(const std::string &attributeName) const {
-				std::vector<Data_Types::All_Variant_type> vdata;
 				Attribute<DataType> res(attributeName);
-				//res.dimensionality = getAttributeDimensionality(attributeName);
-				readAttributeData(attributeName, res.dimensionality, vdata);
-				res.data.resize(vdata.size());
-				for (size_t i = 0; i < vdata.size(); ++i)
-#if (have_stdcpplib_variant==1)
-					res.data[i] = std::get<DataType>(vdata[i]);
-#else
-					res.data[i] = mpark::get<DataType>(vdata[i]);
-#endif
-				//std::copy_n(vdata.cbegin(), vdata.cend(), res.data.begin());
+				readAttributeData(attributeName, res.dimensionality, res.data);
 				return res;
 			}
 			template<class DataType> void writeAttribute(const Attribute<DataType> &attribute) {
@@ -112,12 +91,7 @@ namespace icedb {
 				for (const auto &d : attribute.dimensionality) sz *= d;
 				Expects(attribute.data.size() == sz);
 
-				std::vector<Data_Types::All_Variant_type> vdata(attribute.data.size());
-				for (size_t i = 0; i < attribute.data.size(); ++i)
-					vdata[i] = attribute.data[i];
-				// copy_n will not work here...
-				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
-				writeAttributeData(attribute.name, typeid(DataType), attribute.dimensionality, vdata);
+				writeAttributeData(attribute.name, typeid(DataType), attribute.dimensionality, attribute.data);
 			}
 			template<class DataType> void writeAttribute(
 				const std::string &name,

@@ -13,5 +13,15 @@ namespace icedb {
 			CanHaveAttributes_impl();
 			virtual ~CanHaveAttributes_impl();
 		};
+
+		/** \brief An encapsulating class that ensures that an attribute exists before it is accessed.
+		*
+		* \todo Candidate class. Needs an implementation.
+		**/
+		class Checked_Existing_Attribute {
+		public:
+			std::shared_ptr<H5::H5Object> parent;
+			const std::string name;
+		};
 	}
 }
