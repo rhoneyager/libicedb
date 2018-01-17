@@ -167,22 +167,19 @@ namespace icedb {
 		template <class DataType, class ObjectType>
 		void pullData(
 			std::vector<size_t> &dims,
-			std::vector<Data_Types::All_Variant_type> &data,
+			std::vector<DataType> &tdata,
 			gsl::not_null<ObjectType*> obj)
 		{
-			std::vector<DataType> tdata;
 			size_t sz = 1;
 			for (const auto &s : dims) sz *= s;
 			tdata.resize(sz);
 			icedb::fs::hdf5::readDatasetArray<DataType, H5::DataSet>(obj, tdata.data());
-
-			data.resize(tdata.size());
-			std::copy(tdata.cbegin(), tdata.cend(), data.begin());
 		}
 
+		template <class DataType>
 		void Table::readAll(
 			std::vector<size_t> &dims,
-			std::vector<Data_Types::All_Variant_type> &data) const
+			std::vector<DataType> &data) const
 		{
 			Expects(valid());
 			auto selfptr = _getTableSelf();
@@ -191,73 +188,34 @@ namespace icedb {
 			for (const auto &s : dims) sz *= s;
 			data.resize(sz);
 
-			if (icedb::fs::hdf5::isType<uint64_t, H5::DataSet>(selfptr.get()))
-				pullData<uint64_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<int64_t, H5::DataSet>(selfptr.get()))
-				pullData<int64_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<uint32_t, H5::DataSet>(selfptr.get()))
-				pullData<uint32_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<int32_t, H5::DataSet>(selfptr.get()))
-				pullData<int32_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<uint16_t, H5::DataSet>(selfptr.get()))
-				pullData<uint16_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<int16_t, H5::DataSet>(selfptr.get()))
-				pullData<int16_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<uint8_t, H5::DataSet>(selfptr.get()))
-				pullData<uint8_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<int8_t, H5::DataSet>(selfptr.get()))
-				pullData<int8_t, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<float, H5::DataSet>(selfptr.get()))
-				pullData<float, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<double, H5::DataSet>(selfptr.get()))
-				pullData<double, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<char, H5::DataSet>(selfptr.get()))
-				pullData<char, H5::DataSet>(dims, data, selfptr.get());
-			else if (icedb::fs::hdf5::isType<std::string, H5::DataSet>(selfptr.get()))
-				pullData<std::string, H5::DataSet>(dims, data, selfptr.get());
-			else throw(std::invalid_argument("Unhandled data type"));
+			pullData<DataType, H5::DataSet>(dims, data, selfptr.get());
 		}
 
 		template <class DataType, class ObjectType>
 		void pushData(
 			const std::vector<size_t> &dims,
 			gsl::not_null<ObjectType*> obj,
-			const std::vector<Data_Types::All_Variant_type> &indata)
+			const std::vector<DataType> &data)
 		{
 			size_t numElems = 1;
 			for (const auto &s : dims) numElems *= s;
 			Expects(numElems > 0);
-			std::vector<DataType> data(numElems);
-			for (size_t i = 0; i < numElems; ++i)
-#if (have_stdcpplib_variant==1)
-					data[i] = std::get<DataType>(indata[i]);
-#else
-					data[i] = mpark::get<DataType>(indata[i]);
-#endif
 
 			icedb::fs::hdf5::writeDatasetArray<DataType, ObjectType>(dims, obj, data.data());
-			//icedb::fs::hdf5::addAttrArray<DataType, ObjectType>(obj.get(), attributeName.c_str(), dimensionality, data);
 		}
 
+		/*
+		template <class DataType>
 		void Table::writeAll(
-			const std::type_info &type_id,
-			const std::vector<Data_Types::All_Variant_type> &data) const
+			const std::vector<DataType> &data) const
 		{
 			Expects(valid());
 			auto selfptr = _getTableSelf();
 			const auto dimensionality = getDimensions();
 			// Need to copy from the variant structure into an array of the exact data type
-			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else if (type_id == typeid(int64_t))pushData<int64_t, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else if (type_id == typeid(uint32_t))pushData<uint32_t, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else if (type_id == typeid(int32_t))pushData<int32_t, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else if (type_id == typeid(float))pushData<float, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else if (type_id == typeid(double))pushData<double, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else if (type_id == typeid(char))pushData<char, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else if (type_id == typeid(std::string))pushData<std::string, H5::DataSet>(dimensionality, selfptr.get(), data);
-			else throw(std::invalid_argument("Unhandled data type"));
-			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
+			pushData<DataType, H5::DataSet>(dimensionality, selfptr.get(), data);
 		}
+		*/
 
 		template <class DataType>
 		void Table::writeAllInner(const gsl::span<const DataType> &outData) const {
@@ -271,19 +229,18 @@ namespace icedb {
 			icedb::fs::hdf5::writeDatasetArray<DataType, H5::DataSet>(dimensionality, selfptr.get(), outData.data());
 		}
 
-		template void Table::writeAllInner<uint64_t>(const gsl::span<const uint64_t> &outData) const;
-		template void Table::writeAllInner<int64_t>(const gsl::span<const int64_t> &outData) const;
-		template void Table::writeAllInner<uint32_t>(const gsl::span<const uint32_t> &outData) const;
-		template void Table::writeAllInner<int32_t>(const gsl::span<const int32_t> &outData) const;
-		template void Table::writeAllInner<uint16_t>(const gsl::span<const uint16_t> &outData) const;
-		template void Table::writeAllInner<int16_t>(const gsl::span<const int16_t> &outData) const;
-		template void Table::writeAllInner<uint8_t>(const gsl::span<const uint8_t> &outData) const;
-		template void Table::writeAllInner<int8_t>(const gsl::span<const int8_t> &outData) const;
-		template void Table::writeAllInner<double>(const gsl::span<const double> &outData) const;
-		template void Table::writeAllInner<float>(const gsl::span<const float> &outData) const;
-		template void Table::writeAllInner<char>(const gsl::span<const char> &outData) const;
 
+#define INST_WRITE_TBL_INNER_TYPE(x) \
+		template void Table::writeAllInner<x>(const gsl::span<const x> &outData) const;
 
+		INST_ATTR(INST_WRITE_TBL_INNER_TYPE);
+
+#define INST_READ_TBL_TYPE(x) \
+		template void Table::readAll<x>( \
+		std::vector<size_t> &dims, \
+		std::vector<x> &data) const;
+
+		INST_ATTR(INST_READ_TBL_TYPE);
 
 		CanHaveTables::CanHaveTables() {}
 		CanHaveTables::~CanHaveTables() {}

@@ -129,7 +129,7 @@ namespace icedb {
 			gsl::not_null<const H5::H5Object*> parent,
 			const std::string &attributeName,
 			std::vector<size_t> &dims,
-			std::vector<DataType> &data) const
+			std::vector<DataType> &data)
 		{
 			Expects(doesAttributeExist(parent,attributeName));
 
@@ -163,20 +163,6 @@ namespace icedb {
 			const std::string &attributeName,\
 			std::vector<size_t> &dims, \
 			std::vector<x> &data) const;
-
-#define INST_ATTR(y) \
-			y(double); \
-			y(float); \
-			y(uint64_t); \
-			y(int64_t); \
-			y(uint32_t); \
-			y(int32_t); \
-			y(uint16_t); \
-			y(int16_t); \
-			y(uint8_t); \
-			y(int8_t); \
-			y(char); \
-			y(std::string);
 		
 		//INST_READ_ATTR_TYPE(double);
 		INST_ATTR(INST_READ_ATTR_TYPE);

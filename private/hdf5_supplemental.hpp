@@ -13,6 +13,20 @@
 #include "../icedb/fs.hpp"
 #include "../icedb/util.hpp"
 
+#define INST_ATTR(y) \
+			y(double); \
+			y(float); \
+			y(uint64_t); \
+			y(int64_t); \
+			y(uint32_t); \
+			y(int32_t); \
+			y(uint16_t); \
+			y(int16_t); \
+			y(uint8_t); \
+			y(int8_t); \
+			y(char); \
+			y(std::string);
+
 namespace icedb {
 	namespace fs {
 		namespace hdf5 {

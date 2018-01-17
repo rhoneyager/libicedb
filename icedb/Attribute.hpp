@@ -60,11 +60,11 @@ namespace icedb {
 			void deleteAttribute(const std::string &attributeName);
 
 
-			template <class DataType> void readAttributeData(
+			template <class DataType> static void readAttributeData(
 				gsl::not_null<const H5::H5Object*> parent,
 				const std::string &attributeName,
 				std::vector<size_t> &dimensions,
-				std::vector<DataType> &data) const;
+				std::vector<DataType> &data);
 			template <class DataType> void readAttributeData(
 				const std::string &attributeName,
 				std::vector<size_t> &dimensions,
@@ -91,7 +91,7 @@ namespace icedb {
 				for (const auto &d : attribute.dimensionality) sz *= d;
 				Expects(attribute.data.size() == sz);
 
-				writeAttributeData(attribute.name, typeid(DataType), attribute.dimensionality, attribute.data);
+				writeAttributeData(attribute.name, attribute.dimensionality, attribute.data);
 			}
 			template<class DataType> void writeAttribute(
 				const std::string &name,

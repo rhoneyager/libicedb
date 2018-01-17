@@ -50,20 +50,8 @@ namespace icedb {
 			}
 			std::type_index getTableTypeId() const;
 
-			void readAll(
-				std::vector<size_t> &dimensions,
-				std::vector<Data_Types::All_Variant_type> &data) const;
 			template <class DataType>
-			void readAll(std::vector<size_t> &dims, std::vector<DataType> &data) const {
-				assert(isTableOfType<DataType>());
-				std::vector<Data_Types::All_Variant_type> vdata;
-
-				readAll(dims, vdata);
-				data.resize(vdata.size());
-				for (size_t i = 0; i < vdata.size(); ++i)
-					data[i] = std::get<DataType>(vdata[i]);
-				//return res;
-			}
+			void readAll(std::vector<size_t> &dims, std::vector<DataType> &data) const;
 
 			// Fixed size of data. Cannot resize without re-creating the dataset, for now.
 			// Eventually, will support unlimited dimensions.
@@ -72,10 +60,6 @@ namespace icedb {
 			template <class DataType>
 			void writeAllInner(const gsl::span<const DataType> &outData) const;
 		public:
-			/// \deprecated Too slow of a method
-			void writeAll(
-				const std::type_info &type_id,
-				const std::vector<Data_Types::All_Variant_type> &data) const;
 			
 			template <class DataType>
 			void writeAll(const gsl::span<const DataType> &outData) const {
