@@ -148,7 +148,6 @@ source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
 add_library(libicedb STATIC ${libsrcs})
-set_target_properties(libicedb PROPERTIES CXX_STANDARD 17)
 # related_includes contains the GSL.
 target_include_directories(libicedb SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}

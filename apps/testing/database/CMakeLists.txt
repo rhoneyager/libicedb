@@ -9,7 +9,6 @@ SET(srcs ${srcs}
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
 ENDIF()
 add_executable(database ${srcs})
-set_target_properties(database PROPERTIES CXX_STANDARD 17)
 target_include_directories(database SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(database SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}

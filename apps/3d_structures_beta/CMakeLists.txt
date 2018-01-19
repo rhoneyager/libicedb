@@ -14,7 +14,6 @@ SET(srcs ${srcs}
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
 ENDIF()
 add_executable(3d_structures_beta ${srcs})
-set_target_properties(3d_structures_beta PROPERTIES CXX_STANDARD 17)
 target_include_directories(3d_structures_beta SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(3d_structures_beta SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(3d_structures_beta SYSTEM
