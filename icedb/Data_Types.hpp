@@ -1,8 +1,9 @@
 #pragma once
+#include "defs.h"
 #include <cstdint>
 #include <memory>
 #include <typeinfo>
-#include <typeindex>
+//#include <typeindex>
 //#include "compat/variant_backend.hpp"
 
 namespace H5 {
@@ -46,6 +47,8 @@ namespace icedb {
 
 		//typedef variant<uint64_t, int64_t, uint32_t, int32_t, uint16_t, int16_t, uint8_t, int8_t, float, double, char, std::string> All_Variant_type;
 
+#if __cplusplus > 201103L
 		template <class T> const std::type_index getType() { return typeid(T); }
+#endif
 	}
 }

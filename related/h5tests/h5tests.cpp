@@ -9,14 +9,21 @@
 #include <string>
 
 struct version {
-	int maj = 0;
-	int min = 0;
-	int rev = 0;
-	int patch = 0;
-	version() {}
+	int maj;
+	int min;
+	int rev;
+	int patch;
+	void _init() {
+		maj = 0;
+		min = 0;
+		rev = 0;
+		patch = 0;
+	}
+	version() { _init();}
 	version(const std::string &strver) {
 		// Versions look like 1.10.0-patch1
 		using namespace std;
+		_init();
 		size_t delim1 = strver.find_first_of(".");
 		size_t delim2 = strver.find_first_of(".", delim1+1);
 		size_t delim3 = strver.find_first_of("-");

@@ -32,6 +32,15 @@
 # define ICEDB_CALL_CPP extern "CPP"
 #endif
 
+// gcc 4.4 will not work. No decltype!
+// constexpr fix for gcc 4.4
+//#if defined(__cplusplus)
+//#if __cplusplus < 201103L
+//#define constexpr const
+//#define noexcept
+//#endif
+//#endif
+
 ICEDB_BEGIN_DECL_C
 
 /* Compiler and version diagnostics */
