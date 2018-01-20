@@ -36,8 +36,12 @@ namespace icedb {
 					fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE),
 					H5P_DEFAULT);
 				constexpr uint64_t dbverno = 1;
-				icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res.get(), "Version", dbverno);
-				icedb::fs::hdf5::addAttr<std::string, H5::H5File>(res.get(), "Software", "libicedb");
+				auto basegrp = res->openGroup("."); //->getHDF5Group();
+				icedb::fs::hdf5::addAttr<uint64_t, H5::Group>(&basegrp, "Version", dbverno);
+				icedb::fs::hdf5::addAttr<std::string, H5::Group>(&basegrp, "Software", "libicedb");
+
+				//icedb::fs::hdf5::addAttr<uint64_t, H5::H5File>(res.get(), "Version", dbverno);
+				//icedb::fs::hdf5::addAttr<std::string, H5::H5File>(res.get(), "Software", "libicedb");
 				return res;
 			}
 		
@@ -143,7 +147,11 @@ namespace icedb {
 					// Open files and mount in the relative path tree
 					std::shared_ptr<H5::H5File> newHfile = std::make_shared<H5::H5File>(toMount.first.string(), Hflags);
 					//res._impl->mappedFiles[toMount.second] = newHfile;
-					res->hFile->mount(toMount.second, *(newHfile.get()), H5P_DEFAULT);
+
+					/** \note HDF5 C++ bug in constness on 1.8.5, CentOS 6. I cannot directly pass
+					* H5P_DEFAULT to the trivial constructor for H5::PropList as an rvalue **/
+					H5::PropList pl(H5P_DEFAULT);
+					res->hFile->mount(toMount.second, *(newHfile.get()), pl);
 				}
 			}
 

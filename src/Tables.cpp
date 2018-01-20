@@ -269,7 +269,11 @@ namespace icedb {
 			if (fs::hdf5::useZLIB()) {
 				plist->setDeflate(fs::hdf5::useZLIB());
 			}
+#if ICEDB_H5_CREATEPROPLIST_SETATTRCRTORDER == 1
 			plist->setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
+#else
+#pragma message("This HDF5 version does not support plist->setAttrCrtOrder. Ignoring. TODO: Fix.")
+#endif
 
 			if (type_id == typeid(uint64_t))fs::hdf5::createDatasetRaw<uint64_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);
 			else if (type_id == typeid(int64_t))fs::hdf5::createDatasetRaw<int64_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);

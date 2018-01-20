@@ -60,14 +60,36 @@ namespace icedb {
 
 		bool CanHaveAttributes::doesAttributeExist(const std::string &attributeName) const
 		{
+			/** \note Despite the documentation in HDF5 1.8, the attrExists
+			 * function does not, in fact, exist! Tested on HDF5 1.8.5-patch1 on
+			 * CentOS6, GCC 7. Docs state that this is a method of H5Object.
+			 **/
 			Expects(valid());
+#if ICEDB_H5_HASH5OBJECTATTREXISTS == 1
 			return _getAttributeParent()->attrExists(attributeName);
+#else
+			// Because of the bug, I have to manually iterate over all attributes.
+#pragma message("CanHaveAttributes::doesAttributeExist needs an implementation for this version of HDF5")
+			throw;
+			return false;
+#endif
 		}
 
 		bool CanHaveAttributes::doesAttributeExist(
 			gsl::not_null<const H5::H5Object*> parent, const std::string &attributeName)
 		{
+			/** \note Despite the documentation in HDF5 1.8, the attrExists
+			 * function does not, in fact, exist! Tested on HDF5 1.8.5-patch1 on
+			 * CentOS6, GCC 7. Docs state that this is a method of H5Object.
+			 **/
+#if ICEDB_H5_HASH5OBJECTATTREXISTS == 1
 			return parent->attrExists(attributeName);
+#else
+			// Because of the bug, I have to manually iterate over all attributes.
+#pragma message("CanHaveAttributes::doesAttributeExist needs an implementation for this version of HDF5")
+			throw;
+			return false;
+#endif
 		}
 
 		std::set<std::string> CanHaveAttributes::getAttributeNames() const {
@@ -158,7 +180,7 @@ namespace icedb {
 			gsl::not_null<const H5::H5Object*> parent, \
 			const std::string &attributeName, \
 			std::vector<size_t> &dims, \
-			std::vector<x> &data) const; \
+			std::vector<x> &data) ; \
 		template void CanHaveAttributes::readAttributeData<x>( \
 			const std::string &attributeName,\
 			std::vector<size_t> &dims, \

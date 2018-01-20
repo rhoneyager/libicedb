@@ -69,8 +69,11 @@ int main() {
 	std::string strVersion(H5_VERSION);
 	version v(strVersion);
 	version vLocation("1.10.1-patch0");
+	version vH5ObjectHasAttribute("1.10.0");
 
 	bool hasDeprecatedCommonFG = (vLocation <= v);
+	bool hasH5ObjectAttrExists = !(v <= vH5ObjectHasAttribute);
+	bool has_DSetCreatPropList_setAttrCrtOrder = !(v <= vH5ObjectHasAttribute);
 
 	out << "#pragma once\n"
 		"#ifndef ICEDB_H5_TESTS_HDR\n"
@@ -102,6 +105,16 @@ int main() {
 		out << "#define ICEDB_H5_GETNUMOBJS_OWNER H5::CommonFG\n";
 		out << "#define ICEDB_H5_GETNUMOBJS_OWNER_PTR H5::CommonFG*\n";
 		out << "#define ICEDB_H5_UNIFIED_GROUP_FILE 0\n";
+	}
+	if (hasH5ObjectAttrExists) {
+		out << "#define ICEDB_H5_HASH5OBJECTATTREXISTS 1\n";
+	} else {
+		out << "#define ICEDB_H5_HASH5OBJECTATTREXISTS 0\n";
+	}
+	if (has_DSetCreatPropList_setAttrCrtOrder) {
+		out << "#define ICEDB_H5_CREATEPROPLIST_SETATTRCRTORDER 1\n";
+	} else {
+		out << "#define ICEDB_H5_CREATEPROPLIST_SETATTRCRTORDER 0\n";
 	}
 
 

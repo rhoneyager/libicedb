@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <memory>
 #include <typeinfo>
-//#include <typeindex>
+#if __cplusplus > 201103L
+#include <typeindex>
+#endif
 //#include "compat/variant_backend.hpp"
 
 namespace H5 {

@@ -159,7 +159,10 @@ namespace icedb {
 			gsl::not_null<const Group*> containingParent, 
 			gsl::not_null<H5::H5File*> pointsTo)
 		{
-			containingParent->getHDF5Group()->mount(subdirname, *(pointsTo.get()), H5P_DEFAULT);
+			/** \note HDF5 C++ bug in constness on 1.8.5, CentOS 6. I cannot directly pass
+			* H5P_DEFAULT to the trivial constructor for H5::PropList as an rvalue **/
+			H5::PropList pl(H5P_DEFAULT);
+			containingParent->getHDF5Group()->mount(subdirname, *(pointsTo.get()), pl);
 			return openGroup(subdirname, containingParent);
 		}
 	}
