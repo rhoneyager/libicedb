@@ -229,23 +229,6 @@ namespace icedb {
 			//if (icedb::fs::hdf5::isType<DataType, H5::H5Object>(parent.get(), attributeName))
 				//pullData<DataType>(attributeName, dims, data, parent.get());
 			pushData<DataType, H5::H5Object>(attributeName, dimensionality, parent, data);
-
-			/*
-			if (type_id == typeid(uint64_t))pushData<uint64_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(int64_t))pushData<int64_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(uint32_t))pushData<uint32_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(int32_t))pushData<int32_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(uint16_t))pushData<uint16_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(int16_t))pushData<int16_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(uint8_t))pushData<uint8_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(int8_t))pushData<int8_t, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(float))pushData<float, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(double))pushData<double, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(char))pushData<char, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else if (type_id == typeid(std::string))pushData<std::string, H5::H5Object>(attributeName, dimensionality, parent, data);
-			else throw(std::invalid_argument("Unhandled data type"));
-			*/
-			//if (icedb::Data_Types::Is_Valid_Data_Type(type_id)) throw;
 		}
 
 #define INST_WRITE_ATTR_TYPE(x) \

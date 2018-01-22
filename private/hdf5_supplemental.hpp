@@ -6,6 +6,7 @@
 #include <functional>
 #include <stdexcept>
 #include <sstream>
+#include <iostream> // For debugging
 
 #include <gsl/gsl>
 #include "icedb_h5.h" // Auto-generated. Gets installed in the correct location.
@@ -88,7 +89,10 @@ namespace icedb {
 			void addAttr(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname, const DataType &value)
 			{
 				auto vls_type = MatchAttributeType<DataType>();
-				H5::DataSpace att_space(H5S_SCALAR);
+				//H5::DataSpace att_space(H5S_SCALAR); // Will not work with older NetCDF versions
+				//H5::DataSpace att_space(H5S_SIMPLE);
+				hsize_t dsize = 1; //static_cast<hsize_t>(data.size());
+				H5::DataSpace att_space(1, &dsize);
 				H5::Attribute attr = obj->createAttribute(attname, *vls_type, att_space);
 				insertAttr<DataType>(attr, vls_type.get(), value);
 			}
@@ -105,11 +109,19 @@ namespace icedb {
 				std::vector<hsize_t> hdims;
 				for (const auto &d : dimensionality)
 					hdims.push_back(static_cast<hsize_t>(d));
-				H5::ArrayType vls_type(*ftype, static_cast<int>(dimensionality.size()), (hdims.data()));
 
-				H5::DataSpace att_space(H5S_SCALAR);
-				H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
-				attr.write(vls_type, value.data());
+				// This newer form can be read by old NetCDF versions (like 4.1.1, 01/2014)
+				// The older form could only be read by newer NetCDF versions
+				// Of course, NC can only ever read singular-dimension attributes.
+				H5::DataSpace att_space(static_cast<int>(dimensionality.size()), hdims.data());
+				H5::Attribute attr = obj->createAttribute(attname, *(ftype.get()), att_space);
+				attr.write(*ftype, value.data());
+				
+				// Older form cannot be read by older versions of NetCDF.
+				//H5::ArrayType vls_type(*ftype, static_cast<int>(dimensionality.size()), (hdims.data()));
+				//H5::DataSpace att_space(H5S_SCALAR); // Will not work with older NetCDF versions.
+				//H5::Attribute attr = obj->createAttribute(attname, vls_type, att_space);
+				//attr.write(vls_type, value.data());
 			}
 
 			/// Writes a vector of objects
