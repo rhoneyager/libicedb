@@ -48,6 +48,7 @@ namespace icedb {
 				if (atype == typeid(Type)) return true;
 				return false;
 			}
+
 			std::type_index getTableTypeId() const;
 
 			template <class DataType>
