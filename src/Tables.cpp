@@ -273,10 +273,8 @@ namespace icedb {
 			plist->setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
 #else
 			{
-				// Strictly, this function sets the property on a group,
-				// but I think that the HDF5 docs are wrong again here.
 				hid_t id = plist->getId();
-				herr_t e = H5Pset_link_creation_order(id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
+				herr_t e = H5Pset_attr_creation_order(id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
 				if (e < 0) throw;
 			}
 #endif

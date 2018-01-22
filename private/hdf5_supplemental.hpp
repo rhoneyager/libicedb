@@ -207,10 +207,12 @@ namespace icedb {
 			DataContainerType getAttributeGroupingType(gsl::not_null<Container*> obj, gsl::not_null<const char*> attname)
 			{
 				H5::Attribute attr = obj->openAttribute(attname);
-				const hid_t attrid = attr.getId();
-				H5::DataType dtype = attr.getDataType().getId();
-				const hid_t dtypeid = dtype.getId();
-				const H5T_class_t class_type = H5Tget_class(dtypeid);
+				//const hid_t attrid = attr.getId();
+				H5::DataType dtype = attr.getDataType();
+				//const hid_t dtypeid = dtype.getId();
+				//const H5T_class_t class_type = H5Tget_class(dtypeid);
+				H5T_class_t class_type = dtype.getClass();
+				// I could also use the H5::DataType::detectClass method here...
 				if (class_type == H5T_class_t::H5T_ARRAY) return DataContainerType::ARRAY;
 				else if (class_type == H5T_class_t::H5T_COMPOUND) return DataContainerType::COMPOUND;
 				else if (class_type == H5T_class_t::H5T_ENUM) return DataContainerType::ENUM;
