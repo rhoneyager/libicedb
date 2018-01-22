@@ -8,6 +8,7 @@ set(srcs shapes-main.cpp
 	shapeIOtext.cpp
 	shapeIOtext.hpp
 	shapeIOtextParsers.cpp
+	shapeIOtextParsers2.cpp
 	README.md)
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
