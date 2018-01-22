@@ -7,7 +7,7 @@ set(srcs shapes-main.cpp
 	shape.hpp
 	shapeIOtext.cpp
 	shapeIOtext.hpp
-	shapeIOtextParsers.cpp
+	#shapeIOtextParsers.cpp
 	shapeIOtextParsers2.cpp
 	README.md)
 IF (WIN32 AND NOT CYGWIN)

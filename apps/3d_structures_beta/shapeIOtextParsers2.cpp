@@ -5,10 +5,60 @@
 #include <algorithm>
 #include <fstream>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include "shape.hpp"
 namespace icedb {
 	namespace Examples {
 		namespace Shapes {
+			ShapeDataBasic readTextFile(const std::string &filename);
+			ShapeDataBasic readDDSCAT(const char* in);
+			void readHeader(const char* in, std::string &desc, size_t &np, size_t &headerEnd);
+			void readDDSCATtextContents(const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic& p);
+			ShapeDataBasic readRawText(const char *iin);
+
+			ShapeDataBasic readTextFile(
+				const std::string &filename) {
+				// Open the file and copy to a string. Check the first few lines to see if any
+				// alphanumeric characters are present. If there are, treat it as a DDSCAT file.
+				// Otherwise, treat as a raw text file.
+				std::ifstream in(filename.c_str());
+				std::ostringstream so;
+				boost::iostreams::copy(in, so);
+				std::string s = so.str();
+
+				auto end = s.find_first_of("\n\0");
+				Expects(end != std::string::npos);
+				std::string ssub = s.substr(0, end);
+				auto spos = ssub.find_first_not_of("0123456789. \t\n");
+
+				if (std::string::npos == spos) // This is a raw text file
+					return readRawText(s.c_str());
+				else return readDDSCAT(s.c_str()); // This is a DDSCAT file
+												   //if ((std::string::npos != spos) && (spos < end)) {
+												   //	return readDDSCAT(s.c_str());
+												   //}
+												   //else {
+												   //	return readTextRaw(s.c_str());
+												   //}
+			}
+
+			ShapeDataBasic readDDSCAT(const char* in)
+			{
+				using namespace std;
+				ShapeDataBasic res;
+
+				std::string str(in);
+				std::string desc; // Currently unused
+				size_t headerEnd = 0, numPoints = 0;
+				readHeader(str.c_str(), desc, numPoints, headerEnd);
+				//res.required.particle_id = desc;
+				//data->resize((int)numPoints, ::scatdb::shape::backends::NUM_SHAPECOLS);
+				readDDSCATtextContents(str.c_str(), numPoints, headerEnd, res);
+				return res;
+			}
+
 			void readHeader(const char* in, std::string &desc, size_t &np,
 				size_t &headerEnd)
 			{
@@ -82,7 +132,52 @@ namespace icedb {
 
 				headerEnd = (pend - in) / sizeof(char);
 			}
-			/// Read ddscat text contents
+
+			/// Read a series of floating point numbers from a buffer. It is suggested to
+			/// pre-size the output vector with reserve(...) and an expected size of the output.
+			void readFloats(
+				std::vector<float> &outNumbers,
+				gsl::not_null<const char *> startPosition,
+				const char* endPosition = nullptr)
+			{
+				if (!endPosition)
+					endPosition = strchr(startPosition.get() + 1, '\0');
+
+				const char *sB = startPosition; // Start of buffer
+				const char *eB = endPosition;   // End of buffer
+				const char *cN = sB; // Start of current number
+				const char *eN; // End of current number
+
+				const char* numbers = "0123456789.";
+				const char* whitespace = " \t\n";
+				float num = 0;
+				// This loop extracts every number that it can from the input character buffer.
+				while (cN < eB) {
+					// Seek to the start of a number
+					if (cN != sB)
+						cN = strpbrk(eN+1, numbers);
+					else 
+						cN = strpbrk(eN, numbers); // Special case: array start
+
+					// Find the end of the number (end of string, whitespace or end of line)
+					eN = strpbrk(cN, whitespace);
+
+					// Safety checks for end of range.
+					if (cN >= eB) break;
+					if (eN > eB) eN = eB;
+					// Both statements should guarantee that you can't have a partial end read,
+					// and lexical_cast should not encounter a whitespace-only string.
+
+					// Extract the number.
+					// Throws bad_lexical_cast if there is any text in-between.
+					num = boost::lexical_cast<float>(cN, eN - cN);
+
+					// Append the number to the output vector
+					outNumbers.push_back(num);
+				}
+			}
+
+			/// Read ddscat text contents - the stuff after the header
 			void readDDSCATtextContents(const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic& p)
 			{
 				using namespace std;
@@ -90,10 +185,12 @@ namespace icedb {
 				//Eigen::Vector3f crdsm, crdsi; // point location and diel entries
 				const char* pa = &iin[headerEnd];
 				const char* pb = strchr(pa + 1, '\0');
-
+				
 				std::vector<float> parser_vals; //(numPoints*8);
 				parser_vals.reserve(7 * numExpectedPoints);
-				parse_shapefile_entries(pa, pb, parser_vals);
+
+				readFloats(parser_vals, pa, pb);
+
 				assert(parser_vals.size() % 7 == 0);
 				size_t &numPoints = p.required.number_of_particle_scattering_elements;
 				numPoints = parser_vals.size() / 7;
@@ -134,81 +231,6 @@ namespace icedb {
 			}
 
 
-			ShapeDataBasic readDDSCAT(const char* in)
-			{
-				using namespace std;
-				ShapeDataBasic res;
-
-				std::string str(in);
-				std::string desc; // Currently unused
-				size_t headerEnd = 0, numPoints = 0;
-				readHeader(str.c_str(), desc, numPoints, headerEnd);
-				//res.required.particle_id = desc;
-				//data->resize((int)numPoints, ::scatdb::shape::backends::NUM_SHAPECOLS);
-				readDDSCATtextContents(str.c_str(), numPoints, headerEnd, res);
-				return res;
-			}
-
-
-
-			void writeDDSCAT(const std::string &filename, const ShapeDataBasic& p)
-			{
-				using namespace std;
-				std::ofstream out(filename.c_str());
-
-				out << p.required.particle_id << endl;
-				out << p.required.number_of_particle_scattering_elements << "\t= Number of lattice points" << endl;
-
-				out << "1.0\t1.0\t1.0\t= target vector a1 (in TF)" << endl;
-				out << "0.0\t1.0\t0.0\t= target vector a2 (in TF)" << endl;
-				out << "1.0\t1.0\t1.0\t= d_x/d  d_y/d  d_x/d  (normally 1 1 1)" << endl;
-
-				//out << (*hdr)(X0, 0) << "\t" << (*hdr)(X0, 1) << "\t" << (*hdr)(X0, 2);
-				out << "0.0\t0.0\t0.0\t= X0(1-3) = location in lattice of target origin" << endl;
-				out << "\tNo.\tix\tiy\tiz\tICOMP(x, y, z)" << endl;
-				//size_t i = 1;
-
-				const size_t numPoints = p.required.number_of_particle_scattering_elements;
-				std::vector<float> oi(numPoints * 7);
-
-				for (size_t j = 0; j < numPoints; j++)
-				{
-					const float &x = p.required.particle_scattering_element_coordinates[j * 3 + 0];
-					const float &y = p.required.particle_scattering_element_coordinates[j * 3 + 1];
-					const float &z = p.required.particle_scattering_element_coordinates[j * 3 + 2];
-					if (p.optional.particle_scattering_element_number.empty()) {
-						oi[j * 7 + 0] = j + 1;
-					}
-					else {
-						oi[j * 7 + 0] = p.optional.particle_scattering_element_number[j];
-					}
-					oi[j * 7 + 1] = x;
-					oi[j * 7 + 2] = y;
-					oi[j * 7 + 3] = z;
-
-					uint64_t comp = 1;
-					if (p.required.number_of_particle_constituents > 1) {
-						if (p.optional.particle_scattering_element_composition_whole.size()) {
-							comp = p.optional.particle_scattering_element_composition_whole[j];
-						}
-						if (p.optional.particle_scattering_element_composition_fractional.size()) {
-							throw(std::invalid_argument("Cannot write a DDSCAT shape file with this type of dielectric!"));
-						}
-					}
-					oi[j * 7 + 4] = comp;
-					oi[j * 7 + 5] = comp;
-					oi[j * 7 + 6] = comp;
-				}
-
-				std::string generated;
-				std::back_insert_iterator<std::string> sink(generated);
-				if (!print_shapefile_entries(sink, oi))
-				{
-					throw(std::invalid_argument("Somehow unable to print the shape points properly."));
-				}
-				out << generated;
-			}
-
 
 
 			/// Simple file assuming one substance, with 3-column rows, each representing a single point.
@@ -229,18 +251,22 @@ namespace icedb {
 				}
 				if (pNumStart >= pb) throw(std::invalid_argument("Cannot find any points in a shapefile."));
 
-				const char* firstLineEnd = strchr(pNumStart + 1, '\n'); // End of the first line containing numberic data.
+				const char* firstLineEnd = strchr(pNumStart + 1, '\n'); // End of the first line containing numeric data.
 																		// Attempt to guess the number of points based on the number of lines in the file.
-				int guessNumPoints = std::count(pNumStart, pb, '\n');
+				int guessNumPoints = (int) std::count(pNumStart, pb, '\n');
 				std::vector<float> firstLineVals; //(numPoints*8);
 												  //std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
 				std::vector<float> parser_vals;
 				parser_vals.reserve(guessNumPoints * 4);
-				parse_shapefile_entries(pNumStart, pb, parser_vals);
+				// Read all of the numbers
+				readFloats(parser_vals, pNumStart, pb);
+				//parse_shapefile_entries(pNumStart, pb, parser_vals);
 				const void* floatloc = memchr(pNumStart, '.', pb - pNumStart);
 				res.required.particle_scattering_element_coordinates_are_integral = (floatloc) ? 0 : 1;
 
-				parse_shapefile_entries(pNumStart, firstLineEnd, firstLineVals);
+				// Also parse just the first line to get the number of columns
+				readFloats(firstLineVals, pNumStart, firstLineEnd);
+				//parse_shapefile_entries(pNumStart, firstLineEnd, firstLineVals);
 
 				size_t numCols = firstLineVals.size();
 				bool good = false;
@@ -288,44 +314,6 @@ namespace icedb {
 				return res;
 			}
 
-			void writeTextRaw(const std::string &filename, const ShapeDataBasic& p)
-			{
-				using namespace std;
-				std::ofstream out(filename.c_str());
-				std::string generated;
-				std::back_insert_iterator<std::string> sink(generated);
-				if (!print_shapefile_pts(sink, p.required.particle_scattering_element_coordinates))
-				{
-					throw(std::invalid_argument("Somehow unable to print the shape points properly."));
-				}
-				out << generated;
-			}
-
-			ShapeDataBasic readTextFile(
-				const std::string &filename) {
-				// Open the file and copy to a string. Check the first few lines to see if any
-				// alphanumeric characters are present. If there are, treat it as a DDSCAT file.
-				// Otherwise, treat as a raw text file.
-				std::ifstream in(filename.c_str());
-				std::ostringstream so;
-				boost::iostreams::copy(in, so);
-				std::string s = so.str();
-
-				auto end = s.find_first_of("\n\0");
-				Expects(end != std::string::npos);
-				std::string ssub = s.substr(0, end);
-				auto spos = ssub.find_first_not_of("0123456789. \t\n");
-
-				if (std::string::npos == spos) // This is a raw text file
-					return readRawText(s.c_str());
-				else return readDDSCAT(s.c_str()); // This is a DDSCAT file
-												   //if ((std::string::npos != spos) && (spos < end)) {
-												   //	return readDDSCAT(s.c_str());
-												   //}
-												   //else {
-												   //	return readTextRaw(s.c_str());
-												   //}
-			}
 
 		}
 	}
