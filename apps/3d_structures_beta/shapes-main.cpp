@@ -32,6 +32,7 @@ std::mutex mStack, mOutStack; ///< Allows synchronized access to the job stack
 std::deque<std::pair<sfs::path, std::string> > myreadstack;
 std::deque<std::tuple<icedb::Examples::Shapes::ShapeDataBasic, sfs::path, std::string> > mywritestack;
 std::vector<std::unique_ptr<std::thread> > pool;
+std::atomic<int> countCurrentReading;
 // These get set in main(int,char**).
 float resolution_um = 0;
 bool nccompat = true;
@@ -45,6 +46,7 @@ void readtask() {
 			std::lock_guard<std::mutex> lStack(mStack);
 			if (myreadstack.empty()) return;
 			cur = myreadstack.front();
+			countCurrentReading++;
 			myreadstack.pop_front();
 		}
 		auto data = icedb::Examples::Shapes::readTextFile(cur.first.string());
@@ -52,12 +54,14 @@ void readtask() {
 		data.required.NC4_compat = nccompat;
 		if (resolution_um)
 			data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
+
 		{
 			std::lock_guard<std::mutex> lOutStack(mOutStack);
 			//std::cout << "." << std::endl;
 			mywritestack.push_back(
 				std::tuple<icedb::Examples::Shapes::ShapeDataBasic, sfs::path, std::string>
 				(std::move(data), cur.first, cur.second));
+			countCurrentReading--;
 		}
 	}
 }
@@ -144,7 +148,8 @@ int main(int argc, char** argv) {
 				// Awkward object encapsulation. I want RAII, but I want to
 				// explicitly free the lock before sleeping this thread.
 				std::unique_ptr<std::lock_guard<std::mutex> > lOutStack = make_unique<std::lock_guard<std::mutex>>(mOutStack);
-				if (myreadstack.empty() && mywritestack.empty()) {
+				// There is a bit of a bug here where some shaped can be reading, but not yet written...
+				if (myreadstack.empty() && mywritestack.empty() && !countCurrentReading.load()) {
 					//std::cout << "Writer finished and closing." << std::endl;
 					break;
 				}
@@ -159,7 +164,16 @@ int main(int argc, char** argv) {
 			}
 			{
 				//std::cout << "Writing " << std::get<2>(cur) << std::endl;
-				auto sgrp = basegrp->createGroup(std::get<2>(cur));
+
+				// Trying to figure out where to put he read shape in the HDF5 file.
+				// For this example, single file reads may occasionally occur,
+				// and the groupName would just be "/", which is not correct.
+				std::string groupName = std::get<2>(cur);
+				if (groupName == "/") groupName = "";
+				const std::string particleId = std::get<0>(cur).required.particle_id;
+				if (!groupName.size() && particleId.size()) groupName = particleId;
+				if (!groupName.size()) groupName = "shape";
+				auto sgrp = basegrp->createGroup(groupName);
 				auto shp = std::get<0>(cur).toShape(
 					std::get<1>(cur).filename().string(), sgrp->getHDF5Group());
 			}

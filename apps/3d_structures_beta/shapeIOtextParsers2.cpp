@@ -146,7 +146,7 @@ namespace icedb {
 				const char *sB = startPosition; // Start of buffer
 				const char *eB = endPosition;   // End of buffer
 				const char *cN = sB; // Start of current number
-				const char *eN; // End of current number
+				const char *eN = sB; // End of current number
 
 				const char* numbers = "0123456789.";
 				const char* whitespace = " \t\n";
@@ -160,7 +160,9 @@ namespace icedb {
 					else 
 						cN = strpbrk(eN, numbers); // Special case: array start
 
-					if (!cN) break;
+					if (!cN) {
+						break;
+					}
 					// Find the end of the number (end of string, whitespace or end of line)
 					eN = strpbrk(cN, whitespace);
 
