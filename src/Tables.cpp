@@ -272,7 +272,13 @@ namespace icedb {
 #if ICEDB_H5_CREATEPROPLIST_SETATTRCRTORDER == 1
 			plist->setAttrCrtOrder(H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
 #else
-#pragma message("This HDF5 version does not support plist->setAttrCrtOrder. Ignoring. TODO: Fix.")
+			{
+				// Strictly, this function sets the property on a group,
+				// but I think that the HDF5 docs are wrong again here.
+				hid_t id = plist->getId();
+				herr_t e = H5Pset_link_creation_order(id, H5P_CRT_ORDER_TRACKED | H5P_CRT_ORDER_INDEXED);
+				if (e < 0) throw;
+			}
 #endif
 
 			if (type_id == typeid(uint64_t))fs::hdf5::createDatasetRaw<uint64_t, H5::Group>(_getTablesParent().get(), tableName.c_str(), dims, plist);

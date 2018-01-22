@@ -68,10 +68,10 @@ namespace icedb {
 #if ICEDB_H5_HASH5OBJECTATTREXISTS == 1
 			return _getAttributeParent()->attrExists(attributeName);
 #else
-			// Because of the bug, I have to manually iterate over all attributes.
-#pragma message("CanHaveAttributes::doesAttributeExist needs an implementation for this version of HDF5")
-			throw;
-			return false;
+			hid_t objid = _getAttributeParent()->getId();
+			htri_t res = H5Aexists(objid, attributeName.c_str());
+			if (res < 0) throw;
+			return (res > 0) ? true : false;
 #endif
 		}
 
@@ -85,10 +85,10 @@ namespace icedb {
 #if ICEDB_H5_HASH5OBJECTATTREXISTS == 1
 			return parent->attrExists(attributeName);
 #else
-			// Because of the bug, I have to manually iterate over all attributes.
-#pragma message("CanHaveAttributes::doesAttributeExist needs an implementation for this version of HDF5")
-			throw;
-			return false;
+			hid_t objid = parent->getId();
+			htri_t res = H5Aexists(objid, attributeName.c_str());
+			if (res < 0) throw;
+			return (res > 0) ? true : false;
 #endif
 		}
 
