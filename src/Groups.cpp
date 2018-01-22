@@ -47,7 +47,7 @@ namespace icedb {
 		}
 
 		Group_impl::Group_impl(Group_HDF_shared_ptr grp)
-			: Group{ "UNKNOWN" }
+			: Group( "UNKNOWN" )
 		{
 			this->grp = grp;
 			this->_setAttributeParent(grp);
