@@ -151,6 +151,7 @@ namespace icedb {
 				const char* numbers = "0123456789.";
 				const char* whitespace = " \t\n";
 				float num = 0;
+				unsigned int numExtracted = 0;
 				// This loop extracts every number that it can from the input character buffer.
 				while (cN < eB) {
 					// Seek to the start of a number
@@ -159,6 +160,7 @@ namespace icedb {
 					else 
 						cN = strpbrk(eN, numbers); // Special case: array start
 
+					if (!cN) break;
 					// Find the end of the number (end of string, whitespace or end of line)
 					eN = strpbrk(cN, whitespace);
 
@@ -183,6 +185,7 @@ namespace icedb {
 #endif
 					// Append the number to the output vector
 					outNumbers.push_back(num);
+					numExtracted++;
 				}
 			}
 

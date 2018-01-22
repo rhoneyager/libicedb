@@ -5,6 +5,7 @@
 #include <atomic>
 #include <sstream>
 #include <string>
+#include <iostream>
 namespace icedb {
 	namespace fs {
 		namespace impl {
@@ -90,6 +91,8 @@ namespace icedb {
 					Expects(isval >= 0 && "File should exist at this point." && cand.first.string().c_str());
 					if (isval > 0)
 						mountFiles.push_back(cand);
+					if (isval == 0)
+						std::cerr << "File " << cand.first.string() << " is somehow invalid." << std::endl;
 				}
 				return mountFiles;
 			}
