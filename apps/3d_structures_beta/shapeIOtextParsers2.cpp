@@ -170,8 +170,17 @@ namespace icedb {
 
 					// Extract the number.
 					// Throws bad_lexical_cast if there is any text in-between.
+#if BOOST_VERSION >= 105200
 					num = boost::lexical_cast<float>(cN, eN - cN);
-
+#else
+					// This version of lexical_cast is simply too old.
+					// A temporary string gets constructed.
+					// The other option is to make the character array
+					// mutable, and to pepper it with NULLS, but this
+					// makes the code much less portable.
+					std::string temp(cN,eN-cN);
+					num = boost::lexical_cast<float>(temp);
+#endif
 					// Append the number to the output vector
 					outNumbers.push_back(num);
 				}
