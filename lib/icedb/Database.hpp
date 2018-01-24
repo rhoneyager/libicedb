@@ -2,8 +2,8 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <gsl/span>
-#include <gsl/pointers>
+#include "compat/gsl/span"
+#include "compat/gsl/pointers"
 #include "util.hpp"
 #include "Data_Types.hpp"
 #include "fs.hpp"

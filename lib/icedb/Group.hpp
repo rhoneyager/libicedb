@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <set>
-#include <gsl/gsl>
+#include "compat/gsl/gsl"
 #include "Attribute.hpp"
 #include "Table.hpp"
 #include "util.hpp"

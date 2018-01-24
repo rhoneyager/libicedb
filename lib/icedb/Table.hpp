@@ -1,8 +1,8 @@
 #pragma once
 #include "Attribute.hpp"
-#include <gsl/gsl>
-#include <gsl/gsl_assert>
-#include <gsl/span>
+#include "compat/gsl/gsl"
+#include "compat/gsl/gsl_assert"
+#include "compat/gsl/span"
 namespace icedb {
 	namespace Groups {
 		class Group;

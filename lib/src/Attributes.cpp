@@ -2,7 +2,7 @@
 #include "../private/Attribute_impl.hpp"
 #include "../private/hdf5_load.h"
 #include "../private/hdf5_supplemental.hpp"
-#include <gsl/gsl_assert>
+#include "../icedb/compat/gsl/gsl_assert"
 #include <stdexcept>
 
 namespace icedb {

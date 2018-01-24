@@ -3,8 +3,8 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <gsl/gsl_assert>
-#include <gsl/gsl>
+#include "compat/gsl/gsl_assert"
+#include "compat/gsl/gsl"
 #include "Data_Types.hpp"
 
 

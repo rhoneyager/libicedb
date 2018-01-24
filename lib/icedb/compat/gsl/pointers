@@ -19,7 +19,7 @@
 #ifndef GSL_POINTERS_H
 #define GSL_POINTERS_H
 
-#include <gsl/gsl_assert>
+#include "gsl_assert"
 
 #include <iostream>
 #include <memory>

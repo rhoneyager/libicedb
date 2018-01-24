@@ -37,15 +37,15 @@ set(related_cmake_objects
 	../CMakeRules/signing.cmake)
 
 set(gsl_objs
-	related_includes/gsl/gsl
-	related_includes/gsl/gsl_algorithm
-	related_includes/gsl/gsl_assert
-	related_includes/gsl/gsl_byte
-	related_includes/gsl/gsl_util
-	related_includes/gsl/multi_span
-	related_includes/gsl/pointers
-	related_includes/gsl/span
-	related_includes/gsl/string_span
+	icedb/compat/gsl/gsl
+	icedb/compat/gsl/gsl_algorithm
+	icedb/compat/gsl/gsl_assert
+	icedb/compat/gsl/gsl_byte
+	icedb/compat/gsl/gsl_util
+	icedb/compat/gsl/multi_span
+	icedb/compat/gsl/pointers
+	icedb/compat/gsl/span
+	icedb/compat/gsl/string_span
 	)
 set(shp_objs
 	icedb/shape.hpp
@@ -113,11 +113,16 @@ ENDIF()
 
 add_library(icedb STATIC ${libsrcs})
 add_dependencies(icedb h5tests) # Ensures that icedb_h5.h is generated before build.
-# related_includes contains the GSL.
+# compat contains the GSL.
 target_include_directories(icedb SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
-	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/related_includes
-	)
+	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
+#target_include_directories(icedb SYSTEM
+#	PUBLIC
+#	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat>
+#	$<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${REL_INCLUDE_DIR}>
+#	$<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${REL_INCLUDE_DIR}/icedb/compat>
+	#${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
+	#	)
 
 # HDF5 is only exposed to the core library.
 target_compile_definitions(icedb

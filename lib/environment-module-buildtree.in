@@ -1,0 +1,15 @@
+#%Module 1.0
+#
+#  icedb module for use with 'environment-modules' package:
+#
+#  include directories suppressed because CMake should really be used for building
+#
+
+prepend-path		PATH		@PROJECT_BINARY_DIR@/@LOOP_CONFIG@
+prepend-path		LD_LIBRARY_PATH	@PROJECT_BINARY_DIR@/@LOOP_CONFIG@
+prepend-path		LIBRARY_PATH	@PROJECT_BINARY_DIR@/@LOOP_CONFIG@
+#prepend-path		INCLUDE		@PROJECT_SOURCE_DIR@
+#prepend-path		C_INCLUDE_PATH	@PROJECT_SOURCE_DIR@
+#prepend-path		CPLUS_INCLUDE_PATH	@PROJECT_SOURCE_DIR@
+prepend-path		MANPATH		@PROJECT_BINARY_DIR@/man
+setenv			icedb_DIR	@PROJECT_BINARY_DIR@

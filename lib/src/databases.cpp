@@ -3,7 +3,7 @@
 #include <memory>
 #include <stdexcept>
 #include "../icedb/fs.hpp"
-#include <gsl/gsl_assert>
+#include "../icedb/compat/gsl/gsl_assert"
 #include "../icedb/fs_backend.hpp"
 #include "../private/hdf5_supplemental.hpp"
 #include "../icedb/Database.hpp"

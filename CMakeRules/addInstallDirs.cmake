@@ -2,6 +2,7 @@ macro(addInstallDirs basename )
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for headers")
+set(INSTALL_SHARE_DIR share CACHE PATH "Installation directory for errata")
 set(INSTALL_DOC_DIR share/doc CACHE PATH "Installation directory for documentation")
 set(INSTALL_DATA_DIST_DIR share/data CACHE PATH "Installation directory for package-provided data")
 if (USES_PLUGINS)
@@ -22,7 +23,7 @@ set(INSTALL_CMAKE_DIR ${INSTALL_CMAKE_DIR_BASE}/conf${configappend})
 # Constructing relative and absolute paths, needed for the cmake export file header locator
 # Absolute paths: ABS_INSTALL_${p}_DIR
 # Relative paths: REL_${p}_DIR
-set (folders LIB BIN INCLUDE CMAKE DOC DATA_DIST )
+set (folders LIB BIN INCLUDE CMAKE DOC DATA_DIST SHARE)
 if(uses_plugins)
 	SET(folders ${folders} PLUGINS)
 endif()

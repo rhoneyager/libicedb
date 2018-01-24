@@ -81,10 +81,22 @@ set(pkglibs icedb)
 set(pkgversion ${icedb_VERSION})
 # ... for the build tree
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/lib")
+foreach(LOOP_CONFIG Debug Release RelWithDebInfo MinSizeRel)
+	configure_file(lib/environment-module-buildtree.in
+		"${PROJECT_BINARY_DIR}/environment-modules/buildtree/icedb/${LOOP_CONFIG}" @ONLY)
+endforeach()
 configure_file(CMakeRules/Pkg_Config.cmake.in
 	"${PROJECT_BINARY_DIR}/icedbConfig.cmake" @ONLY)
 # ... and for the install tree
-set(CONF_INCLUDE_DIRS "\${ICEDB_CMAKE_DIR}/${REL_INCLUDE_DIR}") # Before WiX
+set(CONF_INCLUDE_DIRS "\${icedb_CMAKE_DIR}/${REL_INCLUDE_DIR}") # Before WiX
+foreach(LOOP_CONFIG Debug Release RelWithDebInfo MinSizeRel)
+	configure_file(lib/environment-module.in
+		"${PROJECT_BINARY_DIR}/environment-modules/install/icedb/${configbase}/${LOOP_CONFIG}" @ONLY)
+endforeach()
+INSTALL(DIRECTORY "${PROJECT_BINARY_DIR}/environment-modules/install/icedb"
+	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_SHARE_DIR}/environment-modules
+	COMPONENT Errata
+	)
 configure_file(CMakeRules/Pkg_Config.cmake.in
 	"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake" @ONLY)
 # ... for both
@@ -95,6 +107,9 @@ INSTALL(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake"
 	"${PROJECT_BINARY_DIR}/icedbConfigVersion.cmake"
 	DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Libraries)
 
+INSTALL(EXPORT icedbTargets
+	DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Libraries
+	)
 
 # Generate doxygen documentation, if needed.
 adddocs()

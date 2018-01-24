@@ -1,3 +1,0 @@
-[submodule "related_includes/variant"]
-	path = lib/related_includes/variant
-	url = https://github.com/mpark/variant.git

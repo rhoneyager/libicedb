@@ -1,5 +1,5 @@
 #include "../private/hdf5_supplemental.hpp"
-#include <gsl/gsl_assert>
+#include "../icedb/compat/gsl/gsl_assert"
 #include "../icedb/defs.h"
 #include <string>
 #include <sstream>

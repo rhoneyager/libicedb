@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream> // For debugging
 
-#include <gsl/gsl>
+#include "../icedb/compat/gsl/gsl"
 #include "icedb_h5.h" // Auto-generated. Gets installed in the correct location.
 #include "hdf5_load.h"
 #include "../icedb/fs.hpp"
