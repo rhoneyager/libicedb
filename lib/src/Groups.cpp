@@ -1,5 +1,5 @@
 #include "../icedb/Group.hpp"
-#include "../icedb/compat/hdf5_load.h"
+#include "../private/hdf5_load.h"
 #include "../private/hdf5_supplemental.hpp"
 #include "../private/Group_impl.hpp"
 #include <gsl/gsl_assert>

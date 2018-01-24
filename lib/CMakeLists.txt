@@ -73,7 +73,7 @@ set(db_objs
 	icedb/fs.hpp)
 set(hdf_objs
 	private/hdf5_supplemental.hpp
-	icedb/compat/hdf5_load.h
+	private/hdf5_load.h
 	src/export-hdf5.cpp)
 set(lib_objs
 	icedb/Data_Types.hpp
@@ -137,4 +137,7 @@ endif()
 addlib(icedb STATIC)
 storebin(icedb)
 
+INSTALL(DIRECTORY icedb
+	DESTINATION include
+	)
 

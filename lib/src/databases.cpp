@@ -8,7 +8,7 @@
 #include "../private/hdf5_supplemental.hpp"
 #include "../icedb/Database.hpp"
 #include "../private/Database_impl.hpp"
-#include "../icedb/compat/hdf5_load.h"
+#include "../private/hdf5_load.h"
 
 
 namespace icedb {

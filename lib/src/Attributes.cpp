@@ -1,6 +1,6 @@
 #include "../icedb/Attribute.hpp"
 #include "../private/Attribute_impl.hpp"
-#include "../icedb/compat/hdf5_load.h"
+#include "../private/hdf5_load.h"
 #include "../private/hdf5_supplemental.hpp"
 #include <gsl/gsl_assert>
 #include <stdexcept>

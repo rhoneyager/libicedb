@@ -10,7 +10,7 @@
 
 #include <gsl/gsl>
 #include "icedb_h5.h" // Auto-generated. Gets installed in the correct location.
-#include "../icedb/compat/hdf5_load.h"
+#include "hdf5_load.h"
 #include "../icedb/fs.hpp"
 #include "../icedb/util.hpp"
 
