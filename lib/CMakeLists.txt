@@ -12,12 +12,13 @@ set_target_properties(h5tests PROPERTIES CXX_STANDARD 11)
 target_include_directories(h5tests SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
 	)
-addapp(h5tests Build_System_Internal)
+addapp_base(h5tests Build_System_Internal)
 # storebin(h5tests) # This temporary binary never gets installed.
 
 # icedb_h5.h is system-specific and defines parameters only used
 # by the core library. It is private.
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
+add_custom_command(TARGET h5tests POST_BUILD
+	#OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
 	COMMAND h5tests
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Generate HDF5 definitions for function matching"
@@ -102,7 +103,7 @@ source_group("CMake" FILES ${related_cmake_objects})
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
 	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
 	${related_cmake_objects}
-	${CMAKE_BINARY_DIR}/icedb_h5.h
+	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
 IF (WIN32 AND NOT CYGWIN)
 SET(libsrcs ${libsrcs} 
@@ -111,6 +112,7 @@ source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
 add_library(icedb STATIC ${libsrcs})
+add_dependencies(icedb h5tests) # Ensures that icedb_h5.h is generated before build.
 # related_includes contains the GSL.
 target_include_directories(icedb SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}

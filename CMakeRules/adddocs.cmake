@@ -20,7 +20,7 @@ if(BUILD_DOCUMENTATION)
     endif()
 
 
-    configure_file(Doxyfile.in
+    configure_file(docs/Doxyfile.in
         "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
 
     if (BUILD_DOCUMENTATION_IN_ALL)

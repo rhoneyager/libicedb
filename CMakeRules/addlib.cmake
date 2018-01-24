@@ -21,12 +21,12 @@ macro(addlib libname libshared )
 	# These two are for symbol export
 	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
-
 	INSTALL(TARGETS ${libname} 
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
-		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-		COMPONENT Plugins)
+		RUNTIME DESTINATION bin/bin${configappend}
+		LIBRARY DESTINATION lib/lib${configappend}
+		ARCHIVE DESTINATION lib/lib${configappend}
+		COMPONENT Libraries
+		)
 
 endmacro(addlib libname headername)
 
@@ -47,8 +47,15 @@ set_target_properties( ${objname}
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release"
     RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel"
     RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo"
-)
+    )
 
+	#INSTALL(TARGETS ${objname} 
+		#LIBRARY DESTINATION lib/lib${configappend}
+				#			ARCHIVE DESTINATION lib/lib${configappend}
+		#		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
+		#		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+		#		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+		#COMPONENT Libraries)
 endmacro(storebin objname)
 
 macro(storeplugin objname folder)

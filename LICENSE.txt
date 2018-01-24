@@ -1,3 +1,3 @@
-Copyright (C) 2017, by Ryan Honeyager. 
+Copyright (C) 2017-2018, by Ryan Honeyager. 
 
 This code is not yet intended for public consumption. It is intended for internal testing and should not be distributed. No guarantees are made regarding its accuracy or usefulness. It is a work in progress. As it is further developed, this license will become much more permissive.
