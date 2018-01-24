@@ -10,6 +10,11 @@ macro(addlib libname libshared )
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES DEBUG_POSTFIX _Debug${configappend} )
 	set_target_properties( ${libname} PROPERTIES FOLDER "Libs")
 
+	if (DEFINED ICEDB_COMMON_SHARED_LIBS)
+		target_link_libraries(${libname} ${ICEDB_COMMON_SHARED_LIBS})
+	endif()
+
+
 	# This is for determining the build type (esp. used in registry code)
 	target_compile_definitions(${libname} PRIVATE BUILDCONF="${CMAKE_BUILD_TYPE}")
 	target_compile_definitions(${libname} PRIVATE BUILDTYPE=BUILDTYPE_$<CONFIGURATION>)
@@ -17,20 +22,11 @@ macro(addlib libname libshared )
 	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
 
-	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
-		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-			target_link_libraries(${libname} dl stdc++fs)
-		endif()
-	endif()
-	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-		target_link_libraries(${libname} dl stdc++fs)
-	endif()
 	INSTALL(TARGETS ${libname} 
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
 		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
 		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
 		COMPONENT Plugins)
-	#delayedsigning( ${libname} )
 
 endmacro(addlib libname headername)
 
@@ -85,8 +81,5 @@ macro(addplugin appname foldername folder)
 		COMPONENT Plugins)
 	include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-	IF(DEFINED COMMON_CFLAGS) 
-		set_target_properties(${appname} PROPERTIES COMPILE_FLAGS ${COMMON_CFLAGS})
-	ENDIF()
 	storeplugin(${appname} ${folder})
 endmacro(addplugin appname)

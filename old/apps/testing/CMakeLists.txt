@@ -1,5 +1,0 @@
-ADD_SUBDIRECTORY(dll-load)
-ADD_SUBDIRECTORY(dll-netcdf)
-ADD_SUBDIRECTORY(fs)
-ADD_SUBDIRECTORY(error-throw)
-ADD_SUBDIRECTORY(os-functions)

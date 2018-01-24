@@ -1,14 +1,23 @@
 cmake_minimum_required (VERSION 3.1)
+# This project needs at least CMake 3.1. If your system
+# does not provide this version, you can get it from
+# https://cmake.org/download/
+
+# This project requires a C++11 compiler.
 project(icedb C CXX)
+
+# Convenience functions
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/CMakeRules"
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED YES)
-set(CMAKE_CXX_EXTENSIONS OFF)
-SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# Global definitions
+set(CMAKE_CXX_STANDARD 14) # TODO: Switch to 11?
+set(CMAKE_CXX_STANDARD_REQUIRED YES) # Force compiler switches
+set(CMAKE_CXX_EXTENSIONS OFF) # No compiler-specific extensions
+SET(CMAKE_POSITION_INDEPENDENT_CODE ON) # Building dynamic libraries
+# Convenience functions
 include(addBaseProject)
 include(addBoostUniform)
 include(adddocs)
@@ -21,150 +30,53 @@ include(adddocs)
 ENABLE_TESTING()
 INCLUDE(CTest)
 
+# Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
 set(MINOR 4)
-set(REVISION 1)
+set(REVISION 2)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
 
+# This config file stores basic information about the build.
+# Version number, git hash, ...
 configure_file (
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake-settings.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/cmake-settings.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/cmake-settings.h"
     )
+
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
 
 # Add in script-generated includes
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
+# The two dependencies: boost and HDF5
 addBoostUniform(program_options )
-#include_directories(BEFORE SYSTEM ${Boost_INCLUDE_DIR})
-#link_directories(${Boost_LIBRARY_DIR})
-#link_directories(${Boost_LIBRARY_DIR_DEBUG})
-#link_directories(${Boost_LIBRARY_DIR_RELEASE})
-
 find_package(HDF5 REQUIRED COMPONENTS C CXX HL)
-#include_directories(${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
-#add_definitions(${HDF5_DEFINITIONS})
-if(DEFINED HDF5_C_LIBRARIES)
-	#set (h5libs ${HDF5_C_LIBRARIES} ${HDF5_CXX_LIBRARIES})
-	set (h5libs ${HDF5_LIBRARIES})
-	#message("${h5libs}")
-endif()
-#find_package(Eigen3 REQUIRED)
+# These are rather polluting
+mark_as_advanced(HDF5_CXX_LIBRARY_dl HDF5_CXX_LIBRARY_hdf5 HDF5_CXX_LIBRARY_hdf5_cpp
+	HDF5_CXX_LIBRARY_hdf5_hl HDF5_CXX_LIBRARY_hdf5_hl_cpp HDF5_CXX_LIBRARY_m
+	HDF5_CXX_LIBRARY_pthread HDF5_CXX_LIBRARY_sz HDF5_CXX_LIBRARY_z 
+	HDF5_C_LIBRARY_dl HDF5_C_LIBRARY_hdf5 HDF5_C_LIBRARY_hdf5_hl 
+	HDF5_C_LIBRARY_m HDF5_C_LIBRARY_pthread HDF5_C_LIBRARY_sz HDF5_C_LIBRARY_z)
 
-add_executable(h5tests related/h5tests/h5tests.cpp)
-set_target_properties(h5tests PROPERTIES CXX_STANDARD 11)
-target_include_directories(h5tests SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
-	)
-
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
-	COMMAND h5tests
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	COMMENT "Generate HDF5 definitions for function matching"
-	)
-
-set(related_cmake_objects
-	CMakeRules/addapp.cmake
-	CMakeRules/addBaseProject.cmake
-	CMakeRules/addBoostUniform.cmake
-	CMakeRules/adddocs.cmake
-	CMakeRules/addlib.cmake
-	CMakeRules/FindEigen3.cmake
-	CMakeRules/generaterc.cmake
-	CMakeRules/GetGitRevisionDescription.cmake
-	CMakeRules/signing.cmake)
-set(gsl_objs
-	related_includes/gsl/gsl
-	related_includes/gsl/gsl_algorithm
-	related_includes/gsl/gsl_assert
-	related_includes/gsl/gsl_byte
-	related_includes/gsl/gsl_util
-	related_includes/gsl/multi_span
-	related_includes/gsl/pointers
-	related_includes/gsl/span
-	related_includes/gsl/string_span
-	)
-set(shp_objs
-	icedb/shape.hpp
-	icedb/shapeAlg.hpp
-	private/Shape_impl.hpp
-	src/Shapes.cpp)
-set(grp_objs
-	icedb/Group.hpp
-	private/Group_impl.hpp
-	src/Groups.cpp)
-set(att_objs
-	icedb/Attribute.hpp
-	private/Attribute_impl.hpp
-	src/Attributes.cpp)
-set(tbl_objs
-	icedb/Table.hpp
-	private/Table_impl.hpp
-	src/Tables.cpp)
-set(db_objs
-	icedb/Database.hpp
-	private/Database_impl.hpp
-	src/databases.cpp
-	icedb/fs_backend.hpp
-	src/fs_backend.cpp
-	icedb/fs.hpp)
-set(hdf_objs
-	private/hdf5_supplemental.hpp
-	icedb/compat/hdf5_load.h
-	src/export-hdf5.cpp)
-set(lib_objs
-	icedb/Data_Types.hpp
-	icedb/defs.h
-	icedb/util.hpp
-	private/resource.h
-	src/util.cpp
-	)
-
-generaterc("libicedb" "dll"
-	"libicedb"
-	"Scattering utility library"
-	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
-	 )
-source_group("GSL" FILES ${gsl_objs})
-source_group("Lib" FILES ${lib_objs})
-source_group("Shapes" FILES ${shp_objs})
-source_group("Groups" FILES ${grp_objs})
-source_group("Attributes" FILES ${att_objs})
-source_group("Tables" FILES ${tbl_objs})
-source_group("Databases" FILES ${db_objs})
-source_group("HDF5" FILES ${hdf_objs})
-source_group("CMake" FILES ${related_cmake_objects})
-set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
-	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
-	${related_cmake_objects}
-	${CMAKE_BINARY_DIR}/icedb_h5.h
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake-settings.h")
-IF (WIN32 AND NOT CYGWIN)
-SET(libsrcs ${libsrcs} 
-	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
-source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
-ENDIF()
-
-add_library(libicedb STATIC ${libsrcs})
-# related_includes contains the GSL.
-target_include_directories(libicedb SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
-	PUBLIC ${CMAKE_SOURCE_DIR}/related_includes
-	)
-
-target_compile_definitions(libicedb
-	PRIVATE ${HDF5_DEFINITIONS})
-target_link_libraries(libicedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
-addlib(libicedb STATIC)
-storebin(libicedb)
-
+# The different components are in different subdirectories
+add_subdirectory(lib)
 add_subdirectory(apps)
 
+# Generate doxygen documentation, if needed.
 adddocs()
 
-set(BUILDNAME "Unspecified" CACHE STRING "Build name variable for CTest")
-set(SITE "Unknown" CACHE STRING "Site name")
+
+# CTest stuff. May switch from CTest in the future.
+set(BUILDNAME "Unspecified_Build_Name_for_CTest" CACHE STRING "Build name variable for CTest")
+set(SITE "Unknown_Site_Name_for_CTest" CACHE STRING "Site name")
+mark_as_advanced(BUILDNAME SITE)
+# A junk test, for now. I only care if the code builds.
 add_test ( get_id command uname -a)
+
+# CPack stuff
 

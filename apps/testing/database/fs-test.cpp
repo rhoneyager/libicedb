@@ -1,15 +1,14 @@
-// Boost bug with C++17 requires this define. See https://stackoverflow.com/questions/41972522/c2143-c2518-when-trying-to-compile-project-using-boost-multiprecision
-#define _HAS_AUTO_PTR_ETC 1
+// Always include this first
+#include <icedb/defs.h>
+
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "../../../icedb/fs.hpp"
-//#include "../../../private/hdf5_supplemental.hpp"
-//#include "../../../private/fs_backend.hpp"
-#include "../../../icedb/Database.hpp"
-#include "../../../icedb/shape.hpp"
+#include <icedb/fs.hpp>
+#include <icedb/Database.hpp>
+#include <icedb/shape.hpp>
 
 int main(int argc, char** argv) {
 	using namespace std;

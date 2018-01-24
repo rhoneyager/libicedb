@@ -32,6 +32,15 @@
 # define ICEDB_CALL_CPP extern "CPP"
 #endif
 
+// gcc 4.4 will not work. No decltype!
+// constexpr fix for gcc 4.4
+//#if defined(__cplusplus)
+//#if __cplusplus < 201103L
+//#define constexpr const
+//#define noexcept
+//#endif
+//#endif
+
 ICEDB_BEGIN_DECL_C
 
 /* Compiler and version diagnostics */
@@ -133,26 +142,8 @@ ICEDB_BEGIN_DECL_C
 #define ICEDB_DEBUG_FSIG ""
 #endif
 #endif
-#define ICEDB_WIDEN2(x) L ## x
-#define ICEDB_WIDEN(x) ICEDB_WIDEN2(x)
-	/* Global exception raising code (invokes debugger) */
-	ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A(const char*, int, const char*);
-ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, int, const wchar_t*);
-#define ICEDB_DEBUG_RAISE_EXCEPTION() ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC( ICEDB_WIDEN(__FILE__), (int)__LINE__, ICEDB_WIDEN(ICEDB_DEBUG_FSIG));
 
-#define ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A
-/* Global error codes. */
-#define ICEDB_GLOBAL_ERROR_TODO 999
-
-#if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
-#define ICEDB_USING_SECURE_STRINGS 1
-#define ICEDB_DEFS_COMPILER_HAS_FPRINTF_S
-#define ICEDB_DEFS_COMPILER_HAS_FPUTS_S
-#else
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-	/* Thread local storage stuff */
+/* Thread local storage stuff */
 #ifdef _MSC_FULL_VER
 #define ICEDB_THREAD_LOCAL __declspec( thread )
 #endif
@@ -171,26 +162,13 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, 
 /// Denotes an 'optional' parameter (one which can be replaced with a NULL or nullptr)
 #define ICEDB_OPTIONAL
 
-enum ICEDB_DATA_TYPES {
-	ICEDB_TYPE_NOTYPE, ///< Signifies no type / an error
-	ICEDB_TYPE_CHAR, ///< Equiv. to NC_CHAR
-	ICEDB_TYPE_INT8, ///< Equiv. to NC_BYTE
-	ICEDB_TYPE_UINT8, ///< Equiv. to NC_UBYTE
-	ICEDB_TYPE_UINT16, ///< Equiv. to NC_USHORT
-	ICEDB_TYPE_INT16, ///< Equiv. to NC_SHORT
-	ICEDB_TYPE_UINT32, ///< Equiv. to NC_UINT
-	ICEDB_TYPE_INT32, ///< Equiv. to NC_INT (or NC_LONG)
-	ICEDB_TYPE_UINT64, ///< Equiv. to NC_UINT64
-	ICEDB_TYPE_INT64, ///< Equiv. to NC_INT64
-	ICEDB_TYPE_FLOAT, ///< Equiv. to NC_FLOAT
-	ICEDB_TYPE_DOUBLE, ///< Equiv. to NC_DOUBLE
-					   // These have no corresponding NetCDF type. They never get saved by themselves, but contain pointers to things like string arrays, which are NetCDF objects.
-					   ICEDB_TYPE_INTMAX,
-					   ICEDB_TYPE_INTPTR,
-					   ICEDB_TYPE_UINTMAX,
-					   ICEDB_TYPE_UINTPTR
-};
-
 ICEDB_END_DECL_C
+
+// Errata:
+
+#ifndef ICEDB_NO_ERRATA
+// Boost bug with C++17 requires this define. See https://stackoverflow.com/questions/41972522/c2143-c2518-when-trying-to-compile-project-using-boost-multiprecision
+#define _HAS_AUTO_PTR_ETC 1
+#endif
 
 #endif

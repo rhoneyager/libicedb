@@ -1,7 +1,18 @@
-/** 3d_structures program - A program to read and write shape files
+/** \brief 3d_structures program - A program to read and write shape files
+ *
+ * This program reads shape files (in ADDA or DDSCAT formats) and writes
+ * an HDF5/netCDF file as an output. The program demonstrates how to
+ * create shapes using the library's C++ interface.
+ *
+ * This example is multi-threaded. Read operations on ASCII text are slow,
+ * as are filesystem calls. This program can read in files at near disk
+ * speed. Sadly, HDF5 can only write objects using one thread at a time,
+ * and its internal compression filters are also single-threaded.
 **/
-// Boost bug with C++17 requires this define. See https://stackoverflow.com/questions/41972522/c2143-c2518-when-trying-to-compile-project-using-boost-multiprecision
-#define _HAS_AUTO_PTR_ETC 1
+
+// Include this first
+#include <icedb/defs.h>
+
 #include <boost/program_options.hpp>
 #include <atomic>
 #include <chrono>       // std::chrono::seconds
@@ -17,7 +28,10 @@
 #include <icedb/shape.hpp>
 #include <icedb/Database.hpp>
 #include <icedb/fs_backend.hpp>
-#include "../../private/hdf5_supplemental.hpp"
+// TODO: Remove this and either make the convenience function public or
+// improve the interface.
+// Currently, it is used only to set the compression level of the output data.
+#include "../../lib/private/hdf5_supplemental.hpp"
 #include "shape.hpp"
 #include "shapeIOtext.hpp"
 
@@ -27,7 +41,6 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} }
 };
 
-//std::mutex mHDF5; ///< Allows only one thread to write to the HDF5 file at a time.
 std::mutex mStack, mOutStack; ///< Allows synchronized access to the job stack
 std::deque<std::pair<sfs::path, std::string> > myreadstack;
 std::deque<std::tuple<icedb::Examples::Shapes::ShapeDataBasic, sfs::path, std::string> > mywritestack;
