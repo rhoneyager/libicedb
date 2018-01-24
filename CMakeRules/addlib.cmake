@@ -21,10 +21,11 @@ macro(addlib libname libshared )
 	# These two are for symbol export
 	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
-	INSTALL(TARGETS ${libname} 
-		RUNTIME DESTINATION bin/bin${configappend}
-		LIBRARY DESTINATION lib/lib${configappend}
-		ARCHIVE DESTINATION lib/lib${configappend}
+	INSTALL(TARGETS ${libname}
+		EXPORT icedbTargets
+		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
+		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
 		COMPONENT Libraries
 		)
 

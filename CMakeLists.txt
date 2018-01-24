@@ -23,6 +23,7 @@ include(addBoostUniform)
 include(adddocs)
 include(addapp)
 include(addlib)
+include(addInstallDirs)
 include(generaterc)
 include(GetGitRevisionDescription)
 include(adddocs)
@@ -38,6 +39,7 @@ set(REVISION 2)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
+addInstallDirs(icedb)
 
 # This config file stores basic information about the build.
 # Version number, git hash, ...
@@ -63,9 +65,36 @@ mark_as_advanced(HDF5_CXX_LIBRARY_dl HDF5_CXX_LIBRARY_hdf5 HDF5_CXX_LIBRARY_hdf5
 	HDF5_C_LIBRARY_dl HDF5_C_LIBRARY_hdf5 HDF5_C_LIBRARY_hdf5_hl 
 	HDF5_C_LIBRARY_m HDF5_C_LIBRARY_pthread HDF5_C_LIBRARY_sz HDF5_C_LIBRARY_z)
 
+# CMake find_package script creator stuff
+
 # The different components are in different subdirectories
 add_subdirectory(lib)
 add_subdirectory(apps)
+export(TARGETS icedb
+		FILE "${PROJECT_BINARY_DIR}/icedbTargets.cmake")
+export(PACKAGE icedb)
+
+
+# CMake find_package script creator stuff # TODO: Put this in a separate script
+set(pkgname "icedb")
+set(pkglibs icedb)
+set(pkgversion ${icedb_VERSION})
+# ... for the build tree
+set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/lib")
+configure_file(CMakeRules/Pkg_Config.cmake.in
+	"${PROJECT_BINARY_DIR}/icedbConfig.cmake" @ONLY)
+# ... and for the install tree
+set(CONF_INCLUDE_DIRS "\${ICEDB_CMAKE_DIR}/${REL_INCLUDE_DIR}") # Before WiX
+configure_file(CMakeRules/Pkg_Config.cmake.in
+	"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake" @ONLY)
+# ... for both
+configure_file(CMakeRules/Pkg_ConfigVersion.cmake.in
+	"${PROJECT_BINARY_DIR}/icedbConfigVersion.cmake" @ONLY)
+
+INSTALL(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake"
+	"${PROJECT_BINARY_DIR}/icedbConfigVersion.cmake"
+	DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Libraries)
+
 
 # Generate doxygen documentation, if needed.
 adddocs()

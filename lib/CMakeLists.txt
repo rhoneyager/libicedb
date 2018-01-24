@@ -138,6 +138,7 @@ addlib(icedb STATIC)
 storebin(icedb)
 
 INSTALL(DIRECTORY icedb
-	DESTINATION include
+	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_INCLUDE_DIR}
+	COMPONENT Headers
 	)
 
