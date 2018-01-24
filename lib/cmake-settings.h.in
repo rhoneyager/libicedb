@@ -1,7 +1,0 @@
-#pragma once
-#define libicedb_MAJOR @MAJOR@
-#define libicedb_MINOR @MINOR@
-#define libicedb_REVISION @REVISION@
-#define libicedb_GitHash "@GITHASHVAR@"
-#define libicedb_GitBranch "@GITREFSPECVAR@"
-

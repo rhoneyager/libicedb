@@ -1,2 +1,0 @@
-add_subdirectory(3d_structures_beta)
-add_subdirectory(testing)
