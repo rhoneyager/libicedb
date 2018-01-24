@@ -111,6 +111,11 @@ INSTALL(EXPORT icedbTargets
 	DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Libraries
 	)
 
+INSTALL(DIRECTORY share/examples
+	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_SHARE_DIR}
+	COMPONENT Examples
+	)
+
 # Generate doxygen documentation, if needed.
 adddocs()
 
