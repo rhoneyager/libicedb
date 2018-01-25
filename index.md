@@ -9,13 +9,13 @@ summary: icedb is a toolkit for manipulating particle scattering databases. It i
 
 {% include note.html content="If you're using this software, then you are probably interested in storing and manipulating snow and aerosol particles. This toolkit provides the ability to manipulate both particle structural information and scattering information." %}
 
-## Get the pre-packaged toolkit
+## Get icedb pre-packaged 
 
 On certain operating systems, pre-packaged versions of icedb are available. This is the easiest way to get started, but it is also the least customizable. If you only want to run the example binaries, then this option is best. If you want to link your own code against icedb, then this option is okay. If you want to develop icedb or greatly extend its functionality, then skip to the next section.
 
 {% include note.html content="Packages are on the TO-DO list for now." %}
 
-## Build the toolkit
+## Build icedb
 
 Follow these instructions to build icedb.
 
@@ -39,7 +39,7 @@ If you've never installed or run icedb locally on your computer, follow these in
 
 CMake is a tool for generating build scripts. Every development environment is set up in a different way. Files may be located in different places. Packages may have different versions. Different compilers may be used. Different operating systems provide different features to end-user programs. CMake accounts for all of these differences, and produces sets of building instructions that will work for your particular platform.
 
-In case you have never used CMake before, you might want to take a look at <a href="http://cmake.org">it's website</a> and these tutorials for end-users using the <a href="https://www.youtube.com/watch?v=CLvZTyji_Uw">console</a> and a <a href="https://www.youtube.com/watch?v=lAiuLHy4dCk">GUI</a>.
+In case you have never used CMake before, you might want to take a look at [it's website](http://cmake.org) and these tutorials for end-users using the [console](https://www.youtube.com/watch?v=CLvZTyji_Uw) and a [GUI](https://www.youtube.com/watch?v=lAiuLHy4dCk).
 
 If you've never installed or run icedb locally on your computer, follow these instructions to install icedb:
 
