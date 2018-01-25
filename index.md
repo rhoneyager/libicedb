@@ -1,38 +1,64 @@
 ---
-title: "Getting started with the Documentation Theme for Jekyll"
-keywords: sample homepage
+title: "Getting started with icedb"
+keywords: homepage icedb libicedb
 tags: [getting_started]
 sidebar: mydoc_sidebar
 permalink: index.html
-summary: These brief instructions will help you get started quickly with the theme. The other topics in this help provide additional information and detail about working with other aspects of this theme and Jekyll.
+summary: icedb is a toolkit for manipulating particle scattering databases. It
+ is under heavy development, so this site doesn't have much content yet. The 
+ instructions here will help you quickly get started. The other topics listed
+ in the sidebar will provide additional information and detail.
 ---
 
-{% include note.html content="If you're cloning this theme, you're probably writing documentation of some kind. I have a blog on technical writing here called <a alt='technical writing blog' href='http://idratherbewriting.com'>I'd Rather Be Writing</a>. If you'd like to stay updated with the latest trends, best practices, and other methods for writing documentation, consider <a href='https://tinyletter.com/tomjoht'>subscribing</a>. I also have a site on <a href='http://idratherbewriting.com/learnapidoc'>writing API documentation</a>. Also, if you want a slightly different Jekyll documentation theme, see my <a href='https://github.com/amzn/jekyll-doc-project'>Jekyll doc project theme</a>." %}
+{% include note.html content="If you're using this software, then you are probably interested in storing and manipulating snow and aerosol particles. This toolkit provides the ability to manipulate both particle structural information and scattering information." %}
 
-## Build the Theme
+## Get the pre-packaged toolkit
 
-Follow these instructions to build the theme.
+On certain operating systems, pre-packaged versions of icedb are available. This is the easiest way to get started, but it is also the least customizable. If you only want to run the example binaries, then this option is best. If you want to link your own code against icedb, then this option is okay. If you want to develop icedb or greatly extend its functionality, then skip to the next section.
 
-### 1. Download the theme
+{% include note.html content="Packages are on the TO-DO list for now." %}
 
-First download or clone the theme from the [Github repo](https://github.com/tomjoht/documentation-theme-jekyll). Most likely you won't be pulling in updates once you start customizing the theme, so downloading the theme (instead of cloning it) probably makes the most sense. In Github, click the **Clone or download** button, and then click **Download ZIP**.
+## Build the toolkit
 
-### 2. Install Jekyll
+Follow these instructions to build icedb.
 
-If you've never installed or run a Jekyll site locally on your computer, follow these instructions to install Jekyll:
+### 1. Download icedb
 
-* [Install Jekyll on Mac][mydoc_install_jekyll_on_mac]
-* [Install Jekyll on Windows][mydoc_install_jekyll_on_windows]
+First download or clone icedb from the [Github repo](https://github.com/rhoneyager/libicedb). Development is ongoing, so cloning the repository probably makes the most sense. However, for anyone unexperienced with git, GitHub or version control, you might just want to download a ZIP file containing the latest copy of the source code. In this case, click the **Clone or download** button, and then click **Download ZIP**.
 
-### 3. Install Bundler
+{% include note.html content="Currently, this repository is **PRIVATE**, so only members of the ibedb development team can access it. If you want access, <a href="mailto:ryan@honeyager.info">send me an email</a>." %}
 
-In case you haven't installed Bundler, install it:
+### 2. Install the prerequisites
 
-```
-gem install bundler
-```
+If you've never installed or run icedb locally on your computer, follow these instructions to install the backend libraries that icedb needs to function:
 
-You'll want [Bundler](http://bundler.io/) to make sure all the Ruby gems needed work well with your project. Bundler sorts out dependencies and installs missing gems or matches up gems with the right versions based on gem dependencies.
+* [Install dependencies on CentOS / RHEL / Fedora][mydoc_install_deps_on_fed]
+* [Install dependencies on Debian / Ubuntu][mydoc_install_deps_on_deb]
+* [Install dependencies on FreeBSD][mydoc_install_deps_on_mac]
+* [Install dependencies on Mac][mydoc_install_deps_on_mac]
+* [Install dependencies on Windows][mydoc_install_deps_on_windows]
+
+### 3. Configure, build and install icedb using CMake
+
+CMake is a tool for generating build scripts. Every development environment is set up in a different way. Files may be located in different places. Packages may have different versions. Different compilers may be used. Different operating systems provide different features to end-user programs. CMake accounts for all of these differences, and produces sets of building instructions that will work for your particular platform.
+
+In case you have never used CMake before, you might want to take a look at <a href="http://cmake.org">it's website</a> and these tutorials for end-users using the <a href="https://www.youtube.com/watch?v=CLvZTyji_Uw">console</a> and a <a href="https://www.youtube.com/watch?v=lAiuLHy4dCk">GUI</a>.
+
+If you've never installed or run icedb locally on your computer, follow these instructions to install icedb:
+
+
+* [Build icedb using Makefiles (most of you should go here)][mydoc_build_icedb_on_makefiles]
+* [Build icedb using Visual Studio 2017][mydoc_build_icedb_on_vs17]
+* [Build icedb using XCode][mydoc_build_icedb_on_xcode]
+
+### 4. Learn where the installation has put the different components of the icedb installation
+
+### 5. Try out the example applications
+
+### 6. Try linking a small, sample application to the icedb libraries
+
+
+
 
 ### 4. Option 1: Build the Theme (*without* the github-pages gem) {#option1}
 
