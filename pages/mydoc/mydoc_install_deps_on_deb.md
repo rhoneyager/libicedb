@@ -1,16 +1,16 @@
 ---
-title: Install Dependencies on CentOS / Fedora / Red Hat Enterprise Linux
-tags: [getting_started, troubleshooting, installation, Fedora, RHEL, CentOS]
-keywords: dependencies Fedora RHEL Red Hat Enterprise Linux CentOS install
-summary: "Installation of dependencies on Linux is usually less problematic than on Windows. However, CentOS and RHEL are rather conservative with their package choices, so additional steps may be required."
+title: Install Dependencies on Debian / Ubuntu
+tags: [getting_started, troubleshooting, installation, Debian, Ubuntu]
+keywords: dependencies Linux Debian Ubuntu install
+summary: "Installation of dependencies on Linux is usually less problematic than on Windows"
 sidebar: mydoc_sidebar
-permalink: install_deps_on_fed.html
+permalink: install_deps_on_deb.html
 folder: mydoc
 ---
 
 ## Basic dependencies
 
-{% include note.html content="If your system is not based on CentOS, Fedora, Red Hat Enterprise Linux, or a similar system, then you are reading the wrong set of instructions." %}
+{% include note.html content="If your system is not based on Debian, Ubuntu, or a similar system, then you are reading the wrong set of instructions." %}
 
 
 Each development environment is different. Fortunately, icedb has few dependencies.
@@ -25,10 +25,12 @@ Requirements:
 - Doxygen (optional; generates local html documentation of the library functions)
 
 
-To install these dependencies on CentOS, Fedora and RHEL, this command may be used:
+To install these dependencies on Debian-based systems, this command may be used:
 ```
-sudo yum install cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel
+suto apt update
+sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev libboost-all-dev
 ```
+If you have an older installation or distribution, then use apt-get instead of apt.
 
 ## Compiler-specific instructions
 

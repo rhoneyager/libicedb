@@ -29,11 +29,11 @@ First download or clone icedb from the [Github repo](https://github.com/rhoneyag
 
 If you've never installed or run icedb locally on your computer, follow these instructions to install the backend libraries that icedb needs to function:
 
-* [Install dependencies on CentOS / RHEL / Fedora][mydoc_install_deps_on_fed]
-* [Install dependencies on Debian / Ubuntu][mydoc_install_deps_on_deb]
-* [Install dependencies on FreeBSD][mydoc_install_deps_on_mac]
-* [Install dependencies on Mac][mydoc_install_deps_on_mac]
-* [Install dependencies on Windows][mydoc_install_deps_on_windows]
+* [Install dependencies on CentOS / RHEL / Fedora][install_deps_on_fed]
+* [Install dependencies on Debian / Ubuntu][install_deps_on_deb]
+* [Install dependencies on FreeBSD][install_deps_on_mac]
+* [Install dependencies on Mac][install_deps_on_mac]
+* [Install dependencies on Windows][install_deps_on_windows]
 
 ### 3. Configure, build and install icedb using CMake
 
