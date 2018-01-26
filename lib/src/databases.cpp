@@ -111,7 +111,7 @@ namespace icedb {
 			//= std::make_unique(<Database_impl, mem::icedb_delete<Database_impl> >();
 			res->hFile = res->hFileImage.getHFile();
 
-			return res;
+			return std::move(res);
 		}
 
 
@@ -155,7 +155,7 @@ namespace icedb {
 				}
 			}
 
-			return res;
+			return std::move(res);
 		}
 
 		void Database::indexDatabase(const std::string &location)
