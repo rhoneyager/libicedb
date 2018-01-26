@@ -135,6 +135,7 @@ if(Boost_FILESYSTEM_LIBRARY)
 		${Boost_FILESYSTEM_LIBRARY}
 		${Boost_SYSTEM_LIBRARY})
 	target_compile_definitions(icedb PUBLIC ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)
+	target_include_directories(icedb SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 else()
 	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
 		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)

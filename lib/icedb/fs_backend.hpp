@@ -1,15 +1,19 @@
 #pragma once
 #ifndef __has_include
-  static_assert(0, "This library requires a recent compiler that supports __has_include");
+  //static_assert(0, "This library requires a recent compiler that supports __has_include");
+#define __has_include(x) 0
 #endif
-#if __has_include(<boost/filesystem.hpp>) && defined(ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)
+#if __has_include(<boost/filesystem.hpp>) || defined(ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)
 # define have_boost_filesystem 1
 # include <boost/filesystem.hpp>
   namespace sfs = boost::filesystem;
 #elif __has_include(<filesystem>)
+  // filesystem is still problematic, so I am ignoring it for now. Build system almost always overrides with boost::filesystem.
 # include <filesystem>
 # define have_std_filesystem 1
-  namespace sfs = std::filesystem;
+# define experimental_filesystem
+  namespace sfs = std::experimental::filesystem::v1;
+ // namespace sfs = std::filesystem;
 #elif __has_include(<experimental/filesystem>)
 # include <experimental/filesystem>
 # define have_std_filesystem 1
