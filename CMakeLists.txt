@@ -56,7 +56,9 @@ endif()
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # The two dependencies: boost and HDF5
-addBoostUniform(program_options )
+addBoostUniform(program_options REQUIRED)
+addBoostUniform(filesystem system)
+
 find_package(HDF5 REQUIRED COMPONENTS C CXX HL)
 # These are rather polluting
 mark_as_advanced(HDF5_CXX_LIBRARY_dl HDF5_CXX_LIBRARY_hdf5 HDF5_CXX_LIBRARY_hdf5_cpp

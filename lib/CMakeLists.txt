@@ -128,14 +128,22 @@ target_include_directories(icedb SYSTEM
 target_compile_definitions(icedb
 	PRIVATE ${HDF5_DEFINITIONS})
 target_link_libraries(icedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
-
-if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
-	IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
+# Let's prefer the boost filesystem library for now.
+# It is more stable and more widely supported.
+if(Boost_FILESYSTEM_LIBRARY)
+	target_link_libraries(icedb
+		${Boost_FILESYSTEM_LIBRARY}
+		${Boost_SYSTEM_LIBRARY})
+	target_compile_definitions(icedb PUBLIC ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)
+else()
+	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
+		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
+			target_link_libraries(icedb stdc++fs)
+		endif()
+	endif()
+	if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 		target_link_libraries(icedb stdc++fs)
 	endif()
-endif()
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-	target_link_libraries(icedb stdc++fs)
 endif()
 
 

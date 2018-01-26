@@ -2,7 +2,11 @@
 #ifndef __has_include
   static_assert(0, "This library requires a recent compiler that supports __has_include");
 #endif
-#if __has_include(<filesystem>)
+#if __has_include(<boost/filesystem.hpp>) && defined(ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)
+# define have_boost_filesystem 1
+# include <boost/filesystem.hpp>
+  namespace sfs = boost::filesystem;
+#elif __has_include(<filesystem>)
 # include <filesystem>
 # define have_std_filesystem 1
   namespace sfs = std::filesystem;
@@ -11,10 +15,6 @@
 # define have_std_filesystem 1
 # define experimental_filesystem
   namespace sfs = std::experimental::filesystem::v1;
-#elif __has_include(<boost/filesystem.hpp>)
-# define have_boost_filesystem 1
-# include<boost/filesystem.hpp>
-  namespace sfs = boost::filesystem;
 #else
   static_assert(0, "This library either requires boost::filesystem or a recent compiler that supports the C++ 2017 filesystem library.");
 #endif
