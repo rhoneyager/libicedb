@@ -61,9 +61,9 @@ scl enable devtoolset-7 bash
 
 The version of CMake provided by these systems is insufficient. Conveniently, the [CMake download page](https://cmake.org/download/) provides links to pre-compiled binaries for Linux. Download and extract the CMake binaries to a location like /your/home/directory/bin, /usr/local/bin, or another appropriate location. It would help if this location were in your PATH.
 
-### CentOS 7 / Fedora / RHEL 6 / RHEL 7 with Clang
+### CentOS 7 / Fedora / RHEL 6 / RHEL 7 with Clang (Work in Progress; Needs Further Testing)
 
-{% include note.html content="Not available for CentOS 6." %}
+{% include note.html content="Not available for CentOS 6. Unavailable to test on RHEL." %}
 
 CentOS 7, Fedora, RHEL 6, and RHEL 7 provide the LLVM/Clang 3.4 compiler, which fully supports C++11. The command to install Clang is:
 ```
@@ -73,8 +73,12 @@ sudo yum install clang
 You will need to pass environment variables to the build system to indicate that Clang is your preferred compiler. On Bash, this is:
 ```
 export C=/your/path/to/clang
-export CXX=/your/path/to/clang
+export CXX=/your/path/to/clang++
 ```
+Or, tell CMake your preferred compiler directly by specifying options:
+- CMAKE\_CXX\_COMPILER=/your/path/to/clang++
+- CMAKE\_C\_COMPILER=/your/path/to/clang
+
 Make sure that you have the correct environment loaded before proceeding to the build phase.
 
 ### Other RHEL-like systems

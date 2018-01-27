@@ -27,62 +27,67 @@ Requirements:
 
 To install these dependencies on Debian-based systems, this command may be used:
 ```
-suto apt update
+sudo apt update
 sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev libboost-all-dev
 ```
-If you have an older installation or distribution, then use apt-get instead of apt.
+If you have a very old installation or distribution, then you may need to use apt-get instead of apt.
 
 ## Compiler-specific instructions
 
-### CentOS 7 / Fedora / RHEL 7 with GCC
+### Debian Stretch / Ubuntu 16.04 LTS / Ubuntu 17.10 with GCC
 
 This is the easiest option.
-{% include note.html content="Any recent (i.e. still supported) Fedora Linux will work. New Fedora releases occur twice a year, and they are only supported for about a year after release." %}
 
 ```
-sudo yum install gcc-c++
+sudo apt install g++
 ```
 
-### CentOS 6 / RHEL 6 with GCC 6 or 7
+### Debian Stretch / Ubuntu 16.04 LTS / Ubuntu 17.10 with clang
 
-CentOS and Red Hat Enterprise Linux 6 are compiled using GCC 4.2, and this compiler is
-too old for building icedb. It predates full C++11 support.
+This is also very easy. Clang comes in multiple versions on this platform, including 3.8, 3.9, 5.0.
 
-Fortunately, pre-built compilers are available through add-on packages provided by
-the [Software Collections](https://www.softwarecollections.org) repository.
-
-This is [Red Hat's recommended method](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/developer_guide/scl-utils) for obtaining recent GCC compilers for RHEL, and they provide installation instructions.
-
-For CentOS, [equivalent instructions are provided on the Software Collections website](https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/).
-
-Make sure that you are in the correct environment before proceeding to the build phase.
-For both instruction sets, the final command spawns a new sub-shell with environment variables pre-set to point to the correct compiler:
 ```
-scl enable devtoolset-7 bash
+sudo apt install clang
 ```
+Run CMake with these options:
+- CMAKE\_CXX\_COMPILER=/usr/bin/clang++
+- CMAKE\_C\_COMPILER=/usr/bin/clang
 
-The version of CMake provided by these systems is insufficient. Conveniently, the [CMake download page](https://cmake.org/download/) provides links to pre-compiled binaries for Linux. Download and extract the CMake binaries to a location like /your/home/directory/bin, /usr/local/bin, or another appropriate location. It would help if this location were in your PATH.
+Conveniently, the hdf5 and boost libraries' C++11 bindings are compatible with clang on these distributions. No linking errors were observed.
 
-### CentOS 7 / Fedora / RHEL 6 / RHEL 7 with Clang
 
-{% include note.html content="Not available for CentOS 6." %}
+### Ubuntu 14.04 LTS (Work in Progress) with clang only
 
-CentOS 7, Fedora, RHEL 6, and RHEL 7 provide the LLVM/Clang 3.4 compiler, which fully supports C++11. The command to install Clang is:
+The provided GCC compilers predate full C++11 support. They will not work.
+
+The clang compiler, version 3.8 or 3.9 are available, but clang's default C++ Standard Template Library (STL) headers are the ones provided by GCC (in the libstdc++ package).
+
+You will need to install several packages:
 ```
-sudo yum install clang
+sudo apt install libc++-dev libc++abi-dev clang-3.8
 ```
+You will have to install an updated CMake, available from [here](https://cmake.org/download/).
 
-You will need to pass environment variables to the build system to indicate that Clang is your preferred compiler. On Bash, this is:
-```
-export C=/your/path/to/clang
-export CXX=/your/path/to/clang
-```
-Make sure that you have the correct environment loaded before proceeding to the build phase.
+Run CMake with these options:
+- CMAKE\_CXX\_COMPILER=/usr/bin/clang++-3.8
+- CMAKE\_C\_COMPILER=/usr/bin/clang-3.8
+- CMAKE\_CXX\_FLAGS=-I/usr/include/c++/v1
+- CMAKE\_EXE\_LINKER\_FLAGS=-nodefaultlibs -lc++ -lc++abi -lm -lc -lgcc\_s -lgcc
+- CMAKE\_SHARED\_LINKER\_FLAGS=-nodefaultlibs -lc++ -lc++abi -lm -lc -lgcc\_s -lgcc
 
-### Other RHEL-like systems
+When building, boost::filesystem is missing a few small functions. These may be worked around in the future. The rest of the build is untested.
 
-If the system is based on CentOS or Red Hat Enterprise Linux 7, follow those instructions.
-If the system is based on Fedora, follow those instructions.
+### Debian jessie
+
+The default GCC compiler is version 4.9.2, which is too old.
+The available clang compiler is version 3.5, which is also too old.
+You will have to compile the compiler from sctatch, and may also have to provide updated headers.
+You will have to install an updated CMake, available from [here](https://cmake.org/download/).
+
+### Other Debian-like systems
+
+If the system is based on Debian, follow those instructions.
+If the system is based on Ubuntu, follow those instructions.
 
 If the system is older, or if you cannot install packages on your system, then you may need to compile the compiler yourself. For GCC, see the instructions at the [GNU Compiler Collection Website](https://gcc.gnu.org/). For Clang, see [their website](https://clang.llvm.org/).
 Your mileage may vary. You will also probably have to compile HDF5 ([link](https://www.hdfgroup.org/downloads/hdf5/)) and zlib ([link](https://zlib.net/)). If possible, use a virtual machine with a more recent Linux distribution.
