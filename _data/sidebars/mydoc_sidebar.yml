@@ -2,8 +2,8 @@
 
 entries:
 - title: sidebar
-  product: Jekyll Doc Theme
-  version: 6.0
+  product: icedb
+  version: 0.4.2
   folders:
 
   - title:
@@ -35,6 +35,10 @@ entries:
     - title: Supported features
       url: /mydoc_supported_features.html
       output: web, pdf
+
+    - title: Install dependencies on FreeBSD
+      url: /install_deps_on_bsd.html
+      output: web
 
     - title: About the theme author
       url: /mydoc_about.html

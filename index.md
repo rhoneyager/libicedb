@@ -17,6 +17,7 @@ On certain operating systems, pre-packaged versions of icedb are available. This
 
 ## Build icedb
 
+
 Follow these instructions to build icedb.
 
 ### 1. Download icedb
@@ -29,9 +30,11 @@ First download or clone icedb from the [Github repo](https://github.com/rhoneyag
 
 If you've never installed or run icedb locally on your computer, follow these instructions to install the backend libraries that icedb needs to function:
 
+[Sidebar navigation][mydoc_sidebar_navigation].
+
 * [Install dependencies on CentOS / RHEL / Fedora][install_deps_on_fed]
 * [Install dependencies on Debian / Ubuntu][install_deps_on_deb]
-* [Install dependencies on FreeBSD][install_deps_on_mac]
+* [Install dependencies on FreeBSD][install_deps_on_bsd]
 * [Install dependencies on Mac][install_deps_on_mac]
 * [Install dependencies on Windows][install_deps_on_windows]
 

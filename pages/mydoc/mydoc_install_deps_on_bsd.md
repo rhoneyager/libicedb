@@ -1,7 +1,8 @@
 ---
 title: Install Dependencies on BSDs
 tags: [getting_started, troubleshooting, installation, FreeBSD, BSD, OpenBSD, NetBSD, DragonflyBSD]
-keywords: dependencies BSD FreeBSD OpenBSD NetBSD DragonflyBSD install
+last_updated: January 27, 2018
+keywords: dependencies, BSD, FreeBSD, OpenBSD, NetBSD, DragonflyBSD, install
 summary: "Installation of dependencies on recent versions of FreeBSD is easy. Other BSDs, like OpenBSD, DragonFlyBSD and NetBSD, should also work well."
 sidebar: mydoc_sidebar
 permalink: install_deps_on_bsd.html

@@ -101,11 +101,11 @@ defaults:
 # these are defaults used for the frontmatter for these file types
 
 sidebars:
-- home_sidebar
+#- home_sidebar
 - mydoc_sidebar
-- product1_sidebar
-- product2_sidebar
-- other
+#- product1_sidebar
+#- product2_sidebar
+#- other
 
 description: >- # this means to ignore newlines until "baseurl:"
   icedb is a toolkit for manipulating particle scattering databases. It
