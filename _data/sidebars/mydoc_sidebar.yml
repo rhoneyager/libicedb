@@ -24,18 +24,12 @@ entries:
     folderitems:
 
     - title: What is icedb?
-      url: /what_is_icedb.html
+      url: /index.html
       output: web, pdf
 
     - title: Features
       url: /features.html
       output: web, pdf
-
-    - title: Quickstart
-      url: /index.html
-      output: web, pdf
-      type: homepage
-
 
     - title: Papers and Talks
       url: /pubs.html
@@ -81,6 +75,11 @@ entries:
     output: web, pdf
     folderitems:
 
+    - title: Getting Started
+      url: /quickstart.html
+      output: web, pdf
+      type: homepage
+
     - title: Packages
       url: /install_packages.html
       output: web
@@ -113,34 +112,6 @@ entries:
       url: /mydoc_pages.html
       output: web, pdf
 
-    - title: Posts
-      url: /mydoc_posts.html
-      output: web, pdf
-
-    - title: Lists
-      url: /mydoc_lists.html
-      output: web, pdf
-
-    - title: Conditional logic
-      url: /mydoc_conditional_logic.html
-      output: web, pdf
-
-    - title: Content reuse
-      url: /mydoc_content_reuse.html
-      output: web, pdf
-
-    - title: Collections
-      url: /mydoc_collections.html
-      output: web, pdf
-
-    - title: WebStorm editor tips
-      url: /mydoc_webstorm_text_editor.html
-      output: web, pdf
-
-    - title: Atom editor tips
-      url: /mydoc_atom_text_editor.html
-      output: web, pdf
-
   - title: Particle Shapes
     output: web, pdf
 
@@ -149,64 +120,12 @@ entries:
       url: /mydoc_sidebar_navigation.html
       output: web, pdf
 
-    - title: YAML tutorial in the context of Jekyll
-      url: /mydoc_yaml_tutorial.html
-      output: web, pdf
-
-    - title: Tags
-      url: /mydoc_tags.html
-      output: web, pdf
-
-    - title: Series
-      url: /mydoc_series.html
-      output: web, pdf
-
   - title: Particle Scattering Matrices
     output: web, pdf
 
     folderitems:
     - title: Tooltips
       url: /mydoc_adding_tooltips.html
-      output: web, pdf
-
-    - title: Alerts
-      url: /mydoc_alerts.html
-      output: web, pdf
-
-    - title: Icons
-      url: /mydoc_icons.html
-      output: web, pdf
-
-    - title: Images
-      url: /mydoc_images.html
-      output: web, pdf
-
-    - title: Code samples
-      url: /mydoc_code_samples.html
-      output: web, pdf
-
-    - title: Labels
-      url: /mydoc_labels.html
-      output: web, pdf
-
-    - title: Links
-      url: /mydoc_hyperlinks.html
-      output: web, pdf
-
-    - title: Navtabs
-      url: /mydoc_navtabs.html
-      output: web, pdf
-
-    - title: Tables
-      url: /mydoc_tables.html
-      output: web, pdf
-
-    - title: Syntax highlighting
-      url: /mydoc_syntax_highlighting.html
-      output: web, pdf
-
-    - title: Workflow maps
-      url: /mydoc_workflow_maps.html
       output: web, pdf
 
   - title: Troubleshooting
