@@ -23,40 +23,57 @@ entries:
     output: web, pdf
     folderitems:
 
-    - title: Get started
+    - title: What is icedb?
+      url: /what_is_icedb.html
+      output: web, pdf
+
+    - title: Features
+      url: /features.html
+      output: web, pdf
+
+    - title: Quickstart
       url: /index.html
       output: web, pdf
       type: homepage
 
-    - title: Introduction
-      url: /mydoc_introduction.html
+
+    - title: Papers and Talks
+      url: /pubs.html
       output: web, pdf
 
-    - title: Supported features
-      url: /mydoc_supported_features.html
+    - title: Credits
+      url: /credits.html
       output: web, pdf
 
-    - title: Install dependencies on FreeBSD
-      url: /install_deps_on_bsd.html
-      output: web
-
-    - title: About the theme author
-      url: /mydoc_about.html
-      output: web, pdf
-
-    - title: Support
-      url: /mydoc_support.html
+    - title: License
+      url: /license.html
       output: web, pdf
 
   - title: Release Notes
     output: web, pdf
     folderitems:
 
-    - title: 6.0 Release notes
+    - title: Roadmap
+      url: /roadmap.html
+      output: web, pdf
+
+    - title: Changelog
+      url: /changelog.html
+      output: web, pdf
+
+    - title: 0.4 Release notes
+      url: /mydoc_release_notes_04.html
+      output: web, pdf
+
+    - title: 0.3 Release notes
+      url: /mydoc_release_notes_03.html
+      output: web, pdf
+
+    - title: 0.2 Release notes
       url: /mydoc_release_notes_60.html
       output: web, pdf
 
-    - title: 5.0 Release notes
+    - title: 0.1 Release notes
       url: /mydoc_release_notes_50.html
       output: web, pdf
 
@@ -64,19 +81,31 @@ entries:
     output: web, pdf
     folderitems:
 
-    - title: About Ruby, Gems, Bundler, etc.
-      url: /mydoc_about_ruby_gems_etc.html
-      output: web, pdf
+    - title: Packages
+      url: /install_packages.html
+      output: web
 
-    - title: Install Jekyll on Mac
-      url: /mydoc_install_jekyll_on_mac.html
-      output: web, pdf
+    - title: Debian / Ubuntu
+      url: /install_deps_on_deb.html
+      output: web
 
-    - title: Install Jekyll on Windows
-      url: /mydoc_install_jekyll_on_windows.html
-      output: web, pdf
+    - title: CentOS / Fedora / RHEL
+      url: /install_deps_on_fed.html
+      output: web
 
-  - title: Authoring
+    - title: Windows
+      url: /install_deps_on_win.html
+      output: web
+
+    - title: FreeBSD
+      url: /install_deps_on_bsd.html
+      output: web
+
+    - title: OS X
+      url: /install_deps_on_mac.html
+      output: web
+
+  - title: Database File Structure
     output: web, pdf
 
     folderitems:
@@ -112,7 +141,7 @@ entries:
       url: /mydoc_atom_text_editor.html
       output: web, pdf
 
-  - title: Navigation
+  - title: Particle Shapes
     output: web, pdf
 
     folderitems:
@@ -132,7 +161,7 @@ entries:
       url: /mydoc_series.html
       output: web, pdf
 
-  - title: Formatting
+  - title: Particle Scattering Matrices
     output: web, pdf
 
     folderitems:
@@ -178,74 +207,6 @@ entries:
 
     - title: Workflow maps
       url: /mydoc_workflow_maps.html
-      output: web, pdf
-
-  - title: Handling reviews
-    output: web, pdf
-
-    folderitems:
-    - title: Commenting on files
-      url: /mydoc_commenting_on_files.html
-      output: web, pdf
-
-#    - title: Git collaboration
-#      url: /mydoc_git_collaboration
-#      output: web, pdf
-
-  - title: Publishing
-    output: web, pdf
-
-    folderitems:
-    - title: Build arguments
-      url: /mydoc_build_arguments.html
-      output: web, pdf
-
-    - title: Themes
-      url: /mydoc_themes.html
-      output: web, pdf
-
-    - title: Generating PDFs
-      url: /mydoc_generating_pdfs.html
-      output: web, pdf
-
-    - title: Help APIs and UI tooltips
-      url: /mydoc_help_api.html
-      output: web, pdf
-
-    - title: Search configuration
-      url: /mydoc_search_configuration.html
-      output: web, pdf
-
-    - title: iTerm profiles
-      url: /mydoc_iterm_profiles.html
-      output: web, pdf
-
-    - title: Pushing builds to server
-      url: /mydoc_push_build_to_server.html
-      output: web, pdf
-
-    - title: Publishing on Github Pages
-      url: /mydoc_publishing_github_pages.html
-      output: web, pdf
-
-  - title: Special layouts
-    output: web, pdf
-
-    folderitems:
-    - title: Knowledge-base layout
-      url: /mydoc_kb_layout.html
-      output: web, pdf
-
-    - title: Glossary layout
-      url: /mydoc_glossary.html
-      output: web, pdf
-
-    - title: FAQ layout
-      url: /mydoc_faq_layout.html
-      output: web, pdf
-
-    - title: Shuffle layout
-      url: /mydoc_shuffle.html
       output: web, pdf
 
   - title: Troubleshooting
