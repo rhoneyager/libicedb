@@ -1,9 +1,9 @@
 ---
-title: Install Dependencies on BSDs
+title: Configure, Build and Install on BSDs
 tags: [getting_started, troubleshooting, installation, FreeBSD, BSD, OpenBSD, NetBSD, DragonflyBSD]
 last_updated: January 27, 2018
 keywords: dependencies, BSD, FreeBSD, OpenBSD, NetBSD, DragonflyBSD, install
-summary: "Installation of dependencies on recent versions of FreeBSD is easy. Other BSDs, like OpenBSD, DragonFlyBSD and NetBSD, should also work well."
+summary: "Installation on recent versions of FreeBSD is easy. Other BSDs, like OpenBSD, DragonFlyBSD and NetBSD, should also work well."
 sidebar: mydoc_sidebar
 permalink: install_deps_on_bsd.html
 folder: mydoc
@@ -53,4 +53,29 @@ sudo pkg install gcc7
 Run CMake with these options:
 - CMAKE\_CXX\_COMPILER=/usr/local/bin/g++7
 - CMAKE\_C\_COMPILER=/usr/local/bin/gcc7
+
+## Build instructions
+
+
+- Download (and perhaps extract) the source code package. 
+- Create a new build directory. It can be anywhere. Switch into this directory.
+- Run cmake to generate the build scripts. e.g.:
+```
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX={install path} {Path to source directory}
+```
+- This command, on Linux, typically defaults to generating Makefiles and will use gcc as the compiler. Consult the CMake
+   documentation for details regarding how to change the compiler or other settings.
+   - To change the compiler, the CMake option is -DCMAKE_CXX_COMPILER='path to compiler' for C++ and -DCMAKE\_C\_COMPILER='path' for C.
+- If cmake is set to generate Makefiles, run:
+```
+make
+```
+- If the build is successful, binaries and libraries should be in the ./RelWithDebInfo directory. These can all be copied
+to the install directory using:
+```
+sudo make install
+```
+
+{% include note.html content="If you already have write privileges on your install directory, such as when it is in your home directory, then you can just run make install without sudo." %}
+
 

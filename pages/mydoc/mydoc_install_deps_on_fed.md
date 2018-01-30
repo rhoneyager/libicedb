@@ -1,8 +1,8 @@
 ---
-title: Install Dependencies on CentOS / Fedora / Red Hat Enterprise Linux
+title: Configure, Build and Install on CentOS / Fedora / Red Hat Enterprise Linux
 tags: [getting_started, troubleshooting, installation, Fedora, RHEL, CentOS]
 keywords: dependencies Fedora RHEL Red Hat Enterprise Linux CentOS install
-summary: "Installation of dependencies on Linux is usually less problematic than on Windows. However, CentOS and RHEL are rather conservative with their package choices, so additional steps may be required."
+summary: "Installation on Linux is usually less problematic than on Windows. However, CentOS and RHEL are rather conservative with their package choices, so additional steps may be required."
 sidebar: mydoc_sidebar
 permalink: install_deps_on_fed.html
 folder: mydoc
@@ -88,5 +88,29 @@ If the system is based on Fedora, follow those instructions.
 
 If the system is older, or if you cannot install packages on your system, then you may need to compile the compiler yourself. For GCC, see the instructions at the [GNU Compiler Collection Website](https://gcc.gnu.org/). For Clang, see [their website](https://clang.llvm.org/).
 Your mileage may vary. You will also probably have to compile HDF5 ([link](https://www.hdfgroup.org/downloads/hdf5/)) and zlib ([link](https://zlib.net/)). If possible, use a virtual machine with a more recent Linux distribution.
+
+## Build instructions
+
+
+- Download (and perhaps extract) the source code package. 
+- Create a new build directory. It can be anywhere. Switch into this directory.
+- Run cmake to generate the build scripts. e.g.:
+```
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX={install path} {Path to source directory}
+```
+- This command, on Linux, typically defaults to generating Makefiles and will use gcc as the compiler. Consult the CMake
+   documentation for details regarding how to change the compiler or other settings.
+   - To change the compiler, the CMake option is -DCMAKE_CXX_COMPILER='path to compiler' for C++ and -DCMAKE\_C\_COMPILER='path' for C.
+- If cmake is set to generate Makefiles, run:
+```
+make
+```
+- If the build is successful, binaries and libraries should be in the ./RelWithDebInfo directory. These can all be copied
+to the install directory using:
+```
+sudo make install
+```
+
+{% include note.html content="If you already have write privileges on your install directory, such as when it is in your home directory, then you can just run make install without sudo." %}
 
 

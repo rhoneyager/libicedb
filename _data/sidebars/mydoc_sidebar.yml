@@ -43,6 +43,59 @@ entries:
       url: /license.html
       output: web, pdf
 
+  - title: Building and Installation
+    output: web, pdf
+    folderitems:
+
+    - title: Packages
+      url: /install_packages.html
+      output: web
+
+    - title: Download Source Code
+      url: /download.html
+      output: web
+
+    - title: Using CMake
+      url: /cmake.html
+      output: web
+
+      subfolders:
+      - title: Specific build instructions
+        output: web
+        subfolderitems:
+
+        - title: BSDs
+          url: /install_deps_on_bsd.html
+          output: web
+
+        - title: CentOS / Fedora / RHEL
+          url: /install_deps_on_fed.html
+          output: web
+
+        - title: Debian / Ubuntu
+          url: /install_deps_on_deb.html
+          output: web
+
+        - title: OS X
+          url: /install_deps_on_osx.html
+          output: web
+
+        - title: Windows
+          url: /install_deps_on_win.html
+          output: web
+
+    - title: Install directory structure
+      url: /install_dir.html
+      output: web
+
+    - title: Sample applications
+      url: /sample_apps.html
+      output: web
+
+    - title: Linking your code with icedb
+      url: /linking.html
+      output: web
+
   - title: Release Notes
     output: web, pdf
     folderitems:
@@ -59,73 +112,52 @@ entries:
       url: /mydoc_release_notes_04.html
       output: web, pdf
 
-    - title: 0.3 Release notes
-      url: /mydoc_release_notes_03.html
-      output: web, pdf
-
-    - title: 0.2 Release notes
-      url: /mydoc_release_notes_60.html
-      output: web, pdf
-
-    - title: 0.1 Release notes
-      url: /mydoc_release_notes_50.html
-      output: web, pdf
-
-  - title: Installation
-    output: web, pdf
-    folderitems:
-
-    - title: Getting Started
-      url: /quickstart.html
-      output: web, pdf
-      type: homepage
-
-    - title: Packages
-      url: /install_packages.html
-      output: web
-
-    - title: Debian / Ubuntu
-      url: /install_deps_on_deb.html
-      output: web
-
-    - title: CentOS / Fedora / RHEL
-      url: /install_deps_on_fed.html
-      output: web
-
-    - title: Windows
-      url: /install_deps_on_win.html
-      output: web
-
-    - title: FreeBSD
-      url: /install_deps_on_bsd.html
-      output: web
-
-    - title: OS X
-      url: /install_deps_on_mac.html
-      output: web
-
   - title: Database File Structure
     output: web, pdf
 
     folderitems:
-    - title: Pages
-      url: /mydoc_pages.html
+    - title: Dimensions
+      url: /structs_dimensions.html
+      output: web, pdf
+
+    - title: Physical Particle Properties
+      url: /structs_ppp.html
+      output: web, pdf
+
+    - title: Essential Scattering Variables
+      url: /structs_esv.html
+      output: web, pdf
+
+    - title: Extended Scattering Variables
+      url: /structs_exv.html
+      output: web, pdf
+
+    - title: Metadata
+      url: /structs_metadata.html
       output: web, pdf
 
   - title: Particle Shapes
     output: web, pdf
 
     folderitems:
-    - title: Sidebar navigation
-      url: /mydoc_sidebar_navigation.html
+    - title: Overview
+      url: /shapes_overview.html
+      output: web, pdf
+
+    - title: Example Workflow
+      url: /shapes_example.html
+      output: web, pdf
+
+    - title: Standard Algorithms
+      url: /shapes_algs.html
       output: web, pdf
 
   - title: Particle Scattering Matrices
     output: web, pdf
 
     folderitems:
-    - title: Tooltips
-      url: /mydoc_adding_tooltips.html
+    - title: Overview
+      url: /scatt_overview.html
       output: web, pdf
 
   - title: Troubleshooting
