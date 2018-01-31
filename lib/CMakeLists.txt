@@ -7,19 +7,19 @@ include(generaterc)
 # It reads the HDF5 version information and writes a header
 # that describes certain unstable aspects of the HDF5 C++
 # interface.
-add_executable(h5tests related/h5tests/h5tests.cpp)
-set_target_properties(h5tests PROPERTIES CXX_STANDARD 11)
-target_include_directories(h5tests SYSTEM
+add_executable(icedb-h5tests related/h5tests/h5tests.cpp)
+set_target_properties(icedb-h5tests PROPERTIES CXX_STANDARD 11)
+target_include_directories(icedb-h5tests SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
 	)
-addapp_base(h5tests Build_System_Internal)
+addapp_base(icedb-h5tests Build_System_Internal)
 # storebin(h5tests) # This temporary binary never gets installed.
 
 # icedb_h5.h is system-specific and defines parameters only used
 # by the core library. It is private.
-add_custom_command(TARGET h5tests POST_BUILD
+add_custom_command(TARGET icedb-h5tests POST_BUILD
 	#OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
-	COMMAND h5tests
+	COMMAND icedb-h5tests
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Generate HDF5 definitions for function matching"
 	)
@@ -112,7 +112,7 @@ source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
 add_library(icedb STATIC ${libsrcs})
-add_dependencies(icedb h5tests) # Ensures that icedb_h5.h is generated before build.
+add_dependencies(icedb icedb-h5tests) # Ensures that icedb_h5.h is generated before build.
 # compat contains the GSL.
 target_include_directories(icedb SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
