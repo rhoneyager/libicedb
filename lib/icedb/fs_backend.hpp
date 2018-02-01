@@ -1,9 +1,10 @@
 #pragma once
+#include <boost/version.hpp>
 #ifndef __has_include
   //static_assert(0, "This library requires a recent compiler that supports __has_include");
 #define __has_include(x) 0
 #endif
-#if (__has_include(<boost/filesystem.hpp>) || defined(ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)) && (!ICEDB_PROHIBIT_BOOST_FILESYSTEM)
+#if (__has_include(<boost/filesystem.hpp>) || defined(ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)) && (!ICEDB_PROHIBIT_BOOST_FILESYSTEM) && (BOOST_VERSION > 104400)
 # define have_boost_filesystem 1
 # include <boost/filesystem.hpp>
   namespace sfs = boost::filesystem;
@@ -20,7 +21,7 @@
 # define experimental_filesystem
   namespace sfs = std::experimental::filesystem::v1;
 #else
-  static_assert(0, "This library either requires boost::filesystem or a recent compiler that supports the C++ 2017 filesystem library.");
+  static_assert(0, "This library either requires boost::filesystem v3 or a recent compiler that supports the C++ 2017 filesystem library.");
 #endif
 
 //__cpp_lib_experimental_filesystem - is not yet defined on all compilers, notable MSVC17.
