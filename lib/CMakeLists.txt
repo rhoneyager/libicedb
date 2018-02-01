@@ -130,10 +130,10 @@ target_compile_definitions(icedb
 target_link_libraries(icedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
 # Let's prefer the boost filesystem library for now.
 # It is more stable and more widely supported.
-if(PROHIBIT_BUILD_USING_BOOST_FILESYSTEM)
+if(PROHIBIT_BUILD_USING_BOOST_FILESYSTEM OR ("${Boost_MINOR_VERSION}" LESS "45"))
 	target_compile_definitions(icedb PUBLIC ICEDB_PROHIBIT_BOOST_FILESYSTEM)
 endif()
-if(Boost_FILESYSTEM_LIBRARY)
+if(Boost_FILESYSTEM_LIBRARY AND ("${Boost_MINOR_VERSION}" GREATER "44"))
 	target_link_libraries(icedb
 		${Boost_FILESYSTEM_LIBRARY}
 		${Boost_SYSTEM_LIBRARY})
