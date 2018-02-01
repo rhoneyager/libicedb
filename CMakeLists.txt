@@ -57,7 +57,22 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # The two dependencies: boost and HDF5
 addBoostUniform(program_options REQUIRED)
-addBoostUniform(filesystem system)
+option (FORCE_BUILD_USING_BOOST_FILESYSTEM
+    "Force the build using boost filesystem" OFF)
+option (PROHIBIT_BUILD_USING_BOOST_FILESYSTEM
+	"Prevent the use of boost's filesystem" OFF)
+
+if(FORCE_BUILD_USING_BOOST_FILESYSTEM)
+	addBoostUniform(filesystem system REQUIRED)
+else()
+	if(PROHIBIT_BUILD_USING_BOOST_FILESYSTEM)
+		set(Boost_FILESYSTEM_LIBRARY_DEBUG "Boost_FILESYSTEM_LIBRARY_DEBUG-NOTFOUND" CACHE FILEPATH "" FORCE)
+		set(Boost_FILESYSTEM_LIBRARY_RELEASE "Boost_FILESYSTEM_LIBRARY_RELEASE-NOTFOUND" CACHE FILEPATH "" FORCE)
+
+	else()
+		addBoostUniform(filesystem system)
+	endif()
+endif()
 
 find_package(HDF5 COMPONENTS C CXX HL REQUIRED )
 # These are rather polluting
