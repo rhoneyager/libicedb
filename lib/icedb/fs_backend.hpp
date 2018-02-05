@@ -1,10 +1,15 @@
 #pragma once
-#include <boost/version.hpp>
 #ifndef __has_include
   //static_assert(0, "This library requires a recent compiler that supports __has_include");
 #define __has_include(x) 0
 #endif
-#if (__has_include(<boost/filesystem.hpp>) || defined(ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)) && (!ICEDB_PROHIBIT_BOOST_FILESYSTEM) && (BOOST_VERSION > 104400)
+#if (__has_include(<boost/version.hpp>))
+#include <boost/version.hpp>
+#endif
+#if (ICEDB_USING_INTERNAL_FILESYSTEM == 1)
+# include "fs.hpp"
+  namespace sfs = icedb::fs;
+#elif (__has_include(<boost/filesystem.hpp>) || defined(ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)) && (!ICEDB_PROHIBIT_BOOST_FILESYSTEM) && (BOOST_VERSION > 104400)
 # define have_boost_filesystem 1
 # include <boost/filesystem.hpp>
   namespace sfs = boost::filesystem;

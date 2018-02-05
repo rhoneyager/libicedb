@@ -18,6 +18,7 @@ namespace icedb {
 	namespace fs {
 
 		bool exists(const path& p, std::error_code &ec) noexcept {
+			ec.clear();
 			bool res = PathFileExistsW(p.native().c_str());
 			DWORD err = GetLastError();
 			ec.assign(static_cast<int>(err), std::system_category());
@@ -30,6 +31,7 @@ namespace icedb {
 			return res;
 		}
 		bool is_directory(const path& p, std::error_code &ec) noexcept {
+			ec.clear();
 			bool res = PathIsDirectoryW(p.native().c_str());
 			DWORD err = GetLastError();
 			ec.assign(static_cast<int>(err), std::system_category());
@@ -42,6 +44,7 @@ namespace icedb {
 			return res;
 		}
 		bool is_symlink(const path& p, std::error_code &ec) noexcept {
+			ec.clear();
 			DWORD atts = GetFileAttributesW(p.native().c_str());
 			if (atts == INVALID_FILE_ATTRIBUTES) {
 				DWORD err = GetLastError();
@@ -56,7 +59,24 @@ namespace icedb {
 			if (ec.value()) throw std::runtime_error(ec.message().c_str());
 			return res;
 		}
+		bool is_regular_file(const path& p, std::error_code &ec) noexcept {
+			ec.clear();
+			DWORD atts = GetFileAttributesW(p.native().c_str());
+			if (atts == INVALID_FILE_ATTRIBUTES) {
+				DWORD err = GetLastError();
+				ec.assign(static_cast<int>(err), std::system_category());
+			}
+			bool isNormal = (atts & FILE_ATTRIBUTE_NORMAL) ? true : false;
+			return isNormal;
+		}
+		bool is_regular_file(const path& p) {
+			std::error_code ec;
+			bool res = is_regular_file(p, ec);
+			if (ec.value()) throw std::runtime_error(ec.message().c_str());
+			return res;
+		}
 		path read_symlink(const path& p, std::error_code &ec) noexcept {
+			ec.clear();
 			HANDLE hFile = nullptr;
 			// See example at https://msdn.microsoft.com/en-us/library/windows/desktop/aa364962(v=vs.85).aspx
 			hFile = CreateFileW(p.native().c_str(), GENERIC_READ, FILE_SHARE_READ,
@@ -87,6 +107,7 @@ namespace icedb {
 			return res;
 		}
 		bool create_directory(const path& p, std::error_code& ec) noexcept {
+			ec.clear();
 			bool res = CreateDirectoryW(p.native().c_str(), NULL);
 			if (!res) {
 				DWORD err = GetLastError();
@@ -100,7 +121,24 @@ namespace icedb {
 			if (ec.value()) throw std::runtime_error(ec.message().c_str());
 			return res;
 		}
-		//bool create_directories(const path& p, std::error_code& ec) noexcept;
-
+		bool create_directories(const path& p, std::error_code& ec) noexcept {
+			ec.clear();
+			for (const auto d : p) {
+				if (!exists(d)) create_directory(d);
+				else {
+					if (!is_directory(d)) {
+						ec.assign(static_cast<int>(ENOTDIR), std::system_category());
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		bool create_directories(const path& p) {
+			std::error_code ec;
+			bool res = create_directories(p, ec);
+			if (ec.value()) throw std::runtime_error(ec.message().c_str());
+			return res;
+		}
 	}
 }

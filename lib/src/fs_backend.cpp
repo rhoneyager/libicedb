@@ -107,6 +107,12 @@ namespace icedb {
 			}
 			
 		}
+		
+		path::path(const std::string &src) {
+			// setLocale defaults to "C"
+			std::wstring wc(src.size(), L'#'); // (cSize, L'#');
+			mbstowcs(&wc[0], src.data(), src.size());
+		}
 
 		path& path::_M_append(const path::string_type& s) {
 			_M_pathname += preferred_separator;

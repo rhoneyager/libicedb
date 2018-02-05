@@ -75,6 +75,7 @@ namespace icedb {
 				_M_pathname(std::move(source)) {
 				_M_split_cmpts();
 			}
+			path(const std::string &src);
 
 			~path() = default;
 
@@ -84,6 +85,7 @@ namespace icedb {
 			path& assign(string_type&& __source);
 
 			path& operator/=(const path& __p) { return _M_append(__p._M_pathname); }
+			inline path operator/(const path &p) { path res = *this; res /= p; return p; }
 			bool operator==(const path& p) const
 			{
 				if (p._M_pathname != _M_pathname) return false;
@@ -111,6 +113,7 @@ namespace icedb {
 			bool empty() const noexcept { return _M_pathname.empty(); }
 			// iterators
 			class iterator {
+			public:
 				using difference_type = std::ptrdiff_t;
 				using value_type = path;
 				using reference = const path&;
@@ -173,14 +176,14 @@ namespace icedb {
 		bool is_symlink(const path&, std::error_code &ec) noexcept;
 		path read_symlink(const path&);
 		path read_symlink(const path&, std::error_code &ec) noexcept;
-		//bool is_regular_file(const path&);
-		//bool is_regular_file(const path&, std::error_code &ec) noexcept;
+		bool is_regular_file(const path&);
+		bool is_regular_file(const path&, std::error_code &ec) noexcept;
 		bool is_directory(const path&);
 		bool is_directory(const path&, std::error_code &ec) noexcept;
 		bool create_directory(const path& p);
 		bool create_directory(const path& p, std::error_code& ec) noexcept;
-		//bool create_directories(const path& p);
-		//bool create_directories(const path& p, std::error_code& ec) noexcept;
+		bool create_directories(const path& p);
+		bool create_directories(const path& p, std::error_code& ec) noexcept;
 
 	}
 }
