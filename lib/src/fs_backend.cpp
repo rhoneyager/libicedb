@@ -1,4 +1,5 @@
 #include "../icedb/fs_backend.hpp"
+#include "../icedb/fs.hpp"
 #include "../icedb/compat/gsl/gsl_assert"
 #include "../private/hdf5_load.h"
 #include <algorithm>
@@ -106,5 +107,74 @@ namespace icedb {
 			}
 			
 		}
+
+		path& path::_M_append(const path::string_type& s) {
+			_M_pathname += preferred_separator;
+			_M_pathname += s;
+			_M_split_cmpts();
+			return *this;
+		}
+
+		path& path::operator=(path::string_type&& __source) {
+			_M_pathname = __source;
+			_M_split_cmpts();
+			return *this;
+		}
+		path& path::assign(path::string_type&& __source) {
+			_M_pathname = __source;
+			_M_split_cmpts();
+			return *this;
+		}
+		
+		path::iterator path::begin() const {
+			if (_M_type == _Type::_Multi)
+				return iterator(this, _M_cmpts.begin());
+			return iterator(this, false);
+
+		}
+		path::iterator path::end() const {
+			if (_M_type == _Type::_Multi)
+				return iterator(this, _M_cmpts.end());
+			return iterator(this, true);
+		}
+
+		template <class String_t = std::string >
+		void splitVector(
+			const String_t &instr, std::vector<String_t> &out, typename String_t::value_type delim)
+		{
+			using namespace std;
+			typedef String_t::value_type Val_t;
+			out.clear();
+			if (!instr.size()) return;
+
+			// Fast string splitting based on null values.
+			const Val_t* start = instr.data();
+			const Val_t* stop = instr.data() + instr.size();
+			while (start < stop)
+			{
+				// Find the next null character
+				const Val_t* sep = start;
+				sep = std::find(start, stop, delim);
+				if (*start == delim)
+				{
+					start = sep + 1;
+					continue;
+				}
+				out.push_back(String_t(start, sep));
+				start = sep + 1;
+			}
+		}
+
+		/// This function splits the components of the path according to / or \\.
+		void path::_M_split_cmpts() {
+			_M_cmpts.clear();
+			auto ssplit = this->_M_pathname;
+			std::replace_if(ssplit.begin(), ssplit.end(), 
+				[](decltype(ssplit)::value_type c) { return (c == '\\') ? true : false; }, 
+				'/');
+			
+			splitVector(ssplit, _M_cmpts, L'/');
+		}
+
 	}
 }

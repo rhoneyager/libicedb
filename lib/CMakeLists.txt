@@ -83,6 +83,13 @@ set(lib_objs
 	src/util.cpp
 	)
 
+# Internal filesystem features
+IF (WIN32 AND NOT CYGWIN)
+	set(db_objs ${db_objs} src/fs_win.cpp)
+else()
+	set(db_objs ${db_objs} src/fs_posix.cpp)
+endif()
+
 # On Windows, when producing a DLL, this generated file
 # will add some information that can be read by Windows
 # Explorer. Version info, basically.
