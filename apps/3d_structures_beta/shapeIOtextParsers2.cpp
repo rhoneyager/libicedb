@@ -53,12 +53,12 @@ namespace icedb {
 					while (isNumber(*cur)) {
 						if (!isControl(*cur)) {
 							if (!inExponent) {
-								numerator += (*cur - '0');
 								numerator *= 10;
+								numerator += (*cur - '0');
 								if (pastDecimal) digits_denom++;
 							} else {
-								numeratorExp += (*cur - '0');
 								numeratorExp *= 10;
+								numeratorExp += (*cur - '0');
 								if (pastDecimal) digits_denom_Exp++;
 							}
 						} else {
@@ -90,6 +90,7 @@ namespace icedb {
 					if (numeratorExp) fnum *= powf(10.f, exponent);
 
 					out[curout] = fnum;
+					resetNum();
 					curout++;
 
 					++cur;
@@ -426,7 +427,7 @@ namespace icedb {
 				const char* pb = strchr(pa + 1, '\0');
 				
 				std::vector<float> parser_vals; //(numPoints*8);
-				parser_vals.reserve(7 * numExpectedPoints);
+				parser_vals.resize(7 * numExpectedPoints);
 
 				size_t numRead = array_to_floats(pa, pb - pa, parser_vals.data(), parser_vals.size());
 
@@ -496,26 +497,28 @@ namespace icedb {
 				std::vector<float> firstLineVals; //(numPoints*8);
 												  //std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
 				std::vector<float> parser_vals;
-				parser_vals.reserve(guessNumPoints * 4);
+				parser_vals.resize(guessNumPoints * 4);
+				firstLineVals.resize(4);
 
-				array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size());
+				size_t actualNumReads = array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size());
+				parser_vals.resize(actualNumReads);
 
 				//parse_shapefile_entries(pNumStart, pb, parser_vals);
 				const void* floatloc = memchr(pNumStart, '.', pb - pNumStart);
 				res.required.particle_scattering_element_coordinates_are_integral = (floatloc) ? 0 : 1;
 
 				// Also parse just the first line to get the number of columns
-				array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size());
+				size_t numCols = array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size());
 				
-				size_t numCols = firstLineVals.size();
 				bool good = false;
 				if (numCols == 3) good = true; // Three columns, x, y and z
 				if (numCols == 4) good = true; // Four columns, x, y, z and material
 				if (!good) throw (std::invalid_argument("Bad read"));
 				if (parser_vals.size() == 0) throw (std::invalid_argument("Bad read"));
 
-				size_t actualNumPoints = parser_vals.size() / numCols;
+				size_t actualNumPoints = actualNumReads / numCols;
 				assert(actualNumPoints == guessNumPoints);
+				
 
 				res.required.number_of_particle_scattering_elements = actualNumPoints;
 				if (numCols == 3) {

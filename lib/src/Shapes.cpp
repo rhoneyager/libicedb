@@ -256,7 +256,7 @@ namespace icedb {
 			gsl::not_null<const NewShapeRequiredProperties*> required,
 			const NewShapeCommonOptionalProperties* optional)
 		{
-			Expects(required->isValid());
+			Expects(required->isValid(&(std::cerr)));
 			if (required->requiresOptionalPropertiesStruct()) Expects(optional);
 			if (optional) Expects(optional->isValid(required));
 			
