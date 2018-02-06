@@ -63,6 +63,7 @@ option (PROHIBIT_BUILD_USING_BOOST_FILESYSTEM
 	"Prevent the use of boost's filesystem" OFF)
 option (ICEDB_USING_INTERNAL_FILESYSTEM
 	"Beta feature: internal filesystem" OFF)
+option(USE_OLD_CPP03_ABI "C++11 led to changes in the GLIB C++ ABI. Turn this on if you are linking against old system libraries" OFF)
 
 if(FORCE_BUILD_USING_BOOST_FILESYSTEM)
 	addBoostUniform(filesystem system REQUIRED)

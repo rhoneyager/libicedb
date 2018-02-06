@@ -3,11 +3,10 @@ macro(adddocs )
 find_package(Doxygen)
 option (BUILD_DOCUMENTATION
     "Build the documentation for this library" OFF)
+option (BUILD_DOCUMENTATION_IN_ALL
+	"Build documentation automatically with 'make all'. Also used for 'make install' and 'make package'" OFF)
 
 if(BUILD_DOCUMENTATION)
-
-    option (BUILD_DOCUMENTATION_IN_ALL
-        "Build documentation automatically with 'make all'. Also used for 'make install' and 'make package'" OFF)
 
     if (NOT DOXYGEN_FOUND)
         message(SEND_ERROR "Documentation build requested but Doxygen is not found.")
