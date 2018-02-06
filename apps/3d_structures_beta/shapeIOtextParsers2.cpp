@@ -48,8 +48,17 @@ namespace icedb {
 					if (c == '-' || c == '+' || c == '.' || c == 'e' || c == 'E') return true;
 					return false;
 				};
+				auto advanceToNumber = [](const char* in, const char* end) -> const char* {
+					while (in < end) {
+						if (*in >= '0' && *in <= '9') return in;
+						else if (*in == '-' || *in == '+' || *in == '.' || *in == 'e' || *in == 'E') return in;
+						else ++in;
+					}
+					return in;
+				};
 				while ((cur < end) && (curout < outlen)) {
-					cur = strpbrk(cur, numbers);
+					//cur = strpbrk(cur, numbers);
+					cur = advanceToNumber(cur, end);
 					while (isNumber(*cur)) {
 						if (!isControl(*cur)) {
 							if (!inExponent) {
