@@ -12,6 +12,91 @@
 namespace icedb {
 	namespace Examples {
 		namespace Shapes {
+
+			size_t array_to_floats(
+				const char* in, const size_t inlen, float* out, const size_t outlen)
+			{
+				size_t curout = 0;
+				// Accepts numbers of the form: (+- )[0-9]*.[0-9]*(eE)(+- )[0-9]*.[0-9]*
+				bool isNegative = false;
+				bool inExponent = false;
+				bool expIsNeg = false;
+				bool pastDecimal = false;
+
+				uint64_t numerator, numeratorExp;
+				uint64_t digits_denom, digits_denom_Exp;
+				auto resetNum = [&]()
+					{numerator = 0; digits_denom = 0;
+					numeratorExp = 0; digits_denom_Exp = 0;
+					isNegative = false; inExponent = false;
+					expIsNeg = false; pastDecimal = false; };
+				resetNum();
+				
+				const char* cur = in;
+				const char* end = in + inlen;
+				// Advance to the start of a number
+				assert(cur);
+				const char* numbers = "0123456789-+.eE";
+				const char* whitespace = " \t\n";
+				const char* numEnd = nullptr;
+				auto isNumber = [](char c) -> bool {
+					if (c >= '0' && c <= '9') return true;
+					if (c == '-' || c == '+' || c == '.' || c == 'e' || c == 'E') return true;
+					return false;
+				};
+				auto isControl = [](char c) -> bool {
+					if (c == '-' || c == '+' || c == '.' || c == 'e' || c == 'E') return true;
+					return false;
+				};
+				while ((cur < end) && (curout < outlen)) {
+					cur = strpbrk(cur, numbers);
+					while (isNumber(*cur)) {
+						if (!isControl(*cur)) {
+							if (!inExponent) {
+								numerator += (*cur - '0');
+								numerator *= 10;
+								if (pastDecimal) digits_denom++;
+							} else {
+								numeratorExp += (*cur - '0');
+								numeratorExp *= 10;
+								if (pastDecimal) digits_denom_Exp++;
+							}
+						} else {
+							if (*cur == '.') pastDecimal = true;
+							if (*cur == '-' && !inExponent) isNegative = true;
+							if (*cur == '-' && inExponent) expIsNeg = true;
+							if (*cur == 'e' || *cur == 'E') {
+								inExponent = true; pastDecimal = false; isNegative = false;
+							}
+						}
+						++cur;
+					}
+					if (!numerator) continue;
+
+					// Number is loaded. Assign and advance.
+					float exponent = 0;
+					if (numeratorExp) {
+						exponent = static_cast<float>(numeratorExp);
+						if (digits_denom_Exp) exponent /= powf(10.f, static_cast<float>(digits_denom_Exp));
+						if (expIsNeg) exponent *= -1;
+					}
+
+					float num = 0;
+					num = static_cast<float>(numerator);
+					if (digits_denom) num /= powf(10.f, static_cast<float>(digits_denom));
+					if (isNegative) num *= -1;
+
+					float fnum = num;
+					if (numeratorExp) fnum *= powf(10.f, exponent);
+
+					out[curout] = fnum;
+					curout++;
+
+					++cur;
+				}
+				return curout;
+			}
+
 			template <class T>
 			T m_atof(const char* x, size_t len)
 			{
@@ -331,70 +416,6 @@ namespace icedb {
 				headerEnd = (pend - in) / sizeof(char);
 			}
 
-			/// Read a series of floating point numbers from a buffer. It is suggested to
-			/// pre-size the output vector with reserve(...) and an expected size of the output.
-			void readFloats(
-				std::vector<float> &outNumbers,
-				gsl::not_null<const char *> startPosition,
-				const char* endPosition = nullptr)
-			{
-				if (!endPosition)
-					endPosition = strchr(startPosition.get() + 1, '\0');
-
-				const char *sB = startPosition; // Start of buffer
-				const char *eB = endPosition;   // End of buffer
-				const char *cN = sB; // Start of current number
-				const char *eN = sB; // End of current number
-
-				const char* numbers = "0123456789.";
-				const char* whitespace = " \t\n";
-				float num = 0;
-				unsigned int numExtracted = 0;
-				// This loop extracts every number that it can from the input character buffer.
-				while (cN < eB) {
-					// Seek to the start of a number
-					if (cN != sB)
-						cN = strpbrk(eN+1, numbers);
-					else 
-						cN = strpbrk(eN, numbers); // Special case: array start
-
-					if (!cN) {
-						break;
-					}
-					// Find the end of the number (end of string, whitespace or end of line)
-					eN = strpbrk(cN, whitespace);
-
-					// Safety checks for end of range.
-					if (cN >= eB) break;
-					if (eN > eB) eN = eB;
-					// Both statements should guarantee that you can't have a partial end read,
-					// and lexical_cast should not encounter a whitespace-only string.
-
-					// Extract the number.
-					// Throws bad_lexical_cast if there is any text in-between.
-
-					num = m_atof<float>(cN, eN - cN);
-					//num = my_atof(cN, eN - cN);
-					/*
-#if BOOST_VERSION >= 105200
-					// This function is very slow
-					num = boost::lexical_cast<float>(cN, eN - cN);
-#else
-					// This version of lexical_cast is simply too old.
-					// A temporary string gets constructed.
-					// The other option is to make the character array
-					// mutable, and to pepper it with NULLS, but this
-					// makes the code much less portable.
-					std::string temp(cN,eN-cN);
-					num = boost::lexical_cast<float>(temp);
-#endif
-*/
-					// Append the number to the output vector
-					outNumbers.push_back(num);
-					numExtracted++;
-				}
-			}
-
 			/// Read ddscat text contents - the stuff after the header
 			void readDDSCATtextContents(const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic& p)
 			{
@@ -407,9 +428,9 @@ namespace icedb {
 				std::vector<float> parser_vals; //(numPoints*8);
 				parser_vals.reserve(7 * numExpectedPoints);
 
-				readFloats(parser_vals, pa, pb);
+				size_t numRead = array_to_floats(pa, pb - pa, parser_vals.data(), parser_vals.size());
 
-				assert(parser_vals.size() % 7 == 0);
+				assert(numRead % 7 == 0);
 				size_t &numPoints = p.required.number_of_particle_scattering_elements;
 				numPoints = parser_vals.size() / 7;
 				assert(numPoints == numExpectedPoints);
@@ -476,16 +497,16 @@ namespace icedb {
 												  //std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
 				std::vector<float> parser_vals;
 				parser_vals.reserve(guessNumPoints * 4);
-				// Read all of the numbers
-				readFloats(parser_vals, pNumStart, pb);
+
+				array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size());
+
 				//parse_shapefile_entries(pNumStart, pb, parser_vals);
 				const void* floatloc = memchr(pNumStart, '.', pb - pNumStart);
 				res.required.particle_scattering_element_coordinates_are_integral = (floatloc) ? 0 : 1;
 
 				// Also parse just the first line to get the number of columns
-				readFloats(firstLineVals, pNumStart, firstLineEnd);
-				//parse_shapefile_entries(pNumStart, firstLineEnd, firstLineVals);
-
+				array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size());
+				
 				size_t numCols = firstLineVals.size();
 				bool good = false;
 				if (numCols == 3) good = true; // Three columns, x, y and z
