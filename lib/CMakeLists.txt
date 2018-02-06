@@ -149,6 +149,9 @@ else()
 		target_link_libraries(icedb stdc++fs)
 	endif()
 endif()
+if(USE_OLD_CPP03_ABI)
+	target_compile_definitions(icedb PUBLIC _GLIBCXX_USE_CXX11_ABI=0)
+endif()
 
 
 addlib(icedb STATIC)
