@@ -89,6 +89,8 @@ If the system is based on Fedora, follow those instructions.
 If the system is older, or if you cannot install packages on your system, then you may need to compile the compiler yourself. For GCC, see the instructions at the [GNU Compiler Collection Website](https://gcc.gnu.org/). For Clang, see [their website](https://clang.llvm.org/).
 Your mileage may vary. You will also probably have to compile HDF5 ([link](https://www.hdfgroup.org/downloads/hdf5/)) and zlib ([link](https://zlib.net/)). If possible, use a virtual machine with a more recent Linux distribution.
 
+For CentOS 6 / RHEL 6, you may need to also set -D\_GLIBCXX\_USE\_CXX11\_ABI=0 as a CMake option, if you are linking using a self-compiled compiler combined with the distribution-packaged libraries.
+
 ## Build instructions
 
 
@@ -100,7 +102,7 @@ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX={install path} {P
 ```
 - This command, on Linux, typically defaults to generating Makefiles and will use gcc as the compiler. Consult the CMake
    documentation for details regarding how to change the compiler or other settings.
-   - To change the compiler, the CMake option is -DCMAKE_CXX_COMPILER='path to compiler' for C++ and -DCMAKE\_C\_COMPILER='path' for C.
+   - To change the compiler, the CMake option is -DCMAKE\_CXX\_COMPILER='path to compiler' for C++ and -DCMAKE\_C\_COMPILER='path' for C.
 - If cmake is set to generate Makefiles, run:
 ```
 make
