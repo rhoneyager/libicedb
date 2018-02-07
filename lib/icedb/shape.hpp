@@ -90,6 +90,9 @@ namespace icedb {
 			float particle_scattering_element_spacing = -1;
 
 
+			/// EXPERIMENTAL HINT: Specify the maximum scattering element dimension
+			float hint_max_scattering_element_dimension = -1;
+
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
 			bool isValid(gsl::not_null<const NewShapeRequiredProperties*> required, std::ostream *errout = nullptr) const;

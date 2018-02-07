@@ -15,8 +15,9 @@ namespace icedb {
 		namespace Shapes {
 
 			size_t strints_array_to_floats(
-				const char* in, const size_t inlen, float* out, const size_t outlen)
+				const char* in, const size_t inlen, float* out, const size_t outlen, float& max_element)
 			{
+				max_element = 0;
 				size_t curout = 0;
 				// Accepts numbers of the form: [0-9]*
 				// No negatives, exponents or decimals.
@@ -32,6 +33,7 @@ namespace icedb {
 						readnums = true;
 					} else if(readnums){
 						out[curout] = numerator;
+						if (numerator > max_element) max_element = numerator;
 						curout++;
 						numerator = 0;
 						readnums = false;
@@ -465,8 +467,8 @@ namespace icedb {
 				
 				std::vector<float> parser_vals; //(numPoints*8);
 				parser_vals.resize(7 * numExpectedPoints);
-
-				size_t numRead = strints_array_to_floats(pa, pb - pa, parser_vals.data(), parser_vals.size());
+				float max_element = 0;
+				size_t numRead = strints_array_to_floats(pa, pb - pa, parser_vals.data(), parser_vals.size(), max_element);
 
 				assert(numRead % 7 == 0);
 				size_t &numPoints = p.required.number_of_particle_scattering_elements;
@@ -505,6 +507,7 @@ namespace icedb {
 					p.optional.particle_scattering_element_composition_whole[idx] = 1;
 				}
 				p.required.particle_scattering_element_coordinates_are_integral = 1;
+				p.optional.hint_max_scattering_element_dimension = max_element;
 			}
 
 
@@ -533,15 +536,17 @@ namespace icedb {
 				// The implementation using std::count is unfortunately slow
 				//int guessNumPoints = (int) std::count(pNumStart, pb, '\n');
 				// This is much faster, and allows for auto-vectorization
-				long guessNumPoints = 0;
+				int guessNumPoints = 1; // Just in case there is a missing newline at the end
+				// This format does not pre-specify the number of points.
 				for (const char* c = pNumStart; c != pb; ++c)
 					if (c[0] == '\n') guessNumPoints++;
 
+				float max_element = -1, junk_f = -1;
 				std::array<float, 4> firstLineVals; //(numPoints*8);
 												  //std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
-				std::vector<float> parser_vals(guessNumPoints * 4, 0);
+				std::vector<float> parser_vals((guessNumPoints * 4), 0);
 
-				size_t actualNumReads = strints_array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size());
+				size_t actualNumReads = strints_array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size(), max_element);
 				if (actualNumReads == 0) throw (std::invalid_argument("Bad read"));
 				parser_vals.resize(actualNumReads);
 
@@ -551,7 +556,7 @@ namespace icedb {
 				res.required.particle_scattering_element_coordinates_are_integral = 1;
 
 				// Also parse just the first line to get the number of columns
-				size_t numCols = strints_array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size());
+				size_t numCols = strints_array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size(), junk_f);
 				
 				bool good = false;
 				if (numCols == 3) good = true; // Three columns, x, y and z
@@ -594,6 +599,7 @@ namespace icedb {
 				}
 
 				res.required.particle_id = "";
+				res.optional.hint_max_scattering_element_dimension = max_element;
 
 				return res;
 			}
