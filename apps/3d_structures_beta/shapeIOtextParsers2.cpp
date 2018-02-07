@@ -14,6 +14,33 @@ namespace icedb {
 	namespace Examples {
 		namespace Shapes {
 
+			size_t strints_array_to_floats(
+				const char* in, const size_t inlen, float* out, const size_t outlen)
+			{
+				size_t curout = 0;
+				// Accepts numbers of the form: [0-9]*
+				// No negatives, exponents or decimals.
+
+				float numerator = 0;
+				assert(in);
+				const char* end = in + inlen;
+				bool readnums = false;
+				for (const char* cur = in; (cur <= end) && (curout < outlen); ++cur) {
+					if ((*cur <= '9') && (*cur >= '0')) {
+						numerator *= 10;
+						numerator += (*cur - '0');
+						readnums = true;
+					} else if(readnums){
+						out[curout] = numerator;
+						curout++;
+						numerator = 0;
+						readnums = false;
+					}
+				}
+				return curout;
+			}
+
+
 			size_t array_to_floats(
 				const char* in, const size_t inlen, float* out, const size_t outlen)
 			{
@@ -439,7 +466,7 @@ namespace icedb {
 				std::vector<float> parser_vals; //(numPoints*8);
 				parser_vals.resize(7 * numExpectedPoints);
 
-				size_t numRead = array_to_floats(pa, pb - pa, parser_vals.data(), parser_vals.size());
+				size_t numRead = strints_array_to_floats(pa, pb - pa, parser_vals.data(), parser_vals.size());
 
 				assert(numRead % 7 == 0);
 				size_t &numPoints = p.required.number_of_particle_scattering_elements;
@@ -510,27 +537,26 @@ namespace icedb {
 				for (const char* c = pNumStart; c != pb; ++c)
 					if (c[0] == '\n') guessNumPoints++;
 
-				std::vector<float> firstLineVals; //(numPoints*8);
+				std::array<float, 4> firstLineVals; //(numPoints*8);
 												  //std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
-				std::vector<float> parser_vals;
-				parser_vals.resize(guessNumPoints * 4);
-				firstLineVals.resize(4);
+				std::vector<float> parser_vals(guessNumPoints * 4, 0);
 
-				size_t actualNumReads = array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size());
+				size_t actualNumReads = strints_array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size());
+				if (actualNumReads == 0) throw (std::invalid_argument("Bad read"));
 				parser_vals.resize(actualNumReads);
 
 				//parse_shapefile_entries(pNumStart, pb, parser_vals);
-				const void* floatloc = memchr(pNumStart, '.', pb - pNumStart);
-				res.required.particle_scattering_element_coordinates_are_integral = (floatloc) ? 0 : 1;
+				//const void* floatloc = memchr(pNumStart, '.', pb - pNumStart);
+				//res.required.particle_scattering_element_coordinates_are_integral = (floatloc) ? 0 : 1;
+				res.required.particle_scattering_element_coordinates_are_integral = 1;
 
 				// Also parse just the first line to get the number of columns
-				size_t numCols = array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size());
+				size_t numCols = strints_array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size());
 				
 				bool good = false;
 				if (numCols == 3) good = true; // Three columns, x, y and z
 				if (numCols == 4) good = true; // Four columns, x, y, z and material
 				if (!good) throw (std::invalid_argument("Bad read"));
-				if (parser_vals.size() == 0) throw (std::invalid_argument("Bad read"));
 
 				size_t actualNumPoints = actualNumReads / numCols;
 				assert(actualNumPoints == guessNumPoints);
