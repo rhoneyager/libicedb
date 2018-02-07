@@ -5,9 +5,10 @@
 #include <algorithm>
 #include <fstream>
 
+#include <icedb/fs_backend.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/iostreams/copy.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
+//#include <boost/iostreams/copy.hpp>
+//#include <boost/iostreams/filtering_stream.hpp>
 #include "shape.hpp"
 namespace icedb {
 	namespace Examples {
@@ -317,9 +318,9 @@ namespace icedb {
 				// alphanumeric characters are present. If there are, treat it as a DDSCAT file.
 				// Otherwise, treat as a raw text file.
 				std::ifstream in(filename.c_str());
-				std::ostringstream so;
-				boost::iostreams::copy(in, so);
-				std::string s = so.str();
+				uintmax_t sz = sfs::file_size(sfs::path(filename));
+				std::string s(sz, ' ');
+				in.read(&s[0], sz);
 
 				auto end = s.find_first_of("\n\0");
 				Expects(end != std::string::npos);
