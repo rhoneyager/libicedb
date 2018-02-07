@@ -503,7 +503,13 @@ namespace icedb {
 
 				const char* firstLineEnd = strchr(pNumStart + 1, '\n'); // End of the first line containing numeric data.
 																		// Attempt to guess the number of points based on the number of lines in the file.
-				int guessNumPoints = (int) std::count(pNumStart, pb, '\n');
+				// The implementation using std::count is unfortunately slow
+				//int guessNumPoints = (int) std::count(pNumStart, pb, '\n');
+				// This is much faster, and allows for auto-vectorization
+				long guessNumPoints = 0;
+				for (const char* c = pNumStart; c != pb; ++c)
+					if (c[0] == '\n') guessNumPoints++;
+
 				std::vector<float> firstLineVals; //(numPoints*8);
 												  //std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
 				std::vector<float> parser_vals;
