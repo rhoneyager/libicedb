@@ -146,4 +146,46 @@ mark_as_advanced(BUILDNAME SITE)
 add_test ( get_id command uname -a)
 
 # CPack stuff
+set(CPACK_PACKAGE_NAME "icedb")
+set(CPACK_PACKAGE_VENDOR "Ryan Honeyager")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "icedb")
+set(CPACK_PACKAGE_VERSION "${icedb_VERSION}")
+set(CPACK_PACKAGE_VERSION_MAJOR "${MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${REVISION}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "icedb")
+set(CPACK_PACKAGE_CONTACT "Ryan Honeyager (ryan@honeyager.info)")
+
+set (CPACK_COMPONENTS_ALL 
+	Applications
+	Examples
+	Libraries 
+	Headers
+)
+
+set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION 
+	"All of the apps")
+set(CPACK_COMPONENT_EXAMPLES_DESCRIPTION 
+	"Basic example files")
+set(CPACK_COMPONENT_LIBRARIES_DESCRIPTION 
+	"The compiled libraries")
+set(CPACK_COMPONENT_HEADERS_DESCRIPTION 
+	"Headers for code development")
+
+set(CPACK_COMPONENT_HEADERS_DEPENDS Libraries)
+set(CPACK_COMPONENT_EXAMPLES_DEPENDS Libraries Applications Headers)
+set(CPACK_COMPONENT_APPLICATIONS_DEPENDS Libraries Headers)
+
+set(CPACK_COMPONENT_LIBRARIES_REQUIRED 1)
+
+set(CPACK_RPM_PACKAGE_REQUIRES 
+	"cmake >= 3.1, doxygen, hdf5-devel, hdf5, git, zlib-devel, boost-devel >= 1.48, gcc-c++ >= 6"
+	)
+
+set(CPACK_DEBIAN_PACKAGE_DEPENDS
+	"cmake (>= 3.1), doxygen, libhdf5-dev, hdf5-tools, git, zlib1g-dev, libboost-all-dev (>= 1.48), g++ (>= 6)"
+	)
+
+# This must always be last!
+include(CPack)
 

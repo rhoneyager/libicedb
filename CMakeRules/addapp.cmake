@@ -15,16 +15,20 @@ macro(addapp appname foldername)
 	INSTALL(TARGETS ${appname} 
 		CONFIGURATIONS Debug
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Debug
+		COMPONENT Applications
 		)
 	INSTALL(TARGETS ${appname}
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Release
-		CONFIGURATIONS Release)
+		CONFIGURATIONS Release
+		COMPONENT Applications)
 	INSTALL(TARGETS ${appname}
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/RelWithDebInfo
-		CONFIGURATIONS RelWithDebInfo)
+		CONFIGURATIONS RelWithDebInfo
+		COMPONENT APPLICATIONS)
 	INSTALL(TARGETS ${appname}
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/MinSizeRel
-		CONFIGURATIONS MinSizeRel)
+		CONFIGURATIONS MinSizeRel
+		COMPONENT Applications)
 endmacro(addapp appname foldername)
 
 
