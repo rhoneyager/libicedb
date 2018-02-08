@@ -35,13 +35,13 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API html documentation with Doxygen" VERBATIM
     )
     # This builds the latex docs
-    add_custom_target(doc-latex ${ALL_FLAG}
-        latex refman.tex
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex
-        COMMENT "Generating API pdf documentation with Doxygen" VERBATIM
-    )
+    #    add_custom_target(doc-latex ${ALL_FLAG}
+    #        latex refman.tex
+    #        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex
+    #        COMMENT "Generating API pdf documentation with Doxygen" VERBATIM
+    #    )
 
-    add_custom_target(docs ${ALL_FLAG} DEPENDS doc-html doc-latex)
+    add_custom_target(docs ${ALL_FLAG} DEPENDS doc-html)
 endif()
 
 if (BUILD_DOCUMENTATION_IN_ALL)
@@ -50,7 +50,7 @@ if (BUILD_DOCUMENTATION_IN_ALL)
     # html
     install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/html/ DESTINATION ${INSTALL_DOC_DIR}/html)
     # pdf
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex/ DESTINATION ${INSTALL_DOC_DIR}/latex)
+    #    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex/ DESTINATION ${INSTALL_DOC_DIR}/latex)
 endif()
 
 endmacro(adddocs )
