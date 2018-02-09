@@ -158,7 +158,7 @@ namespace icedb {
 		Shape_impl::~Shape_impl() {}
 		Shape::~Shape() {}
 		Shape::Shape(const std::string &uid) : particle_unique_id{ uid } {}
-		std::string Shape::_icedb_obj_type_shape_identifier = "shape";
+		const std::string Shape::_icedb_obj_type_shape_identifier = "shape";
 
 		bool Shape::isShape(Groups::Group &owner, const std::string &name) {
 			if (!owner.doesGroupExist(name)) return false;

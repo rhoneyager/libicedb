@@ -21,7 +21,7 @@
 # define experimental_filesystem
   namespace sfs = std::experimental::filesystem::v1;
 #else
-  static_assert(0, "This library either requires boost::filesystem v3 or a recent compiler that supports the C++ 2017 filesystem library.");
+# error("This library either requires boost::filesystem v3 or a recent compiler that supports the C++ 2017 filesystem library.");
 #endif
 
 //__cpp_lib_experimental_filesystem - is not yet defined on all compilers, notable MSVC17.
@@ -33,21 +33,29 @@
 
 namespace icedb {
 	namespace fs {
+		/// Internal filesystem functions. These will be mase user-inaccessible in a future release.
+		/// \deprecated These will be moved to a private header in a future release.
 		namespace impl {
 			typedef std::set<sfs::path> ExtensionsMatching_Type;
 			extern const ExtensionsMatching_Type common_hdf5_extensions;
+			/// Finds out where a symbolic link points to
 			sfs::path resolveSymLinks(const sfs::path &base);
 
 			/// File path, relative mount point
 			typedef std::vector<std::pair<sfs::path, std::string> > CollectedFilesRet_Type;
+			/// Find all files under the base location that have matching extensions.
+			/// Used to collect files for reading.
 			CollectedFilesRet_Type collectDatasetFiles(
 				const sfs::path &base,
 				const ExtensionsMatching_Type &fileExtensionsToMatch = common_hdf5_extensions);
 
+			/// Like resolveSymLinks, but throw if the resulting path does not exist.
 			sfs::path resolveSymlinkPathandForceExists(const std::string &location);
 
+			/// Like collectDatasetFiles for HDF5 files, but then check that these files are, indeed, HDF5 files.
 			CollectedFilesRet_Type collectActualHDF5files(const sfs::path &pBaseS);
 
+			/// Generate a unique string, used in memort-only HDF5 file trees.
 			std::string getUniqueVROOTname();
 		}
 	}

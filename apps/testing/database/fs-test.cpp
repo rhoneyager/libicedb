@@ -1,3 +1,6 @@
+/** \brief This is an example application that illustrates how to
+ * manipulate the most basic features of an icedb database.
+**/
 // Always include this first
 #include <icedb/defs.h>
 
@@ -21,6 +24,7 @@ int main(int argc, char** argv) {
 		("dbpath,p", po::value<string>()->default_value("testdataset"), "Database path")
 		("create", "Create a sample database at this location")
 		("rw", "Specifies that the database should be opened in read-write mode")
+		("ro", "Specifies that the database should be opened in read-only mode")
 		;
 
 	po::variables_map vm;
@@ -30,12 +34,15 @@ int main(int argc, char** argv) {
 
 	auto doHelp = [&](const std::string& s)->void
 	{
-		cout << s << endl;
-		cout << desc << endl;
+		std::cout << s << endl;
+		std::cout << desc << endl;
 		exit(1);
 	};
 
 	if (vm.count("help")) doHelp("");
+	if (!vm.count("create") && !vm.count("rw") && !vm.count("ro"))
+		doHelp("Must specify if the database is being created, or "
+			"opened in read-write or read-only mode.");
 
 	string dbpath = vm["dbpath"].as<string>();
 
@@ -240,6 +247,7 @@ int main(int argc, char** argv) {
 		       "If this is the case, either run with --create as an option, "
 		       "or check that the database path (--dbpath) is correct." << std::endl;
 		icedb::fs::IOopenFlags flags = icedb::fs::IOopenFlags::READ_ONLY;
+		if (vm.count("ro")) flags = icedb::fs::IOopenFlags::READ_ONLY;
 		if (vm.count("rw")) flags = icedb::fs::IOopenFlags::READ_WRITE;
 		auto db = icedb::Databases::Database::openDatabase(dbpath, flags);
 	}

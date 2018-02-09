@@ -11,6 +11,7 @@ namespace H5 {
 	class H5File;
 }
 namespace icedb {
+	/// All stuff related to Groups.
 	namespace Groups {
 #ifdef _MSC_FULL_VER
 #pragma warning( push )

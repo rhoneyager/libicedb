@@ -15,7 +15,9 @@ namespace H5 {
 }
 namespace icedb {
 
+	/// Functions to detect the type of stored data
 	namespace Data_Types {
+		/// Is the type (T) a type supported for I/O by this library?
 		template <class T> constexpr bool Is_Valid_Data_Type() { return false; }
 		template<> constexpr bool Is_Valid_Data_Type<uint64_t>() { return true; }
 		template<> constexpr bool Is_Valid_Data_Type<int64_t>() { return true; }
@@ -29,6 +31,7 @@ namespace icedb {
 		template<> constexpr bool Is_Valid_Data_Type<double>() { return true; }
 		template<> constexpr bool Is_Valid_Data_Type<char>() { return true; }
 		template<> constexpr bool Is_Valid_Data_Type<std::string>() { return true; }
+		/// Is the type (type_id) a type supported for I/O by this library?
 		inline bool Is_Valid_Data_Type(const std::type_info &type_id) {
 			if (type_id == typeid(uint64_t)) return true;
 			else if (type_id == typeid(int64_t)) return true;
