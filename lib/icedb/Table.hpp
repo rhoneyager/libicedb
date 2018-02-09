@@ -11,14 +11,19 @@ namespace icedb {
 	namespace Tables {
 		class CanHaveTables;
 
-
+		/// This defines a table.
+		/// \see CanHaveTables for the functions to create, access and remove tables.
 		class Table : virtual public Attributes::CanHaveAttributes {
 			friend class CanHaveTables;
 			//void readAttachedDimensionScales() const;
 		protected:
+			/// Associates the icedb table with the fundamental HDF5 DataSet. Only used internally.
 			virtual void _setTableSelf(std::shared_ptr<H5::DataSet> obj) = 0;
+			/// Gets the fundamental HDF5 DataSet associated with the table. Only used internally.
 			virtual std::shared_ptr<H5::DataSet> _getTableSelf() const = 0;
+			/// Checks that Table is well-formed during runtime. Only used internally.
 			bool valid() const;
+			/// Default constructor, used by CanHaveTables
 			Table(const std::string &name = "");
 		public:
 			virtual ~Table();
@@ -50,19 +55,31 @@ namespace icedb {
 			/// Is this Table used as a dimension scale?
 			bool isDimensionScale() const;
 
-			void setDimensionScale(const std::string &dimensionScaleName); ///< Make this table a dimension scale with name dimensionScaleName.
+			/// Designate this table as a dimension scale
+			void setDimensionScale(const std::string &dimensionScaleName);
+			/// Set the axis label for the dimension designated by DimensionNumber
 			void setDimensionScaleAxisLabel(size_t DimensionNumber, const std::string &label);
+			/// Get the axis label for the dimension designated by DimensionNumber
 			std::string getDimensionScaleAxisLabel(size_t DimensionNumber) const;
+			/// Get the name of this table's defined dimension scale
 			std::string getDimensionScaleName() const;
 
+			/// Check if this table has the matching Type
 			template<class Type> bool isTableOfType() const {
 				std::type_index atype = getTableTypeId();
 				if (atype == typeid(Type)) return true;
 				return false;
 			}
 
+			/// Get the type of the table (i.e. int64_t, float, etc.)
 			std::type_index getTableTypeId() const;
 
+			/// \brief Read all of the data in the associated table
+			/// \param DataType is the type of data.
+			/// \throws if the DataType is mismatched (see isTableOfType and getTableTypeId).
+			/// \param dims is an output parameter representing the size of each of the table's dimensions
+			/// \param data is an output parameter that stores the table's data.
+			/// \note This convenience function uses a std::vector to store the output. This uses dynamic memory.
 			template <class DataType>
 			void readAll(std::vector<size_t> &dims, std::vector<DataType> &data) const;
 
@@ -74,84 +91,83 @@ namespace icedb {
 			void writeAllInner(const gsl::span<const DataType> &outData) const;
 		public:
 			
+			/// \brief Write the passed data to the table. Writes whole table.
+			/// \param DataType is the type of the data.
+			/// \throws if the DataType does not match the fundamental type of the table.
+			/// \param outData is the data to be written to the table.
+			/// \throws if outData's size does not match the table's size.
 			template <class DataType>
 			void writeAll(const gsl::span<const DataType> &outData) const {
 				static_assert(icedb::Data_Types::Is_Valid_Data_Type<DataType>() == true,
 					"Data to be written must be a valid data type");
 				this->template writeAllInner<DataType>(outData);
 			}
+			/// \brief Write the passed data to the table. Writes whole table.
+			/// \param DataType is the type of the data.
+			/// \throws if the DataType does not match the fundamental type of the table.
+			/// \param outData is the data to be written to the table.
+			/// \throws if outData's size does not match the table's size.
 			template <class DataType>
 			void writeAll(const gsl::span<DataType> &outData) const {
 				this->template writeAll<DataType>(gsl::span<const DataType>(outData.cbegin(), outData.cend()));
 			}
+			/// \brief Write the passed data to the table. Writes whole table. Convenience converter function.
+			/// \param DataType is the type of the data.
+			/// \throws if the DataType does not match the fundamental type of the table.
+			/// \param outData is the data to be written to the table.
+			/// \throws if outData's size does not match the table's size.
 			template <class DataType>
 			void writeAll(const std::vector<DataType> &outData) const {
 				this->template writeAll<DataType>(gsl::span<const DataType>(outData.data(), outData.size()));
 			}
-
-			// These are the old definitions. They caused too many copies.
-			/*
-			template <class DataType>
-			void writeAll(const std::vector<DataType> &outData) const {
-				Expects(isTableOfType<DataType>());
-				size_t sz = 1;
-				for (const auto &d : getDimensions()) sz *= d;
-				Expects(outData.size() == sz);
-
-				std::vector<Data_Types::All_Variant_type> vdata(outData.size());
-				for (size_t i = 0; i < outData.size(); ++i)
-					vdata[i] = outData[i];
-				// copy_n will not work here...
-				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
-				writeAll(typeid(DataType), vdata);
-			}
-			template <class DataType>
-			void writeAll(const gsl::span<DataType> &outData) const {
-				Expects(isTableOfType<DataType>());
-				size_t sz = 1;
-				for (const auto &d : getDimensions()) sz *= d;
-				Expects(outData.size() == sz);
-
-				std::vector<Data_Types::All_Variant_type> vdata(outData.size());
-				for (size_t i = 0; i < static_cast<size_t>(outData.size()); ++i)
-					vdata[i] = outData[i];
-				// copy_n will not work here...
-				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
-				writeAll(typeid(DataType), vdata);
-			}
-			template <class DataType>
-			void writeAll(const gsl::span<const DataType> &outData) const {
-				Expects(isTableOfType<DataType>());
-				size_t sz = 1;
-				for (const auto &d : getDimensions()) sz *= d;
-				Expects(outData.size() == sz);
-
-				std::vector<Data_Types::All_Variant_type> vdata(outData.size());
-				for (size_t i = 0; i < static_cast<size_t>(outData.size()); ++i)
-					vdata[i] = outData[i];
-				// copy_n will not work here...
-				//std::copy_n(attribute.data.cbegin(), attribute.data.cend(), vdata.begin());
-				writeAll(typeid(DataType), vdata);
-			}
-			*/
 		};
 
+		/// \brief The virtual base class used in all objects that can contain tables (groups and datasets).
 		class CanHaveTables {
+			/// Checks that the class is well-formed, constructed and activated. CanHaveTables _needs_ post-constructor setup.
 			bool valid() const;
+			/// \brief Internal function to create a table. Does not write data.
+			/// \param tableName is the name of the table.
+			/// \param type is the type of the table.
+			/// \param dims are the dimensions of the table.
+			/// \param chunks are the HDF5 chunking parameters, used when writing a table.
 			void _createTable(const std::string &tableName, const std::type_index& type, const std::vector<size_t> &dims, const std::vector<size_t> &chunks);
 		protected:
+			/// Trivial constructor used when CanHaveTables is a virtual base class.
 			CanHaveTables();
+			/// CanHaveTables needs post-constructor setup. This sets the base HDF5 object that gets manipulated.
 			virtual void _setTablesParent(std::shared_ptr<H5::Group> obj) = 0;
+			/// Gets the base HDF5 object that is manipulated.
 			virtual std::shared_ptr<H5::Group> _getTablesParent() const = 0;
 		public:
 			~CanHaveTables();
+			/// \brief Lists all table names that are children of this object
 			std::set<std::string> getTableNames() const;
+			/// \brief Does a table exist with the given name
 			bool doesTableExist(const std::string &tableName) const;
+			/// \brief Unlink a table. In HDF5, this is not the same as erasing a table, which never actually happens.
+			/// \throws if a table with name tableName does not exist.
+			/// \throws if the open file is read only
 			void unlinkTable(const std::string &tableName);
+			/// Open the table with the matching name.
+			/// \throws if a table with this name does not exist.
 			Table::Table_Type openTable(const std::string &tableName);
+			/// \brief The default chunking strategy for this table. Used for storage i/o speed, and for compression.
+			/// \todo Use a more intelligent strategy
+			/// \returns the ideal size of each chunk of the dataset.
 			inline std::vector<size_t> getChunkStrategy(const std::vector<size_t> &dims) {
 				return dims;
 			}
+			/// \brief Create a table
+			/// \param DataType is the type of the data
+			/// \param tableName is the name of the table
+			/// \throws if a table with this name already exists
+			/// \throws if the base object is read only
+			/// \param dims are the dimensions of the table
+			/// \param chunks is the size of each N-dimensional chunk, used for storage and compression. HDF5
+			/// writes each table as a group of chunked objects. When reading or writing, entire chunks are always
+			/// read or written.
+			/// \returns The new table.
 			template <class DataType>
 			Table::Table_Type createTable(const std::string &tableName, const std::vector<size_t> &dims, const std::vector<size_t> *chunks = nullptr) {
 				Expects(!doesTableExist(tableName));
@@ -163,6 +179,16 @@ namespace icedb {
 				_createTable(tableName, Data_Types::getType<DataType>(), dims, *chunks);
 				return openTable(tableName);
 			}
+			/// \brief Create a table
+			/// \param DataType is the type of the data
+			/// \param tableName is the name of the table
+			/// \throws if a table with this name already exists
+			/// \throws if the base object is read only
+			/// \param dims are the dimensions of the table
+			/// \param chunks is the size of each N-dimensional chunk, used for storage and compression. HDF5
+			/// writes each table as a group of chunked objects. When reading or writing, entire chunks are always
+			/// read or written.
+			/// \returns The new table.
 			template <class DataType>
 			Table::Table_Type createTable(
 				const std::string &tableName,
@@ -173,6 +199,17 @@ namespace icedb {
 				auto tbl = createTable<DataType>(tableName, vdims, chunks);
 				return tbl;
 			}
+			/// \brief Create a table and writes initial data. Used with small tables.
+			/// \param DataType is the type of the data
+			/// \param tableName is the name of the table
+			/// \throws if a table with this name already exists
+			/// \throws if the base object is read only
+			/// \param dims are the dimensions of the table
+			/// \param data are the initial data of the table
+			/// \param chunks is the size of each N-dimensional chunk, used for storage and compression. HDF5
+			/// writes each table as a group of chunked objects. When reading or writing, entire chunks are always
+			/// read or written.
+			/// \returns The new table.
 			template <class DataType>
 			Table::Table_Type createTable(
 				const std::string &tableName,
@@ -185,6 +222,17 @@ namespace icedb {
 				tbl->template writeAll<DataType>(gsl::span<const DataType>(data.begin(), data.end()));
 				return tbl;
 			}
+			/// \brief Create a table and sets the table's initial data
+			/// \param DataType is the type of the data
+			/// \param tableName is the name of the table
+			/// \throws if a table with this name already exists
+			/// \throws if the base object is read only
+			/// \param dims are the dimensions of the table
+			/// \param data are the data of the table
+			/// \param chunks is the size of each N-dimensional chunk, used for storage and compression. HDF5
+			/// writes each table as a group of chunked objects. When reading or writing, entire chunks are always
+			/// read or written.
+			/// \returns The new table.
 			template <class DataType>
 			Table::Table_Type createTable(
 				const std::string &tableName,
@@ -196,6 +244,17 @@ namespace icedb {
 				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}
+			/// \brief Create a table and sets the table's initial data
+			/// \param DataType is the type of the data
+			/// \param tableName is the name of the table
+			/// \throws if a table with this name already exists
+			/// \throws if the base object is read only
+			/// \param dims are the dimensions of the table
+			/// \param data are the data of the table
+			/// \param chunks is the size of each N-dimensional chunk, used for storage and compression. HDF5
+			/// writes each table as a group of chunked objects. When reading or writing, entire chunks are always
+			/// read or written.
+			/// \returns The new table.
 			template <class DataType>
 			Table::Table_Type createTable(
 				const std::string &tableName,
@@ -207,6 +266,17 @@ namespace icedb {
 				tbl->template writeAll<DataType>(data);
 				return tbl;
 			}
+			/// \brief Create a table and sets the table's initial data
+			/// \param DataType is the type of the data
+			/// \param tableName is the name of the table
+			/// \throws if a table with this name already exists
+			/// \throws if the base object is read only
+			/// \param dims are the dimensions of the table
+			/// \param data are the data of the table
+			/// \param chunks is the size of each N-dimensional chunk, used for storage and compression. HDF5
+			/// writes each table as a group of chunked objects. When reading or writing, entire chunks are always
+			/// read or written.
+			/// \returns The new table.
 			template <class DataType>
 			Table::Table_Type createTable(
 				const std::string &tableName,
