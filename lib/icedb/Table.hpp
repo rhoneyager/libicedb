@@ -7,8 +7,10 @@ namespace icedb {
 	namespace Groups {
 		class Group;
 	}
+	/// Everything to do with Tables is located in this namespace
 	namespace Tables {
 		class CanHaveTables;
+
 
 		class Table : virtual public Attributes::CanHaveAttributes {
 			friend class CanHaveTables;
@@ -20,8 +22,11 @@ namespace icedb {
 			Table(const std::string &name = "");
 		public:
 			virtual ~Table();
+			/// The name of the Table
 			const std::string name; // Constant, and in a base class, so no need to change.
+			/// The dimensions of a Table are expressed as a vector of unsigned integers.
 			typedef std::vector<size_t> Dimensions_Type;
+			/// The preferred method of access of a Table is through std::unique_ptr
 			typedef std::unique_ptr<Table> Table_Type;
 
 			/// \todo Need to ensure that tables have dimension scales attached in all cases.
@@ -31,13 +36,20 @@ namespace icedb {
 			//bool hasDimensionScaleAttached(size_t DimensionNumber, gsl::not_null<const Table *> scale) const;
 			//bool hasDimensionScalesAttached() const;
 
+			/// Returns the number of dimensions of a table.
 			size_t getNumDimensions() const;
+			/// Returns a vector containing the dimensions of the table.
 			Dimensions_Type getDimensions() const;
+			/// Attaches a dimension scale to a table.
+			/// \see the HDF5 HL dimension scale API docs, at https://support.hdfgroup.org/HDF5/doc/HL/RM_H5DS.html
 			void attachDimensionScale(size_t DimensionNumber, gsl::not_null<const Table *> scale); ///< Attach a dimension scale to this table.
+			/// Detaches a dimension scale from this table.
 			void detachDimensionScale(size_t DimensionNumber, gsl::not_null<const Table *> scale);
 			//Table_Type readDimensionScale(size_t DimensionNumber) const;
 			
+			/// Is this Table used as a dimension scale?
 			bool isDimensionScale() const;
+
 			void setDimensionScale(const std::string &dimensionScaleName); ///< Make this table a dimension scale with name dimensionScaleName.
 			void setDimensionScaleAxisLabel(size_t DimensionNumber, const std::string &label);
 			std::string getDimensionScaleAxisLabel(size_t DimensionNumber) const;
