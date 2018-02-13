@@ -1,5 +1,14 @@
-icedb
+icedb API Documentation
 ========================
+
+You are currently browsing the icedb API documentation site, which is useful for scientists and programmers who are linking their own software to icedb.
+
+The main website for icedb is located at [/](https://rhoneyager.github.io/libicedb/).
+
+The GitHub repository for icedb is located at [https://www.github.com/rhoneyager/libicedb](https://www.github.com/rhoneyager/libicedb).
+
+
+## Description
 
 The Earth's atmosphere contains many small liquid and solid particles. 
 The most obvious example of this is in clouds, which are made up of many small ice crystals and water droplets.
@@ -9,7 +18,4 @@ icedb is a library that manages this particle scattering data. It is designed to
 database format that was developed over 2016-2017 by Stefan Kneifel et al. and discussed at the
 [1st International Summer Snowfall Workshop](http://www.geoverbund-abcj.de/SharedDocs/Meldungen/GEOVERBUND/EN/20170719_1st-summer-snowfall-workshop.html).
 
-The main website for this project is located at [https://rhoneyager.github.io/libicedb/](https://rhoneyager.github.io/libicedb/).
-
-You are currently browsing the API documentation site, which is useful for scientists and programmers who are linking their own software to icedb.
 
