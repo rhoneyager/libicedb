@@ -1,0 +1,7 @@
+<map id="icedb::Examples::Shapes::readDDSCAT" name="icedb::Examples::Shapes::readDDSCAT">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1Examples_1_1Shapes.html#aa83815532aea205d67b56220bc965228" title="icedb::Examples::Shapes\l::readHeader" alt="" coords="224,5,395,47"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a8e0f657be09aae9687aa63bed84f46a1" title="icedb::Examples::Shapes\l::readTextContents" alt="" coords="224,71,395,112"/>
+<area shape="rect" id="node4" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="443,56,605,127"/>
+<area shape="rect" id="node5" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a9119256a03fa440b5b7102800d756198" title="Used in quickly printing shapefile. " alt="" coords="658,12,821,83"/>
+<area shape="rect" id="node6" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a3590d9b16b4a098b6ddbcec4819f4c52" title="anonymous_namespace\l\{shapeIOtextParsers\l::cpp\}::print_shapefile_pts" alt="" coords="653,107,825,163"/>
+</map>

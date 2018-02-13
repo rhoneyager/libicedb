@@ -1,0 +1,13 @@
+<map id="icedb::Attributes::CanHaveAttributes_impl::_getAttributeParent" name="icedb::Attributes::CanHaveAttributes_impl::_getAttributeParent">
+<area shape="rect" id="node2" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a75393edad25db53293d82bd19b9eec84" title="Delete an attribute, by name, that is attached to this object. " alt="" coords="442,119,667,161"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a141ff056368bf7328a0260c71291bdc0" title="Function to write an attribute to an object, with the provided raw data. " alt="" coords="724,149,971,190"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#ad7b31d1a3780871e833230ea6ba64e58" title="Does the object have an attribute with the given name? " alt="" coords="445,236,664,292"/>
+<area shape="rect" id="node9" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#af243988edeb7ed8c8a64dd50a1d9ddf2" title="List all attributes attached to this object. " alt="" coords="451,39,659,95"/>
+<area shape="rect" id="node10" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a5f48307951d3fb8d3c102870a45f2960" title="Returns the type of an attribute. " alt="" coords="451,383,659,439"/>
+<area shape="rect" id="node11" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a1fadaaa55831998b3e8e073a05dfce6c" title="Function to read the data from an attribute using the provided input vectors. " alt="" coords="433,317,676,358"/>
+<area shape="rect" id="node12" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a216d51927f7964bca99ed3ade84709e9" title="icedb::Attributes::\lCanHaveAttributes::valid" alt="" coords="217,178,385,219"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Shapes_1_1Shape.html#a743de57cbd91205fea7d4a9d02575652" title="Is this object a group? " alt="" coords="772,386,923,427"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Shapes_1_1Shape.html#aaf0300a0218cb7318678b7b6c299f1a7" title="Is &quot;group&quot; a valid shape, according to the spec.? " alt="" coords="772,313,923,354"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#adad73321598114379cef59a417421427" title="Function to read the data from an attribute. " alt="" coords="726,243,969,285"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Shapes_1_1Shape.html#aeaae7da7e2ce54eedfea05e59d2da197" title="Is this object a valid shape, according to the spec? " alt="" coords="1019,313,1169,354"/>
+</map>

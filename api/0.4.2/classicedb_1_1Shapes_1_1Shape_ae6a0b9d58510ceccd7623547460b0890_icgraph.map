@@ -1,0 +1,6 @@
+<map id="icedb::Shapes::Shape::isShape" name="icedb::Shapes::Shape::isShape">
+<area shape="rect" id="node2" href="$classicedb_1_1Shapes_1_1Shape.html#aa74d1ac6872ed319e6e44e063995c22e" title="Is this object a shape? " alt="" coords="204,5,355,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Shapes_1_1Shape.html#aaf0300a0218cb7318678b7b6c299f1a7" title="Is &quot;group&quot; a valid shape, according to the spec.? " alt="" coords="204,71,355,112"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Shapes_1_1Shape.html#aa450e550ff04f4a8edbc0b0af326f7d9" title="Re&#45;open an open HDF5 group as a shape. " alt="" coords="204,136,355,177"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Shapes_1_1Shape.html#aeaae7da7e2ce54eedfea05e59d2da197" title="Is this object a valid shape, according to the spec? " alt="" coords="403,71,553,112"/>
+</map>

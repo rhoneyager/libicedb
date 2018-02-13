@@ -1,0 +1,9 @@
+<map id="icedb::Groups::Group_impl" name="icedb::Groups::Group_impl">
+<area shape="rect" id="node2" href="$classicedb_1_1Groups_1_1Group.html" title="A group is similar to a folder / directory. It can have Attributes and Tables. " alt="" coords="570,93,717,119"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html" title="This is a virtual base class for objects that can have attributes. This includes tables, groups and HDF5 files. " alt="" coords="216,5,349,47"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Attributes_1_1CanHaveAttributes__impl.html" title="icedb::Attributes::\lCanHaveAttributes_impl" alt="" coords="561,8,725,49"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Tables_1_1CanHaveTables.html" title="The virtual base class used in all objects that can contain tables (groups and datasets). " alt="" coords="181,157,384,183"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Tables_1_1CanHaveTables__impl.html" title="icedb::Tables::CanHaveTables_impl" alt="" coords="527,157,760,183"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="243,93,323,119"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="5,85,132,127"/>
+</map>

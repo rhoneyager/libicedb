@@ -1,0 +1,11 @@
+<map id="icedb::Databases::Database::createSingleFileDatabase" name="icedb::Databases::Database::createSingleFileDatabase">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1fs_1_1hdf5.html#add74346b9c2eb7dd133928d598f69225" title="icedb::fs::hdf5::getHDF5\lIOflags" alt="" coords="521,6,687,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Databases_1_1Database__impl.html#a321a886a3681bb7d607f805e060f14ec" title="icedb::Databases::Database\l_impl::makeDatabaseFileStandard" alt="" coords="241,32,464,74"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Databases_1_1Database.html#a005c40e8b6cb0a0a5a0c96256bede0b8" title="icedb::Databases::Database\l::openDatabase" alt="" coords="259,98,447,139"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1fs_1_1impl.html#ae5c49e76db60602cedd6dd8317bceec1" title="Finds out where a symbolic link points to. " alt="" coords="1185,115,1340,156"/>
+<area shape="rect" id="node6" href="$namespaceicedb_1_1fs_1_1impl.html#ab57ef8e3a8c29a60a36cbbf701bcb66f" title="Like collectDatasetFiles for HDF5 files, but then check that these files are, indeed, HDF5 files. " alt="" coords="529,123,679,164"/>
+<area shape="rect" id="node9" href="$namespaceicedb_1_1fs_1_1hdf5.html#a16f78c89c51a0d3d0f1a8a07e84ccb6b" title="icedb::fs::hdf5::createGroup\lStructure" alt="" coords="512,188,696,230"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1fs_1_1impl.html#ae58335756c72cfc8f4f13eae099c969a" title="icedb::fs::impl::collect\lDatasetFiles" alt="" coords="748,123,899,164"/>
+<area shape="rect" id="node8" href="$namespaceicedb_1_1fs_1_1impl.html#af0cc17c58406b9ca481838b4cd1bbfa7" title="Like resolveSymLinks, but throw if the resulting path does not exist. " alt="" coords="951,174,1137,215"/>
+<area shape="rect" id="node10" href="$namespaceicedb_1_1fs_1_1hdf5.html#a7efaa79fb30d0ccd628177d8c0e5f36c" title="icedb::fs::hdf5::explode" alt="" coords="744,196,903,222"/>
+</map>

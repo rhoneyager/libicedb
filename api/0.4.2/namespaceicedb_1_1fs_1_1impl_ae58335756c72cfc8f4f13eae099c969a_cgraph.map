@@ -1,0 +1,4 @@
+<map id="icedb::fs::impl::collectDatasetFiles" name="icedb::fs::impl::collectDatasetFiles">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1fs_1_1impl.html#af0cc17c58406b9ca481838b4cd1bbfa7" title="Like resolveSymLinks, but throw if the resulting path does not exist. " alt="" coords="204,5,391,47"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1fs_1_1impl.html#ae5c49e76db60602cedd6dd8317bceec1" title="Finds out where a symbolic link points to. " alt="" coords="439,35,593,76"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="scatdb::registry::read_file_type_multi&lt;::scatdb::shape::shapeIO &gt;" name="scatdb::registry::read_file_type_multi&lt;::scatdb::shape::shapeIO &gt;">
+<area shape="rect" id="node2" href="$namespacescatdb_1_1plugins_1_1builtin_1_1shape.html#adbc023784c23dc829b045f608861aae9" title="scatdb::plugins::builtin\l::shape::readDDSCAT" alt="" coords="221,39,376,80"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1Examples_1_1Shapes.html#aa83815532aea205d67b56220bc965228" title="icedb::Examples::Shapes\l::readHeader" alt="" coords="424,5,595,47"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a8e0f657be09aae9687aa63bed84f46a1" title="icedb::Examples::Shapes\l::readTextContents" alt="" coords="424,71,595,112"/>
+<area shape="rect" id="node5" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="643,56,805,127"/>
+<area shape="rect" id="node6" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a9119256a03fa440b5b7102800d756198" title="Used in quickly printing shapefile. " alt="" coords="858,12,1021,83"/>
+<area shape="rect" id="node7" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a3590d9b16b4a098b6ddbcec4819f4c52" title="anonymous_namespace\l\{shapeIOtextParsers\l::cpp\}::print_shapefile_pts" alt="" coords="853,107,1025,163"/>
+</map>

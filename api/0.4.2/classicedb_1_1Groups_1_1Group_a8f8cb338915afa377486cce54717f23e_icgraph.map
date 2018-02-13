@@ -1,0 +1,7 @@
+<map id="icedb::Groups::Group::createGroup" name="icedb::Groups::Group::createGroup">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1Groups.html#a1cf004dc432d87dc4e22a3b3ce67d40e" title="This exists because HDF5&#39;s API changed. " alt="" coords="223,5,365,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Groups_1_1Group__impl.html#a05e3f9542a4be081c56075fb0deb5997" title="Create a group. " alt="" coords="221,71,367,112"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Databases_1_1Database__impl.html#a45f3c3f3262aa475b2908176ce0ab36a" title="icedb::Databases::Database\l_impl::createGroup" alt="" coords="200,136,388,177"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Groups_1_1Group.html#a84dbed74760eae87755f1e92fb0e32b4" title="Create a group with a specified parent (static function) " alt="" coords="221,201,367,243"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Shapes_1_1Shape.html#a293993892f987e2dcdfdeb4c4c8d95dd" title="Create a new shape. " alt="" coords="219,267,369,308"/>
+</map>

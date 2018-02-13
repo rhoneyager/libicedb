@@ -1,0 +1,5 @@
+<map id="icedb::Tables::Table::setDimensionScale" name="icedb::Tables::Table::setDimensionScale">
+<area shape="rect" id="node2" href="$classicedb_1_1Tables_1_1Table.html#a9f9417a43751a0e5c7639ebfae870009" title="Gets the fundamental HDF5 DataSet associated with the table. Only used internally. " alt="" coords="572,20,712,62"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#a1ca4af5be957b799fcd48288c4a71407" title="Is this Table used as a dimension scale? " alt="" coords="196,24,336,66"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Tables_1_1Table.html#a87e0e23502ba591a6951ec1defaebdb1" title="Checks that Table is well&#45;formed during runtime. Only used internally. " alt="" coords="384,79,524,120"/>
+</map>

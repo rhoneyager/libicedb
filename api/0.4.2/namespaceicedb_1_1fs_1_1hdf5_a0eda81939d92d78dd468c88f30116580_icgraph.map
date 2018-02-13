@@ -1,0 +1,6 @@
+<map id="icedb::fs::hdf5::readDatasetDimensions" name="icedb::fs::hdf5::readDatasetDimensions">
+<area shape="rect" id="node2" href="$classicedb_1_1Tables_1_1Table.html#abd0cf794aa24af3fff2af5feddc52b26" title="Returns a vector containing the dimensions of the table. " alt="" coords="259,5,399,47"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Tables_1_1Table.html#acc7a50a4adf8598bee76c349d3b4108b" title="Read all of the data in the associated table. " alt="" coords="259,71,399,112"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1fs_1_1hdf5.html#a5b435c547b03ec9ddee85d5a5a39562b" title="icedb::fs::hdf5::readDataset\lDimensions" alt="" coords="237,136,421,177"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#af2a984731fbf16af5278c14a06846988" title="icedb::Tables::Table\l::writeAllInner" alt="" coords="469,5,609,47"/>
+</map>

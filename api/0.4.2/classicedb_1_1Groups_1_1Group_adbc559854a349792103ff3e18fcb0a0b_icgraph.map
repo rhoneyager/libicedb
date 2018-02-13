@@ -1,0 +1,5 @@
+<map id="icedb::Groups::Group::doesGroupExist" name="icedb::Groups::Group::doesGroupExist">
+<area shape="rect" id="node2" href="$classicedb_1_1Shapes_1_1Shape.html#a293993892f987e2dcdfdeb4c4c8d95dd" title="Create a new shape. " alt="" coords="200,5,351,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Shapes_1_1Shape.html#aa74d1ac6872ed319e6e44e063995c22e" title="Is this object a shape? " alt="" coords="200,71,351,112"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Shapes_1_1Shape.html#af820d6ae785741832a112796bf057236" title="Open a group&#39;s subgroup as a shape. " alt="" coords="200,136,351,177"/>
+</map>

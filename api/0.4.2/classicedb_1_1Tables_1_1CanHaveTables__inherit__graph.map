@@ -1,0 +1,7 @@
+<map id="icedb::Tables::CanHaveTables" name="icedb::Tables::CanHaveTables">
+<area shape="rect" id="node2" href="$classicedb_1_1Groups_1_1Group.html" title="A group is similar to a folder / directory. It can have Attributes and Tables. " alt="" coords="263,80,410,107"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Tables_1_1CanHaveTables__impl.html" title="icedb::Tables::CanHaveTables_impl" alt="" coords="5,80,239,107"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Groups_1_1Group__impl.html" title="icedb::Groups::Group_impl" alt="" coords="60,155,237,181"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Shapes_1_1Shape.html" title="A high&#45;level class to manipulate particle shapes. " alt="" coords="261,155,412,181"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Shapes_1_1Shape__impl.html" title="icedb::Shapes::Shape_impl" alt="" coords="151,229,333,256"/>
+</map>

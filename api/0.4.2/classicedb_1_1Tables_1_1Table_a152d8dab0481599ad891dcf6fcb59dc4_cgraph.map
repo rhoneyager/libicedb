@@ -1,0 +1,6 @@
+<map id="icedb::Tables::Table::setDimensionScaleAxisLabel" name="icedb::Tables::Table::setDimensionScaleAxisLabel">
+<area shape="rect" id="node2" href="$classicedb_1_1Tables_1_1Table.html#a9f9417a43751a0e5c7639ebfae870009" title="Gets the fundamental HDF5 DataSet associated with the table. Only used internally. " alt="" coords="679,5,819,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#af083d70aef16dd5c453df177b31b7340" title="Returns the number of dimensions of a table. " alt="" coords="253,64,399,105"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Tables_1_1Table.html#a87e0e23502ba591a6951ec1defaebdb1" title="Checks that Table is well&#45;formed during runtime. Only used internally. " alt="" coords="469,129,609,171"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1fs_1_1hdf5.html#a89c4a48a28e49347217b0e7e19040395" title="icedb::fs::hdf5::readDataset\lNumDimensions" alt="" coords="447,64,631,105"/>
+</map>

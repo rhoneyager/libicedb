@@ -1,0 +1,5 @@
+<map id="icedb::Examples::Shapes::readTextRaw" name="icedb::Examples::Shapes::readTextRaw">
+<area shape="rect" id="node2" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="224,49,387,120"/>
+<area shape="rect" id="node3" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a9119256a03fa440b5b7102800d756198" title="Used in quickly printing shapefile. " alt="" coords="439,5,602,76"/>
+<area shape="rect" id="node4" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a3590d9b16b4a098b6ddbcec4819f4c52" title="anonymous_namespace\l\{shapeIOtextParsers\l::cpp\}::print_shapefile_pts" alt="" coords="435,101,607,157"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="icedb::Attributes::CanHaveAttributes::doesAttributeExist" name="icedb::Attributes::CanHaveAttributes::doesAttributeExist">
+<area shape="rect" id="node2" href="$classicedb_1_1Shapes_1_1Shape.html#a743de57cbd91205fea7d4a9d02575652" title="Is this object a group? " alt="" coords="320,5,471,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Shapes_1_1Shape.html#aaf0300a0218cb7318678b7b6c299f1a7" title="Is &quot;group&quot; a valid shape, according to the spec.? " alt="" coords="320,71,471,112"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#adad73321598114379cef59a417421427" title="Function to read the data from an attribute. " alt="" coords="274,136,517,177"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a141ff056368bf7328a0260c71291bdc0" title="Function to write an attribute to an object, with the provided raw data. " alt="" coords="272,201,519,243"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Shapes_1_1Shape.html#aeaae7da7e2ce54eedfea05e59d2da197" title="Is this object a valid shape, according to the spec? " alt="" coords="567,71,717,112"/>
+</map>

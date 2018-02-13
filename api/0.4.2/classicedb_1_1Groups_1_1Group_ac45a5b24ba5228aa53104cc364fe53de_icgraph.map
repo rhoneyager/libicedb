@@ -1,0 +1,11 @@
+<map id="icedb::Groups::Group::openGroup" name="icedb::Groups::Group::openGroup">
+<area shape="rect" id="node2" href="$classicedb_1_1Databases_1_1Database__impl.html#a95804a83bbba66697f88f75f3ad805e2" title="icedb::Databases::Database\l_impl::createGroupStructure" alt="" coords="200,5,388,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Shapes_1_1Shape.html#a293993892f987e2dcdfdeb4c4c8d95dd" title="Create a new shape. " alt="" coords="219,71,369,112"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Shapes_1_1Shape.html#aa74d1ac6872ed319e6e44e063995c22e" title="Is this object a shape? " alt="" coords="219,136,369,177"/>
+<area shape="rect" id="node5" href="$fs-test_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="This is an example application that illustrates how to manipulate the most basic features of an icedb..." alt="" coords="269,202,319,229"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Groups_1_1Group__impl.html#a6faaf91674d477a9f62e8188bf6ad11c" title="Opens a group. " alt="" coords="221,253,367,295"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Databases_1_1Database__impl.html#a511162d60f5305c64b0f778ba0bb878e" title="icedb::Databases::Database\l_impl::openGroup" alt="" coords="200,319,388,360"/>
+<area shape="rect" id="node9" href="$classicedb_1_1Groups_1_1Group.html#aabbfb6a2ff54d8b3754ef60234fd20cf" title="Open a group under the specified parent (static function) " alt="" coords="221,384,367,425"/>
+<area shape="rect" id="node10" href="$classicedb_1_1Shapes_1_1Shape.html#af820d6ae785741832a112796bf057236" title="Open a group&#39;s subgroup as a shape. " alt="" coords="219,449,369,491"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Groups_1_1Group.html#ac144e598f1243bab548b8556747dcacb" title="Mount an HDF5 file as a child &#39;group&#39;. " alt="" coords="436,253,583,295"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="icedb::Tables::Table" name="icedb::Tables::Table">
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table__impl.html" title="icedb::Tables::Table_impl" alt="" coords="5,169,176,196"/>
+<area shape="rect" id="node2" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html" title="This is a virtual base class for objects that can have attributes. This includes tables, groups and HDF5 files. " alt="" coords="24,5,157,47"/>
+</map>

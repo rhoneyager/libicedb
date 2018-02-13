@@ -1,0 +1,11 @@
+<map id="icedb::Attributes::CanHaveAttributes::valid" name="icedb::Attributes::CanHaveAttributes::valid">
+<area shape="rect" id="node2" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a75393edad25db53293d82bd19b9eec84" title="Delete an attribute, by name, that is attached to this object. " alt="" coords="230,5,455,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a141ff056368bf7328a0260c71291bdc0" title="Function to write an attribute to an object, with the provided raw data. " alt="" coords="512,35,759,76"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#ad7b31d1a3780871e833230ea6ba64e58" title="Does the object have an attribute with the given name? " alt="" coords="233,122,452,178"/>
+<area shape="rect" id="node9" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#af243988edeb7ed8c8a64dd50a1d9ddf2" title="List all attributes attached to this object. " alt="" coords="239,202,447,258"/>
+<area shape="rect" id="node10" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#a1fadaaa55831998b3e8e073a05dfce6c" title="Function to read the data from an attribute using the provided input vectors. " alt="" coords="221,283,464,324"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Shapes_1_1Shape.html#a743de57cbd91205fea7d4a9d02575652" title="Is this object a group? " alt="" coords="560,100,711,141"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Shapes_1_1Shape.html#aaf0300a0218cb7318678b7b6c299f1a7" title="Is &quot;group&quot; a valid shape, according to the spec.? " alt="" coords="560,165,711,207"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html#adad73321598114379cef59a417421427" title="Function to read the data from an attribute. " alt="" coords="514,231,757,272"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Shapes_1_1Shape.html#aeaae7da7e2ce54eedfea05e59d2da197" title="Is this object a valid shape, according to the spec? " alt="" coords="807,165,957,207"/>
+</map>

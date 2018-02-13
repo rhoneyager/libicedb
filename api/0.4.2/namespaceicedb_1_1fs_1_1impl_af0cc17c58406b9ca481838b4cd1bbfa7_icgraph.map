@@ -1,0 +1,10 @@
+<map id="icedb::fs::impl::resolveSymlinkPathandForceExists" name="icedb::fs::impl::resolveSymlinkPathandForceExists">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1fs_1_1impl.html#ae58335756c72cfc8f4f13eae099c969a" title="icedb::fs::impl::collect\lDatasetFiles" alt="" coords="240,97,391,139"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Databases_1_1Database.html#ad4d1c9f1ae657eb7c0604f2d9cb71fe3" title="icedb::Databases::Database\l::indexDatabase" alt="" coords="637,156,825,197"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1fs_1_1impl.html#ab57ef8e3a8c29a60a36cbbf701bcb66f" title="Like collectDatasetFiles for HDF5 files, but then check that these files are, indeed, HDF5 files. " alt="" coords="439,97,589,139"/>
+<area shape="rect" id="node9" href="$beta_2shapes-main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="The main body of the program. " alt="" coords="489,46,539,73"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Databases_1_1Database.html#a005c40e8b6cb0a0a5a0c96256bede0b8" title="icedb::Databases::Database\l::openDatabase" alt="" coords="637,64,825,105"/>
+<area shape="rect" id="node5" href="$fs-test_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="This is an example application that illustrates how to manipulate the most basic features of an icedb..." alt="" coords="1109,130,1160,157"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Databases_1_1Database.html#af8a815d50cfe7369076b949690b1fae8" title="icedb::Databases::Database\l::createSampleDatabase" alt="" coords="873,123,1061,164"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Databases_1_1Database.html#a369093248318822b8354b3de2806d304" title="icedb::Databases::Database\l::createSingleFileDatabase" alt="" coords="873,5,1061,47"/>
+</map>

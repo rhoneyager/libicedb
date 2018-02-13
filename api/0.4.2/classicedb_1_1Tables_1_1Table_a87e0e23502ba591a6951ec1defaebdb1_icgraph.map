@@ -1,0 +1,19 @@
+<map id="icedb::Tables::Table::valid" name="icedb::Tables::Table::valid">
+<area shape="rect" id="node2" href="$classicedb_1_1Tables_1_1CanHaveTables.html#aada0f621a32ae3a5542c579b8329fe5a" title="Internal function to create a table. Does not write data. " alt="" coords="193,5,396,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#a59dea05c0af12a4b7f458016d6d702ae" title="icedb::Tables::Table\l::attachDimensionScale" alt="" coords="463,67,625,108"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Tables_1_1Table.html#a3b8cf685c4ae812a43a227b315d798db" title="Detaches a dimension scale from this table. " alt="" coords="462,135,626,176"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Tables_1_1Table.html#abd0cf794aa24af3fff2af5feddc52b26" title="Returns a vector containing the dimensions of the table. " alt="" coords="225,392,365,433"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Tables_1_1Table.html#af2a984731fbf16af5278c14a06846988" title="icedb::Tables::Table\l::writeAllInner" alt="" coords="474,369,614,411"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Tables_1_1Table.html#aecf10ffac8f0b1ee08c59c1684ed8985" title="Get the axis label for the dimension designated by DimensionNumber. " alt="" coords="444,205,644,247"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Tables_1_1Table.html#a669a84150f573de92f9d21e9f5de04d2" title="Get the name of this table&#39;s defined dimension scale. " alt="" coords="205,457,384,499"/>
+<area shape="rect" id="node9" href="$classicedb_1_1Tables_1_1Table.html#af083d70aef16dd5c453df177b31b7340" title="Returns the number of dimensions of a table. " alt="" coords="222,173,367,215"/>
+<area shape="rect" id="node10" href="$classicedb_1_1Tables_1_1Table.html#a152d8dab0481599ad891dcf6fcb59dc4" title="Set the axis label for the dimension designated by DimensionNumber. " alt="" coords="444,281,644,323"/>
+<area shape="rect" id="node11" href="$classicedb_1_1Tables_1_1CanHaveTables.html#a5adb51a296d3ad91766eabbd559d89f3" title="Lists all table names that are children of this object. " alt="" coords="193,523,396,564"/>
+<area shape="rect" id="node12" href="$classicedb_1_1Tables_1_1Table.html#a455683c761d82da30c8ef25930f167ab" title="Get the type of the table (i.e. int64_t, float, etc.) " alt="" coords="225,588,365,629"/>
+<area shape="rect" id="node13" href="$classicedb_1_1Tables_1_1Table.html#a1ca4af5be957b799fcd48288c4a71407" title="Is this Table used as a dimension scale? " alt="" coords="225,705,365,747"/>
+<area shape="rect" id="node14" href="$classicedb_1_1Tables_1_1Table.html#ac8c729890b897710023cf501d317e3bb" title="Designate this table as a dimension scale. " alt="" coords="473,676,615,717"/>
+<area shape="rect" id="node16" href="$classicedb_1_1Tables_1_1CanHaveTables.html#ae5b93977857bea7b20303637a31f3f06" title="icedb::Tables::CanHaveTables\l::openTable" alt="" coords="193,771,396,812"/>
+<area shape="rect" id="node17" href="$classicedb_1_1Tables_1_1Table.html#acc7a50a4adf8598bee76c349d3b4108b" title="Read all of the data in the associated table. " alt="" coords="225,836,365,877"/>
+<area shape="rect" id="node18" href="$classicedb_1_1Tables_1_1CanHaveTables.html#ade0b5a88f5f8baf5e3dfe10d6a621178" title="Unlink a table. In HDF5, this is not the same as erasing a table, which never actually happens..." alt="" coords="193,901,396,943"/>
+<area shape="rect" id="node15" href="$classicedb_1_1Shapes_1_1Shape.html#a14d237d126185771723a727d56e09611" title="Create a new shape. " alt="" coords="692,676,843,717"/>
+</map>

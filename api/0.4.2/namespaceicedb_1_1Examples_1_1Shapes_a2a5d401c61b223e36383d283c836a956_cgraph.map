@@ -1,0 +1,11 @@
+<map id="icedb::Examples::Shapes::readRawText" name="icedb::Examples::Shapes::readRawText">
+<area shape="rect" id="node2" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="884,58,1047,129"/>
+<area shape="rect" id="node4" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a3590d9b16b4a098b6ddbcec4819f4c52" title="anonymous_namespace\l\{shapeIOtextParsers\l::cpp\}::print_shapefile_pts" alt="" coords="1099,196,1271,252"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af4f846f5268e26fe554768d8e0844f0d" title="icedb::Examples::Shapes\l::readDDSCAT" alt="" coords="443,80,613,121"/>
+<area shape="rect" id="node8" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106" title="icedb::Examples::Shapes\l::readTextFile" alt="" coords="224,144,395,185"/>
+<area shape="rect" id="node10" href="$namespaceicedb_1_1Examples_1_1Shapes.html#ada655bbe1a5eec60651e64f0bc9fa245" title="icedb::Examples::Shapes\l::writeTextRaw" alt="" coords="880,262,1051,304"/>
+<area shape="rect" id="node3" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a9119256a03fa440b5b7102800d756198" title="Used in quickly printing shapefile. " alt="" coords="1103,58,1266,129"/>
+<area shape="rect" id="node6" href="$namespaceicedb_1_1Examples_1_1Shapes.html#aa83815532aea205d67b56220bc965228" title="icedb::Examples::Shapes\l::readHeader" alt="" coords="661,94,832,136"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a8e0f657be09aae9687aa63bed84f46a1" title="icedb::Examples::Shapes\l::readTextContents" alt="" coords="661,29,832,70"/>
+<area shape="rect" id="node9" href="$namespaceicedb_1_1Examples_1_1Shapes.html#ab50b849f9533e0dcccd4eb57e19310f0" title="Simple file assuming one substance, with 3&#45;column rows, each representing a single point..." alt="" coords="443,145,613,186"/>
+</map>

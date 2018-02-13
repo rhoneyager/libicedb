@@ -1,0 +1,16 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1fs_1_1impl.html#ae58335756c72cfc8f4f13eae099c969a" title="icedb::fs::impl::collect\lDatasetFiles" alt="" coords="110,60,261,101"/>
+<area shape="rect" id="node5" href="$beta_2shapes-main_8cpp.html#a6285f7490b6dd81ce98e2527e0620413" title="Convenience function to build a pool of threads for parsing shapes and writing to the hdf5 file..." alt="" coords="110,126,261,153"/>
+<area shape="rect" id="node15" href="$namespaceicedb_1_1fs_1_1hdf5.html#aa823e59a8819be3d124fc64700385fe7" title="icedb::fs::hdf5::useZLIB" alt="" coords="104,177,267,203"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1fs_1_1impl.html#af0cc17c58406b9ca481838b4cd1bbfa7" title="Like resolveSymLinks, but throw if the resulting path does not exist. " alt="" coords="315,5,501,47"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1fs_1_1impl.html#ae5c49e76db60602cedd6dd8317bceec1" title="Finds out where a symbolic link points to. " alt="" coords="557,32,712,73"/>
+<area shape="rect" id="node6" href="$beta_2shapes-main_8cpp.html#ae40c007b788d66f509cf4110d9c98e2a" title="This is the primary function in each thread devoted to reading shapes. Usually, about three of these ..." alt="" coords="372,126,444,153"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106" title="icedb::Examples::Shapes\l::readTextFile" alt="" coords="549,119,720,160"/>
+<area shape="rect" id="node8" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af4f846f5268e26fe554768d8e0844f0d" title="icedb::Examples::Shapes\l::readDDSCAT" alt="" coords="768,85,939,127"/>
+<area shape="rect" id="node14" href="$namespaceicedb_1_1Examples_1_1Shapes.html#ab50b849f9533e0dcccd4eb57e19310f0" title="Simple file assuming one substance, with 3&#45;column rows, each representing a single point..." alt="" coords="768,151,939,192"/>
+<area shape="rect" id="node9" href="$namespaceicedb_1_1Examples_1_1Shapes.html#aa83815532aea205d67b56220bc965228" title="icedb::Examples::Shapes\l::readHeader" alt="" coords="987,27,1157,68"/>
+<area shape="rect" id="node10" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a8e0f657be09aae9687aa63bed84f46a1" title="icedb::Examples::Shapes\l::readTextContents" alt="" coords="987,92,1157,133"/>
+<area shape="rect" id="node11" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="1205,107,1368,177"/>
+<area shape="rect" id="node12" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a9119256a03fa440b5b7102800d756198" title="Used in quickly printing shapefile. " alt="" coords="1421,63,1583,133"/>
+<area shape="rect" id="node13" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a3590d9b16b4a098b6ddbcec4819f4c52" title="anonymous_namespace\l\{shapeIOtextParsers\l::cpp\}::print_shapefile_pts" alt="" coords="1416,158,1588,214"/>
+</map>

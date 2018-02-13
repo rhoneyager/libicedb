@@ -1,0 +1,8 @@
+<map id="icedb::Shapes::Shape::createShape" name="icedb::Shapes::Shape::createShape">
+<area shape="rect" id="node2" href="$structicedb_1_1Shapes_1_1NewShapeCommonOptionalProperties.html#a0e81ce83ddbf3aaa952bef45eac31fc4" title="icedb::Shapes::NewShapeCommon\lOptionalProperties::isValid" alt="" coords="204,5,435,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#ac8c729890b897710023cf501d317e3bb" title="Designate this table as a dimension scale. " alt="" coords="248,71,391,112"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Tables_1_1Table.html#a9a3b2d0856fa207acf193dc3b236c3c7" title="Write the passed data to the table. Writes whole table. " alt="" coords="249,136,389,177"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Tables_1_1Table.html#a87e0e23502ba591a6951ec1defaebdb1" title="Checks that Table is well&#45;formed during runtime. Only used internally. " alt="" coords="671,75,811,116"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Tables_1_1Table.html#a9f9417a43751a0e5c7639ebfae870009" title="Gets the fundamental HDF5 DataSet associated with the table. Only used internally. " alt="" coords="859,75,999,116"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Tables_1_1Table.html#a1ca4af5be957b799fcd48288c4a71407" title="Is this Table used as a dimension scale? " alt="" coords="483,129,623,171"/>
+</map>

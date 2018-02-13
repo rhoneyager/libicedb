@@ -1,0 +1,4 @@
+<map id="icedb::Shapes::Shape::openShape" name="icedb::Shapes::Shape::openShape">
+<area shape="rect" id="node2" href="$classicedb_1_1Shapes_1_1Shape.html#ae6a0b9d58510ceccd7623547460b0890" title="Is this object actually a shape? " alt="" coords="204,5,355,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Groups_1_1Group.html#a2f0d4c7ed3cd13dbe49410872455d1b9" title="Get the fundamental HDF5 object that the group is built on. " alt="" coords="403,5,549,47"/>
+</map>

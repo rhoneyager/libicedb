@@ -1,0 +1,4 @@
+<map id="icedb::Tables::CanHaveTables::unlinkTable" name="icedb::Tables::CanHaveTables::unlinkTable">
+<area shape="rect" id="node2" href="$classicedb_1_1Tables_1_1Table.html#a87e0e23502ba591a6951ec1defaebdb1" title="Checks that Table is well&#45;formed during runtime. Only used internally. " alt="" coords="256,5,396,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#a9f9417a43751a0e5c7639ebfae870009" title="Gets the fundamental HDF5 DataSet associated with the table. Only used internally. " alt="" coords="444,5,584,47"/>
+</map>

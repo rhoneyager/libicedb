@@ -1,0 +1,8 @@
+<map id="icedb::fs::hdf5::readDatasetNumDimensions" name="icedb::fs::hdf5::readDatasetNumDimensions">
+<area shape="rect" id="node2" href="$classicedb_1_1Tables_1_1Table.html#af083d70aef16dd5c453df177b31b7340" title="Returns the number of dimensions of a table. " alt="" coords="257,104,402,145"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1fs_1_1hdf5.html#a5b435c547b03ec9ddee85d5a5a39562b" title="icedb::fs::hdf5::readDataset\lDimensions" alt="" coords="237,169,421,211"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#a59dea05c0af12a4b7f458016d6d702ae" title="icedb::Tables::Table\l::attachDimensionScale" alt="" coords="489,5,650,47"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Tables_1_1Table.html#a3b8cf685c4ae812a43a227b315d798db" title="Detaches a dimension scale from this table. " alt="" coords="487,71,651,112"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Tables_1_1Table.html#a152d8dab0481599ad891dcf6fcb59dc4" title="Set the axis label for the dimension designated by DimensionNumber. " alt="" coords="469,136,669,177"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Tables_1_1Table.html#aecf10ffac8f0b1ee08c59c1684ed8985" title="Get the axis label for the dimension designated by DimensionNumber. " alt="" coords="469,201,669,243"/>
+</map>

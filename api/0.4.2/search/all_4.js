@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['data',['data',['../classicedb_1_1Attributes_1_1Attribute.html#aecf87c5421d27b63d8d733f43403070a',1,'icedb::Attributes::Attribute']]],
+  ['data_5ftypes_2ehpp',['Data_Types.hpp',['../Data__Types_8hpp.html',1,'']]],
+  ['database',['Database',['../classicedb_1_1Databases_1_1Database.html',1,'icedb::Databases::Database'],['../classicedb_1_1Databases_1_1Database__impl.html#a6efef52d7a939622bbc934ff6b90ffe0',1,'icedb::Databases::Database_impl::Database()'],['../classicedb_1_1Databases_1_1Database.html#ac137d445607dd57e637ea828d22440a1',1,'icedb::Databases::Database::Database()']]],
+  ['database_2ehpp',['Database.hpp',['../Database_8hpp.html',1,'']]],
+  ['database_5fimpl',['Database_impl',['../classicedb_1_1Databases_1_1Database__impl.html',1,'icedb::Databases::Database_impl'],['../classicedb_1_1Databases_1_1Database__impl.html#adf986bf7e9329b53e1ae8ba4c2cdacec',1,'icedb::Databases::Database_impl::Database_impl()'],['../classicedb_1_1Databases_1_1Database__impl.html#a4b3bf55b18336dd5eeeca059781b855f',1,'icedb::Databases::Database_impl::Database_impl(size_t virtualMemSizeInBytes)']]],
+  ['database_5fimpl_2ehpp',['Database_impl.hpp',['../Database__impl_8hpp.html',1,'']]],
+  ['database_5fptr',['Database_ptr',['../classicedb_1_1Databases_1_1Database.html#a099ccc5bf7ba50a4c7425f531728e480',1,'icedb::Databases::Database']]],
+  ['databases_2ecpp',['databases.cpp',['../databases_8cpp.html',1,'']]],
+  ['databases_2emd',['databases.md',['../databases_8md.html',1,'']]],
+  ['datacontainertype',['DataContainerType',['../namespaceicedb_1_1fs_1_1hdf5.html#a72a254318f9f9138c62b81c9070f9bf8',1,'icedb::fs::hdf5']]],
+  ['datasetexists',['datasetExists',['../namespaceicedb_1_1fs_1_1hdf5.html#a0e2c4a63425f8036737628686856d711',1,'icedb::fs::hdf5']]],
+  ['defs_2eh',['defs.h',['../defs_8h.html',1,'']]],
+  ['deleteattribute',['deleteAttribute',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a75393edad25db53293d82bd19b9eec84',1,'icedb::Attributes::CanHaveAttributes']]],
+  ['deletegroup',['deleteGroup',['../classicedb_1_1Groups_1_1Group.html#a929bd772a5db4649d00208afec169798',1,'icedb::Groups::Group::deleteGroup()'],['../classicedb_1_1Groups_1_1Group__impl.html#ab6e5b45931c580692f776e3418297838',1,'icedb::Groups::Group_impl::deleteGroup()']]],
+  ['deprecated_20list',['Deprecated List',['../deprecated.html',1,'']]],
+  ['detachdimensionscale',['detachDimensionScale',['../classicedb_1_1Tables_1_1Table.html#a3b8cf685c4ae812a43a227b315d798db',1,'icedb::Tables::Table']]],
+  ['dimensionality',['dimensionality',['../classicedb_1_1Attributes_1_1Attribute.html#af7cd92070586cdc6d339bc339eba540c',1,'icedb::Attributes::Attribute']]],
+  ['dimensions_5ftype',['Dimensions_Type',['../classicedb_1_1Tables_1_1Table.html#a37ab5e90bc0904958697febfef4d90ed',1,'icedb::Tables::Table']]],
+  ['dl_5ficedb',['DL_ICEDB',['../defs_8h.html#a4bd3acec94b4c3f2380272fbec745979',1,'defs.h']]],
+  ['doesattributeexist',['doesAttributeExist',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#ad7b31d1a3780871e833230ea6ba64e58',1,'icedb::Attributes::CanHaveAttributes::doesAttributeExist(const std::string &amp;attributeName) const'],['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#abac6431c5506fcbf65c3fb1473dcc882',1,'icedb::Attributes::CanHaveAttributes::doesAttributeExist(gsl::not_null&lt; const H5::H5Object *&gt; parent, const std::string &amp;attributeName)']]],
+  ['doesgroupexist',['doesGroupExist',['../classicedb_1_1Groups_1_1Group.html#adbc559854a349792103ff3e18fcb0a0b',1,'icedb::Groups::Group::doesGroupExist()'],['../classicedb_1_1Groups_1_1Group__impl.html#ad280ee09e14155933242c5815affbdfa',1,'icedb::Groups::Group_impl::doesGroupExist()']]],
+  ['doestableexist',['doesTableExist',['../classicedb_1_1Tables_1_1CanHaveTables.html#ae7aade90339d578cb6694b0f509435c8',1,'icedb::Tables::CanHaveTables']]],
+  ['databases',['databases',['../md_docs_databases.html',1,'']]]
+];

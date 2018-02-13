@@ -1,0 +1,6 @@
+<map id="icedb::Tables::Table::getNumDimensions" name="icedb::Tables::Table::getNumDimensions">
+<area shape="rect" id="node2" href="$classicedb_1_1Tables_1_1Table.html#a59dea05c0af12a4b7f458016d6d702ae" title="icedb::Tables::Table\l::attachDimensionScale" alt="" coords="218,5,379,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Tables_1_1Table.html#a3b8cf685c4ae812a43a227b315d798db" title="Detaches a dimension scale from this table. " alt="" coords="217,71,381,112"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Tables_1_1Table.html#aecf10ffac8f0b1ee08c59c1684ed8985" title="Get the axis label for the dimension designated by DimensionNumber. " alt="" coords="199,136,399,177"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Tables_1_1Table.html#a152d8dab0481599ad891dcf6fcb59dc4" title="Set the axis label for the dimension designated by DimensionNumber. " alt="" coords="199,201,399,243"/>
+</map>

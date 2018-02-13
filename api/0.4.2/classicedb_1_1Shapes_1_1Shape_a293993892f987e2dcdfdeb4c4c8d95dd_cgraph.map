@@ -1,0 +1,7 @@
+<map id="icedb::Shapes::Shape::createShape" name="icedb::Shapes::Shape::createShape">
+<area shape="rect" id="node2" href="$classicedb_1_1Groups_1_1Group.html#a8f8cb338915afa377486cce54717f23e" title="Create a group. " alt="" coords="206,5,353,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Shapes_1_1Shape.html#ad7130fa2f27db8354d10986e58697699" title="Create a new shape. " alt="" coords="204,71,355,112"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Groups_1_1Group.html#adbc559854a349792103ff3e18fcb0a0b" title="Does a group with this name exist? " alt="" coords="206,136,353,177"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Groups_1_1Group.html#ac45a5b24ba5228aa53104cc364fe53de" title="Opens a group. " alt="" coords="206,201,353,243"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Groups_1_1Group.html#a2f0d4c7ed3cd13dbe49410872455d1b9" title="Get the fundamental HDF5 object that the group is built on. " alt="" coords="403,71,549,112"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="icedb::Examples::Shapes::ShapeDataBasic::toShape" name="icedb::Examples::Shapes::ShapeDataBasic::toShape">
+<area shape="rect" id="node2" href="$classicedb_1_1Shapes_1_1Shape.html#ad7130fa2f27db8354d10986e58697699" title="Create a new shape. " alt="" coords="237,5,388,47"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Groups_1_1Group.html#a2f0d4c7ed3cd13dbe49410872455d1b9" title="Get the fundamental HDF5 object that the group is built on. " alt="" coords="436,5,583,47"/>
+</map>
