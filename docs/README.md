@@ -3,7 +3,7 @@ icedb API Documentation
 
 You are currently browsing the icedb API documentation site, which is useful for scientists and programmers who are linking their own software to icedb.
 
-The main website for icedb is located at [/](https://rhoneyager.github.io/libicedb/).
+The main website for icedb is located at [https://rhoneyager.github.io/libicedb/](/libicedb/).
 
 The GitHub repository for icedb is located at [https://www.github.com/rhoneyager/libicedb](https://www.github.com/rhoneyager/libicedb).
 
