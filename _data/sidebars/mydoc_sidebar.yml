@@ -27,10 +27,6 @@ entries:
       url: /index.html
       output: web, pdf
 
-    - title: Features
-      url: /features.html
-      output: web, pdf
-
     - title: Papers and Talks
       url: /pubs.html
       output: web, pdf
@@ -96,21 +92,25 @@ entries:
       url: /linking.html
       output: web
 
-  - title: Release Notes
+  - title: For Programmers
     output: web, pdf
     folderitems:
 
-    - title: Roadmap
-      url: /roadmap.html
+    - title: Release notes
+      url: /mydoc_release_notes_.html
       output: web, pdf
 
     - title: Changelog
       url: /changelog.html
       output: web, pdf
 
-    - title: 0.4 Release notes
-      url: /mydoc_release_notes_04.html
+    - title: Roadmap
+      url: /roadmap.html
       output: web, pdf
+
+    - title: Source code documentation
+      url: /sourcedocs.html
+      output: web
 
   - title: Database File Structure
     output: web, pdf
