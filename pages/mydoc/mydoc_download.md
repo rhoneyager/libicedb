@@ -13,6 +13,3 @@ folder: mydoc
 
 First download or clone icedb from the [Github repo](https://github.com/rhoneyager/libicedb). Development is ongoing, so cloning the repository probably makes the most sense. However, for anyone unexperienced with git, GitHub or version control, you might just want to download a ZIP file containing the latest copy of the source code. In this case, click the **Clone or download** button, and then click **Download ZIP**.
 
-{% include note.html content="Currently, this repository is **PRIVATE**, so only members of the ibedb development team can access it. If you want access, [send me an email](mailto:ryan@honeyager.info)." %}
-
-
