@@ -1,8 +1,8 @@
-# LIBICEDB
+# ICEDB
 
 ## Synopsis
 
-Libicedb is a library and set of programs that manipulates snow scattering databases.
+icedb is a library and set of programs that manipulates snow scattering databases.
 
 It has a documentation website, located at: [https://rhoneyager.github.io/libicedb/](https://rhoneyager.github.io/libicedb/).
 This site has build instructions, examples, a complete API documentation and more.
@@ -13,5 +13,5 @@ This library is quite new and under heavy development. Expect much to change, an
 
 ## License
 
-See [LICENSE.txt](./LICENSE.txt)
+Released under the GNU AGPL, version 3. See [LICENSE.txt](./LICENSE.txt)
 
