@@ -471,7 +471,7 @@ namespace icedb {
 				size_t numRead = strints_array_to_floats(pa, pb - pa, parser_vals.data(), parser_vals.size(), max_element);
 
 				assert(numRead % 7 == 0);
-				size_t &numPoints = p.required.number_of_particle_scattering_elements;
+				auto &numPoints = p.required.number_of_particle_scattering_elements;
 				numPoints = parser_vals.size() / 7;
 				assert(numPoints == numExpectedPoints);
 				p.optional.particle_scattering_element_number.resize(numPoints);
