@@ -206,7 +206,7 @@ namespace icedb {
 				readFloats(parser_vals, pa, pb);
 
 				assert(parser_vals.size() % 7 == 0);
-				size_t &numPoints = p.required.number_of_particle_scattering_elements;
+				auto &numPoints = p.required.number_of_particle_scattering_elements;
 				numPoints = parser_vals.size() / 7;
 				assert(numPoints == numExpectedPoints);
 				p.optional.particle_scattering_element_number.resize(numPoints);
