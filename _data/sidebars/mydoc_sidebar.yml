@@ -116,8 +116,16 @@ entries:
     output: web, pdf
 
     folderitems:
+    - title: Metadata
+      url: /structs_metadata.html
+      output: web, pdf
+
     - title: Dimensions
       url: /structs_dimensions.html
+      output: web, pdf
+
+    - title: 3-D Shape Structures
+      url: /structs_3d_shapes.html
       output: web, pdf
 
     - title: Physical Particle Properties
@@ -130,10 +138,6 @@ entries:
 
     - title: Extended Scattering Variables
       url: /structs_exv.html
-      output: web, pdf
-
-    - title: Metadata
-      url: /structs_metadata.html
       output: web, pdf
 
   - title: Particle Shapes
