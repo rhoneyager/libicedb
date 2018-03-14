@@ -38,10 +38,11 @@ int main(int argc, char** argv) {
 			options(oall).positional(p).run(), vm);
 		po::notify(vm);
 
-		if (vm.count("help")) {
-			cerr << desc << "\n";
-			return 1;
-		}
+		auto doHelp = [&desc](const std::string &msg) {
+			std::cerr << msg << std::endl << desc << std::endl;
+			exit(1);
+		};
+		if (vm.count("help")) doHelp("");
 
 		double inVal, outVal;
 		string inUnits, outUnits;
@@ -66,11 +67,13 @@ int main(int argc, char** argv) {
 		else {
 			cout << "Specify input units (terminate with 'enter'): ";
 			std::getline(cin, inUnits);
+			if (!inUnits.size()) doHelp("Need to specify input units.");
 		}
 		if (vm.count("output-units")) outUnits = vm["output-units"].as<string>();
 		else{
 			cout << "Specify output units (terminate with 'enter'): ";
 			std::getline(cin, outUnits);
+			if (!outUnits.size()) doHelp("Need to specify output units.");
 		}
 		if ((!vm.count("input") || !vm.count("input-units") || !vm.count("output-units")) & !isSpec) {
 			cout << "Is this a spectral unit conversion (i.e. GHz to mm) [no]? ";

@@ -58,8 +58,7 @@ namespace icedb {
 		}
 		template <class T> options_ptr options::add(const std::string &key, const T &value)
 		{
-			if (hasVal(key)) throw;
-			ICEDB_throw(::icedb::error::error_types::xKeyExists)
+			if (hasVal(key)) ICEDB_throw(::icedb::error::error_types::xKeyExists)
 				.add<std::string>("key", key)
 				.add<T>("newValue", value);
 			return this->setVal<T>(key, value);
