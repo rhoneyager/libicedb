@@ -75,8 +75,16 @@ int main(int argc, char** argv) {
 			std::getline(cin, outUnits);
 			if (!outUnits.size()) doHelp("Need to specify output units.");
 		}
-		if ((!vm.count("input") || !vm.count("input-units") || !vm.count("output-units")) & !isSpec) {
-			cout << "Is this a spectral unit conversion (i.e. GHz to mm) [no]? ";
+		bool hasLenUnits = false;
+		bool hasFreqUnits = false;
+		if (icedb::units::converter(inUnits, "m").isValid()) hasLenUnits = true;
+		if (icedb::units::converter(outUnits, "m").isValid()) hasLenUnits = true;
+		if (icedb::units::converter(inUnits, "Hz").isValid()) hasFreqUnits = true;
+		if (icedb::units::converter(outUnits, "Hz").isValid()) hasFreqUnits = true;
+
+		if (!isSpec && hasLenUnits && hasFreqUnits) {
+		//if ((!vm.count("input") || !vm.count("input-units") || !vm.count("output-units")) && !isSpec) {
+			cout << "Is this an in-vacuo spectral unit conversion (i.e. GHz to mm) [yes]? ";
 			string temp;
 			std::getline(cin, temp);
 			if (temp.size()) {
@@ -94,7 +102,7 @@ int main(int argc, char** argv) {
 						.add<string>("Input _Bool_", temp);
 				}
 			}
-			else isSpec = false;
+			else isSpec = true;
 		}
 
 		std::shared_ptr<icedb::units::converter> cnv;
@@ -109,7 +117,7 @@ int main(int argc, char** argv) {
 			outVal = cnv->convert(inVal);
 			cout << outVal << endl;
 		}
-		else cerr << "Conversion is invalid or unhandled." << endl;
+		else cerr << "Conversion is invalid or unhandled for \"" << inUnits << "\" to \"" << outUnits << "\"." << endl;
 	}
 	catch (std::exception &e) {
 		cerr << "An exception has occurred: " << e.what() << endl;

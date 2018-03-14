@@ -84,12 +84,15 @@ namespace icedb {
 				return i->constructConverter(opts);
 			}
 			// Only return nullptr if unable to find a usable hook.
-			ICEDB_log("units", icedb::logging::ICEDB_LOG_ERROR, "No registered handler for unit conversion found.");
-			ICEDB_throw(icedb::error::error_types::xBadInput)
-				.add<std::string>("Reason", "There is no code which can handle this unit conversion.")
-				.add<std::string>("inUnits", inUnits)
-				.add<std::string>("outUnits", outUnits)
-				;
+			ICEDB_log("units", icedb::logging::ICEDB_LOG_DEBUG_1, "No handler for unit conversion found for "
+				"conversions between " << inUnits << " and " << outUnits << ".");
+			// We don;t want to throw an error here. Only throw if a conversion is actually attempted.
+			// Otherwise, we quash the purpose of isValid().
+			//ICEDB_throw(icedb::error::error_types::xBadInput)
+			//	.add<std::string>("Reason", "There is no code which can handle this unit conversion.")
+			//	.add<std::string>("inUnits", inUnits)
+			//	.add<std::string>("outUnits", outUnits)
+			//	;
 			return nullptr;
 		}
 

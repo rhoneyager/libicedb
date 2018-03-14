@@ -5,7 +5,7 @@
 #include <sstream>
 #include "../icedb/misc/os_functions.h"
 namespace {
-	int logConsoleThreshold = 0;
+	int logConsoleThreshold = icedb::logging::PRIORITIES::ICEDB_LOG_DEBUG_WARNING;
 	int logDebugThreshold = 0;
 	std::string logFile;
 	std::shared_ptr<std::ofstream> lOut;
