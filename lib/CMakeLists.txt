@@ -4,7 +4,7 @@ include(addlib)
 include(generaterc)
 
 # This is a tiny executable consumed by the build system.
-# It reads the HDF5 version ICEDB_LOG_INFOrmation and writes a header
+# It reads the HDF5 version information and writes a header
 # that describes certain unstable aspects of the HDF5 C++
 # interface.
 add_executable(icedb-h5tests related/h5tests/h5tests.cpp)
@@ -132,8 +132,8 @@ set(lib_objs
 	)
 
 # On Windows, when producing a DLL, this generated file
-# will add some ICEDB_LOG_INFOrmation that can be read by Windows
-# Explorer. Version ICEDB_LOG_INFO, basically.
+# will add some information that can be read by Windows
+# Explorer. Version info, basically.
 generaterc("libicedb" "dll"
 	"libicedb"
 	"Scattering utility library"
