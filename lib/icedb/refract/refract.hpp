@@ -67,6 +67,9 @@ namespace icedb {
 		all_providers_p listAllProviders(const std::string &subst);
 		void enumProvider(provider_p p, std::ostream &out = std::cerr);
 		void enumProviders(all_providers_p p, std::ostream &out = std::cerr);
+		void enumSubstances(std::ostream &out = std::cerr);
+
+		provider_p findProviderByName(const std::string &providerName);
 
 		provider_p findProvider(const std::string &subst,
 			bool haveFreq = true, bool haveTemp = true, const std::string &startAt = "");

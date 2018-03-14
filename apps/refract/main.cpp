@@ -8,6 +8,7 @@
 #include <iostream>
 #include <icedb/refract/refract.hpp>
 #include <icedb/units/units.hpp>
+#include <icedb/error.hpp>
 
 int main(int argc, char** argv) {
 	using namespace std;
@@ -23,6 +24,8 @@ int main(int argc, char** argv) {
 			("help,h", "produce help message")
 			("list-all", "List all refractive index providers")
 			("list-subst", po::value<string>(), "List all refractive index providers for a given substance")
+			("list-substs", "List all substances for which refractive indices can be determined")
+			("list-provider", po::value<string>(), "List information about a refractive index provider (e.g. source paper, domain of validity)")
 			("subst", po::value<string>(), "Substance of interest (ice, water)")
 			("freq,f", po::value<double>(), "Frequency")
 			("freq-units", po::value<string>()->default_value("GHz"), "Frequency units")
@@ -53,10 +56,26 @@ int main(int argc, char** argv) {
 			icedb::refract::enumProviders(ps);
 			return 0;
 		}
+		if (vm.count("list-substs")) {
+			icedb::refract::enumSubstances();
+			return 0;
+		}
 		if (vm.count("list-subst")) {
 			string lsubst = vm["list-subst"].as<string>();
 			auto ps = icedb::refract::listAllProviders(lsubst);
+			if (!ps) ICEDB_throw(error::error_types::xNullPointer)
+				.add<std::string>("Reason", "Cannot find any refractive index formulas for this substance")
+				.add<std::string>("Substance", lsubst);
 			icedb::refract::enumProviders(ps);
+			return 0;
+		}
+		if (vm.count("list-provider")) {
+			string lprov = vm["list-provider"].as<string>();
+			auto ps = icedb::refract::findProviderByName(lprov);
+			if (!ps) ICEDB_throw(error::error_types::xNullPointer)
+				.add<std::string>("Reason", "Cannot find this refractive index provider")
+				.add<std::string>("Provider", lprov);
+			icedb::refract::enumProvider(ps);
 			return 0;
 		}
 		if (!vm.count("subst")) doHelp("Must specify a substance.");
@@ -83,8 +102,9 @@ int main(int argc, char** argv) {
 				if (f) {
 					try {
 						f(inFreq, inTemp, m);
+						cout << m << "\twas found using provider " << prov << "." << endl;
 						found = true;
-						break;
+						//break;
 					}
 					catch (std::exception &e) { if (prov == subst) cerr << e.what(); } // Out of range
 				}
@@ -95,8 +115,9 @@ int main(int argc, char** argv) {
 				if (f) {
 					try {
 						f(inFreq, m);
+						cout << m << "\twas found using provider " << prov << "." << endl;
 						found = true;
-						break;
+						//break;
 					}
 					catch (std::exception &e) { if (prov == subst) cerr << e.what(); } // Out of range
 				}
@@ -105,10 +126,10 @@ int main(int argc, char** argv) {
 				continue;
 			}
 		}
-		if (found) {
-			cout << m << "\twas found using provider " << prov << "." << endl;
-		}
-		else {
+		//if (found) {
+		//	cout << m << "\twas found using provider " << prov << "." << endl;
+		//}
+		if (!found) {
 			cerr << "A refractive index provider that could handle the input cannot be found." << endl;
 			return 3;
 		}

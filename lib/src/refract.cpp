@@ -2,6 +2,7 @@
 #include <complex>
 #include <valarray>
 #include <mutex>
+#include <set>
 #include "../icedb/refract/refract.hpp"
 #include "../icedb/refract/refractBase.hpp"
 #include "../icedb/zeros.hpp"
@@ -16,6 +17,7 @@ namespace icedb {
 			all_providers_mp allProvidersSet;
 			std::map<std::string, all_providers_mp> providersSet;
 			std::map<std::string, provider_mp> providersByName;
+			std::set<std::string> substs;
 			void _init() {
 				std::lock_guard<std::mutex> lock(m_refracts);
 				static bool inited = false;
@@ -124,6 +126,7 @@ namespace icedb {
 			block->insert(std::pair<int,provider_mp>(priority,res));
 			implementations::allProvidersSet->insert(std::pair<int, provider_mp>(priority, res));
 			implementations::providersByName[res->name] = res;
+			implementations::substs.emplace(res->substance);
 			return res;
 		}
 		provider_s::provider_s() {}
@@ -154,7 +157,7 @@ namespace icedb {
 		}
 		void enumProvider(provider_p p, std::ostream &out) {
 			if (!p) ICEDB_throw(error::error_types::xNullPointer)
-				.add<std::string>("Reason", "The pointer passed to this function was NULL!");
+				.add<std::string>("Reason", "No provider was passed to this function - instead, a NULL was passed!");
 			out << "Provider:\t" << p->name << "\n"
 				<< "\tSubstance:\t" << p->substance << "\n"
 				<< "\tSource:\t" << p->source << "\n"
@@ -163,7 +166,7 @@ namespace icedb {
 				out << "\tRequirements:\n";
 				for (const auto &r : p->reqs) {
 					out << "\t\tParameter:\t" << r.first
-						<< "\t\t\tRange:\t" << r.second->validRange.first << " - "
+						<< "\t\t\tRange:\t" << r.second->validRange.first << " to "
 						<< r.second->validRange.second << " "
 						<< r.second->parameterUnits << "\n";
 				}
@@ -177,6 +180,23 @@ namespace icedb {
 			for (const auto &i : *(p.get())) {
 				enumProvider(i.second, out);
 			}
+		}
+		void enumSubstances(std::ostream &out) {
+			listAllProviders();
+			out << "Substances:" << std::endl;
+			for (const auto &i : implementations::substs)
+				out << "\t" << i << std::endl;
+		}
+
+		provider_p findProviderByName(const std::string &providerName) {
+			provider_p emptyres;
+			if (!implementations::allProvidersSet) implementations::_init();
+			if (implementations::allProvidersSet->size() == 0) implementations::_init();
+			if (implementations::providersByName.count(providerName)) {
+				provider_p cres = implementations::providersByName.at(providerName);
+				return cres;
+			}
+			return emptyres;
 		}
 
 		provider_p findProvider(const std::string &subst,
