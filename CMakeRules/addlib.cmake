@@ -10,28 +10,34 @@ macro(addlib libname libshared )
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES DEBUG_POSTFIX _Debug${configappend} )
 	set_target_properties( ${libname} PROPERTIES FOLDER "Libs")
 
+	if (DEFINED ICEDB_COMMON_SHARED_LIBS)
+		target_link_libraries(${libname} ${ICEDB_COMMON_SHARED_LIBS})
+	endif()
+
+
 	# This is for determining the build type (esp. used in registry code)
 	target_compile_definitions(${libname} PRIVATE BUILDCONF="${CMAKE_BUILD_TYPE}")
 	target_compile_definitions(${libname} PRIVATE BUILDTYPE=BUILDTYPE_$<CONFIGURATION>)
 	# These two are for symbol export
 	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
-
-	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
-		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-			target_link_libraries(${libname} dl stdc++fs)
-		endif()
+	if (NOT INSTALL_DIR_SUBFOLDERS)
+		INSTALL(TARGETS ${libname}
+			EXPORT icedbTargets
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}
+			LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}
+			ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}
+			COMPONENT Libraries
+			)
+	else()
+		INSTALL(TARGETS ${libname}
+			EXPORT icedbTargets
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
+			LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+			ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+			COMPONENT Libraries
+			)
 	endif()
-	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-		target_link_libraries(${libname} dl stdc++fs)
-	endif()
-	INSTALL(TARGETS ${libname} 
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
-		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-		COMPONENT Plugins)
-	#delayedsigning( ${libname} )
-
 endmacro(addlib libname headername)
 
 macro(storebin objname)
@@ -51,8 +57,15 @@ set_target_properties( ${objname}
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release"
     RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel"
     RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo"
-)
+    )
 
+	#INSTALL(TARGETS ${objname} 
+		#LIBRARY DESTINATION lib/lib${configappend}
+				#			ARCHIVE DESTINATION lib/lib${configappend}
+		#		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
+		#		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+		#		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+		#COMPONENT Libraries)
 endmacro(storebin objname)
 
 macro(storeplugin objname folder)
@@ -85,8 +98,5 @@ macro(addplugin appname foldername folder)
 		COMPONENT Plugins)
 	include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-	IF(DEFINED COMMON_CFLAGS) 
-		set_target_properties(${appname} PROPERTIES COMPILE_FLAGS ${COMMON_CFLAGS})
-	ENDIF()
 	storeplugin(${appname} ${folder})
 endmacro(addplugin appname)

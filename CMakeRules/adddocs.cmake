@@ -3,11 +3,10 @@ macro(adddocs )
 find_package(Doxygen)
 option (BUILD_DOCUMENTATION
     "Build the documentation for this library" OFF)
+option (BUILD_DOCUMENTATION_IN_ALL
+	"Build documentation automatically with 'make all'. Also used for 'make install' and 'make package'" OFF)
 
 if(BUILD_DOCUMENTATION)
-
-    option (BUILD_DOCUMENTATION_IN_ALL
-        "Build documentation automatically with 'make all'. Also used for 'make install' and 'make package'" OFF)
 
     if (NOT DOXYGEN_FOUND)
         message(SEND_ERROR "Documentation build requested but Doxygen is not found.")
@@ -20,7 +19,7 @@ if(BUILD_DOCUMENTATION)
     endif()
 
 
-    configure_file(Doxyfile.in
+    configure_file(docs/Doxyfile.in
         "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
 
     if (BUILD_DOCUMENTATION_IN_ALL)
@@ -36,13 +35,13 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API html documentation with Doxygen" VERBATIM
     )
     # This builds the latex docs
-    add_custom_target(doc-latex ${ALL_FLAG}
-        latex refman.tex
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex
-        COMMENT "Generating API pdf documentation with Doxygen" VERBATIM
-    )
+    #    add_custom_target(doc-latex ${ALL_FLAG}
+    #        latex refman.tex
+    #        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex
+    #        COMMENT "Generating API pdf documentation with Doxygen" VERBATIM
+    #    )
 
-    add_custom_target(docs ${ALL_FLAG} DEPENDS doc-html doc-latex)
+    add_custom_target(docs ${ALL_FLAG} DEPENDS doc-html)
 endif()
 
 if (BUILD_DOCUMENTATION_IN_ALL)
@@ -51,7 +50,7 @@ if (BUILD_DOCUMENTATION_IN_ALL)
     # html
     install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/html/ DESTINATION ${INSTALL_DOC_DIR}/html)
     # pdf
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex/ DESTINATION ${INSTALL_DOC_DIR}/latex)
+    #    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex/ DESTINATION ${INSTALL_DOC_DIR}/latex)
 endif()
 
 endmacro(adddocs )

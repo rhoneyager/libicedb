@@ -1,19 +1,43 @@
-include(signing)
-macro(addapp appname foldername)
+include(addlib)
+#include(signing)
+macro(addapp_base appname foldername)
 	set_target_properties( ${appname} PROPERTIES FOLDER "Apps/${foldername}")
-	INSTALL(TARGETS ${appname} RUNTIME DESTINATION bin/bin${configappend} COMPONENT Applications)
 	include_directories(${CMAKE_CURRENT_BINARY_DIR})
-	IF(DEFINED COMMON_CFLAGS) 
-		set_target_properties(${appname} PROPERTIES COMPILE_FLAGS ${COMMON_CFLAGS})
-	ENDIF()
-if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
-	IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-		target_link_libraries(${appname} dl)
+	if (DEFINED ICEDB_COMMON_EXE_LIBS)
+		target_link_libraries(${appname} ${ICEDB_COMMON_EXE_LIBS})
 	endif()
-endif()
-	storebin(${appname})
-	delayedsigning( ${appname} )
-endmacro(addapp appname)
+	#delayedsigning( ${appname} )
+
+endmacro(addapp_base appname foldername)
+
+macro(addapp appname foldername)
+	addapp_base(${appname} ${foldername})
+	if (NOT INSTALL_DIR_SUBFOLDERS)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}
+			COMPONENT Applications
+			)
+	else()
+		INSTALL(TARGETS ${appname} 
+			CONFIGURATIONS Debug
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Debug
+			COMPONENT Applications
+			)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Release
+			CONFIGURATIONS Release
+			COMPONENT Applications)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/RelWithDebInfo
+			CONFIGURATIONS RelWithDebInfo
+			COMPONENT APPLICATIONS)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/MinSizeRel
+			CONFIGURATIONS MinSizeRel
+			COMPONENT Applications)
+	endif()
+endmacro(addapp appname foldername)
+
 
 macro(add_header_files srcs)
   if( hds )
@@ -21,27 +45,4 @@ macro(add_header_files srcs)
     list(APPEND ${srcs} ${hds})
   endif()
 endmacro(add_header_files srcs)
-
-macro(addbasicapp appname)
-	set(${appname}_LIBRARIES "")
-	set(${appname}_INCLUDE_DIRS "")
-	target_link_libraries (${appname} ${${appname}_LIBRARIES})
-IF(DEFINED COMMON_LIBS )
-	target_link_libraries (${appname} ${COMMON_LIBS})
-ENDIF()
-	include_directories(${CMAKE_CURRENT_BINARY_DIR})
-	include_directories(${${appname}_INCLUDE_DIRS})
-	IF(DEFINED COMMON_CFLAGS) 
-		set_target_properties(${appname} PROPERTIES COMPILE_FLAGS ${COMMON_CFLAGS})
-	ENDIF()
-	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
-		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-			target_link_libraries(${appname} dl)
-		endif()
-	endif()
-	INSTALL(TARGETS ${appname} RUNTIME DESTINATION bin COMPONENT Applications)
-	set_target_properties(${appname} PROPERTIES FOLDER "Apps")
-	delayedsigning( ${appname} )
-endmacro(addbasicapp appname)
-
 

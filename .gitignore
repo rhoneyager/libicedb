@@ -268,3 +268,10 @@ __pycache__/
 *.pyc
 /CMakeSettings.json
 /build2
+/old/related
+/old/related/zlib
+/old/related/UDUNITS-2
+/old/related/netcdf-c
+/old/related/hdf5
+/old/related/eigen
+/old/related/bzip2
