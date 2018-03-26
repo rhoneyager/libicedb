@@ -7,10 +7,6 @@
 #include <map>
 #include <string>
 #include <vector>
-//#include <boost/parameter/keyword.hpp>
-//#include <boost/parameter/name.hpp>
-//#include <boost/parameter/preprocessor.hpp>
-//#include <boost/lexical_cast.hpp>
 #include "../units/units.hpp"
 #include "refractBase.hpp"
 #include "../optionsForwards.hpp"
