@@ -1,4 +1,4 @@
-#define __STDC_WANT_LIB_EXT1__ 1
+#include "../icedb/defs.h"
 #include "../icedb/util.h"
 #include "../icedb/util.hpp"
 #include <cstring>
