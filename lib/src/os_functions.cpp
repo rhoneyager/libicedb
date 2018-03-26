@@ -255,9 +255,9 @@ namespace icedb {
 				{
 					out = std::string(info.dli_fname);
 				}
-                if (!out.size()) {
-                    ICEDB_DEBUG_RAISE_EXCEPTION();
-                }
+				if (!out.size()) {
+					    ICEDB_DEBUG_RAISE_EXCEPTION();
+				}
 				return out;
 			}
 #endif
@@ -329,8 +329,8 @@ namespace icedb {
 				// Has getpwuid_r
 				if (!username.size()) {
 					uid_t uid = geteuid();
-					struct passwd* ps = ICEDB_malloc(sizeof passwd);
-					struct passwd** pres;
+					struct passwd* ps = (passwd*) ICEDB_malloc(sizeof(passwd));
+					struct passwd** pres; // A pointer to the result (or NULL on failure) is stored here.
 					res = getpwuid_r(uid, ps, hname, len, pres);
 					if ((res == 0) && pres) {
 						username = std::string(ps->pw_name);
@@ -360,6 +360,7 @@ namespace icedb {
 				if (res == 0) {
 					const char *homedir = pw.pw_dir;
 					homeDir = std::string(homedir);
+				}
 #else
 				struct passwd* ps = getpwuid(geteuid());
 				if (ps) homeDir = std::string(ps->pw_dir);
@@ -696,7 +697,7 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 #elif defined(__unix__) || defined(__APPLE__)
 	modpath = icedb::os_functions::unix::GetModulePath(ptr);
 #else
-    ICEDB_DEBUG_RAISE_EXCEPTION();
+	ICEDB_DEBUG_RAISE_EXCEPTION();
 #endif
 	ICEDB_COMPAT_strncpy_s(res, sz, modpath.c_str(), modpath.size());
 	return res;
@@ -780,7 +781,13 @@ void ICEDB_getCWDI() {
 	delete[] cd;
 #else
 	char ccwd[4096];
-	getcwd(ccwd, 4096);
+	char* res = getcwd(ccwd, 4096);
+	if (!res) {
+		auto err = ICEDB_error_context_create(ICEDB_ERRORCODES_OS);
+		ICEDB_DEBUG_RAISE_EXCEPTION();
+
+		return ;
+	}
 	cwd = std::string(ccwd);
 #endif
 }
@@ -801,7 +808,8 @@ char* ICEDB_getLibPath(size_t sz, char* res) {
 }
 const char* ICEDB_getLibPathC() {
 	ICEDB_getLibDirI();
-	return libPath.c_str(); }
+	return libPath.c_str();
+}
 char* ICEDB_getAppPath(size_t sz, char* res) {
 	ICEDB_getAppDirI();
 	ICEDB_COMPAT_strncpy_s(res, sz, appPath.c_str(), appPath.size());
@@ -809,7 +817,8 @@ char* ICEDB_getAppPath(size_t sz, char* res) {
 }
 const char* ICEDB_getAppPathC() {
 	ICEDB_getAppDirI(); 
-	return appPath.c_str(); }
+	return appPath.c_str();
+}
 
 void ICEDB_getPluginDirI() {
 	ICEDB_getLibDirI();
@@ -891,6 +900,7 @@ void ICEDB_libEntry(int, char**) {
 	// Query the filesystem to load the remaining plugins
 
 }
+
 void ICEDB_libExit() {
 	using namespace std;
 	if (_consoleTerminated) return;
@@ -914,7 +924,7 @@ void ICEDB_writeDebugString(const char* c) {
 	OutputDebugStringA(c);
 #else
 	// Just write to CERR
-	ICEDB_COMPAT_fprintf_s(stderr, c);
+	ICEDB_COMPAT_fprintf_s(stderr, "%s", c);
 #endif
 }
 
@@ -943,3 +953,4 @@ namespace icedb {
 		const char* getCWD() { ICEDB_getCWDI(); return CWD.c_str(); }
 	}
 }
+
