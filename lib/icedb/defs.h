@@ -102,7 +102,7 @@ ICEDB_BEGIN_DECL_C
 #ifdef _WIN32
 #define ICEDB_OS_WINDOWS
 #endif
-#if !defined(_WIN32) && !defined(SDBR_OS_UNIX) && !defined(SDBR_OS_LINUX)
+#if !defined(_WIN32) && !defined(ICEDB_OS_UNIX) && !defined(ICEDB_OS_LINUX)
 #define ICEDB_OS_UNSUPPORTED
 #endif
 
