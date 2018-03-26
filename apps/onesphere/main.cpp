@@ -1,7 +1,6 @@
 #include <icedb/defs.h>
-/// This is a program that reads datasets from an hdf5 file.
-/// It takes the desired datasets and writes them into the
-/// specified text file or directory.
+/// This is a program that calculates scattering by individual spheres.
+/// This program takes as many options as there are ways to specify target geometry and properties.
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <exception>
@@ -10,6 +9,19 @@
 #include <icedb/units/units.hpp>
 #include <icedb/error.hpp>
 
+namespace std
+{
+	/// Used when listing the program options
+	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec)
+	{
+		for (auto item : vec)
+		{
+			os << item << " ";
+		}
+		return os;
+	}
+}
+
 int main(int argc, char** argv) {
 	using namespace std;
 	int retval = 0;
@@ -17,124 +29,72 @@ int main(int argc, char** argv) {
 		using namespace icedb;
 		namespace po = boost::program_options;
 
-		po::options_description desc("Allowed options"), cmdline("Command-line options"),
+		po::options_description desc("Allowed options"), 
+			subst_opts("Substance options"),
+			unit_opts("Unit options"),
+			environ_opts("Environment options"),
+			scatt_matrix_opts("Scattering matrix options"),
+			scatt_provider_opts("Scattering method options"),
+			cmdline("Command-line options"),
 			config("Config options"), hidden("Hidden options"), oall("all options");
 
-		cmdline.add_options()
-			("help,h", "produce help message")
-			("list-all", "List all refractive index providers")
-			("list-subst", po::value<string>(), "List all refractive index providers for a given substance")
-			("list-substs", "List all substances for which refractive indices can be determined")
-			("list-provider", po::value<string>(), "List information about a refractive index provider (e.g. source paper, domain of validity)")
-			("subst", po::value<string>(), "Substance of interest (ice, water)")
-			("freq,f", po::value<double>(), "Frequency")
-			("freq-units", po::value<string>()->default_value("GHz"), "Frequency units")
-			("temp,T", po::value<double>(), "Temperature")
+		unit_opts.add_options()
+			("length-units", po::value<string>()->default_value("um"), "Units of length (um, mm, cm, m)")
+			("volume-units", po::value<string>()->default_value("um^3"), "Units of volume (um^3, m^3, cm^3)")
+			("frequency-units", po::value<string>()->default_value("GHz"), "Units of frequency (GHz, Hz)")
+			("temperature-units", po::value<string>()->default_value("K"), "Units of temperature (K, degC)")
 			("temp-units", po::value<string>()->default_value("K"), "Temperature units")
 			;
+		subst_opts.add_options()
+			("refractive-index,r", po::value<vector<string> >()->multitoken(), "Refractive indices of target (may instead specify substance and temperature)")
+			("volume,v", po::value<vector<string> >()->multitoken(), "Volumes")
+			("radii,a", po::value<vector<string> >()->multitoken(), "Sphere radii")
+			("diameters,d", po::value<vector<string> >()->multitoken(), "Sphere diameters")
 
-		po::positional_options_description p;
-		p.add("subst", 1);
-		p.add("freq", 1);
-		p.add("freq-units", 1);
-		p.add("temp", 1);
-		p.add("temp-units", 1);
+			("substance,S", po::value<vector<string> >(), "Substances of interest. See icedb-refract for a list of pure substances. If not provided, you must specify refractive indices manually.")
+			("temp,T", po::value<vector<string> >()->multitoken(), "Temperatures. Needed to calculate the refractive indices of certain substances.")
+			;
+		environ_opts.add_options()
+			("wavelength,w", po::value<vector<string> >()->multitoken(), "Incident wavelengths")
+			("frequency,f", po::value<vector<string> >()->multitoken(), "Incident frequencies")
+			("environ-refractive-index", po::value<complex<double> >()->default_value(std::complex<double>(1,0)), 
+				"Refractive index of the ambient environment")
+			;
+		scatt_matrix_opts.add_options()
+			("angles", po::value<string>()->default_value("0:19:180:lin"), "Write the output scattering matrices at these scattering angles")
+			;
+		scatt_provider_opts.add_options()
+			("list-scattering-methods", "Generate a list of implemented methods for calculating scattering by spheres.")
+			("scattering-method,M", po::value<vector<string > >()->default_value(vector<string> ({"mie"}))->multitoken(),
+				"Choose the scattering methods (mie, rayleigh, rayleigh-gans)")
+			;
+		cmdline.add_options()
+			("help,h", "produce help message")
+			("help-all", "produce verbose help for all possible options")
+			("output-cross-sections,o", po::value<string>(), "Output file for cross sections. If no output file, then these are written to stdout.")
+			("output-short", "Write terse output. Useful when writing to screen.")
+			("output-scatt-matrices", po::value<string>(), "Path to an HDF5 file with scattering matrix results. If unspecified, then "
+				"the scattering matrices will not be calculated.")
+			("output-format", po::value<string>()->default_value("text"), "Output cross sections file format: text or HDF5. Must specify output-cross-sections for this to have any effect.")
+			;
+		config.add(unit_opts).add(subst_opts).add(environ_opts).add(scatt_matrix_opts).add(scatt_provider_opts);
+		cmdline.add(config);
 
-		desc.add(cmdline).add(config);
-		oall.add(cmdline).add(config).add(hidden);
+		desc.add(cmdline);
+		oall.add(cmdline).add(hidden);
 
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).
-			options(oall).positional(p).run(), vm);
+			options(oall).run(), vm);
 		po::notify(vm);
 
-		auto doHelp = [&](const std::string &m) { cerr << desc << "\n" << m << endl; exit(1); };
+		auto doHelp = [&](const std::string &m) {
+			cerr << desc << "\n" << m << endl; 
+			exit(1); 
+		};
 		if (vm.count("help") || argc < 2) doHelp("");
+		if (vm.count("help-all")) { cerr << oall << endl; exit(1); }
 
-		if (vm.count("list-all")) {
-			auto ps = icedb::refract::listAllProviders();
-			icedb::refract::enumProviders(ps);
-			return 0;
-		}
-		if (vm.count("list-substs")) {
-			icedb::refract::enumSubstances();
-			return 0;
-		}
-		if (vm.count("list-subst")) {
-			string lsubst = vm["list-subst"].as<string>();
-			auto ps = icedb::refract::listAllProviders(lsubst);
-			if (!ps) ICEDB_throw(error::error_types::xNullPointer)
-				.add<std::string>("Reason", "Cannot find any refractive index formulas for this substance")
-				.add<std::string>("Substance", lsubst);
-			icedb::refract::enumProviders(ps);
-			return 0;
-		}
-		if (vm.count("list-provider")) {
-			string lprov = vm["list-provider"].as<string>();
-			auto ps = icedb::refract::findProviderByName(lprov);
-			if (!ps) ICEDB_throw(error::error_types::xNullPointer)
-				.add<std::string>("Reason", "Cannot find this refractive index provider")
-				.add<std::string>("Provider", lprov);
-			icedb::refract::enumProvider(ps);
-			return 0;
-		}
-		if (!vm.count("subst")) doHelp("Must specify a substance.");
-		string subst = vm["subst"].as<string>();
-		string freqUnits = vm["freq-units"].as<string>();
-		string tempUnits = vm["temp-units"].as<string>();
-		bool hasFreq = false, hasTemp = false;
-		double inFreq = 0, inTemp = 0;
-		if (vm.count("freq")) { hasFreq = true; inFreq = vm["freq"].as<double>(); }
-		if (vm.count("temp")) { hasTemp = true; inTemp = vm["temp"].as<double>(); }
-		complex<double> m(0, 0);
-
-		// If an exact provider is specified by name, only a single entry is returned.
-		// Otherwise, all possible matches are returned.
-		auto provAll = icedb::refract::findProviders(subst, hasFreq, hasTemp);
-		// Iterate until a provider works.
-		bool found = false;
-		string prov;
-		for (const auto &p : *(provAll.get())) {
-			prov = p.second->name;
-			if (p.second->speciality_function_type == icedb::refract::provider_s::spt::FREQTEMP) {
-				icedb::refract::refractFunction_freq_temp_t f;
-				icedb::refract::prepRefract(p.second, freqUnits, tempUnits, f);
-				if (f) {
-					try {
-						f(inFreq, inTemp, m);
-						cout << m << "\twas found using provider " << prov << "." << endl;
-						found = true;
-						//break;
-					}
-					catch (std::exception &e) { if (prov == subst) cerr << e.what(); } // Out of range
-				}
-			}
-			else if (p.second->speciality_function_type == icedb::refract::provider_s::spt::FREQ) {
-				icedb::refract::refractFunction_freqonly_t f;
-				icedb::refract::prepRefract(p.second, freqUnits, f);
-				if (f) {
-					try {
-						f(inFreq, m);
-						cout << m << "\twas found using provider " << prov << "." << endl;
-						found = true;
-						//break;
-					}
-					catch (std::exception &e) { if (prov == subst) cerr << e.what(); } // Out of range
-				}
-			}
-			else {
-				continue;
-			}
-		}
-		//if (found) {
-		//	cout << m << "\twas found using provider " << prov << "." << endl;
-		//}
-		if (!found) {
-			cerr << "A refractive index provider that could handle the input cannot be found." << endl;
-			return 3;
-		}
-		//std::shared_ptr<scatdb::units::converter> cnv;
-		//cnv = std::shared_ptr<scatdb::units::converter>(new scatdb::units::converter(inUnits, outUnits));
 	}
 	catch (std::exception &e) {
 		cerr << "An exception has occurred: " << e.what() << endl;
