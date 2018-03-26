@@ -34,6 +34,7 @@ namespace icedb {
 
 				FloatData_t particle_scattering_element_composition_fractional;
 				Int8Data_t particle_scattering_element_composition_whole;
+				float hint_max_scattering_element_dimension = -1;
 				float particle_scattering_element_spacing = -1;
 				void apply(icedb::Shapes::NewShapeCommonOptionalProperties&) const;
 				//void fromShapeObject(const icedb::Shapes::Shape&);

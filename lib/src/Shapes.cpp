@@ -158,7 +158,7 @@ namespace icedb {
 		Shape_impl::~Shape_impl() {}
 		Shape::~Shape() {}
 		Shape::Shape(const std::string &uid) : particle_unique_id{ uid } {}
-		std::string Shape::_icedb_obj_type_shape_identifier = "shape";
+		const std::string Shape::_icedb_obj_type_shape_identifier = "shape";
 
 		bool Shape::isShape(Groups::Group &owner, const std::string &name) {
 			if (!owner.doesGroupExist(name)) return false;
@@ -256,7 +256,7 @@ namespace icedb {
 			gsl::not_null<const NewShapeRequiredProperties*> required,
 			const NewShapeCommonOptionalProperties* optional)
 		{
-			Expects(required->isValid());
+			Expects(required->isValid(&(std::cerr)));
 			if (required->requiresOptionalPropertiesStruct()) Expects(optional);
 			if (optional) Expects(optional->isValid(required));
 			
@@ -322,11 +322,24 @@ namespace icedb {
 			bool considerInts = (required->particle_scattering_element_coordinates_are_integral) ? true : false;
 			bool useUint16s = false, useUint8s = false;
 			if (considerInts) {
-				const auto bounds = std::minmax_element(required->particle_scattering_element_coordinates.cbegin(), required->particle_scattering_element_coordinates.cend());
-				if (*(bounds.first) > 0) {
-					if (*(bounds.second) < UINT8_MAX - 2) useUint8s = true;
-					else if (*(bounds.second) < UINT16_MAX - 2) useUint16s = true;
+				// This minmax check is very slow.....
+				//const auto bounds = std::minmax_element(required->particle_scattering_element_coordinates.cbegin(), required->particle_scattering_element_coordinates.cend());
+				//if (*(bounds.first) > 0) {
+				//	if (*(bounds.second) < UINT8_MAX - 2) useUint8s = true;
+				//	else if (*(bounds.second) < UINT16_MAX - 2) useUint16s = true;
+				//}
+				float mx = -1;
+				if (optional) {
+					if (optional->hint_max_scattering_element_dimension > 0) {
+						mx = optional->hint_max_scattering_element_dimension > 0;
+					}
 				}
+				if (mx < 0) {
+					auto me = std::max_element(required->particle_scattering_element_coordinates.cbegin(), required->particle_scattering_element_coordinates.cend());
+					mx = *me;
+				}
+				if (mx < UINT8_MAX - 2) useUint8s = true;
+					else if (mx < UINT16_MAX - 2) useUint16s = true;
 			}
 			
 			if (useUint8s) {

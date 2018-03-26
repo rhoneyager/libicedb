@@ -12,19 +12,30 @@ endmacro(addapp_base appname foldername)
 
 macro(addapp appname foldername)
 	addapp_base(${appname} ${foldername})
-	INSTALL(TARGETS ${appname} 
-		CONFIGURATIONS Debug
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Debug
-		)
-	INSTALL(TARGETS ${appname}
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Release
-		CONFIGURATIONS Release)
-	INSTALL(TARGETS ${appname}
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/RelWithDebInfo
-		CONFIGURATIONS RelWithDebInfo)
-	INSTALL(TARGETS ${appname}
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/MinSizeRel
-		CONFIGURATIONS MinSizeRel)
+	if (NOT INSTALL_DIR_SUBFOLDERS)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}
+			COMPONENT Applications
+			)
+	else()
+		INSTALL(TARGETS ${appname} 
+			CONFIGURATIONS Debug
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Debug
+			COMPONENT Applications
+			)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Release
+			CONFIGURATIONS Release
+			COMPONENT Applications)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/RelWithDebInfo
+			CONFIGURATIONS RelWithDebInfo
+			COMPONENT APPLICATIONS)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/MinSizeRel
+			CONFIGURATIONS MinSizeRel
+			COMPONENT Applications)
+	endif()
 endmacro(addapp appname foldername)
 
 

@@ -21,14 +21,23 @@ macro(addlib libname libshared )
 	# These two are for symbol export
 	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
-	INSTALL(TARGETS ${libname}
-		EXPORT icedbTargets
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
-		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-		COMPONENT Libraries
-		)
-
+	if (NOT INSTALL_DIR_SUBFOLDERS)
+		INSTALL(TARGETS ${libname}
+			EXPORT icedbTargets
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}
+			LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}
+			ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}
+			COMPONENT Libraries
+			)
+	else()
+		INSTALL(TARGETS ${libname}
+			EXPORT icedbTargets
+			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
+			LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+			ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+			COMPONENT Libraries
+			)
+	endif()
 endmacro(addlib libname headername)
 
 macro(storebin objname)

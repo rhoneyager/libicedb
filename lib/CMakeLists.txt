@@ -75,12 +75,60 @@ set(hdf_objs
 	private/hdf5_supplemental.hpp
 	private/hdf5_load.h
 	src/export-hdf5.cpp)
+set(units_objs
+	icedb/units/units.hpp
+	icedb/units/unitsPlugins.hpp
+	private/unitsBackend.hpp
+	src/units.cpp
+	src/unitsPlugins.cpp
+	src/unitsSimple.cpp
+	)
+set(refract_objs
+	icedb/refract/refract.hpp
+	icedb/refract/refractBase.hpp
+	icedb/refract/refractBoost.hpp
+	private/refractBackend.hpp
+	src/refract.cpp
+	src/refractImpl.cpp
+	src/refractStore.cpp
+	)
+set(versioning_objs
+	icedb/versioning/versioning.hpp
+	icedb/versioning/versioningForwards.h
+	icedb/versioning/versioningForwards.hpp
+	src/versioning.cpp)
+set(error_objs
+	icedb/error.h
+	icedb/error.hpp
+	icedb/errorCodes.h
+	icedb/errorCodes.hpp
+	icedb/error_context.h
+	icedb/errorTypes.hpp
+	src/error.cpp
+	src/errorCodes.cpp
+	src/errorTypes.cpp
+	src/error_context.cpp
+)
 set(lib_objs
 	icedb/Data_Types.hpp
 	icedb/defs.h
+	icedb/optionsForwards.hpp
 	icedb/util.hpp
+	icedb/util.h
+	icedb/logging.hpp
+	icedb/splitSet.hpp
+	icedb/zeros.hpp
+	icedb/misc/os_functions.h
+	icedb/misc/os_functions.hpp
+	private/linterp.h
 	private/resource.h
+	private/options.hpp
+	src/logging.cpp
+	src/options.cpp
+	src/os_functions.cpp
+	src/splitSet.cpp
 	src/util.cpp
+	src/zeros.cpp
 	)
 
 # Internal filesystem features
@@ -101,14 +149,19 @@ generaterc("libicedb" "dll"
 source_group("GSL" FILES ${gsl_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
+source_group("Errors" FILES ${error_objs})
 source_group("Groups" FILES ${grp_objs})
 source_group("Attributes" FILES ${att_objs})
 source_group("Tables" FILES ${tbl_objs})
 source_group("Databases" FILES ${db_objs})
 source_group("HDF5" FILES ${hdf_objs})
+source_group("Units" FILES ${units_objs})
+source_group("Refract" FILES ${refract_objs})
+source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
 	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
+	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
 	${related_cmake_objects}
 	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
     "${CMAKE_BINARY_DIR}/cmake-settings.h")

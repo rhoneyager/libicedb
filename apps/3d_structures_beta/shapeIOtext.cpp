@@ -50,6 +50,7 @@ namespace icedb {
 					p.particle_scattering_element_composition_whole = particle_scattering_element_composition_whole;
 
 				p.particle_scattering_element_spacing = this->particle_scattering_element_spacing;
+				p.hint_max_scattering_element_dimension = this->hint_max_scattering_element_dimension;
 			}
 			icedb::Shapes::Shape::Shape_Type ShapeDataBasic::toShape(
 				const std::string &name, std::shared_ptr<H5::Group> grp) const

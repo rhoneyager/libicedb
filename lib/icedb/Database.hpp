@@ -10,7 +10,9 @@
 #include "Group.hpp"
 
 namespace icedb {
+	/// Everything related to opening and manipulating icedb databases
 	namespace Databases {
+
 		class Database {
 		protected:
 			Database();

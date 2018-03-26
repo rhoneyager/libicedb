@@ -48,7 +48,7 @@ ICEDB_BEGIN_DECL_C
 /* Detection of the operating system and compiler version. Used to declare symbol export / import. */
 
 /* Declare the feature sets that are supported */
-#define ICEDB_FEATURE_GZIP 0 /* Auto-detection of gzip. Needed for hdf5 file storage. */
+//#define ICEDB_FEATURE_GZIP 0 /* Auto-detection of gzip. Needed for hdf5 file storage. */
 
 
 /* Symbol export / import macros */
@@ -102,7 +102,7 @@ ICEDB_BEGIN_DECL_C
 #ifdef _WIN32
 #define ICEDB_OS_WINDOWS
 #endif
-#if !defined(_WIN32) && !defined(SDBR_OS_UNIX) && !defined(SDBR_OS_LINUX)
+#if !defined(_WIN32) && !defined(ICEDB_OS_UNIX) && !defined(ICEDB_OS_LINUX)
 #define ICEDB_OS_UNSUPPORTED
 #endif
 
@@ -143,6 +143,24 @@ ICEDB_BEGIN_DECL_C
 #endif
 #endif
 
+#define ICEDB_WIDEN2(x) L ## x
+#define ICEDB_WIDEN(x) ICEDB_WIDEN2(x)
+/* Global exception raising code (invokes debugger) */
+ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A(const char*, int, const char*);
+ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, int, const wchar_t*);
+#define ICEDB_DEBUG_RAISE_EXCEPTION() ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC( ICEDB_WIDEN(__FILE__), (int)__LINE__, ICEDB_WIDEN(ICEDB_DEBUG_FSIG));
+
+#define ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A
+/* Global error codes. */
+#define ICEDB_GLOBAL_ERROR_TODO 999
+#if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
+#define ICEDB_USING_SECURE_STRINGS 1
+#define ICEDB_DEFS_COMPILER_HAS_FPRINTF_S
+#define ICEDB_DEFS_COMPILER_HAS_FPUTS_S
+#else
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 /* Thread local storage stuff */
 #ifdef _MSC_FULL_VER
 #define ICEDB_THREAD_LOCAL __declspec( thread )
@@ -154,7 +172,9 @@ ICEDB_BEGIN_DECL_C
 // Compiler interface warning suppression
 #if defined _MSC_FULL_VER
 #pragma warning(push)
-#pragma warning( disable : 4251 )
+#pragma warning( disable : 4003 ) // Bug in boost with VS2016.3
+#pragma warning( disable : 4251 ) // DLL interface
+#pragma warning( disable : 4275 ) // DLL interface
 #endif
 
 /// Pointer to an object that is modfied by a function
@@ -168,7 +188,9 @@ ICEDB_END_DECL_C
 
 #ifndef ICEDB_NO_ERRATA
 // Boost bug with C++17 requires this define. See https://stackoverflow.com/questions/41972522/c2143-c2518-when-trying-to-compile-project-using-boost-multiprecision
-#define _HAS_AUTO_PTR_ETC 1
+#ifndef _HAS_AUTO_PTR_ETC
+#define _HAS_AUTO_PTR_ETC	(!_HAS_CXX17)
+#endif /* _HAS_AUTO_PTR_ETC */
 #endif
 
 #endif

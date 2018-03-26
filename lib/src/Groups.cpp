@@ -10,7 +10,7 @@ namespace icedb {
 		Group::Group(const std::string &name) : name{ name } {}
 		Group_impl::Group_impl() : Group() {}
 
-		std::string Group::_icedb_obj_type_identifier = { "_icedb_obj_type" };
+		std::string const Group::_icedb_obj_type_identifier = { "_icedb_obj_type" };
 
 		Group::~Group() {}
 
