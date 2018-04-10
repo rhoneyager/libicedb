@@ -4,7 +4,7 @@
 #include "../icedb/defs.h"
 #include "../private/options.hpp"
 #include "../icedb/logging.hpp"
-#include "../icedb/error.hpp"
+#include "../icedb/error/error.hpp"
 
 namespace icedb {
 	namespace registry {

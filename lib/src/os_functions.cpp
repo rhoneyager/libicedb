@@ -35,8 +35,8 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "../icedb/error.h"
-#include "../icedb/error_context.h"
+#include "../icedb/error/error.h"
+#include "../icedb/error/error_context.h"
 #include "../icedb/misc/os_functions.h"
 #include "../icedb/misc/os_functions.hpp"
 //#include "../icedb/dlls/dlls.h"

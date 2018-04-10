@@ -1,7 +1,7 @@
-#include "../icedb/error.hpp"
+#include "../icedb/error/error.hpp"
 #include "../private/options.hpp"
-#include "../icedb/error_context.h"
-#include "../icedb/error.h"
+#include "../icedb/error/error_context.h"
+#include "../icedb/error/error.h"
 #include "../icedb/util.h"
 #include <cstdio>
 #include <cstring>

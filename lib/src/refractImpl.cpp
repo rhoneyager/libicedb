@@ -10,7 +10,7 @@
 #include "../icedb/zeros.hpp"
 #include "../icedb/units/units.hpp"
 #include "../private/linterp.h"
-#include "../icedb/error.hpp"
+#include "../icedb/error/error.hpp"
 #include "../icedb/logging.hpp"
 
 namespace {

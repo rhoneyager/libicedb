@@ -6,7 +6,7 @@
 #include "../icedb/units/unitsPlugins.hpp"
 #include "../private/unitsBackend.hpp"
 #include "../icedb/logging.hpp"
-#include "../icedb/error.hpp"
+#include "../icedb/error/error.hpp"
 #include "../private/options.hpp"
 
 namespace icedb {

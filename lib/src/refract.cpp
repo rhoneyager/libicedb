@@ -7,7 +7,7 @@
 #include "../icedb/refract/refractBase.hpp"
 #include "../icedb/zeros.hpp"
 #include "../icedb/units/units.hpp"
-#include "../icedb/error.hpp"
+#include "../icedb/error/error.hpp"
 #include "../icedb/logging.hpp"
 
 namespace icedb {

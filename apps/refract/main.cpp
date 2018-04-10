@@ -8,7 +8,7 @@
 #include <iostream>
 #include <icedb/refract/refract.hpp>
 #include <icedb/units/units.hpp>
-#include <icedb/error.hpp>
+#include <icedb/error/error.hpp>
 
 int main(int argc, char** argv) {
 	using namespace std;

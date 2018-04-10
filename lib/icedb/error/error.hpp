@@ -1,9 +1,9 @@
 #pragma once
-#include "defs.h"
+#include "../defs.h"
 #include <exception>
 #include <memory>
 #include <string>
-#include "optionsForwards.hpp"
+#include "../optionsForwards.hpp"
 #include "errorTypes.hpp"
 #include "error.h"
 

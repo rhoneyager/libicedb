@@ -1,7 +1,7 @@
 #pragma once
 #ifndef ICEDB_H_ERROR
 #define ICEDB_H_ERROR
-#include "defs.h"
+#include "../defs.h"
 #include "errorCodes.h"
 #include <stdio.h>
 #include <stdint.h>

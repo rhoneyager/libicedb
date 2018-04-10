@@ -4,7 +4,7 @@
 #include <complex>
 #include <functional>
 
-#include "error.hpp"
+#include "error/error.hpp"
 
 namespace icedb {
 

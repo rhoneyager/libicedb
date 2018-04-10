@@ -9,7 +9,7 @@
 #include <string>
 #include <icedb/refract/refract.hpp>
 #include <icedb/units/units.hpp>
-#include <icedb/error.hpp>
+#include <icedb/error/error.hpp>
 #include <icedb/splitSet.hpp>
 
 namespace std

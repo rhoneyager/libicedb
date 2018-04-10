@@ -1,4 +1,4 @@
-#include "../icedb/errorCodes.h"
+#include "../icedb/error/errorCodes.h"
 
 ICEDB_SYMBOL_PRIVATE const char* ICEDB_ERRORCODES_MAP[ICEDB_ERRORCODES_TOTAL] =
 {

@@ -2,7 +2,7 @@
 #include "../icedb/util.h"
 #include <string.h>
 #include <stdlib.h>
-#include "../icedb/error_context.h"
+#include "../icedb/error/error_context.h"
 #include "../icedb/util.h"
 
 ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context = NULL;

@@ -104,12 +104,12 @@ set(versioning_objs
 	icedb/versioning/versioningForwards.hpp
 	src/versioning.cpp)
 set(error_objs
-	icedb/error.h
-	icedb/error.hpp
-	icedb/errorCodes.h
-	icedb/errorCodes.hpp
-	icedb/error_context.h
-	icedb/errorTypes.hpp
+	icedb/error/error.h
+	icedb/error/error.hpp
+	icedb/error/errorCodes.h
+	icedb/error/errorCodes.hpp
+	icedb/error/error_context.h
+	icedb/error/errorTypes.hpp
 	src/error.cpp
 	src/errorCodes.cpp
 	src/errorTypes.cpp

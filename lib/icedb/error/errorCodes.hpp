@@ -2,7 +2,7 @@
 #ifndef ICEDB_HPP_ERRORCODES
 #define ICEDB_HPP_ERRORCODES
 
-#include "defs.h"
+#include "../defs.h"
 #include "errorCodes.h"
 
 ICEDB_BEGIN_DECL_CPP

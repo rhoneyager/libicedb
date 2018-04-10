@@ -3,7 +3,7 @@
 #include "../private/unitsBackend.hpp"
 #include "../icedb/units/unitsPlugins.hpp"
 #include "../private/options.hpp"
-#include "../icedb/error.hpp"
+#include "../icedb/error/error.hpp"
 #include "../icedb/logging.hpp"
 
 namespace icedb {

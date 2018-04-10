@@ -2,8 +2,8 @@
 #ifndef ICEDB_H_ERRORCODES
 #define ICEDB_H_ERRORCODES
 
-#include "defs.h"
-#include <wchar.h>
+#include "../defs.h"
+//#include <wchar.h>
 ICEDB_BEGIN_DECL
 
 	enum ICEDB_ERRORCODES {

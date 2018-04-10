@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "../icedb/splitSet.hpp"
-#include "../icedb/error.hpp"
+#include "../icedb/error/error.hpp"
 
 #pragma warning( disable : 4244 ) // lots of template math involves doubles, and I'm sick of static casting
 
