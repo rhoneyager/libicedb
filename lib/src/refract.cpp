@@ -110,7 +110,7 @@ namespace icedb {
 		provider_mp provider_s::addReq(const std::string &name, const std::string &units,
 			double low, double high) {
 			auto res = this->shared_from_this();
-			auto newreq = requirement_s::generate(name, units, low, high);
+			auto newreq = Formulas::requirement_s::generate(name, units, low, high);
 			reqs[name] = newreq;
 			return res;
 		}
@@ -131,17 +131,7 @@ namespace icedb {
 		}
 		provider_s::provider_s() {}
 		provider_s::~provider_s() {}
-		requirement_p requirement_s::generate(
-			const std::string &name, const std::string& units,
-			double low, double high) {
-			std::shared_ptr<requirement_s> res(new requirement_s);
-			res->parameterName = name;
-			res->parameterUnits = units;
-			res->hasValidRange = true;
-			res->validRange = std::pair<double, double>(low, high);
-			return res;
-		}
-
+		
 		all_providers_p listAllProviders() {
 			if (!implementations::allProvidersSet) implementations::_init();
 			if (implementations::allProvidersSet->size() == 0) implementations::_init();

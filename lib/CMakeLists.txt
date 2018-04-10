@@ -86,7 +86,9 @@ set(units_objs
 set(conversion_objs
 	icedb/conversions/density.hpp
 	icedb/conversions/size.hpp
+	icedb/formulas/requirements.hpp
 	src/density.cpp
+	src/formula-requirements.cpp
 	src/size.cpp
 	)
 set(refract_objs

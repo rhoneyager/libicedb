@@ -10,20 +10,10 @@
 #include "../units/units.hpp"
 #include "refractBase.hpp"
 #include "../optionsForwards.hpp"
-
+#include "../formulas/requirements.hpp"
 namespace icedb {
 	namespace refract {
-		struct requirement_s;
-		typedef std::shared_ptr<const requirement_s> requirement_p;
-		struct requirement_s {
-			std::string parameterName;
-			std::string parameterUnits;
-			bool hasValidRange;
-			std::pair<double, double> validRange;
-			static requirement_p generate(
-				const std::string &name, const std::string& units,
-				double low, double high);
-		};
+		
 		struct provider_s;
 		typedef std::shared_ptr<provider_s> provider_mp;
 		typedef std::shared_ptr<const provider_s> provider_p;
@@ -36,7 +26,7 @@ namespace icedb {
 			std::string substance;
 			std::string source;
 			std::string notes;
-			std::map<std::string, requirement_p> reqs;
+			std::map<std::string, Formulas::requirement_p> reqs;
 			provider_mp addReq(const std::string &name, const std::string &units,
 				double low, double high);
 			provider_mp registerFunc(int priority = 0);

@@ -23,6 +23,8 @@ namespace icedb {
 		**/
 		namespace Parameters {
 			namespace Base {
+				/// \brief These are the base parameters, common to all object geometries.
+				/// \note There is no SolidEquivalentRadius. See SolidSphereRadius.
 				enum BaseParamName : ParamName {
 					// These parameters describe a fully-solid object.
 					// A fully solid object cannot be "squeezed" into a smaller, more dense shape.
@@ -39,19 +41,25 @@ namespace icedb {
 					MixedDensity, ///< The bulk "density" of the object.
 					MixedVolumeFraction, ///< The ratio of Solid Volume / Mixed Volume.
 					MixedEquivalentRadius, ///< Radius of an equal-mixed-density sphere
-
+					
 					NUM_BASE_PARAMS
 				};
 			}
+			/// \todo Implementation is progressing
 			namespace RegularEllipsoids {
 				enum RegularEllipsoidParamName : ParamName {
 					// Non-spherical shapes:
-					AspectRatio = Base::NUM_BASE_PARAMS+1, ///< Under 1 for oblate (polar < equatorial) , over 1 for prolate (equatorial < polar).
+					AspectRatio = Base::NUM_BASE_PARAMS, ///< Under 1 for oblate (polar < equatorial) , over 1 for prolate (equatorial < polar).
 					MixedSemiPolarAxis, ///< Half-length of the axis of rotational symmetry.
 					MixedSemiEquatorialAxis, ///< Half-length of the non-rotationally-symmetric axis.
 					SolidSemiPolarAxis, ///< Half-length of the axis of rotational symmetry of an equivalent solid object
 					SolidSemiEquatorialAxis, ///< Half-length of the axis of rotational symmetry of an equivalent solid object
-					// There is no SolidEquivalentRadius. See SolidSphereRadius.
+					MixedSemiMajorAxis, ///< Half-length of the longest axis.
+					MixedSemiMinorAxis, ///< Half-length of the shorter axis.
+					SolidSemiMajorAxis, ///< Half-length of the longest axis.
+					SolidSemiMinorAxis, ///< Half-length of the shorter axis.
+
+					NUM_ELLIPSOID_PARAMS
 				};
 			}
 		}
