@@ -23,14 +23,43 @@ namespace icedb {
 			std::set<std::string> &expanded,
 			const std::map<std::string, std::string> *aliases);
 
-		/// Shortcut that already passes parsed ICEDB_LOG_INFOrmation
+		/** As return value **/
+		template <class T>
+		std::set<T> splitSet(
+			const std::string &instr,
+			const std::map<std::string, std::string> *aliases)
+		{
+			std::set<T> expanded;
+			splitSet<T>(instr, expanded, aliases);
+			return expanded;
+		}
+		template <class T>
+		std::set<T> splitSet(
+			const std::string &instr)
+		{
+			std::set<T> expanded;
+			splitSet<T>(instr, expanded, nullptr);
+			return expanded;
+		}
+
+		/// Shortcut that already passes parsed information
 		template <class T>
 		void splitSet(
 			const T &start, const T &end, const T &interval,
 			const std::string &specializer,
 			std::set<T> &expanded);
 
-		/// Extracts ICEDB_LOG_INFOrmation from interval notation
+		/** As return value **/
+		template <class T>
+		std::set<T> splitSet(
+			const T &Tstart, const T &Tend, const T &Tinterval, const std::string &Tspecializer)
+		{
+			std::set<T> expanded;
+			splitSet<T>(Tstart, Tend, Tinterval, Tspecializer, expanded);
+			return expanded;
+		}
+
+		/// Extracts information from interval notation
 		template <class T>
 		void extractInterval(
 			const std::string &instr,
@@ -43,15 +72,44 @@ namespace icedb {
 		**/
 		void splitVector(
 			const std::string &instr, std::vector<std::string> &out, char delim = '\0');
+		inline std::vector<std::string> splitVector(const std::string &instr, char delim = '\0')
+		{
+			std::vector<std::string> res;
+			splitVector(instr, res, delim);
+			return res;
+		}
 		inline void splitNullVector(
-			const std::string &instr, std::vector<std::string> &out) { splitVector(instr, out); }
+			const std::string &instr, std::vector<std::string> &out) {
+			splitVector(instr, out, '\0');
+		}
 
 		/** \brief Convenience function to split a null-separated string list into a map of strings.
 		*
-		* Commonly-used to split up the results of a Ryan_Debug::ProcessICEDB_LOG_INFO environment structure.
+		* Commonly-used to split up the results of a Ryan_Debug::ProcessInfo environment structure.
 		**/
 		void splitNullMap(
 			const std::string &instr, std::map<std::string, std::string> &out);
+
+		inline std::map<std::string, std::string> splitNullMap(const std::string &instr)
+		{
+			std::map<std::string, std::string> res;
+			splitNullMap(instr, res);
+			return res;
+		}
+
+		/// Convert an interval into range notation
+		template <class T>
+		void stringifyRange(const T &Tstart, const T &Tend, const T &Tinterval,
+			const std::string &Tspecializer, std::string &out);
+		template <class T>
+		std::string stringifyRange(const T &Tstart, const T &Tend, const T &Tinterval,
+			const std::string &Tspecializer)
+		{
+			std::string res;
+			stringifyRange<T>(Tstart, Tend, Tinterval, Tspecializer, res);
+			return res;
+		}
+
 
 
 		/** \brief Class to define and search on intervals.

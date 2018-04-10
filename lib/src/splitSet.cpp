@@ -30,6 +30,7 @@ namespace icedb {
 			out = os.str();
 		}
 
+		
 #define DOTYPES(f) f(int); f(float); f(double); f(long); f(long long); \
 	f(unsigned int); f(unsigned long); f(unsigned long long);
 
@@ -45,9 +46,9 @@ namespace icedb {
 			end = boost::lexical_cast<double>(Tend);
 			interval = boost::lexical_cast<double>(Tinterval);
 			std::string specializer(Tspecializer);
-			std::transform(specializer.begin(),specializer.end(),specializer.begin(),::tolower);
+			std::transform(specializer.begin(), specializer.end(), specializer.begin(), ::tolower);
 			std::string srange;
-			stringifyRange(Tstart,Tend,Tinterval,Tspecializer,srange);
+			stringifyRange(Tstart, Tend, Tinterval, Tspecializer, srange);
 
 			if (interval < 0) {
 				ICEDB_throw(error::error_types::xInvalidRange)
@@ -71,21 +72,23 @@ namespace icedb {
 						.template add<T>("Tend", Tend)
 						.template add<T>("Tinterval", Tinterval);
 				}
-				for (double j=start;j<=end+(interval/100.0);j+=interval)
+				for (double j = start; j <= end + (interval / 100.0); j += interval)
 				{
-					if (expanded.count((T) j) == 0)
-						expanded.insert((T) j);
+					if (expanded.count((T)j) == 0)
+						expanded.insert((T)j);
 				}
-			} else if (specializer == "lin") {
+			}
+			else if (specializer == "lin") {
 				// Linear spacing
 				double increment = (end - start) / (interval); // so interval of 1 gives midpoint
-				if (!increment) expanded.insert((T) start);
-				for (double j=start+(increment/2.0); j<end+(increment/100.0);j+=increment)
+				if (!increment) expanded.insert((T)start);
+				for (double j = start + (increment / 2.0); j < end + (increment / 100.0); j += increment)
 				{
-					if (expanded.count((T) j) == 0)
-						expanded.insert((T) j);
+					if (expanded.count((T)j) == 0)
+						expanded.insert((T)j);
 				}
-			} else if (specializer == "log") {
+			}
+			else if (specializer == "log") {
 				if (start == 0 || end == 0)
 					ICEDB_throw(error::error_types::xDivByZero)
 					.add<std::string>("range-name", srange)
@@ -94,17 +97,18 @@ namespace icedb {
 					.template add<T>("Tstart", Tstart)
 					.template add<T>("Tend", Tend)
 					.template add<T>("Tinterval", Tinterval);
-				double is = log10( (double) start); 
-				double ie = log10( (double) end); 
+				double is = log10((double)start);
+				double ie = log10((double)end);
 				double increment = (ie - is) / (interval);
-				if (!increment) expanded.insert((T) start);
-				for (double j=is+(increment/2.0); j<ie+(increment/100.0);j+=increment)
+				if (!increment) expanded.insert((T)start);
+				for (double j = is + (increment / 2.0); j < ie + (increment / 100.0); j += increment)
 				{
-					double k = pow((double) 10.0, (double) j);
-					if (expanded.count((T) k) == 0)
-						expanded.insert((T) k);
+					double k = pow((double) 10.0, (double)j);
+					if (expanded.count((T)k) == 0)
+						expanded.insert((T)k);
 				}
-			} else if (specializer == "inv") {
+			}
+			else if (specializer == "inv") {
 				if (start == 0 || end == 0)
 					ICEDB_throw(error::error_types::xDivByZero)
 					.add<std::string>("range-name", srange)
@@ -113,24 +117,25 @@ namespace icedb {
 					.template add<T>("Tstart", Tstart)
 					.template add<T>("Tend", Tend)
 					.template add<T>("Tinterval", Tinterval);
-				double is = 1.0 / start; 
-				double ie = 1.0 / end; 
+				double is = 1.0 / start;
+				double ie = 1.0 / end;
 				double increment = (is - ie) / (interval);
-				if (!increment) expanded.insert((T) start);
-				for (double j=ie+(increment/2.0); j<is+(increment/100.0);j+=increment)
+				if (!increment) expanded.insert((T)start);
+				for (double j = ie + (increment / 2.0); j < is + (increment / 100.0); j += increment)
 				{
 					double k = (1.0) / j;
-					if (expanded.count((T) k) == 0)
-						expanded.insert((T) k);
+					if (expanded.count((T)k) == 0)
+						expanded.insert((T)k);
 				}
-			} else if (specializer == "cos") {
+			}
+			else if (specializer == "cos") {
 				// Linear in cos
 				// start, end are in degrees
 				const double pi = boost::math::constants::pi<double>();
-				int ai = (int) (interval) % 2;
+				int ai = (int)(interval) % 2;
 				double cs = cos(start * pi / 180.0);
 				double ce = cos(end * pi / 180.0);
-				double increment = (ai) ? (ce - cs) / (interval-1) : (ce - cs) / (interval);
+				double increment = (ai) ? (ce - cs) / (interval - 1) : (ce - cs) / (interval);
 				if (increment == 0) expanded.insert(start);
 				if (increment != increment) // nan check - occurs when selecting only one value, and bounds are the same
 				{
@@ -140,20 +145,21 @@ namespace icedb {
 				if (increment < 0)
 				{
 					increment *= -1.0;
-					std::swap(cs,ce);
+					std::swap(cs, ce);
 				}
 				// For even n, divide into intervals and use the midpoint of the interval.
 				// For odd n, use the endpoints. Note that the weights for orientations 
 				// (not computed here) will be different for the two choices.
-				if (!ai) cs += increment/2.0;
-				for (double j=cs; j<ce+(increment/10.0);j+=increment)
+				if (!ai) cs += increment / 2.0;
+				for (double j = cs; j < ce + (increment / 10.0); j += increment)
 				{
 					// max and min to avoid j>1 and j<-1 error from rounding
-					double k = (acos((double) max(min(j,1.0),-1.0)) * 180.0 / pi);
-					if (expanded.count((T) k) == 0)
-						expanded.insert((T) k);
+					double k = (acos((double)max(min(j, 1.0), -1.0)) * 180.0 / pi);
+					if (expanded.count((T)k) == 0)
+						expanded.insert((T)k);
 				}
-			} else {
+			}
+			else {
 				ICEDB_throw(error::error_types::xInvalidRange)
 					.add<std::string>("range-name", srange)
 					.add<std::string>("specializer-type", specializer)
@@ -163,6 +169,10 @@ namespace icedb {
 					.template add<T>("Tinterval", Tinterval);
 			}
 		}
+
+#define SPEC_STRINGIFYRANGE(T) \
+	template  DL_ICEDB void stringifyRange<T>(const T&, const T&, const T&, const std::string&, std::string&);
+		DOTYPES(SPEC_STRINGIFYRANGE);
 
 #define SPEC_SPLITSET_A(T) \
 	template DL_ICEDB void splitSet<T>(const T&, const T&, \
@@ -188,7 +198,7 @@ namespace icedb {
 			boost::char_separator<char> seprange(":/");
 			bool isRange = false;
 			if (instr.find('/') != string::npos) { isRange = true; specializer = "range"; }
-			tokenizer trange(instr,seprange);
+			tokenizer trange(instr, seprange);
 			vector<T> range;
 			size_t i = 0;
 			for (auto rt = trange.begin(); rt != trange.end(); rt++, i++)
@@ -199,7 +209,8 @@ namespace icedb {
 					if (i < 3)
 					{
 						range.push_back(boost::lexical_cast<T>(s));
-					} else {
+					}
+					else {
 						specializer = s;
 					}
 				}
@@ -222,17 +233,19 @@ namespace icedb {
 				end = range[0];
 				interval = 0;
 				num = 1;
-			} else {
+			}
+			else {
 				start = range[0];
-				end = range[range.size()-1];
+				end = range[range.size() - 1];
 				interval = 0;
 				if (specializer.size())
 				{
-					if (range.size() > 2) num = (size_t) range[1];
-				} else {
+					if (range.size() > 2) num = (size_t)range[1];
+				}
+				else {
 					if (range.size() > 2) interval = range[1];
 					// Linear spacing, starting at start.
-					num = (size_t) ( ( (end - start) / interval) + 1);
+					num = (size_t)(((end - start) / interval) + 1);
 				}
 			}
 		}
@@ -261,7 +274,7 @@ namespace icedb {
 			boost::char_separator<char> sep(",");
 			boost::char_separator<char> seprange(":");
 			{
-				tokenizer tcom(instr,sep);
+				tokenizer tcom(instr, sep);
 				for (auto ot = tcom.begin(); ot != tcom.end(); ot++)
 				{
 					// At this junction, do any alias substitution
@@ -275,9 +288,10 @@ namespace icedb {
 						ssubst = aliases->at(*ot);
 						// Recursively call splitSet to handle bundles of aliases
 						splitSet<T>(ssubst, expanded, aliases);
-					} else { 
+					}
+					else {
 						// Separated based on commas. Expand for dashes and colons
-						tokenizer trange(*ot,seprange);
+						tokenizer trange(*ot, seprange);
 						vector<T> range;
 						string specializer;
 						size_t i = 0;
@@ -289,7 +303,8 @@ namespace icedb {
 								if (i < 3)
 								{
 									range.push_back(boost::lexical_cast<T>(s));
-								} else {
+								}
+								else {
 									specializer = s;
 								}
 							}
@@ -305,11 +320,12 @@ namespace icedb {
 						{
 							if (expanded.count(range[0]) == 0)
 								expanded.insert(range[0]);
-						} else {
+						}
+						else {
 							double start, end = 0, interval = 1;
-							start = (double) range[0];
-							end = (double) range[range.size()-1];
-							if (range.size() > 2) interval = (double) range[1];
+							start = (double)range[0];
+							end = (double)range[range.size() - 1];
+							if (range.size() > 2) interval = (double)range[1];
 
 							// I'm moving the logic to the other template definition, as it 
 							// let's me split stuff without casts back to strings.
@@ -320,7 +336,8 @@ namespace icedb {
 			}
 		}
 
-		template <> void splitSet<std::string>(const std::string &instr, std::set<std::string> &expanded,
+		template <> void splitSet<std::string>(const std::string &instr,
+			std::set<std::string> &expanded,
 			const std::map<std::string, std::string> *aliases)
 		{
 			using namespace std;
@@ -334,7 +351,7 @@ namespace icedb {
 			std::map<std::string, std::string> defaliases;
 			if (!aliases) aliases = &defaliases; // Provides a convenient default
 
-			tokenizer tcom(instr,sep);
+			tokenizer tcom(instr, sep);
 			for (auto ot = tcom.begin(); ot != tcom.end(); ot++)
 			{
 				if (aliases->count(*ot))
@@ -342,12 +359,15 @@ namespace icedb {
 					ssubst = aliases->at(*ot);
 					// Recursively call splitSet to handle bundles of aliases
 					splitSet<std::string>(ssubst, expanded, aliases);
-				} else { 
+				}
+				else {
 					if (expanded.count(*ot) == 0)
 						expanded.insert(*ot);
 				}
 			}
 		}
+
+		
 
 #define SPEC_SPLITSET(T) \
 	template DL_ICEDB void splitSet<T>(const std::string &instr, std::set<T> &expanded, \
@@ -362,7 +382,7 @@ namespace icedb {
 
 
 
-		 void splitVector(
+		void splitVector(
 			const std::string &instr, std::vector<std::string> &out, char delim)
 		{
 			using namespace std;
@@ -379,15 +399,15 @@ namespace icedb {
 				sep = std::find(start, stop, delim);
 				if (*start == delim)
 				{
-					start = sep+1;
+					start = sep + 1;
 					continue;
 				}
 				out.push_back(std::string(start, sep));
-				start = sep+1;
+				start = sep + 1;
 			}
 		}
 
-		 void splitNullMap(
+		void splitNullMap(
 			const std::string &instr, std::map<std::string, std::string> &out)
 		{
 			using namespace std;
@@ -403,7 +423,7 @@ namespace icedb {
 				sep = std::find(start, stop, '\0');
 				if (*start == '\0')
 				{
-					start = sep+1;
+					start = sep + 1;
 					continue;
 				}
 				// Split based on location of equal sign
@@ -413,27 +433,26 @@ namespace icedb {
 				std::string key(start, sepc);
 				if (!key.size())
 				{
-					start = sep+1;
+					start = sep + 1;
 					continue;
 				}
 				std::string val;
 				if (sepc < sep)
 					val = std::string(sepc + 1, sep);
 				out.insert(std::make_pair(key, val));
-				start = sep+1;
+				start = sep + 1;
 			}
 		}
 
-		
 		template <class T>
 		intervals<T>::intervals(const std::string &s) { if (s.size()) append(s); }
 
 		template <class T>
 		intervals<T>::intervals(const std::vector<std::string> &s) { append(s); }
-		
+
 		template <class T>
 		intervals<T>::~intervals() {}
-		
+
 		template <class T>
 		void intervals<T>::append(const std::string &instr,
 			const std::map<std::string, std::string> *aliases)
@@ -461,9 +480,11 @@ namespace icedb {
 					if (specializer == "range")
 					{
 						ranges.push_back(std::pair<T, T>(start, end));
-					} else if (start == end) {
+					}
+					else if (start == end) {
 						ranges.push_back(std::pair<T, T>(start, end));
-					} else {
+					}
+					else {
 						splitSet(start, end, interval, specializer, vals);
 					}
 				}
@@ -473,14 +494,14 @@ namespace icedb {
 				ranges.push_back(std::pair<T, T>(v, v));
 			}
 		}
-		
+
 		template <class T>
 		void intervals<T>::append(const std::vector<std::string> &s,
 			const std::map<std::string, std::string> *aliases)
 		{
 			for (const auto &str : s) append(str, aliases);
 		}
-		
+
 		template <class T>
 		void intervals<T>::append(const intervals<T>& src)
 		{
