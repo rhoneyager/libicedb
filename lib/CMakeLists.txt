@@ -83,6 +83,12 @@ set(units_objs
 	src/unitsPlugins.cpp
 	src/unitsSimple.cpp
 	)
+set(conversion_objs
+	icedb/conversions/density.hpp
+	icedb/conversions/size.hpp
+	src/density.cpp
+	src/size.cpp
+	)
 set(refract_objs
 	icedb/refract/refract.hpp
 	icedb/refract/refractBase.hpp
@@ -142,6 +148,7 @@ generaterc("libicedb" "dll"
 source_group("GSL" FILES ${gsl_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
+source_group("Conversions" FILES ${conversion_objs})
 source_group("Errors" FILES ${error_objs})
 source_group("Groups" FILES ${grp_objs})
 source_group("Attributes" FILES ${att_objs})
@@ -155,6 +162,7 @@ source_group("CMake" FILES ${related_cmake_objects})
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
 	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
+	${conversion_objs}
 	${related_cmake_objects}
 	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
