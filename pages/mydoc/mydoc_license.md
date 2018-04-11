@@ -7,7 +7,7 @@ permalink: license.html
 summary: The icedb source code is released under the AGPL version 3
 ---
 
-#Source Code:
+# Source Code:
 
 Released under the GNU Affero General Public License, version 3.
 
@@ -677,7 +677,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 
 # Documentation and the website
 
-The manual, tutorials, website and accompanying documentation are all released under the Creative Commons Public License (CC BY 3.0 US)[https://creativecommons.org/licenses/by/3.0/us/].
+The manual, tutorials, website and accompanying documentation are all released under the Creative Commons Public License [CC BY 3.0 US](https://creativecommons.org/licenses/by/3.0/us/).
 
 License text:
 ```
