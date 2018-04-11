@@ -1,7 +1,7 @@
 include(addapp)
 
 # Documents the app in Windows Explorer
-generaterc("icedb-3d_structures_beta" "exe"
+generaterc("icedb-3d_structures_multithreaded" "exe"
 	"icedb"
 	"Program to read and write icedb-3d structures to and from a database"
 	 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
@@ -19,17 +19,17 @@ SET(srcs ${srcs}
 	"${CMAKE_CURRENT_BINARY_DIR}/app.rc")
 ENDIF()
 
-add_executable(icedb-3d_structures_beta ${srcs})
-target_include_directories(icedb-3d_structures_beta SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
-target_include_directories(icedb-3d_structures_beta SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
+add_executable(icedb-3d_structures_multithreaded ${srcs})
+target_include_directories(icedb-3d_structures_multithreaded SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+target_include_directories(icedb-3d_structures_multithreaded SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 # TODO: remove the HDF5 dependency here.
-target_include_directories(icedb-3d_structures_beta SYSTEM
+target_include_directories(icedb-3d_structures_multithreaded SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
 	)
-target_compile_definitions(icedb-3d_structures_beta
+target_compile_definitions(icedb-3d_structures_multithreaded
 	PRIVATE ${HDF5_DEFINITIONS})
 
-target_link_libraries(icedb-3d_structures_beta icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(icedb-3d_structures_multithreaded icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
-addapp(icedb-3d_structures_beta Level_0)
-storebin(icedb-3d_structures_beta)
+addapp(icedb-3d_structures_multithreaded Level_0)
+storebin(icedb-3d_structures_multithreaded)

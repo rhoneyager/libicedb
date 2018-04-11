@@ -1,5 +1,6 @@
-add_subdirectory(3d_structures_beta)
-add_subdirectory(3d_structures_example)
+add_subdirectory(3d_structures_multithreaded)
+add_subdirectory(3d_structures_singlefile)
+add_subdirectory(3d_structures_singlethreaded)
 add_subdirectory(onesphere)
 add_subdirectory(testing)
 add_subdirectory(units)
