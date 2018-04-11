@@ -18,6 +18,7 @@
 #include <vector>
 #include <icedb/shape.hpp>
 #include <icedb/Database.hpp>
+#include <icedb/error.hpp>
 #include <icedb/fs_backend.hpp>
 #include "shape.hpp"
 #include "shapeIOtext.hpp"
@@ -25,7 +26,8 @@
 // A list of valid shapefile output formats
 const std::map<std::string, std::set<sfs::path> > file_formats = {
 	{"text", {".dat", ".shp", ".txt", ".shape"} },
-	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} }
+	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} },
+	{"psu", {".nc"}}
 };
 
 // These get set in main(int,char**).
@@ -42,12 +44,13 @@ int main(int argc, char** argv) {
 		po::options_description desc("Allowed options");
 		desc.add_options()
 			("help,h", "produce help message")
-			("from", po::value<string>(), "The path where a shape is read from")
+			("from", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
 			("to", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
 			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
+			("from-format", po::value<string>()->default_value("text"), "The format of the input files. Options: text, psu.")
 			;
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
@@ -65,12 +68,13 @@ int main(int argc, char** argv) {
 		using namespace icedb;
 
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
-		string sFromRaw = vm["from"].as<string>();
+		vector<string> vsFromRaw = vm["from"].as<vector<string> >();
 		string sToRaw = vm["to"].as<string>();
-		sfs::path pFromRaw(sFromRaw);
+		
 		sfs::path pToRaw(sToRaw);
 		string dbpath = vm["db-folder"].as<string>();
 		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
+		string informat = vm["from-format"].as<string>();
 
 		// Create the output database if it does not exist
 		auto iof = fs::IOopenFlags::READ_WRITE;
@@ -79,18 +83,35 @@ int main(int argc, char** argv) {
 		if (!sfs::exists(pToRaw)) iof = fs::IOopenFlags::CREATE;
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		
-		// Reading the shape from the text file
-		auto data = icedb::Examples::Shapes::readTextFile(pFromRaw.string());
-		// Set a basic particle id. This id is used when writing the shape to the output file.
-		// In this example, objects in the output file are named according to their ids.
-		data.required.particle_id = pFromRaw.filename().string();
-		if (resolution_um)
-			data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
+		// Changes start here
+		for (const auto &sFromRaw : vsFromRaw)
+		{
+			sfs::path pFromRaw(sFromRaw);
+			auto files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at(informat));
+			for (const auto &f : files)
+			{
+				// Reading the shape from the text file
+				icedb::Examples::Shapes::ShapeDataBasic data;
+				if (informat == "text")
+					data = icedb::Examples::Shapes::readTextFile(f.first.string());
+				else if (informat == "psu")
+					data = icedb::Examples::Shapes::readPSUfile(f.first.string());
+				else ICEDB_throw(icedb::error::error_types::xBadInput)
+					.add("Description", "Unknown input file format. See program help for a list of valid formats.")
+					.add("Current-format", informat);
 
-		// Writing the shape to the HDF5/netCDF file
-		
-		basegrp = db->createGroupStructure(dbpath);
-		auto shp = data.toShape(data.required.particle_id, basegrp->getHDF5Group());
+				// Set a basic particle id. This id is used when writing the shape to the output file.
+				// In this example, objects in the output file are named according to their ids.
+				data.required.particle_id = pFromRaw.filename().string();
+				if (resolution_um)
+					data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
+
+				// Writing the shape to the HDF5/netCDF file
+
+				basegrp = db->createGroupStructure(dbpath);
+				auto shp = data.toShape(data.required.particle_id, basegrp->getHDF5Group());
+			}
+		}
 	}
 	// Ensure that unhandled errors are displayed before the application terminates.
 	catch (const std::exception &e) {
