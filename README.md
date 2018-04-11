@@ -49,7 +49,7 @@ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX={install path} {P
 ```
 - This command, on Linux, typically defaults to generating Makefiles and will use gcc as the compiler. Consult the CMake
    documentation for details regarding how to change the compiler or other settings.
-   - To change the compiler, prefix the CMake command with CMAKE_CXX_COMPILER='path to compiler'.
+   - To change the compiler, prefix the CMake command with CMAKE\_CXX\_COMPILER='path to compiler'.
 - If cmake is set to generate Makefiles, run:
 ```
 make
