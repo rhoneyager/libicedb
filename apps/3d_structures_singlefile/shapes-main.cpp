@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 		string sToRaw = vm["to"].as<string>();
 		sfs::path pFromRaw(sFromRaw);
 		sfs::path pToRaw(sToRaw);
-		string dbpath = vm["db-folder"].as<string>();
+		string dbpath = vm["db-path"].as<string>();
 		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 
 		// Create the output database if it does not exist

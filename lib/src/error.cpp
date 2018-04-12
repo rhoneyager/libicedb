@@ -268,7 +268,7 @@ namespace icedb {
 			return *this;
 		}
 
-		template <class T> xError& xError::add(const std::string &key, const T &value)
+		template <class T> xError& xError::add(const std::string &key, const T value)
 		{
 			if (!ep->cur) push();
 			this->ep->cur->add<T>(key, value);
@@ -278,8 +278,16 @@ namespace icedb {
 #define DOTYPES(f) f(int); f(float); f(double); f(long); f(long long); \
 	f(unsigned int); f(unsigned long); f(unsigned long long); f(std::string); f(bool); f(std::complex<double>);
 
-#define IMPL_xError_ADD(T) template xError& xError::add<T>(const std::string&, const T&);
+#define IMPL_xError_ADD(T) template xError& xError::add<T>(const std::string&, const T);
 		DOTYPES(IMPL_xError_ADD);
+
+		template<> DL_ICEDB xError& xError::add(const std::string &key,  char const * const value)
+		{
+			if (!ep->cur) push();
+			this->ep->cur->add<std::string>(key, std::string(value));
+			return *this;
+		}
+
 
 
 		template<> DL_ICEDB std::string stringify<std::string>(error_code_t err) {

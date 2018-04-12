@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 		string sToRaw = vm["to"].as<string>();
 		
 		sfs::path pToRaw(sToRaw);
-		string dbpath = vm["db-folder"].as<string>();
+		string dbpath = vm["db-path"].as<string>();
 		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 		string informat = vm["from-format"].as<string>();
 
@@ -109,7 +109,8 @@ int main(int argc, char** argv) {
 				// Writing the shape to the HDF5/netCDF file
 
 				basegrp = db->createGroupStructure(dbpath);
-				auto shp = data.toShape(data.required.particle_id, basegrp->getHDF5Group());
+				auto shpgrp = basegrp->createGroup(data.required.particle_id);
+				auto shp = data.toShape(data.required.particle_id, shpgrp->getHDF5Group());
 			}
 		}
 	}
