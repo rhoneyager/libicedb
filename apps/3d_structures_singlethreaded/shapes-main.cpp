@@ -82,7 +82,9 @@ int main(int argc, char** argv) {
 		if (vm.count("truncate")) iof = fs::IOopenFlags::TRUNCATE;
 		if (!sfs::exists(pToRaw)) iof = fs::IOopenFlags::CREATE;
 		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
-		
+		std::cout << "Creating base group " << dbpath << std::endl;
+		basegrp = db->createGroupStructure(dbpath);
+	
 		// Changes start here
 		for (const auto &sFromRaw : vsFromRaw)
 		{
@@ -102,14 +104,16 @@ int main(int argc, char** argv) {
 
 				// Set a basic particle id. This id is used when writing the shape to the output file.
 				// In this example, objects in the output file are named according to their ids.
-				data.required.particle_id = pFromRaw.filename().string();
+				if (data.required.particle_id.size() == 0)
+					data.required.particle_id = f.first.filename().string();
 				if (resolution_um)
 					data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
 
 				// Writing the shape to the HDF5/netCDF file
 
-				basegrp = db->createGroupStructure(dbpath);
+				std::cout << "Creating group " << data.required.particle_id << std::endl;
 				auto shpgrp = basegrp->createGroup(data.required.particle_id);
+				std::cout << "Writing shape " << data.required.particle_id << std::endl;
 				auto shp = data.toShape(data.required.particle_id, shpgrp->getHDF5Group());
 			}
 		}
