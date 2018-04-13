@@ -28,8 +28,13 @@ Requirements:
 To install these dependencies on Debian-based systems, this command may be used:
 ```
 sudo apt update
-sudo apt install cmake doxygen libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev libboost-all-dev
+sudo apt install cmake libhdf5-dev hdf5-tools git zlib1g-dev libnetcdf-dev libboost-program-options-dev libboost-dev libboost-filesystem-dev libboost-system-dev
 ```
+To install optional dependencies:
+```
+sudo apt install libboost-all-dev cmake-curses-gui doxygen
+```
+
 If you have a very old installation or distribution, then you may need to use apt-get instead of apt.
 
 ## Compiler-specific instructions
@@ -42,6 +47,8 @@ This is the easiest option.
 sudo apt install g++
 ```
 
+Now, scroll down to the Build Instructions section.
+
 ### Debian Stretch / Ubuntu 16.04 LTS / Ubuntu 17.10 with clang
 
 This is also very easy. Clang comes in multiple versions on this platform, including 3.8, 3.9, 5.0.
@@ -49,12 +56,18 @@ This is also very easy. Clang comes in multiple versions on this platform, inclu
 ```
 sudo apt install clang
 ```
-Run CMake with these options:
+Either run CMake with these options:
 - CMAKE\_CXX\_COMPILER=/usr/bin/clang++
 - CMAKE\_C\_COMPILER=/usr/bin/clang
 
+or, invoke cmake this way:
+```
+CC=`which clang` CXX=`which clang` cmake ...
+```
+
 Conveniently, the hdf5 and boost libraries' C++11 bindings are compatible with clang on these distributions. No linking errors were observed.
 
+Scroll down to the Build Instructions section.
 
 ### Ubuntu 14.04 LTS (Work in Progress) with clang only
 
@@ -76,6 +89,7 @@ Run CMake with these options:
 - CMAKE\_SHARED\_LINKER\_FLAGS=-nodefaultlibs -lc++ -lc++abi -lm -lc -lgcc\_s -lgcc
 
 When building, boost::filesystem is missing a few small functions. These may be worked around in the future. The rest of the build is untested.
+
 
 ### Debian jessie
 
@@ -108,12 +122,19 @@ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX={install path} {P
 ```
 make
 ```
-- If the build is successful, binaries and libraries should be in the ./RelWithDebInfo directory. These can all be copied
-to the install directory using:
+- If the build is successful, binaries and libraries should be in the ./RelWithDebInfo directory.
+- If you changed the CMAKE\_BUILD\_TYPE option to another setting, like "Debug" or "Release", the binaries and libraries will be in the ./Debug or ./Release directory, respectively. These options trigger different compiler switches, such as turning on/off debug symbols and different levels of compiler optimizations. There is a marked difference in the size and speed of the compiled programs.
+
+- To copy the binaries to the install directory:
 ```
 sudo make install
 ```
-
 {% include note.html content="If you already have write privileges on your install directory, such as when it is in your home directory, then you can just run make install without sudo." %}
+
+- To create archives of the source code and compiled binaries, try
+```
+make package
+```
+CMake can make many different types of packages. Consult the CMake / CPack documentation for details.
 
 

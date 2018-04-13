@@ -25,9 +25,14 @@ Requirements:
 - Doxygen (optional; generates local html documentation of the library functions)
 
 
-To install these dependencies on CentOS, Fedora and RHEL, this command may be used:
+To install these dependencies on CentOS, Fedora and RHEL, this command may be used (note: yum has been replaced with **dnf** on certain distributions):
 ```
 sudo yum install cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel
+```
+
+Optional packages may be installed with:
+```
+sudo yum install rpm-build
 ```
 
 ## Compiler-specific instructions
@@ -40,6 +45,10 @@ This is the easiest option.
 ```
 sudo yum install gcc-c++
 ```
+
+The version of CMake provided by CentOS and RHEL may be insufficient. Conveniently, the [CMake download page](https://cmake.org/download/) provides links to pre-compiled binaries for Linux. Download and extract the CMake binaries to a location like /your/home/directory/bin, /usr/local/bin, or another appropriate location. It would help if this location were in your PATH.
+
+
 
 ### CentOS 6 / RHEL 6 with GCC 6 or 7
 
@@ -72,7 +81,7 @@ sudo yum install clang
 
 You will need to pass environment variables to the build system to indicate that Clang is your preferred compiler. On Bash, this is:
 ```
-export C=/your/path/to/clang
+export CC=/your/path/to/clang
 export CXX=/your/path/to/clang++
 ```
 Or, tell CMake your preferred compiler directly by specifying options:
