@@ -28,7 +28,7 @@ namespace icedb {
 			xError& push(::icedb::registry::options_ptr);
 			xError& push();
 
-			template <class T> xError& add(const std::string &key, const T &value);
+			template <class T> xError& add(const std::string &key, const T value);
 
 		};
 

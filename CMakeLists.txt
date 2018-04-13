@@ -34,8 +34,8 @@ INCLUDE(CTest)
 # Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
-set(MINOR 4)
-set(REVISION 2)
+set(MINOR 5)
+set(REVISION 1)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
@@ -49,11 +49,7 @@ configure_file (
     )
 
 if(NOT CMAKE_BUILD_TYPE)
-	if (NOT INSTALL_PACKAGE_SYSTEM_LOCATIONS)
-		set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
-	else()
-		set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
-	endif()
+	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
 # Add in script-generated includes
