@@ -56,11 +56,11 @@ namespace icedb {
 				template <typename HandleType, class InvalidValueClass, class CloseMethod>
 				struct ScopedHandle
 				{
-					HandleType h = NULL;
+					HandleType h = 0;
 					bool valid() const { return !InvalidValueClass::isInvalid(h); }
 					~ScopedHandle() {
 						if (valid()) CloseMethod::Close(h);
-						h = NULL;
+						h = 0;
 					}
 					ScopedHandle(HandleType newh) : h(newh) {}
 				};
