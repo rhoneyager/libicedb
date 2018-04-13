@@ -14,6 +14,5 @@ every source code file. [Doxygen](http://www.doxygen.org/index.html) is used to 
 a set of documentation pages for each released version of icedb.
 
 - [Current documentation](api/cur)
-- [Version 0.4.2](api/0.4.2)
 
 {% include links.html %}
