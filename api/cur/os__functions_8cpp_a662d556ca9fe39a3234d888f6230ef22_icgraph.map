@@ -1,0 +1,12 @@
+<map id="ICEDB_getLibDirI" name="ICEDB_getLibDirI">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1os__functions.html#adaa77b23637a14d558c86807c3aa061b" title="icedb::os_functions\l::getLibDir" alt="" coords="186,5,321,47"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1os__functions.html#a57d7d081b0a7efdb4f3b29b5eb367437" title="icedb::os_functions\l::getLibPath" alt="" coords="186,71,321,112"/>
+<area shape="rect" id="node4" href="$os__functions_8h.html#a99248361ef34f102d014ce9c1baea1dc" title="ICEDB_getLibDir" alt="" coords="192,137,315,163"/>
+<area shape="rect" id="node5" href="$os__functions_8h.html#a61e51298b00fd7860eb8f8252b85eb61" title="ICEDB_getLibDirC" alt="" coords="187,187,320,214"/>
+<area shape="rect" id="node6" href="$os__functions_8h.html#a4e9da5504a8337fdd2f19d4cc38d8810" title="ICEDB_getLibPath" alt="" coords="187,238,320,265"/>
+<area shape="rect" id="node7" href="$os__functions_8h.html#a97cb85fccbd7af484a0add920a51637b" title="ICEDB_getLibPathC" alt="" coords="182,289,325,315"/>
+<area shape="rect" id="node8" href="$os__functions_8cpp.html#aa01a33a6dca01a49554afed89d722d9f" title="ICEDB_getPluginDirI" alt="" coords="180,339,327,366"/>
+<area shape="rect" id="node9" href="$os__functions_8h.html#aad061814b8dd3563ec37c126daa47cca" title="ICEDB_getPluginDir" alt="" coords="379,289,522,315"/>
+<area shape="rect" id="node10" href="$os__functions_8h.html#a885e68cab9858d71ce639a5daadaefe7" title="ICEDB_getPluginDirC" alt="" coords="375,339,527,366"/>
+<area shape="rect" id="node11" href="$namespaceicedb_1_1os__functions.html#adac5d8c3b411d71235fa75c1386b795e" title="icedb::os_functions\l::getPluginDir" alt="" coords="383,391,518,432"/>
+</map>

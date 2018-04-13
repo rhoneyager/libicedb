@@ -1,14 +1,14 @@
 <map id="lib/src/databases.cpp" name="lib/src/databases.cpp">
-<area shape="rect" id="node6" href="$fs_8hpp.html" title="../icedb/fs.hpp" alt="" coords="1222,319,1327,345"/>
-<area shape="rect" id="node15" href="$fs__backend_8hpp.html" title="../icedb/fs_backend.hpp" alt="" coords="43,319,205,345"/>
-<area shape="rect" id="node17" href="$hdf5__supplemental_8hpp.html" title="../private/hdf5_supplemental.hpp" alt="" coords="820,244,1031,271"/>
-<area shape="rect" id="node24" href="$hdf5__load_8h.html" title="hdf5_load.h" alt="" coords="383,319,473,345"/>
-<area shape="rect" id="node31" href="$Database_8hpp.html" title="../icedb/Database.hpp" alt="" coords="1450,169,1601,196"/>
-<area shape="rect" id="node39" href="$Database__impl_8hpp.html" title="../private/Database\l_impl.hpp" alt="" coords="1171,80,1304,121"/>
-<area shape="rect" id="node8" href="$Data__Types_8hpp.html" title="Data_Types.hpp" alt="" coords="2337,468,2455,495"/>
-<area shape="rect" id="node9" href="$defs_8h.html" title="defs.h" alt="" coords="2508,543,2567,569"/>
-<area shape="rect" id="node28" href="$util_8hpp.html" title="../icedb/util.hpp" alt="" coords="2057,319,2167,345"/>
-<area shape="rect" id="node34" href="$Group_8hpp.html" title="Group.hpp" alt="" coords="1611,244,1693,271"/>
-<area shape="rect" id="node36" href="$Attribute_8hpp.html" title="Attribute.hpp" alt="" coords="1589,393,1685,420"/>
-<area shape="rect" id="node38" href="$Table_8hpp.html" title="Table.hpp" alt="" coords="1725,319,1803,345"/>
+<area shape="rect" id="node6" href="$fs_8hpp.html" title="../icedb/fs.hpp" alt="" coords="940,319,1046,345"/>
+<area shape="rect" id="node15" href="$fs__backend_8hpp.html" title="../icedb/fs_backend.hpp" alt="" coords="79,319,240,345"/>
+<area shape="rect" id="node17" href="$hdf5__supplemental_8hpp.html" title="../private/hdf5_supplemental.hpp" alt="" coords="934,244,1145,271"/>
+<area shape="rect" id="node24" href="$hdf5__load_8h.html" title="hdf5_load.h" alt="" coords="1274,319,1363,345"/>
+<area shape="rect" id="node31" href="$Database_8hpp.html" title="../icedb/Database.hpp" alt="" coords="1263,169,1414,196"/>
+<area shape="rect" id="node39" href="$Database__impl_8hpp.html" title="../private/Database\l_impl.hpp" alt="" coords="1140,80,1273,121"/>
+<area shape="rect" id="node8" href="$Data__Types_8hpp.html" title="Data_Types.hpp" alt="" coords="927,468,1046,495"/>
+<area shape="rect" id="node9" href="$defs_8h.html" title="defs.h" alt="" coords="1310,543,1369,569"/>
+<area shape="rect" id="node28" href="$util_8hpp.html" title="../icedb/util.hpp" alt="" coords="1490,319,1600,345"/>
+<area shape="rect" id="node34" href="$Group_8hpp.html" title="Group.hpp" alt="" coords="1870,244,1953,271"/>
+<area shape="rect" id="node36" href="$Attribute_8hpp.html" title="Attribute.hpp" alt="" coords="1977,393,2073,420"/>
+<area shape="rect" id="node38" href="$Table_8hpp.html" title="Table.hpp" alt="" coords="1986,319,2064,345"/>
 </map>

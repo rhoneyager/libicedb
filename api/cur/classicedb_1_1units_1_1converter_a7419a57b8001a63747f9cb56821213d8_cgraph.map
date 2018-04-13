@@ -1,0 +1,15 @@
+<map id="icedb::units::converter::getConverter" name="icedb::units::converter::getConverter">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1units_1_1implementations.html#a779542b748276ecd0b6b5233a02ccfa7" title="icedb::units::implementations\l::_init" alt="" coords="204,168,396,209"/>
+<area shape="rect" id="node13" href="$classicedb_1_1registry_1_1options.html#a2bde5fa41310ee345b97341790ee897a" title="icedb::registry::options\l::generate" alt="" coords="223,233,377,275"/>
+<area shape="rect" id="node14" href="$namespaceicedb_1_1units_1_1implementations.html#ab0d31f766299eb70b5b91977bd599cff" title="icedb::units::implementations\l::getHooks" alt="" coords="204,299,396,340"/>
+<area shape="rect" id="node3" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a5d17b522c81a61c963d7b7213ceadc10" title="icedb::units::implementations\l::simpleUnits::canConvert" alt="" coords="457,136,649,177"/>
+<area shape="rect" id="node4" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#ad1224b124a38f0d10a30f43fd07d7031" title="icedb::units::implementations\l::simpleUnits::constructConverter" alt="" coords="444,201,663,243"/>
+<area shape="rect" id="node5" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#aff882cbbe2699005c04bc3807f4c71fe" title="icedb::units::implementations\l::simpleUnits::simpleUnits" alt="" coords="711,201,903,243"/>
+<area shape="rect" id="node6" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a1f0bea3b2fdd7239457a72c982de6650" title="icedb::units::implementations\l::simpleUnits::validLength" alt="" coords="951,5,1143,47"/>
+<area shape="rect" id="node7" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a0a98df912a4ae8518e4ff683a345d60e" title="icedb::units::implementations\l::simpleUnits::validFreq" alt="" coords="951,71,1143,112"/>
+<area shape="rect" id="node8" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a2cce777d5db150dd72474e3a089a3581" title="icedb::units::implementations\l::simpleUnits::validVol" alt="" coords="951,136,1143,177"/>
+<area shape="rect" id="node9" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#ac0a1fd2576dcd4dfe1b74e190a185779" title="icedb::units::implementations\l::simpleUnits::validPres" alt="" coords="951,201,1143,243"/>
+<area shape="rect" id="node10" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a48bba405338cb12952c8b0943678964f" title="icedb::units::implementations\l::simpleUnits::validMass" alt="" coords="951,267,1143,308"/>
+<area shape="rect" id="node11" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a68020aa26fb996f50169a807ee95126e" title="icedb::units::implementations\l::simpleUnits::validTemp" alt="" coords="951,332,1143,373"/>
+<area shape="rect" id="node12" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a1471a5ddb7f2623b620e6089f1025313" title="icedb::units::implementations\l::simpleUnits::validDens" alt="" coords="951,397,1143,439"/>
+</map>

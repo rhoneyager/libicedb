@@ -1,0 +1,24 @@
+<map id="ICEDB_malloc" name="ICEDB_malloc">
+<area shape="rect" id="node2" href="$namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="163,280,269,307"/>
+<area shape="rect" id="node5" href="$error__context_8cpp.html#ab91d2c431ffceaa265e9ed357126be81" title="error_context_append" alt="" coords="651,5,798,32"/>
+<area shape="rect" id="node6" href="$error__context_8cpp.html#ab905211e79f36291dd563e1ad2c49935" title="error_context_copy" alt="" coords="658,60,791,87"/>
+<area shape="rect" id="node7" href="$error__context_8cpp.html#a3724d26e6300b0ccbd2f484530e02b3d" title="error_context_create_impl" alt="" coords="639,117,811,144"/>
+<area shape="rect" id="node8" href="$error_8cpp.html#aebe12860da5e74e35d52efe056493e97" title="error_context_to_message" alt="" coords="637,232,813,259"/>
+<area shape="rect" id="node9" href="$error_8cpp.html#a5a3a9d3bdece33a87ff23af77470304f" title="error_context_to_message_size" alt="" coords="621,335,828,361"/>
+<area shape="rect" id="node10" href="$error__context_8cpp.html#a75a056618d2ef987f2e8cd63f4538d6b" title="error_context_widen" alt="" coords="655,388,794,415"/>
+<area shape="rect" id="node11" href="$util_8h.html#acf805dcc80e9dd2d78603efe35f613f2" title="ICEDB_COMPAT_strdup_s" alt="" coords="632,181,817,208"/>
+<area shape="rect" id="node13" href="$os__functions_8h.html#a7f6122f5c995bc31d7cf26ac84630937" title="ICEDB_enumModules" alt="" coords="883,283,1035,309"/>
+<area shape="rect" id="node14" href="$util_8h.html#a339d3af7c011d56db36f35a982bb6a13" title="ICEDB_COMPAT_wcsdup_s" alt="" coords="627,445,822,472"/>
+<area shape="rect" id="node15" href="$namespaceicedb_1_1os__functions.html#a0dcb2270cb121fb0365afe0bc026e051" title="icedb::os_functions\l::populateOSstrings" alt="" coords="656,559,793,601"/>
+<area shape="rect" id="node3" href="$namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba" title="icedb::malloc" alt="" coords="317,255,416,281"/>
+<area shape="rect" id="node4" href="$util_8h.html#a96af861b569d0cb7ba1390fdd6e771a5" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="464,257,573,284"/>
+<area shape="rect" id="node12" href="$error__context_8cpp.html#aafb4e48d1c9ffff824a2a1770a52fc8a" title="error_context_add_string" alt="" coords="877,181,1042,208"/>
+<area shape="rect" id="node16" href="$os__functions_8h.html#a6087906119ecc126971b483bf6816022" title="ICEDB_getUserName" alt="" coords="883,483,1035,509"/>
+<area shape="rect" id="node18" href="$os__functions_8h.html#abae6c009622be4322436383382db19e3" title="ICEDB_getHostName" alt="" coords="883,544,1035,571"/>
+<area shape="rect" id="node20" href="$os__functions_8h.html#a6c6f63e439496d41afc7095cb7baa21c" title="ICEDB_getAppConfigDir" alt="" coords="876,599,1043,625"/>
+<area shape="rect" id="node22" href="$os__functions_8h.html#abd4d9eb9bb021c2e081864f1c66247aa" title="ICEDB_getHomeDir" alt="" coords="889,659,1030,685"/>
+<area shape="rect" id="node17" href="$namespaceicedb_1_1os__functions.html#afd122db35c7bc46804a85de67faa72f0" title="icedb::os_functions\l::getUserName" alt="" coords="1091,465,1225,506"/>
+<area shape="rect" id="node19" href="$namespaceicedb_1_1os__functions.html#aee2d308b703fb2c702d3734955136561" title="icedb::os_functions\l::getHostName" alt="" coords="1091,530,1225,571"/>
+<area shape="rect" id="node21" href="$namespaceicedb_1_1os__functions.html#aa77028c184adaba90c27cd5fefc3d38f" title="icedb::os_functions\l::getAppConfigDir" alt="" coords="1091,595,1225,637"/>
+<area shape="rect" id="node23" href="$namespaceicedb_1_1os__functions.html#affed33c077d37990f568af9efb095a7a" title="icedb::os_functions\l::getHomeDir" alt="" coords="1091,661,1225,702"/>
+</map>

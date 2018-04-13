@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['shape_5ftype',['Shape_Type',['../classicedb_1_1Shapes_1_1Shape.html#a5cf5e00f8070a919f661428d535397e1',1,'icedb::Shapes::Shape']]],
-  ['stringdata_5ft',['StringData_t',['../namespaceicedb_1_1Examples_1_1Shapes.html#adc0ee971960db473ddb5963af492f761',1,'icedb::Examples::Shapes']]]
+  ['matchattributetypetype',['MatchAttributeTypeType',['../namespaceicedb_1_1fs_1_1hdf5.html#ac4b0a23834eec302fd24c1625a388d4d',1,'icedb::fs::hdf5']]],
+  ['matchtype_5ft',['MatchType_t',['../namespaceicedb_1_1Examples_1_1Shapes.html#af7052ad61a3a809310012e586203c15f',1,'icedb::Examples::Shapes']]]
 ];

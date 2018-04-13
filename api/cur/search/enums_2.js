@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['objecttypes',['ObjectTypes',['../namespaceicedb_1_1fs.html#a0e8b791e46d8baf231a3ad74c3af83eb',1,'icedb::fs']]]
+  ['error_5ftypes',['error_types',['../namespaceicedb_1_1error.html#a73b4a91d91957828b514d16ca71ca751',1,'icedb::error']]]
 ];

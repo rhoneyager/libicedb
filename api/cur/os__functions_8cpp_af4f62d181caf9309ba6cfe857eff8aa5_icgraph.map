@@ -1,0 +1,8 @@
+<map id="ICEDB_getAppDirI" name="ICEDB_getAppDirI">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1os__functions.html#a30e68137fed2e2e285be3c56c72dafdc" title="icedb::os_functions\l::getAppDir" alt="" coords="194,5,329,47"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1os__functions.html#a8be1471b66a9646495040e4708366955" title="icedb::os_functions\l::getAppPath" alt="" coords="194,71,329,112"/>
+<area shape="rect" id="node4" href="$os__functions_8h.html#a0da8e6e9cca42196a839acf37c6e32d1" title="ICEDB_getAppDir" alt="" coords="197,137,326,163"/>
+<area shape="rect" id="node5" href="$os__functions_8h.html#afce9ef778259878534843863808dda9d" title="ICEDB_getAppDirC" alt="" coords="192,187,331,214"/>
+<area shape="rect" id="node6" href="$os__functions_8h.html#ae89455ed221fb5db9baf787f27d2ca3d" title="ICEDB_getAppPath" alt="" coords="192,238,331,265"/>
+<area shape="rect" id="node7" href="$os__functions_8h.html#aa64af1022f9daebf465cf66f1a0b9cf2" title="ICEDB_getAppPathC" alt="" coords="187,289,336,315"/>
+</map>

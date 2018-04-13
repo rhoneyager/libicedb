@@ -1,0 +1,24 @@
+<map id="ICEDB_COMPAT_strncpy_s" name="ICEDB_COMPAT_strncpy_s">
+<area shape="rect" id="node2" href="$error_8cpp.html#a54d397c0e8026c58ce794ba1eb9a770a" title="error_code_to_message" alt="" coords="268,5,429,32"/>
+<area shape="rect" id="node3" href="$error__context_8cpp.html#ab91d2c431ffceaa265e9ed357126be81" title="error_context_append" alt="" coords="275,56,422,83"/>
+<area shape="rect" id="node4" href="$error__context_8cpp.html#ab905211e79f36291dd563e1ad2c49935" title="error_context_copy" alt="" coords="282,107,415,133"/>
+<area shape="rect" id="node5" href="$error__context_8cpp.html#a3724d26e6300b0ccbd2f484530e02b3d" title="error_context_create_impl" alt="" coords="263,157,435,184"/>
+<area shape="rect" id="node6" href="$error_8cpp.html#aebe12860da5e74e35d52efe056493e97" title="error_context_to_message" alt="" coords="261,208,437,235"/>
+<area shape="rect" id="node7" href="$error_8cpp.html#a5a3a9d3bdece33a87ff23af77470304f" title="error_context_to_message_size" alt="" coords="245,259,452,285"/>
+<area shape="rect" id="node8" href="$error__context_8cpp.html#a75a056618d2ef987f2e8cd63f4538d6b" title="error_context_widen" alt="" coords="279,309,418,336"/>
+<area shape="rect" id="node9" href="$namespaceicedb_1_1versioning.html#ae897c1030d31aa4a2f845ff406fc3c6f" title="Calculates version string based on compile&#45;time version of external code. " alt="" coords="285,361,413,402"/>
+<area shape="rect" id="node13" href="$util_8h.html#acf805dcc80e9dd2d78603efe35f613f2" title="ICEDB_COMPAT_strdup_s" alt="" coords="256,427,441,453"/>
+<area shape="rect" id="node16" href="$os__functions_8h.html#a8986cac704f3c432bc7d5cb9930c8058" title="ICEDB_findModuleByFunc" alt="" coords="259,477,438,504"/>
+<area shape="rect" id="node17" href="$os__functions_8h.html#a0da8e6e9cca42196a839acf37c6e32d1" title="ICEDB_getAppDir" alt="" coords="284,528,413,555"/>
+<area shape="rect" id="node18" href="$os__functions_8h.html#ae89455ed221fb5db9baf787f27d2ca3d" title="ICEDB_getAppPath" alt="" coords="279,579,418,605"/>
+<area shape="rect" id="node19" href="$os__functions_8h.html#a528d7a68f04bf25e13f5545f4fef3a3a" title="ICEDB_getCWD" alt="" coords="287,629,410,656"/>
+<area shape="rect" id="node20" href="$os__functions_8h.html#a99248361ef34f102d014ce9c1baea1dc" title="ICEDB_getLibDir" alt="" coords="287,680,410,707"/>
+<area shape="rect" id="node21" href="$os__functions_8h.html#a4e9da5504a8337fdd2f19d4cc38d8810" title="ICEDB_getLibPath" alt="" coords="282,731,415,757"/>
+<area shape="rect" id="node22" href="$os__functions_8h.html#aad061814b8dd3563ec37c126daa47cca" title="ICEDB_getPluginDir" alt="" coords="277,781,420,808"/>
+<area shape="rect" id="node23" href="$versioningForwards_8h.html#a5a2a86e9e3f044dbb40df22aadb013d8" title="ICEDB_WriteLibVersionInfoC" alt="" coords="251,832,446,859"/>
+<area shape="rect" id="node10" href="$namespaceicedb_1_1versioning.html#ae72654663a1867b7c66871f54bd69d16" title="icedb::versioning::\lgetLibVersionInfo" alt="" coords="519,361,647,402"/>
+<area shape="rect" id="node11" href="$namespaceicedb_1_1versioning.html#ae1eb3fb8164f9327a451dc9a1fd5283c" title="icedb::versioning::\lgetLibVersionInfo" alt="" coords="735,331,863,373"/>
+<area shape="rect" id="node12" href="$versioningForwards_8h.html#a8546b5bac63d73e954b321f98dc910c9" title="ICEDB_getLibVersionInfo" alt="" coords="713,397,885,424"/>
+<area shape="rect" id="node14" href="$error__context_8cpp.html#aafb4e48d1c9ffff824a2a1770a52fc8a" title="error_context_add_string" alt="" coords="500,427,665,453"/>
+<area shape="rect" id="node15" href="$os__functions_8h.html#a7f6122f5c995bc31d7cf26ac84630937" title="ICEDB_enumModules" alt="" coords="507,477,659,504"/>
+</map>

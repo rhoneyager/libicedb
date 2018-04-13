@@ -1,0 +1,47 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1refract.html#a373d1d84ef177c4a7f97319a6cfcdb59" title="icedb::refract::enumProvider" alt="" coords="362,303,549,330"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1refract.html#a1a27b2954bf7e11f0909b0224355c925" title="icedb::refract::enumProviders" alt="" coords="111,329,304,355"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1refract.html#a37c82e7cde4d388e626a2719bf3d6217" title="icedb::refract::enumSubstances" alt="" coords="104,481,311,507"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1refract.html#ad3bfb65c70edcf6fd21130dc0c7155cc" title="icedb::refract::listAllProviders" alt="" coords="359,430,552,457"/>
+<area shape="rect" id="node23" href="$namespaceicedb_1_1refract.html#a4f745e4863efe46089b76ec315b8c4f7" title="icedb::refract::findProvider\lByName" alt="" coords="368,503,543,544"/>
+<area shape="rect" id="node24" href="$namespaceicedb_1_1refract.html#a120be2a3571de8ebca8c925ed695395f" title="icedb::refract::findProviders" alt="" coords="116,379,299,406"/>
+<area shape="rect" id="node25" href="$namespaceicedb_1_1refract.html#ac186839a68c0b72ab73703df003309ea" title="icedb::refract::prepRefract" alt="" coords="120,786,295,813"/>
+<area shape="rect" id="node6" href="$namespaceicedb_1_1refract_1_1implementations.html#a50f5d55412e080679ba49cfdff1605d0" title="icedb::refract::implementations\l::_init" alt="" coords="600,397,801,439"/>
+<area shape="rect" id="node7" href="$structicedb_1_1refract_1_1provider__s.html#ab3759da74a6e3f6e38ae7fa1af19dff9" title="icedb::refract::provider\l_s::generate" alt="" coords="887,5,1039,47"/>
+<area shape="rect" id="node8" href="$namespaceicedb_1_1refract_1_1implementations.html#a02c1e587807024933bc0ea461ed59c56" title="icedb::refract::implementations\l::mWaterLiebe" alt="" coords="862,71,1063,112"/>
+<area shape="rect" id="node9" href="$namespaceicedb_1_1refract_1_1implementations.html#a6c886aa40f36b10c13702b9c197d9e8f" title="icedb::refract::implementations\l::mWaterFreshMeissnerWentz" alt="" coords="862,136,1063,177"/>
+<area shape="rect" id="node10" href="$namespaceicedb_1_1refract_1_1implementations.html#a749dcdc20e3e1c2aa4d21842d5f9cde3" title="icedb::refract::implementations\l::mIceMatzler" alt="" coords="862,201,1063,243"/>
+<area shape="rect" id="node11" href="$namespaceicedb_1_1refract_1_1implementations.html#adca5029f9d82dd996da2f45ae06f703d" title="Ice complex refractive index for microwave/uv. " alt="" coords="862,724,1063,765"/>
+<area shape="rect" id="node14" href="$namespaceicedb_1_1refract_1_1implementations.html#a4991d5ca57c34a06470cac862571c615" title="Water complex refractive index for ir/vis. " alt="" coords="862,332,1063,373"/>
+<area shape="rect" id="node16" href="$namespaceicedb_1_1refract_1_1implementations.html#a18b38e433d7f0bc96a530c22b4890bb8" title="Ice complex refractive index for ir/vis. " alt="" coords="862,397,1063,439"/>
+<area shape="rect" id="node17" href="$namespaceicedb_1_1refract_1_1implementations.html#a8030797d2cbd3a7ab22718372426da0d" title="Sodium chloride refractive index for ir/vis. " alt="" coords="862,267,1063,308"/>
+<area shape="rect" id="node18" href="$namespaceicedb_1_1refract_1_1implementations.html#aa923869ef512e698acbcc266c51f3e74" title="Sea salt refractive index for ir/vis. " alt="" coords="862,463,1063,504"/>
+<area shape="rect" id="node19" href="$namespaceicedb_1_1refract_1_1implementations.html#aeafbc4db439ee64663a2b445daba9537" title="Dust&#45;like particle refractive index for ir/vis. " alt="" coords="862,659,1063,700"/>
+<area shape="rect" id="node21" href="$namespaceicedb_1_1refract_1_1implementations.html#a2f889140f3e9dcef8c4dff9f1ac18fc3" title="Sand O&#45;ray refractvie index for ir/vis (birefringent) " alt="" coords="862,528,1063,569"/>
+<area shape="rect" id="node22" href="$namespaceicedb_1_1refract_1_1implementations.html#abe632612f9e23ecfea9f6d13e5f6ee59" title="Sand E&#45;ray refractive index for ir/vis (birefringent) " alt="" coords="862,593,1063,635"/>
+<area shape="rect" id="node12" href="$classicedb_1_1units_1_1converter.html#a1c9b1abbfef26eb425ee2124c2f4f451" title="icedb::units::converter\l::convert" alt="" coords="1130,724,1281,765"/>
+<area shape="rect" id="node13" href="$classicedb_1_1units_1_1converter.html#a5d1ffe72a6cb174356a6e45b40a7eb7a" title="Is this conversion valid? " alt="" coords="1355,724,1506,765"/>
+<area shape="rect" id="node15" href="$namespaceanonymous__namespace_02refractImpl_8cpp_03.html#a35f03ce70e90ed63debdc86f046672e8" title="anonymous_namespace\l\{refractImpl::cpp\}::\lsetupHanelA" alt="" coords="1124,358,1287,414"/>
+<area shape="rect" id="node20" href="$namespaceanonymous__namespace_02refractImpl_8cpp_03.html#acf2ad82c34bb4568de4986539989f461" title="anonymous_namespace\l\{refractImpl::cpp\}::\lsetupHanelB" alt="" coords="1124,586,1287,642"/>
+<area shape="rect" id="node26" href="$classicedb_1_1units_1_1conv__spec.html#a2babec75e3ea94075b1b281c4d8201df" title="icedb::units::conv\l_spec::generate" alt="" coords="393,947,518,988"/>
+<area shape="rect" id="node27" href="$namespaceicedb_1_1units_1_1implementations.html#a990c7192660dfd877914f910792d09b0" title="icedb::units::implementations\l::_queryBackend" alt="" coords="605,992,797,1033"/>
+<area shape="rect" id="node29" href="$classicedb_1_1units_1_1conv__spec.html#abb22e60aeb52fbea75bb8f57617c5d6d" title="icedb::units::conv\l_spec::conv_spec" alt="" coords="637,901,765,943"/>
+<area shape="rect" id="node46" href="$namespaceicedb_1_1units_1_1implementations.html#a82658ecb056bed83d20350a59ec58747" title="icedb::units::implementations\l::_registerBackend" alt="" coords="605,1061,797,1103"/>
+<area shape="rect" id="node28" href="$namespaceicedb_1_1units_1_1implementations.html#a2b1c04aaf61b4da4c8453e69ab71f837" title="icedb::units::implementations\l::_mangle_string" alt="" coords="867,1075,1059,1116"/>
+<area shape="rect" id="node30" href="$namespaceicedb_1_1units_1_1implementations.html#a779542b748276ecd0b6b5233a02ccfa7" title="icedb::units::implementations\l::_init" alt="" coords="1335,1023,1527,1064"/>
+<area shape="rect" id="node41" href="$classicedb_1_1registry_1_1options.html#a2bde5fa41310ee345b97341790ee897a" title="icedb::registry::options\l::generate" alt="" coords="1353,892,1508,933"/>
+<area shape="rect" id="node42" href="$structicedb_1_1units_1_1implementations_1_1spectralUnits.html#a8f1fdb7b365bef929ef6c362863b133a" title="icedb::units::implementations\l::spectralUnits::constructConverter" alt="" coords="849,895,1076,936"/>
+<area shape="rect" id="node31" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a5d17b522c81a61c963d7b7213ceadc10" title="icedb::units::implementations\l::simpleUnits::canConvert" alt="" coords="1588,957,1780,999"/>
+<area shape="rect" id="node32" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#ad1224b124a38f0d10a30f43fd07d7031" title="icedb::units::implementations\l::simpleUnits::constructConverter" alt="" coords="1575,1023,1793,1064"/>
+<area shape="rect" id="node33" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#aff882cbbe2699005c04bc3807f4c71fe" title="icedb::units::implementations\l::simpleUnits::simpleUnits" alt="" coords="1841,928,2033,969"/>
+<area shape="rect" id="node34" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a1f0bea3b2fdd7239457a72c982de6650" title="icedb::units::implementations\l::simpleUnits::validLength" alt="" coords="2081,732,2273,773"/>
+<area shape="rect" id="node35" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a0a98df912a4ae8518e4ff683a345d60e" title="icedb::units::implementations\l::simpleUnits::validFreq" alt="" coords="2081,797,2273,839"/>
+<area shape="rect" id="node36" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a2cce777d5db150dd72474e3a089a3581" title="icedb::units::implementations\l::simpleUnits::validVol" alt="" coords="2081,863,2273,904"/>
+<area shape="rect" id="node37" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#ac0a1fd2576dcd4dfe1b74e190a185779" title="icedb::units::implementations\l::simpleUnits::validPres" alt="" coords="2081,928,2273,969"/>
+<area shape="rect" id="node38" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a48bba405338cb12952c8b0943678964f" title="icedb::units::implementations\l::simpleUnits::validMass" alt="" coords="2081,993,2273,1035"/>
+<area shape="rect" id="node39" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a68020aa26fb996f50169a807ee95126e" title="icedb::units::implementations\l::simpleUnits::validTemp" alt="" coords="2081,1059,2273,1100"/>
+<area shape="rect" id="node40" href="$structicedb_1_1units_1_1implementations_1_1simpleUnits.html#a1471a5ddb7f2623b620e6089f1025313" title="icedb::units::implementations\l::simpleUnits::validDens" alt="" coords="2081,1124,2273,1165"/>
+<area shape="rect" id="node43" href="$classicedb_1_1units_1_1converter.html#a56e2a91b09d1f3e9fecf3fb4047723ee" title="Check if two units can be interconverted. " alt="" coords="1130,957,1281,999"/>
+<area shape="rect" id="node45" href="$classicedb_1_1units_1_1converter.html#a7419a57b8001a63747f9cb56821213d8" title="icedb::units::converter\l::getConverter" alt="" coords="1130,892,1281,933"/>
+<area shape="rect" id="node44" href="$namespaceicedb_1_1units_1_1implementations.html#ab0d31f766299eb70b5b91977bd599cff" title="icedb::units::implementations\l::getHooks" alt="" coords="1335,957,1527,999"/>
+</map>

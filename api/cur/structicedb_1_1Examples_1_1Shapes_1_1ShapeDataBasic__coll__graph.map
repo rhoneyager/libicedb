@@ -1,7 +1,7 @@
 <map id="icedb::Examples::Shapes::ShapeDataBasic" name="icedb::Examples::Shapes::ShapeDataBasic">
-<area shape="rect" id="node2" href="$structicedb_1_1Examples_1_1Shapes_1_1ShapeRequiredData.html" title="icedb::Examples::Shapes\l::ShapeRequiredData" alt="" coords="873,398,1043,439"/>
-<area shape="rect" id="node3" title="STL class. " alt="" coords="255,88,335,115"/>
-<area shape="rect" id="node9" href="$structicedb_1_1Examples_1_1Shapes_1_1ShapeCommonOptionalData.html" title="icedb::Examples::Shapes\l::ShapeCommonOptionalData" alt="" coords="860,169,1056,210"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="5,81,132,122"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="237,352,353,379"/>
+<area shape="rect" id="node2" href="$structicedb_1_1Examples_1_1Shapes_1_1ShapeRequiredData.html" title="icedb::Examples::Shapes\l::ShapeRequiredData" alt="" coords="873,95,1043,137"/>
+<area shape="rect" id="node3" title="STL class. " alt="" coords="255,53,335,80"/>
+<area shape="rect" id="node8" href="$structicedb_1_1Examples_1_1Shapes_1_1ShapeCommonOptionalData.html" title="icedb::Examples::Shapes\l::ShapeCommonOptionalData" alt="" coords="860,231,1056,273"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="5,46,132,87"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="237,281,353,308"/>
 </map>

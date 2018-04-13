@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['vlen',['VLEN',['../namespaceicedb_1_1fs_1_1hdf5.html#a72a254318f9f9138c62b81c9070f9bf8a429db7e61e44a2f31daad796ca6a88cf',1,'icedb::fs::hdf5']]]
+  ['read_5fonly',['READ_ONLY',['../namespaceicedb_1_1fs.html#a8aa7e58f411602b31b0de41c424e278fa47c7e7cb36a953a8c47e02000036bb44',1,'icedb::fs']]],
+  ['read_5fwrite',['READ_WRITE',['../namespaceicedb_1_1fs.html#a8aa7e58f411602b31b0de41c424e278faa7b843fb734e3b3fea8e5f902d3f4144',1,'icedb::fs']]]
 ];

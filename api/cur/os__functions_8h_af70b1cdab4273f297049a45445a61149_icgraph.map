@@ -1,0 +1,6 @@
+<map id="ICEDB_waitOnExitGet" name="ICEDB_waitOnExitGet">
+<area shape="rect" id="node2" href="$os__functions_8h.html#ac7923c42bb81d94bc71c50118746e7f4" title="ICEDB_libExit" alt="" coords="223,13,330,39"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1os__functions.html#a5108a856d1598ec201804d9ac1dc8216" title="icedb::os_functions\l::waitOnExit" alt="" coords="209,64,344,105"/>
+<area shape="rect" id="node3" href="$os__functions_8h.html#a2a41752c46927ca96752df695b542d5b" title="Entry function that gets called when a debugged application first loads. " alt="" coords="392,13,507,39"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1os__functions.html#a2340cd099f50730eb8605ea5205ebd56" title="icedb::os_functions\l::libEntry" alt="" coords="555,5,689,47"/>
+</map>

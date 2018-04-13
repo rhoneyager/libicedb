@@ -1,0 +1,7 @@
+<map id="icedb::malloc" name="icedb::malloc">
+<area shape="rect" id="node2" href="$namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="160,31,251,57"/>
+<area shape="rect" id="node5" href="$namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="152,81,259,108"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="315,5,408,32"/>
+<area shape="rect" id="node4" href="$namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="464,31,547,57"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#ab8cdc0bdd69235af5e6f92fa50da3ee2" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="307,119,416,145"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="icedb::_free" name="icedb::_free">
+<area shape="rect" id="node2" href="$util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="144,5,237,32"/>
+<area shape="rect" id="node3" href="$namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="285,31,368,57"/>
+</map>

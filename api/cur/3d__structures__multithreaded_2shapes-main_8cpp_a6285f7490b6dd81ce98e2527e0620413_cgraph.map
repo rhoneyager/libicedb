@@ -1,0 +1,9 @@
+<map id="construct_thread_pool" name="construct_thread_pool">
+<area shape="rect" id="node2" href="$3d__structures__multithreaded_2shapes-main_8cpp.html#ae40c007b788d66f509cf4110d9c98e2a" title="This is the primary function in each thread devoted to reading shapes. Usually, about three of these ..." alt="" coords="204,46,276,73"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106" title="icedb::Examples::Shapes\l::readTextFile" alt="" coords="324,39,495,80"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a2a5d401c61b223e36383d283c836a956" title="icedb::Examples::Shapes\l::readRawText" alt="" coords="543,5,713,47"/>
+<area shape="rect" id="node6" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af4f846f5268e26fe554768d8e0844f0d" title="icedb::Examples::Shapes\l::readDDSCAT" alt="" coords="543,71,713,112"/>
+<area shape="rect" id="node5" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="996,53,1159,124"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a0c7e41d500cd4ceb231b65841914ba2e" title="icedb::Examples::Shapes\l::readHeader" alt="" coords="769,64,940,105"/>
+<area shape="rect" id="node8" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af97042755647e1f2610ca4301c1eb91a" title="Read ddscat text contents. " alt="" coords="761,129,948,171"/>
+</map>

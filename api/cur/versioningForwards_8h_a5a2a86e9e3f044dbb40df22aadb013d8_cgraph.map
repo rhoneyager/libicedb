@@ -1,0 +1,5 @@
+<map id="ICEDB_WriteLibVersionInfoC" name="ICEDB_WriteLibVersionInfoC">
+<area shape="rect" id="node2" href="$util_8cpp.html#a1ed08a2c440d8ae7a92241348c1feaaa" title="ICEDB_COMPAT_strncpy_s" alt="" coords="255,5,447,32"/>
+<area shape="rect" id="node3" href="$versioning_8cpp.html#ab2728e0e0365bd64f18ac9d0a55fa5f5" title="ICEDB_WriteLibVersionInfoCC" alt="" coords="248,56,453,83"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1versioning.html#a59ff1190b60f407896a1db70ceb50eb0" title="Provides information about the build environment during compilation. " alt="" coords="501,49,629,90"/>
+</map>

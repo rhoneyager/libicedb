@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['file_5fimage',['file_image',['../classicedb_1_1Databases_1_1file__image.html',1,'icedb::Databases']]]
+  ['emptyclass',['EmptyClass',['../structEmptyClass.html',1,'']]],
+  ['error_5foptions_5finner',['error_options_inner',['../classicedb_1_1error_1_1error__options__inner.html',1,'icedb::error']]]
 ];

@@ -1,0 +1,4 @@
+<map id="icedb::versioning::getLibVersionInfo" name="icedb::versioning::getLibVersionInfo">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1versioning.html#ae897c1030d31aa4a2f845ff406fc3c6f" title="Calculates version string based on compile&#45;time version of external code. " alt="" coords="181,5,309,47"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a1ed08a2c440d8ae7a92241348c1feaaa" title="ICEDB_COMPAT_strncpy_s" alt="" coords="357,13,549,39"/>
+</map>

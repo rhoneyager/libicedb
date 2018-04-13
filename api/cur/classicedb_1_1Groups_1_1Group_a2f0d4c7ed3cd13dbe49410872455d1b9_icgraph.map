@@ -1,13 +1,14 @@
 <map id="icedb::Groups::Group::getHDF5Group" name="icedb::Groups::Group::getHDF5Group">
 <area shape="rect" id="node2" href="$classicedb_1_1Shapes_1_1Shape.html#ad7130fa2f27db8354d10986e58697699" title="Create a new shape. " alt="" coords="200,93,351,135"/>
-<area shape="rect" id="node6" href="$classicedb_1_1Shapes_1_1Shape.html#ae6a0b9d58510ceccd7623547460b0890" title="Is this object actually a shape? " alt="" coords="200,287,351,328"/>
-<area shape="rect" id="node9" href="$classicedb_1_1Shapes_1_1Shape.html#aeaae7da7e2ce54eedfea05e59d2da197" title="Is this object a valid shape, according to the spec? " alt="" coords="631,316,781,357"/>
-<area shape="rect" id="node11" href="$classicedb_1_1Shapes_1_1Shape.html#ada14d9fc35c9711f41f1070035635e5c" title="icedb::Shapes::Shape\l::openShape" alt="" coords="200,436,351,477"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Shapes_1_1Shape.html#ae6a0b9d58510ceccd7623547460b0890" title="Is this object actually a shape? " alt="" coords="200,287,351,328"/>
+<area shape="rect" id="node10" href="$classicedb_1_1Shapes_1_1Shape.html#aeaae7da7e2ce54eedfea05e59d2da197" title="Is this object a valid shape, according to the spec? " alt="" coords="631,315,781,356"/>
+<area shape="rect" id="node12" href="$classicedb_1_1Shapes_1_1Shape.html#ada14d9fc35c9711f41f1070035635e5c" title="icedb::Shapes::Shape\l::openShape" alt="" coords="200,436,351,477"/>
 <area shape="rect" id="node3" href="$structicedb_1_1Examples_1_1Shapes_1_1ShapeDataBasic.html#a4c185f8431b7f865f7a8eda66f8d30af" title="Make a new shape under the group. " alt="" coords="399,5,583,47"/>
-<area shape="rect" id="node4" href="$fs-test_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="This is an example application that illustrates how to manipulate the most basic features of an icedb..." alt="" coords="465,71,516,98"/>
-<area shape="rect" id="node5" href="$classicedb_1_1Shapes_1_1Shape.html#a293993892f987e2dcdfdeb4c4c8d95dd" title="Create a new shape. " alt="" coords="415,123,566,164"/>
-<area shape="rect" id="node7" href="$classicedb_1_1Shapes_1_1Shape.html#aa74d1ac6872ed319e6e44e063995c22e" title="Is this object a shape? " alt="" coords="415,188,566,229"/>
-<area shape="rect" id="node8" href="$classicedb_1_1Shapes_1_1Shape.html#aaf0300a0218cb7318678b7b6c299f1a7" title="Is &quot;group&quot; a valid shape, according to the spec.? " alt="" coords="415,253,566,295"/>
-<area shape="rect" id="node10" href="$classicedb_1_1Shapes_1_1Shape.html#aa450e550ff04f4a8edbc0b0af326f7d9" title="Re&#45;open an open HDF5 group as a shape. " alt="" coords="415,319,566,360"/>
-<area shape="rect" id="node12" href="$classicedb_1_1Shapes_1_1Shape.html#af820d6ae785741832a112796bf057236" title="Open a group&#39;s subgroup as a shape. " alt="" coords="415,436,566,477"/>
+<area shape="rect" id="node5" href="$fs-test_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="This is an example application that illustrates how to manipulate the most basic features of an icedb..." alt="" coords="465,71,516,98"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Shapes_1_1Shape.html#a293993892f987e2dcdfdeb4c4c8d95dd" title="Create a new shape. " alt="" coords="415,123,566,164"/>
+<area shape="rect" id="node4" href="$3d__structures__singlethreaded_2shapes-main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="681,13,731,39"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Shapes_1_1Shape.html#aa74d1ac6872ed319e6e44e063995c22e" title="Is this object a shape? " alt="" coords="415,188,566,229"/>
+<area shape="rect" id="node9" href="$classicedb_1_1Shapes_1_1Shape.html#aaf0300a0218cb7318678b7b6c299f1a7" title="Is &quot;group&quot; a valid shape, according to the spec.? " alt="" coords="415,253,566,295"/>
+<area shape="rect" id="node11" href="$classicedb_1_1Shapes_1_1Shape.html#aa450e550ff04f4a8edbc0b0af326f7d9" title="Re&#45;open an open HDF5 group as a shape. " alt="" coords="415,319,566,360"/>
+<area shape="rect" id="node13" href="$classicedb_1_1Shapes_1_1Shape.html#af820d6ae785741832a112796bf057236" title="Open a group&#39;s subgroup as a shape. " alt="" coords="415,436,566,477"/>
 </map>

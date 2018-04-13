@@ -1,0 +1,9 @@
+<map id="ICEDB_COMPAT_wcsdup_s" name="ICEDB_COMPAT_wcsdup_s">
+<area shape="rect" id="node2" href="$util_8cpp.html#a0af30a652d296d71d7dda66c02b3c187" title="ICEDB_COMPAT_wcsncpy_s" alt="" coords="248,5,449,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#ab8cdc0bdd69235af5e6f92fa50da3ee2" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="294,56,403,83"/>
+<area shape="rect" id="node4" href="$namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba" title="icedb::malloc" alt="" coords="497,81,596,108"/>
+<area shape="rect" id="node5" href="$namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="644,31,751,57"/>
+<area shape="rect" id="node6" href="$namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="652,81,743,108"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="799,56,892,83"/>
+<area shape="rect" id="node8" href="$namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="940,81,1023,108"/>
+</map>

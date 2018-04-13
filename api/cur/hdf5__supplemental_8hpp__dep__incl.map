@@ -1,10 +1,10 @@
 <map id="lib/private/hdf5_supplemental.hpp" name="lib/private/hdf5_supplemental.hpp">
-<area shape="rect" id="node2" href="$Attributes_8cpp.html" title="lib/src/Attributes.cpp" alt="" coords="5,87,148,114"/>
-<area shape="rect" id="node3" href="$databases_8cpp.html" title="lib/src/databases.cpp" alt="" coords="166,169,313,196"/>
-<area shape="rect" id="node4" href="$Database__impl_8hpp.html" title="lib/private/Database\l_impl.hpp" alt="" coords="223,80,362,121"/>
-<area shape="rect" id="node5" href="$export-hdf5_8cpp.html" title="lib/src/export&#45;hdf5.cpp" alt="" coords="387,87,537,114"/>
-<area shape="rect" id="node6" href="$Groups_8cpp.html" title="lib/src/Groups.cpp" alt="" coords="562,87,690,114"/>
-<area shape="rect" id="node7" href="$Shapes_8cpp.html" title="lib/src/Shapes.cpp" alt="" coords="714,87,845,114"/>
-<area shape="rect" id="node8" href="$Tables_8cpp.html" title="lib/src/Tables.cpp" alt="" coords="869,87,994,114"/>
-<area shape="rect" id="node9" href="$beta_2shapes-main_8cpp.html" title="apps/3d_structures\l_beta/shapes&#45;main.cpp" alt="" coords="1018,80,1175,121"/>
+<area shape="rect" id="node2" href="$Attributes_8cpp.html" title="lib/src/Attributes.cpp" alt="" coords="5,95,148,121"/>
+<area shape="rect" id="node3" href="$databases_8cpp.html" title="lib/src/databases.cpp" alt="" coords="166,184,313,211"/>
+<area shape="rect" id="node4" href="$Database__impl_8hpp.html" title="lib/private/Database\l_impl.hpp" alt="" coords="223,87,362,129"/>
+<area shape="rect" id="node5" href="$export-hdf5_8cpp.html" title="lib/src/export&#45;hdf5.cpp" alt="" coords="387,95,537,121"/>
+<area shape="rect" id="node6" href="$Groups_8cpp.html" title="lib/src/Groups.cpp" alt="" coords="562,95,690,121"/>
+<area shape="rect" id="node7" href="$Shapes_8cpp.html" title="lib/src/Shapes.cpp" alt="" coords="714,95,845,121"/>
+<area shape="rect" id="node8" href="$Tables_8cpp.html" title="lib/src/Tables.cpp" alt="" coords="869,95,994,121"/>
+<area shape="rect" id="node9" href="$3d__structures__multithreaded_2shapes-main_8cpp.html" title="apps/3d_structures\l_multithreaded/shapes\l&#45;main.cpp" alt="" coords="1019,80,1172,136"/>
 </map>

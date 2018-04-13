@@ -1,12 +1,12 @@
 <map id="lib/private/Database_impl.hpp" name="lib/private/Database_impl.hpp">
-<area shape="rect" id="node2" href="$Database_8hpp.html" title="../icedb/Database.hpp" alt="" coords="599,95,750,121"/>
-<area shape="rect" id="node26" href="$hdf5__supplemental_8hpp.html" title="../private/hdf5_supplemental.hpp" alt="" coords="1094,244,1305,271"/>
-<area shape="rect" id="node8" href="$util_8hpp.html" title="util.hpp" alt="" coords="188,319,252,345"/>
-<area shape="rect" id="node11" href="$Data__Types_8hpp.html" title="Data_Types.hpp" alt="" coords="1048,393,1167,420"/>
-<area shape="rect" id="node17" href="$fs_8hpp.html" title="fs.hpp" alt="" coords="910,319,969,345"/>
-<area shape="rect" id="node18" href="$Group_8hpp.html" title="Group.hpp" alt="" coords="485,169,568,196"/>
-<area shape="rect" id="node12" href="$defs_8h.html" title="defs.h" alt="" coords="1220,468,1278,495"/>
-<area shape="rect" id="node21" href="$Attribute_8hpp.html" title="Attribute.hpp" alt="" coords="478,319,574,345"/>
-<area shape="rect" id="node24" href="$Table_8hpp.html" title="Table.hpp" alt="" coords="327,244,406,271"/>
-<area shape="rect" id="node32" href="$hdf5__load_8h.html" title="hdf5_load.h" alt="" coords="1771,319,1860,345"/>
+<area shape="rect" id="node2" href="$Database_8hpp.html" title="../icedb/Database.hpp" alt="" coords="1149,95,1299,121"/>
+<area shape="rect" id="node26" href="$hdf5__supplemental_8hpp.html" title="../private/hdf5_supplemental.hpp" alt="" coords="595,244,805,271"/>
+<area shape="rect" id="node8" href="$util_8hpp.html" title="util.hpp" alt="" coords="745,319,809,345"/>
+<area shape="rect" id="node13" href="$Data__Types_8hpp.html" title="Data_Types.hpp" alt="" coords="1727,393,1846,420"/>
+<area shape="rect" id="node17" href="$fs_8hpp.html" title="fs.hpp" alt="" coords="985,319,1044,345"/>
+<area shape="rect" id="node18" href="$Group_8hpp.html" title="Group.hpp" alt="" coords="1276,169,1359,196"/>
+<area shape="rect" id="node9" href="$defs_8h.html" title="defs.h" alt="" coords="1424,468,1483,495"/>
+<area shape="rect" id="node21" href="$Attribute_8hpp.html" title="Attribute.hpp" alt="" coords="1380,319,1476,345"/>
+<area shape="rect" id="node24" href="$Table_8hpp.html" title="Table.hpp" alt="" coords="1550,244,1629,271"/>
+<area shape="rect" id="node32" href="$hdf5__load_8h.html" title="hdf5_load.h" alt="" coords="374,319,463,345"/>
 </map>

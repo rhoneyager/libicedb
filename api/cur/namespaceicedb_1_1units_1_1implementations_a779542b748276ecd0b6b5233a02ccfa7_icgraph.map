@@ -1,0 +1,14 @@
+<map id="icedb::units::implementations::_init" name="icedb::units::implementations::_init">
+<area shape="rect" id="node2" href="$classicedb_1_1units_1_1converter.html#a56e2a91b09d1f3e9fecf3fb4047723ee" title="Check if two units can be interconverted. " alt="" coords="245,71,396,112"/>
+<area shape="rect" id="node5" href="$classicedb_1_1units_1_1conv__spec.html#abb22e60aeb52fbea75bb8f57617c5d6d" title="icedb::units::conv\l_spec::conv_spec" alt="" coords="742,133,870,175"/>
+<area shape="rect" id="node9" href="$classicedb_1_1units_1_1converter.html#a8f3fd79b5780d57236832519db509fad" title="icedb::units::converter\l::converter" alt="" coords="245,253,396,295"/>
+<area shape="rect" id="node12" href="$classicedb_1_1units_1_1converter.html#a7419a57b8001a63747f9cb56821213d8" title="icedb::units::converter\l::getConverter" alt="" coords="245,136,396,177"/>
+<area shape="rect" id="node3" href="$structicedb_1_1units_1_1implementations_1_1spectralUnits.html#a40e7afa1de45303ec30ca7423e560faf" title="icedb::units::implementations\l::spectralUnits::canConvert" alt="" coords="461,5,653,47"/>
+<area shape="rect" id="node4" href="$structicedb_1_1units_1_1implementations_1_1spectralUnits.html#a8f1fdb7b365bef929ef6c362863b133a" title="icedb::units::implementations\l::spectralUnits::constructConverter" alt="" coords="444,71,671,112"/>
+<area shape="rect" id="node6" href="$classicedb_1_1units_1_1conv__spec.html#a2babec75e3ea94075b1b281c4d8201df" title="icedb::units::conv\l_spec::generate" alt="" coords="941,133,1067,175"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1refract.html#ac186839a68c0b72ab73703df003309ea" title="icedb::refract::prepRefract" alt="" coords="1115,141,1289,167"/>
+<area shape="rect" id="node8" href="$refract_2main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="1337,141,1388,167"/>
+<area shape="rect" id="node10" href="$classicedb_1_1units_1_1converter.html#ab09de3b809394ab2a3c9e36a4c2d955b" title="icedb::units::converter\l::generate" alt="" coords="482,253,633,295"/>
+<area shape="rect" id="node11" href="$namespaceicedb_1_1refract.html#a0c6930be450eb25a6818b35115007e1b" title="icedb::refract::prepRefract" alt="" coords="719,261,893,287"/>
+<area shape="rect" id="node13" href="$classicedb_1_1units_1_1converter.html#a4969fa404a2cc44f7014f9f5b7a72b46" title="icedb::units::converter\l::converter" alt="" coords="482,136,633,177"/>
+</map>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>icedb: apps/3d_structures/shapeIOtextParsers.cpp File Reference</title>
+<title>icedb: apps/3d_structures_multithreaded/shapeIOtextParsers.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">icedb
-   &#160;<span id="projectnumber">version 0.4.2</span>
+   &#160;<span id="projectnumber">version 0.5.1</span>
    </div>
    <div id="projectbrief">Snow particle scattering database API</div>
   </td>
@@ -60,12 +60,13 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_9654b8d08f4bba4e84b362c5fd320bee.html">apps</a></li><li class="navelem"><a class="el" href="dir_55f53465675dacbaad7818099a930c74.html">3d_structures</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_9654b8d08f4bba4e84b362c5fd320bee.html">apps</a></li><li class="navelem"><a class="el" href="dir_15ba73567231a09ecfc680f856008f8e.html">3d_structures_multithreaded</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">shapeIOtextParsers.cpp File Reference</div>  </div>
@@ -75,29 +76,30 @@ $(function() {
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;boost/iostreams/copy.hpp&gt;</code><br />
-<code>#include &lt;boost/iostreams/filtering_stream.hpp&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;boost/spirit/include/karma.hpp&gt;</code><br />
-<code>#include &lt;boost/spirit/include/qi.hpp&gt;</code><br />
 <code>#include &lt;boost/spirit/include/phoenix_core.hpp&gt;</code><br />
 <code>#include &lt;boost/spirit/include/phoenix_operator.hpp&gt;</code><br />
 <code>#include &lt;boost/spirit/include/phoenix_stl.hpp&gt;</code><br />
-<code>#include &lt;fstream&gt;</code><br />
-<code>#include &quot;<a class="el" href="apps_23d__structures_2shape_8hpp_source.html">shape.hpp</a>&quot;</code><br />
+<code>#include &lt;boost/iostreams/copy.hpp&gt;</code><br />
+<code>#include &lt;boost/iostreams/filtering_stream.hpp&gt;</code><br />
+<code>#include &lt;boost/spirit/include/qi.hpp&gt;</code><br />
+<code>#include &quot;<a class="el" href="apps_23d__structures__multithreaded_2shape_8hpp_source.html">shape.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for shapeIOtextParsers.cpp:</div>
 <div class="dyncontent">
-<div class="center"><img src="shapeIOtextParsers_8cpp__incl.png" border="0" usemap="#apps_23d__structures_2shapeIOtextParsers_8cpp" alt=""/></div>
-<map name="apps_23d__structures_2shapeIOtextParsers_8cpp" id="apps_23d__structures_2shapeIOtextParsers_8cpp">
-<area shape="rect" id="node14" href="apps_23d__structures_2shape_8hpp.html" title="shape.hpp" alt="" coords="1564,102,1647,129"/>
-<area shape="rect" id="node17" href="lib_2icedb_2shape_8hpp.html" title="icedb/shape.hpp" alt="" coords="659,184,776,211"/>
-<area shape="rect" id="node18" href="fs_8hpp.html" title="fs.hpp" alt="" coords="392,408,451,435"/>
-<area shape="rect" id="node25" href="Table_8hpp.html" title="Table.hpp" alt="" coords="601,333,679,360"/>
-<area shape="rect" id="node26" href="Attribute_8hpp.html" title="Attribute.hpp" alt="" coords="720,408,816,435"/>
-<area shape="rect" id="node31" href="Group_8hpp.html" title="Group.hpp" alt="" coords="847,259,929,285"/>
-<area shape="rect" id="node19" href="Data__Types_8hpp.html" title="Data_Types.hpp" alt="" coords="405,483,523,509"/>
-<area shape="rect" id="node20" href="defs_8h.html" title="defs.h" alt="" coords="392,557,451,584"/>
-<area shape="rect" id="node32" href="util_8hpp.html" title="util.hpp" alt="" coords="995,333,1059,360"/>
+<div class="center"><img src="shapeIOtextParsers_8cpp__incl.png" border="0" usemap="#apps_23d__structures__multithreaded_2shapeIOtextParsers_8cpp" alt=""/></div>
+<map name="apps_23d__structures__multithreaded_2shapeIOtextParsers_8cpp" id="apps_23d__structures__multithreaded_2shapeIOtextParsers_8cpp">
+<area shape="rect" id="node15" href="apps_23d__structures__multithreaded_2shape_8hpp.html" title="shape.hpp" alt="" coords="663,117,745,143"/>
+<area shape="rect" id="node18" href="lib_2icedb_2shape_8hpp.html" title="icedb/shape.hpp" alt="" coords="645,199,763,225"/>
+<area shape="rect" id="node19" href="fs_8hpp.html" title="fs.hpp" alt="" coords="347,423,405,449"/>
+<area shape="rect" id="node26" href="Table_8hpp.html" title="Table.hpp" alt="" coords="602,348,681,375"/>
+<area shape="rect" id="node27" href="Attribute_8hpp.html" title="Attribute.hpp" alt="" coords="776,423,872,449"/>
+<area shape="rect" id="node32" href="Group_8hpp.html" title="Group.hpp" alt="" coords="715,273,797,300"/>
+<area shape="rect" id="node20" href="Data__Types_8hpp.html" title="Data_Types.hpp" alt="" coords="314,497,433,524"/>
+<area shape="rect" id="node21" href="defs_8h.html" title="defs.h" alt="" coords="428,572,487,599"/>
+<area shape="rect" id="node33" href="util_8hpp.html" title="util.hpp" alt="" coords="457,497,521,524"/>
 </map>
 </div>
 </div>
@@ -115,12 +117,17 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceicedb_1_1Examples_1_1Shapes"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html">icedb::Examples::Shapes</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a599c03dc0e32c96863b3fbeca7bef935"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="shapeIOtextParsers_8cpp.html#a599c03dc0e32c96863b3fbeca7bef935">_HAS_AUTO_PTR_ETC</a>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:a599c03dc0e32c96863b3fbeca7bef935"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0d0f80130c54c020eb78e46cc0fe101d"><td class="memTemplParams" colspan="2">template&lt;typename Iterator &gt; </td></tr>
-<tr class="memitem:a0d0f80130c54c020eb78e46cc0fe101d"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a0d0f80130c54c020eb78e46cc0fe101d">anonymous_namespace{shapeIOtextParsers.cpp}::parse_shapefile_entries</a> (Iterator first, Iterator last, std::vector&lt; long &gt; &amp;v)</td></tr>
-<tr class="memdesc:a0d0f80130c54c020eb78e46cc0fe101d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses space-separated shapefile entries.  <a href="namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a0d0f80130c54c020eb78e46cc0fe101d">More...</a><br /></td></tr>
-<tr class="separator:a0d0f80130c54c020eb78e46cc0fe101d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a705c1ebc6b7a4f400cb8d225dfd2d26b"><td class="memTemplParams" colspan="2">template&lt;typename Iterator &gt; </td></tr>
+<tr class="memitem:a705c1ebc6b7a4f400cb8d225dfd2d26b"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b">anonymous_namespace{shapeIOtextParsers.cpp}::parse_shapefile_entries</a> (Iterator first, Iterator last, std::vector&lt; float &gt; &amp;v)</td></tr>
+<tr class="memdesc:a705c1ebc6b7a4f400cb8d225dfd2d26b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses space-separated shapefile entries.  <a href="namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b">More...</a><br /></td></tr>
+<tr class="separator:a705c1ebc6b7a4f400cb8d225dfd2d26b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9119256a03fa440b5b7102800d756198"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , typename Container &gt; </td></tr>
 <tr class="memitem:a9119256a03fa440b5b7102800d756198"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a9119256a03fa440b5b7102800d756198">anonymous_namespace{shapeIOtextParsers.cpp}::print_shapefile_entries</a> (OutputIterator &amp;sink, Container const &amp;v)</td></tr>
 <tr class="memdesc:a9119256a03fa440b5b7102800d756198"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used in quickly printing shapefile.  <a href="namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a9119256a03fa440b5b7102800d756198">More...</a><br /></td></tr>
@@ -128,22 +135,39 @@ Functions</h2></td></tr>
 <tr class="memitem:a3590d9b16b4a098b6ddbcec4819f4c52"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , typename Container &gt; </td></tr>
 <tr class="memitem:a3590d9b16b4a098b6ddbcec4819f4c52"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a3590d9b16b4a098b6ddbcec4819f4c52">anonymous_namespace{shapeIOtextParsers.cpp}::print_shapefile_pts</a> (OutputIterator &amp;sink, Container const &amp;v)</td></tr>
 <tr class="separator:a3590d9b16b4a098b6ddbcec4819f4c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c7e41d500cd4ceb231b65841914ba2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#a0c7e41d500cd4ceb231b65841914ba2e">icedb::Examples::Shapes::readHeader</a> (const char *in, std::string &amp;desc, size_t &amp;np, size_t &amp;headerEnd)</td></tr>
+<tr class="separator:a0c7e41d500cd4ceb231b65841914ba2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af97042755647e1f2610ca4301c1eb91a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#af97042755647e1f2610ca4301c1eb91a">icedb::Examples::Shapes::readDDSCATtextContents</a> (const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic &amp;p)</td></tr>
+<tr class="memdesc:af97042755647e1f2610ca4301c1eb91a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read ddscat text contents.  <a href="namespaceicedb_1_1Examples_1_1Shapes.html#af97042755647e1f2610ca4301c1eb91a">More...</a><br /></td></tr>
+<tr class="separator:af97042755647e1f2610ca4301c1eb91a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4f846f5268e26fe554768d8e0844f0d"><td class="memItemLeft" align="right" valign="top">ShapeDataBasic&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#af4f846f5268e26fe554768d8e0844f0d">icedb::Examples::Shapes::readDDSCAT</a> (const char *in)</td></tr>
 <tr class="separator:af4f846f5268e26fe554768d8e0844f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa83815532aea205d67b56220bc965228"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#aa83815532aea205d67b56220bc965228">icedb::Examples::Shapes::readHeader</a> (const char *in, std::string &amp;desc, size_t &amp;np, std::shared_ptr&lt;::scatdb::shape::shapeHeaderStorage_t &gt; hdr, size_t &amp;headerEnd)</td></tr>
-<tr class="separator:aa83815532aea205d67b56220bc965228"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e0f657be09aae9687aa63bed84f46a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#a8e0f657be09aae9687aa63bed84f46a1">icedb::Examples::Shapes::readTextContents</a> (const char *iin, size_t headerEnd, std::shared_ptr&lt;::scatdb::shape::shapeStorage_t &gt; data)</td></tr>
-<tr class="separator:a8e0f657be09aae9687aa63bed84f46a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e1550513b6ba45dcc21c457ebaef7ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#a9e1550513b6ba45dcc21c457ebaef7ec">icedb::Examples::Shapes::writeDDSCAT</a> (const std::string &amp;filename, const ShapeDataBasic &amp;p)</td></tr>
 <tr class="separator:a9e1550513b6ba45dcc21c457ebaef7ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab50b849f9533e0dcccd4eb57e19310f0"><td class="memItemLeft" align="right" valign="top">ShapeDataBasic&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#ab50b849f9533e0dcccd4eb57e19310f0">icedb::Examples::Shapes::readTextRaw</a> (const char *iin)</td></tr>
-<tr class="memdesc:ab50b849f9533e0dcccd4eb57e19310f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple file assuming one substance, with 3-column rows, each representing a single point.  <a href="namespaceicedb_1_1Examples_1_1Shapes.html#ab50b849f9533e0dcccd4eb57e19310f0">More...</a><br /></td></tr>
-<tr class="separator:ab50b849f9533e0dcccd4eb57e19310f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a5d401c61b223e36383d283c836a956"><td class="memItemLeft" align="right" valign="top">ShapeDataBasic&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#a2a5d401c61b223e36383d283c836a956">icedb::Examples::Shapes::readRawText</a> (const char *iin)</td></tr>
+<tr class="separator:a2a5d401c61b223e36383d283c836a956"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada655bbe1a5eec60651e64f0bc9fa245"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#ada655bbe1a5eec60651e64f0bc9fa245">icedb::Examples::Shapes::writeTextRaw</a> (const std::string &amp;filename, const ShapeDataBasic &amp;p)</td></tr>
 <tr class="separator:ada655bbe1a5eec60651e64f0bc9fa245"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bc9f6fc2a9e7cab2a01c3ef5af40106"><td class="memItemLeft" align="right" valign="top">ShapeDataBasic&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106">icedb::Examples::Shapes::readTextFile</a> (const std::string &amp;filename)</td></tr>
 <tr class="separator:a7bc9f6fc2a9e7cab2a01c3ef5af40106"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a599c03dc0e32c96863b3fbeca7bef935"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a599c03dc0e32c96863b3fbeca7bef935">&#9670;&nbsp;</a></span>_HAS_AUTO_PTR_ETC</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define _HAS_AUTO_PTR_ETC&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="shapeIOtextParsers_8cpp_source.html#l00004">4</a> of file <a class="el" href="shapeIOtextParsers_8cpp_source.html">shapeIOtextParsers.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,5 +1,25 @@
 var searchData=
 [
-  ['unlinktable',['unlinkTable',['../classicedb_1_1Tables_1_1CanHaveTables.html#ade0b5a88f5f8baf5e3dfe10d6a621178',1,'icedb::Tables::CanHaveTables']]],
-  ['usezlib',['useZLIB',['../namespaceicedb_1_1fs_1_1hdf5.html#aa823e59a8819be3d124fc64700385fe7',1,'icedb::fs::hdf5::useZLIB()'],['../namespaceicedb_1_1fs_1_1hdf5.html#ae7edb04e52e609a2f496cffe48ae7074',1,'icedb::fs::hdf5::useZLIB(int val)']]]
+  ['readall',['readAll',['../classicedb_1_1Tables_1_1Table.html#acc7a50a4adf8598bee76c349d3b4108b',1,'icedb::Tables::Table']]],
+  ['readattr',['readAttr',['../namespaceicedb_1_1fs_1_1hdf5.html#a592df7a9168bb41a3e2a4f6eb25a85bc',1,'icedb::fs::hdf5']]],
+  ['readattrarray',['readAttrArray',['../namespaceicedb_1_1fs_1_1hdf5.html#aad51f7705d96043684dc0cb2c176015a',1,'icedb::fs::hdf5']]],
+  ['readattribute',['readAttribute',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a618550653303b22ab557e5a094da4bb6',1,'icedb::Attributes::CanHaveAttributes::readAttribute(gsl::not_null&lt; const H5::H5Object *&gt; obj, const std::string &amp;attributeName)'],['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a5b000f9eddfb7bdf5b11bd046fb0baee',1,'icedb::Attributes::CanHaveAttributes::readAttribute(const std::string &amp;attributeName) const']]],
+  ['readattributedata',['readAttributeData',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#adad73321598114379cef59a417421427',1,'icedb::Attributes::CanHaveAttributes::readAttributeData(gsl::not_null&lt; const H5::H5Object *&gt; parent, const std::string &amp;attributeName, std::vector&lt; size_t &gt; &amp;dimensions, std::vector&lt; DataType &gt; &amp;data)'],['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a1fadaaa55831998b3e8e073a05dfce6c',1,'icedb::Attributes::CanHaveAttributes::readAttributeData(const std::string &amp;attributeName, std::vector&lt; size_t &gt; &amp;dimensions, std::vector&lt; DataType &gt; &amp;data) const']]],
+  ['readattrvector',['readAttrVector',['../namespaceicedb_1_1fs_1_1hdf5.html#af558083f6e733bbc17d4b5bda0152461',1,'icedb::fs::hdf5']]],
+  ['readdataset',['readDataset',['../namespaceicedb_1_1Examples_1_1Shapes.html#aabe8f07a066c407dcce5f20aa4be7e2f',1,'icedb::Examples::Shapes']]],
+  ['readdatasetarray',['readDatasetArray',['../namespaceicedb_1_1fs_1_1hdf5.html#a37f4fc10a7c79532e68a38263b322088',1,'icedb::fs::hdf5::readDatasetArray(gsl::not_null&lt; Container *&gt; obj, gsl::not_null&lt; const char *&gt; name, gsl::not_null&lt; DataType *&gt; values)'],['../namespaceicedb_1_1fs_1_1hdf5.html#a6da122c62bb60e88fcf75fb568ff1fd8',1,'icedb::fs::hdf5::readDatasetArray(gsl::not_null&lt; Container *&gt; dataset, gsl::not_null&lt; DataType *&gt; values)']]],
+  ['readdatasetdimensions',['readDatasetDimensions',['../namespaceicedb_1_1fs_1_1hdf5.html#a0eda81939d92d78dd468c88f30116580',1,'icedb::fs::hdf5::readDatasetDimensions(gsl::not_null&lt; H5::DataSet *&gt; dataset, std::vector&lt; size_t &gt; &amp;dims)'],['../namespaceicedb_1_1fs_1_1hdf5.html#a5b435c547b03ec9ddee85d5a5a39562b',1,'icedb::fs::hdf5::readDatasetDimensions(gsl::not_null&lt; Container *&gt; obj, gsl::not_null&lt; const char *&gt; name, std::vector&lt; size_t &gt; &amp;out)']]],
+  ['readdatasetnumdimensions',['readDatasetNumDimensions',['../namespaceicedb_1_1fs_1_1hdf5.html#a89c4a48a28e49347217b0e7e19040395',1,'icedb::fs::hdf5']]],
+  ['readddscat',['readDDSCAT',['../namespaceicedb_1_1Examples_1_1Shapes.html#af4f846f5268e26fe554768d8e0844f0d',1,'icedb::Examples::Shapes']]],
+  ['readddscattextcontents',['readDDSCATtextContents',['../namespaceicedb_1_1Examples_1_1Shapes.html#af97042755647e1f2610ca4301c1eb91a',1,'icedb::Examples::Shapes']]],
+  ['readheader',['readHeader',['../namespaceicedb_1_1Examples_1_1Shapes.html#a0c7e41d500cd4ceb231b65841914ba2e',1,'icedb::Examples::Shapes']]],
+  ['readpsufile',['readPSUfile',['../namespaceicedb_1_1Examples_1_1Shapes.html#ab56cd487345b13b70d602fd92eb2c6ab',1,'icedb::Examples::Shapes']]],
+  ['readrawtext',['readRawText',['../namespaceicedb_1_1Examples_1_1Shapes.html#a2a5d401c61b223e36383d283c836a956',1,'icedb::Examples::Shapes']]],
+  ['readtask',['readtask',['../3d__structures__multithreaded_2shapes-main_8cpp.html#ae40c007b788d66f509cf4110d9c98e2a',1,'shapes-main.cpp']]],
+  ['readtextfile',['readTextFile',['../namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106',1,'icedb::Examples::Shapes']]],
+  ['register_5flog_5fhandler',['register_log_handler',['../namespaceicedb_1_1logging.html#afed24f88bd9b42b0a3470bf6ae7abe8e',1,'icedb::logging']]],
+  ['registerfunc',['registerFunc',['../structicedb_1_1refract_1_1provider__s.html#a04559a5186d00f5fb9fd4a43939daa54',1,'icedb::refract::provider_s']]],
+  ['requiresoptionalpropertiesstruct',['requiresOptionalPropertiesStruct',['../structicedb_1_1Shapes_1_1NewShapeRequiredProperties.html#a88e02959171af230c4e7938f62b0df97',1,'icedb::Shapes::NewShapeRequiredProperties']]],
+  ['resolvesymlinkpathandforceexists',['resolveSymlinkPathandForceExists',['../namespaceicedb_1_1fs_1_1impl.html#af0cc17c58406b9ca481838b4cd1bbfa7',1,'icedb::fs::impl']]],
+  ['resolvesymlinks',['resolveSymLinks',['../namespaceicedb_1_1fs_1_1impl.html#ae5c49e76db60602cedd6dd8317bceec1',1,'icedb::fs::impl']]]
 ];

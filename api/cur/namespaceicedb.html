@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">icedb
-   &#160;<span id="projectnumber">version 0.4.2</span>
+   &#160;<span id="projectnumber">version 0.5.1</span>
    </div>
    <div id="projectbrief">Snow particle scattering database API</div>
   </td>
@@ -62,7 +62,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">icedb Namespace Reference</div>  </div>
 </div><!--header-->
@@ -79,6 +80,8 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceicedb_1_1Databases"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Databases.html">Databases</a></td></tr>
 <tr class="memdesc:namespaceicedb_1_1Databases"><td class="mdescLeft">&#160;</td><td class="mdescRight">Everything related to opening and manipulating icedb databases. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1error"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1error.html">error</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceicedb_1_1Examples"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Examples.html">Examples</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceicedb_1_1fs"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1fs.html">fs</a></td></tr>
@@ -86,19 +89,49 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceicedb_1_1Groups"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Groups.html">Groups</a></td></tr>
 <tr class="memdesc:namespaceicedb_1_1Groups"><td class="mdescLeft">&#160;</td><td class="mdescRight">All stuff related to <a class="el" href="namespaceicedb_1_1Groups.html" title="All stuff related to Groups. ">Groups</a>. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1logging"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1logging.html">logging</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceicedb_1_1mem"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1mem.html">mem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1os__functions"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1os__functions.html">os_functions</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1refract"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1refract.html">refract</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1registry"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1registry.html">registry</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceicedb_1_1Shapes"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Shapes.html">Shapes</a></td></tr>
 <tr class="memdesc:namespaceicedb_1_1Shapes"><td class="mdescLeft">&#160;</td><td class="mdescRight">All facilities to manipulate particle shapes. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1splitSet"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1splitSet.html">splitSet</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceicedb_1_1Tables"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1Tables.html">Tables</a></td></tr>
 <tr class="memdesc:namespaceicedb_1_1Tables"><td class="mdescLeft">&#160;</td><td class="mdescRight">Everything to do with <a class="el" href="namespaceicedb_1_1Tables.html" title="Everything to do with Tables is located in this namespace. ">Tables</a> is located in this namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1units"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1units.html">units</a></td></tr>
+<tr class="memdesc:namespaceicedb_1_1units"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides convenient runtime conversion functions for converting different units. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1versioning"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1versioning.html">versioning</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceicedb_1_1zeros"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1zeros.html">zeros</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a385d10207bd371dc0ce173665b8a12a5"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, <a class="el" href="namespaceicedb_1_1fs.html#a0e8b791e46d8baf231a3ad74c3af83eb">fs::ObjectTypes</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#a385d10207bd371dc0ce173665b8a12a5">ObjectIdPathSet_Type</a></td></tr>
 <tr class="separator:a385d10207bd371dc0ce173665b8a12a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a2cd1f80c4c0771adf6665083598e8320"><td class="memItemLeft" align="right" valign="top"><a class="el" href="defs_8h.html#a9fa71cff718bbe10634bb07b8e8a003a">ICEDB_SYMBOL_SHARED</a> void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320">_malloc</a> (size_t numBytes)</td></tr>
+<tr class="separator:a2cd1f80c4c0771adf6665083598e8320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c72382b614c366705909934c70daf6e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="defs_8h.html#a9fa71cff718bbe10634bb07b8e8a003a">ICEDB_SYMBOL_SHARED</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e">_free</a> (void *obj)</td></tr>
+<tr class="separator:a9c72382b614c366705909934c70daf6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a673763b0d4d07fe7a56b441512beba"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a8a673763b0d4d07fe7a56b441512beba"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba">malloc</a> (size_t numBytes)</td></tr>
+<tr class="separator:a8a673763b0d4d07fe7a56b441512beba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe3b6f8813a7e6ea428f5b5aa0bd34e7"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:afe3b6f8813a7e6ea428f5b5aa0bd34e7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7">free</a> (T *obj)</td></tr>
+<tr class="separator:afe3b6f8813a7e6ea428f5b5aa0bd34e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a385d10207bd371dc0ce173665b8a12a5"></a>
@@ -114,6 +147,293 @@ Typedefs</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="Database_8hpp_source.html#l00041">41</a> of file <a class="el" href="Database_8hpp_source.html">Database.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a9c72382b614c366705909934c70daf6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c72382b614c366705909934c70daf6e">&#9670;&nbsp;</a></span>_free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="defs_8h.html#a4bd3acec94b4c3f2380272fbec745979">DL_ICEDB</a> void icedb::_free </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Free memory region. Should not be double-freed. </p>
+
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00130">130</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="defs_8h_source.html#l00012">ICEDB_END_DECL</a>, and <a class="el" href="util_8cpp_source.html#l00097">ICEDB_free()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="util_8hpp_source.html#l00021">free()</a>, and <a class="el" href="util_8hpp_source.html#l00013">malloc()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6">ICEDB_free</a>(obj); }</div><div class="ttc" id="util_8cpp_html_a544a70a2fcffd7aeed87148396273bb6"><div class="ttname"><a href="util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6">ICEDB_free</a></div><div class="ttdeci">ICEDB_SYMBOL_SHARED void ICEDB_free(void *obj)</div><div class="ttdoc">Free memory region. Should not be double-freed. </div><div class="ttdef"><b>Definition:</b> <a href="util_8cpp_source.html#l00097">util.cpp:97</a></div></div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_a9c72382b614c366705909934c70daf6e_cgraph.png" border="0" usemap="#namespaceicedb_a9c72382b614c366705909934c70daf6e_cgraph" alt=""/></div>
+<map name="namespaceicedb_a9c72382b614c366705909934c70daf6e_cgraph" id="namespaceicedb_a9c72382b614c366705909934c70daf6e_cgraph">
+<area shape="rect" id="node2" href="util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="144,5,237,32"/>
+<area shape="rect" id="node3" href="namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="285,31,368,57"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_a9c72382b614c366705909934c70daf6e_icgraph.png" border="0" usemap="#namespaceicedb_a9c72382b614c366705909934c70daf6e_icgraph" alt=""/></div>
+<map name="namespaceicedb_a9c72382b614c366705909934c70daf6e_icgraph" id="namespaceicedb_a9c72382b614c366705909934c70daf6e_icgraph">
+<area shape="rect" id="node2" href="namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="152,551,235,577"/>
+<area shape="rect" id="node29" href="namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba" title="icedb::malloc" alt="" coords="144,711,243,737"/>
+<area shape="rect" id="node3" href="os__functions_8h.html#a7f6122f5c995bc31d7cf26ac84630937" title="ICEDB_enumModules" alt="" coords="734,863,886,889"/>
+<area shape="rect" id="node4" href="os__functions_8cpp.html#af4f62d181caf9309ba6cfe857eff8aa5" title="ICEDB_getAppDirI" alt="" coords="291,157,424,184"/>
+<area shape="rect" id="node11" href="util_8h.html#a9e776fddd6f4003c968a3f3f5fd76db5" title="Free memory region. Should not be double&#45;freed. " alt="" coords="311,551,404,577"/>
+<area shape="rect" id="node5" href="namespaceicedb_1_1os__functions.html#a30e68137fed2e2e285be3c56c72dafdc" title="icedb::os_functions\l::getAppDir" alt="" coords="508,209,643,250"/>
+<area shape="rect" id="node6" href="namespaceicedb_1_1os__functions.html#a8be1471b66a9646495040e4708366955" title="icedb::os_functions\l::getAppPath" alt="" coords="508,274,643,315"/>
+<area shape="rect" id="node7" href="os__functions_8h.html#a0da8e6e9cca42196a839acf37c6e32d1" title="ICEDB_getAppDir" alt="" coords="511,5,640,32"/>
+<area shape="rect" id="node8" href="os__functions_8h.html#afce9ef778259878534843863808dda9d" title="ICEDB_getAppDirC" alt="" coords="506,56,645,83"/>
+<area shape="rect" id="node9" href="os__functions_8h.html#ae89455ed221fb5db9baf787f27d2ca3d" title="ICEDB_getAppPath" alt="" coords="506,107,645,133"/>
+<area shape="rect" id="node10" href="os__functions_8h.html#aa64af1022f9daebf465cf66f1a0b9cf2" title="ICEDB_getAppPathC" alt="" coords="501,157,650,184"/>
+<area shape="rect" id="node12" href="error__context_8cpp.html#ab91d2c431ffceaa265e9ed357126be81" title="error_context_append" alt="" coords="502,711,649,737"/>
+<area shape="rect" id="node13" href="error__context_8cpp.html#a3724d26e6300b0ccbd2f484530e02b3d" title="error_context_create_impl" alt="" coords="489,441,661,468"/>
+<area shape="rect" id="node14" href="error_8cpp.html#a48898a57ba51434d47cda92e67e6a8f5" title="error_context_deallocate" alt="" coords="493,340,657,367"/>
+<area shape="rect" id="node16" href="error_8cpp.html#aebe12860da5e74e35d52efe056493e97" title="error_context_to_message" alt="" coords="487,492,663,519"/>
+<area shape="rect" id="node17" href="error_8cpp.html#a5a3a9d3bdece33a87ff23af77470304f" title="error_context_to_message_size" alt="" coords="472,609,679,636"/>
+<area shape="rect" id="node18" href="error__context_8cpp.html#a75a056618d2ef987f2e8cd63f4538d6b" title="error_context_widen" alt="" coords="506,660,645,687"/>
+<area shape="rect" id="node19" href="os__functions_8h.html#a76812af6ea15ba3e0d2be54e4dc0f8fb" title="ICEDB_free_enumModulesRes" alt="" coords="473,391,678,417"/>
+<area shape="rect" id="node20" href="namespaceicedb_1_1os__functions.html#a0dcb2270cb121fb0365afe0bc026e051" title="icedb::os_functions\l::populateOSstrings" alt="" coords="507,543,644,585"/>
+<area shape="rect" id="node15" href="namespaceicedb_1_1error.html#ab3af12d58809d796d165faa2e25ce15e" title="icedb::error::get_error\l_context_thread_local" alt="" coords="735,333,885,374"/>
+<area shape="rect" id="node21" href="os__functions_8h.html#a6087906119ecc126971b483bf6816022" title="ICEDB_getUserName" alt="" coords="734,523,886,549"/>
+<area shape="rect" id="node23" href="os__functions_8h.html#abae6c009622be4322436383382db19e3" title="ICEDB_getHostName" alt="" coords="734,580,886,607"/>
+<area shape="rect" id="node25" href="os__functions_8h.html#a6c6f63e439496d41afc7095cb7baa21c" title="ICEDB_getAppConfigDir" alt="" coords="727,640,893,667"/>
+<area shape="rect" id="node27" href="os__functions_8h.html#abd4d9eb9bb021c2e081864f1c66247aa" title="ICEDB_getHomeDir" alt="" coords="739,464,881,491"/>
+<area shape="rect" id="node22" href="namespaceicedb_1_1os__functions.html#afd122db35c7bc46804a85de67faa72f0" title="icedb::os_functions\l::getUserName" alt="" coords="941,511,1076,553"/>
+<area shape="rect" id="node24" href="namespaceicedb_1_1os__functions.html#aee2d308b703fb2c702d3734955136561" title="icedb::os_functions\l::getHostName" alt="" coords="941,577,1076,618"/>
+<area shape="rect" id="node26" href="namespaceicedb_1_1os__functions.html#aa77028c184adaba90c27cd5fefc3d38f" title="icedb::os_functions\l::getAppConfigDir" alt="" coords="941,642,1076,683"/>
+<area shape="rect" id="node28" href="namespaceicedb_1_1os__functions.html#affed33c077d37990f568af9efb095a7a" title="icedb::os_functions\l::getHomeDir" alt="" coords="941,446,1076,487"/>
+<area shape="rect" id="node30" href="util_8h.html#a96af861b569d0cb7ba1390fdd6e771a5" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="303,711,412,737"/>
+<area shape="rect" id="node31" href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="522,964,629,991"/>
+<area shape="rect" id="node32" href="error__context_8cpp.html#ab905211e79f36291dd563e1ad2c49935" title="error_context_copy" alt="" coords="509,812,642,839"/>
+<area shape="rect" id="node33" href="util_8h.html#acf805dcc80e9dd2d78603efe35f613f2" title="ICEDB_COMPAT_strdup_s" alt="" coords="483,761,668,788"/>
+<area shape="rect" id="node35" href="util_8h.html#a339d3af7c011d56db36f35a982bb6a13" title="ICEDB_COMPAT_wcsdup_s" alt="" coords="478,913,673,940"/>
+<area shape="rect" id="node34" href="error__context_8cpp.html#aafb4e48d1c9ffff824a2a1770a52fc8a" title="error_context_add_string" alt="" coords="727,761,893,788"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a2cd1f80c4c0771adf6665083598e8320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cd1f80c4c0771adf6665083598e8320">&#9670;&nbsp;</a></span>_malloc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="defs_8h.html#a4bd3acec94b4c3f2380272fbec745979">DL_ICEDB</a> void * icedb::_malloc </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numBytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted. </p>
+
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00129">129</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="util_8cpp_source.html#l00090">ICEDB_malloc()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="util_8hpp_source.html#l00013">malloc()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="util_8cpp.html#ab8cdc0bdd69235af5e6f92fa50da3ee2">ICEDB_malloc</a>(numBytes); }</div><div class="ttc" id="util_8cpp_html_ab8cdc0bdd69235af5e6f92fa50da3ee2"><div class="ttname"><a href="util_8cpp.html#ab8cdc0bdd69235af5e6f92fa50da3ee2">ICEDB_malloc</a></div><div class="ttdeci">ICEDB_SYMBOL_SHARED void * ICEDB_malloc(size_t numBytes)</div><div class="ttdoc">Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted...</div><div class="ttdef"><b>Definition:</b> <a href="util_8cpp_source.html#l00090">util.cpp:90</a></div></div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_cgraph.png" border="0" usemap="#namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_cgraph" alt=""/></div>
+<map name="namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_cgraph" id="namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_cgraph">
+<area shape="rect" id="node2" href="util_8cpp.html#ab8cdc0bdd69235af5e6f92fa50da3ee2" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="160,5,269,32"/>
+<area shape="rect" id="node3" href="namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba" title="icedb::malloc" alt="" coords="317,31,416,57"/>
+<area shape="rect" id="node4" href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="464,31,555,57"/>
+<area shape="rect" id="node5" href="util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="603,5,696,32"/>
+<area shape="rect" id="node6" href="namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="744,31,827,57"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_icgraph.png" border="0" usemap="#namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_icgraph" alt=""/></div>
+<map name="namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_icgraph" id="namespaceicedb_a2cd1f80c4c0771adf6665083598e8320_icgraph">
+<area shape="rect" id="node2" href="namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba" title="icedb::malloc" alt="" coords="160,208,259,235"/>
+<area shape="rect" id="node3" href="util_8h.html#a96af861b569d0cb7ba1390fdd6e771a5" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="307,233,416,260"/>
+<area shape="rect" id="node4" href="error__context_8cpp.html#ab91d2c431ffceaa265e9ed357126be81" title="error_context_append" alt="" coords="494,5,641,32"/>
+<area shape="rect" id="node5" href="error__context_8cpp.html#ab905211e79f36291dd563e1ad2c49935" title="error_context_copy" alt="" coords="501,56,634,83"/>
+<area shape="rect" id="node6" href="error__context_8cpp.html#a3724d26e6300b0ccbd2f484530e02b3d" title="error_context_create_impl" alt="" coords="481,107,653,133"/>
+<area shape="rect" id="node7" href="error_8cpp.html#aebe12860da5e74e35d52efe056493e97" title="error_context_to_message" alt="" coords="479,157,655,184"/>
+<area shape="rect" id="node8" href="error_8cpp.html#a5a3a9d3bdece33a87ff23af77470304f" title="error_context_to_message_size" alt="" coords="464,208,671,235"/>
+<area shape="rect" id="node9" href="error__context_8cpp.html#a75a056618d2ef987f2e8cd63f4538d6b" title="error_context_widen" alt="" coords="498,259,637,285"/>
+<area shape="rect" id="node10" href="util_8h.html#acf805dcc80e9dd2d78603efe35f613f2" title="ICEDB_COMPAT_strdup_s" alt="" coords="475,309,660,336"/>
+<area shape="rect" id="node12" href="os__functions_8h.html#a7f6122f5c995bc31d7cf26ac84630937" title="ICEDB_enumModules" alt="" coords="726,360,878,387"/>
+<area shape="rect" id="node13" href="util_8h.html#a339d3af7c011d56db36f35a982bb6a13" title="ICEDB_COMPAT_wcsdup_s" alt="" coords="470,411,665,437"/>
+<area shape="rect" id="node14" href="namespaceicedb_1_1os__functions.html#a0dcb2270cb121fb0365afe0bc026e051" title="icedb::os_functions\l::populateOSstrings" alt="" coords="499,462,636,503"/>
+<area shape="rect" id="node11" href="error__context_8cpp.html#aafb4e48d1c9ffff824a2a1770a52fc8a" title="error_context_add_string" alt="" coords="719,309,885,336"/>
+<area shape="rect" id="node15" href="os__functions_8h.html#a6087906119ecc126971b483bf6816022" title="ICEDB_getUserName" alt="" coords="726,412,878,439"/>
+<area shape="rect" id="node17" href="os__functions_8h.html#abae6c009622be4322436383382db19e3" title="ICEDB_getHostName" alt="" coords="726,467,878,493"/>
+<area shape="rect" id="node19" href="os__functions_8h.html#a6c6f63e439496d41afc7095cb7baa21c" title="ICEDB_getAppConfigDir" alt="" coords="719,524,885,551"/>
+<area shape="rect" id="node21" href="os__functions_8h.html#abd4d9eb9bb021c2e081864f1c66247aa" title="ICEDB_getHomeDir" alt="" coords="731,584,873,611"/>
+<area shape="rect" id="node16" href="namespaceicedb_1_1os__functions.html#afd122db35c7bc46804a85de67faa72f0" title="icedb::os_functions\l::getUserName" alt="" coords="933,390,1068,431"/>
+<area shape="rect" id="node18" href="namespaceicedb_1_1os__functions.html#aee2d308b703fb2c702d3734955136561" title="icedb::os_functions\l::getHostName" alt="" coords="933,455,1068,497"/>
+<area shape="rect" id="node20" href="namespaceicedb_1_1os__functions.html#aa77028c184adaba90c27cd5fefc3d38f" title="icedb::os_functions\l::getAppConfigDir" alt="" coords="933,521,1068,562"/>
+<area shape="rect" id="node22" href="namespaceicedb_1_1os__functions.html#affed33c077d37990f568af9efb095a7a" title="icedb::os_functions\l::getHomeDir" alt="" coords="933,586,1068,627"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="afe3b6f8813a7e6ea428f5b5aa0bd34e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe3b6f8813a7e6ea428f5b5aa0bd34e7">&#9670;&nbsp;</a></span>free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void icedb::free </td>
+          <td>(</td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="util_8hpp_source.html#l00021">21</a> of file <a class="el" href="util_8hpp_source.html">util.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="util_8cpp_source.html#l00130">_free()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="os__functions_8cpp_source.html#l00607">ICEDB_enumModules()</a>, <a class="el" href="util_8cpp_source.html#l00097">ICEDB_free()</a>, and <a class="el" href="os__functions_8cpp_source.html#l00723">ICEDB_getAppDirI()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                      {</div><div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <a class="code" href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e">_free</a>(static_cast&lt;void*&gt;(obj));</div><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    }</div><div class="ttc" id="namespaceicedb_html_a9c72382b614c366705909934c70daf6e"><div class="ttname"><a href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e">icedb::_free</a></div><div class="ttdeci">ICEDB_SYMBOL_SHARED void _free(void *obj)</div><div class="ttdef"><b>Definition:</b> <a href="util_8cpp_source.html#l00130">util.cpp:130</a></div></div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_cgraph.png" border="0" usemap="#namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_cgraph" alt=""/></div>
+<map name="namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_cgraph" id="namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_cgraph">
+<area shape="rect" id="node2" href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="136,5,227,32"/>
+<area shape="rect" id="node3" href="util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="275,31,368,57"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_icgraph.png" border="0" usemap="#namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_icgraph" alt=""/></div>
+<map name="namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_icgraph" id="namespaceicedb_afe3b6f8813a7e6ea428f5b5aa0bd34e7_icgraph">
+<area shape="rect" id="node2" href="os__functions_8h.html#a7f6122f5c995bc31d7cf26ac84630937" title="ICEDB_enumModules" alt="" coords="1187,153,1339,180"/>
+<area shape="rect" id="node3" href="util_8h.html#a9e776fddd6f4003c968a3f3f5fd76db5" title="Free memory region. Should not be double&#45;freed. " alt="" coords="156,432,249,458"/>
+<area shape="rect" id="node29" href="os__functions_8cpp.html#af4f62d181caf9309ba6cfe857eff8aa5" title="ICEDB_getAppDirI" alt="" coords="136,842,269,869"/>
+<area shape="rect" id="node4" href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="375,204,465,230"/>
+<area shape="rect" id="node8" href="error__context_8cpp.html#ab91d2c431ffceaa265e9ed357126be81" title="error_context_append" alt="" coords="955,102,1102,129"/>
+<area shape="rect" id="node10" href="error__context_8cpp.html#a3724d26e6300b0ccbd2f484530e02b3d" title="error_context_create_impl" alt="" coords="943,356,1115,382"/>
+<area shape="rect" id="node11" href="error_8cpp.html#aebe12860da5e74e35d52efe056493e97" title="error_context_to_message" alt="" coords="941,406,1117,433"/>
+<area shape="rect" id="node12" href="error_8cpp.html#a5a3a9d3bdece33a87ff23af77470304f" title="error_context_to_message_size" alt="" coords="925,457,1132,484"/>
+<area shape="rect" id="node13" href="error__context_8cpp.html#a75a056618d2ef987f2e8cd63f4538d6b" title="error_context_widen" alt="" coords="959,508,1098,534"/>
+<area shape="rect" id="node17" href="namespaceicedb_1_1os__functions.html#a0dcb2270cb121fb0365afe0bc026e051" title="icedb::os_functions\l::populateOSstrings" alt="" coords="960,559,1097,600"/>
+<area shape="rect" id="node26" href="error_8cpp.html#a48898a57ba51434d47cda92e67e6a8f5" title="error_context_deallocate" alt="" coords="338,609,502,636"/>
+<area shape="rect" id="node28" href="os__functions_8h.html#a76812af6ea15ba3e0d2be54e4dc0f8fb" title="ICEDB_free_enumModulesRes" alt="" coords="317,660,523,686"/>
+<area shape="rect" id="node5" href="namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba" title="icedb::malloc" alt="" coords="596,204,695,230"/>
+<area shape="rect" id="node6" href="util_8h.html#a96af861b569d0cb7ba1390fdd6e771a5" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="768,305,877,332"/>
+<area shape="rect" id="node7" href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="975,52,1082,78"/>
+<area shape="rect" id="node9" href="error__context_8cpp.html#ab905211e79f36291dd563e1ad2c49935" title="error_context_copy" alt="" coords="962,254,1095,281"/>
+<area shape="rect" id="node14" href="util_8h.html#acf805dcc80e9dd2d78603efe35f613f2" title="ICEDB_COMPAT_strdup_s" alt="" coords="936,204,1121,230"/>
+<area shape="rect" id="node16" href="util_8h.html#a339d3af7c011d56db36f35a982bb6a13" title="ICEDB_COMPAT_wcsdup_s" alt="" coords="931,305,1126,332"/>
+<area shape="rect" id="node15" href="error__context_8cpp.html#aafb4e48d1c9ffff824a2a1770a52fc8a" title="error_context_add_string" alt="" coords="1181,204,1346,230"/>
+<area shape="rect" id="node18" href="os__functions_8h.html#a6087906119ecc126971b483bf6816022" title="ICEDB_getUserName" alt="" coords="1187,482,1339,509"/>
+<area shape="rect" id="node20" href="os__functions_8h.html#abae6c009622be4322436383382db19e3" title="ICEDB_getHostName" alt="" coords="1187,544,1339,570"/>
+<area shape="rect" id="node22" href="os__functions_8h.html#a6c6f63e439496d41afc7095cb7baa21c" title="ICEDB_getAppConfigDir" alt="" coords="1180,598,1347,625"/>
+<area shape="rect" id="node24" href="os__functions_8h.html#abd4d9eb9bb021c2e081864f1c66247aa" title="ICEDB_getHomeDir" alt="" coords="1193,658,1334,685"/>
+<area shape="rect" id="node19" href="namespaceicedb_1_1os__functions.html#afd122db35c7bc46804a85de67faa72f0" title="icedb::os_functions\l::getUserName" alt="" coords="1395,464,1529,506"/>
+<area shape="rect" id="node21" href="namespaceicedb_1_1os__functions.html#aee2d308b703fb2c702d3734955136561" title="icedb::os_functions\l::getHostName" alt="" coords="1395,530,1529,571"/>
+<area shape="rect" id="node23" href="namespaceicedb_1_1os__functions.html#aa77028c184adaba90c27cd5fefc3d38f" title="icedb::os_functions\l::getAppConfigDir" alt="" coords="1395,595,1529,636"/>
+<area shape="rect" id="node25" href="namespaceicedb_1_1os__functions.html#affed33c077d37990f568af9efb095a7a" title="icedb::os_functions\l::getHomeDir" alt="" coords="1395,660,1529,702"/>
+<area shape="rect" id="node27" href="namespaceicedb_1_1error.html#ab3af12d58809d796d165faa2e25ce15e" title="icedb::error::get_error\l_context_thread_local" alt="" coords="571,610,720,651"/>
+<area shape="rect" id="node30" href="namespaceicedb_1_1os__functions.html#a30e68137fed2e2e285be3c56c72dafdc" title="icedb::os_functions\l::getAppDir" alt="" coords="353,711,487,752"/>
+<area shape="rect" id="node31" href="namespaceicedb_1_1os__functions.html#a8be1471b66a9646495040e4708366955" title="icedb::os_functions\l::getAppPath" alt="" coords="353,776,487,818"/>
+<area shape="rect" id="node32" href="os__functions_8h.html#a0da8e6e9cca42196a839acf37c6e32d1" title="ICEDB_getAppDir" alt="" coords="355,842,485,869"/>
+<area shape="rect" id="node33" href="os__functions_8h.html#afce9ef778259878534843863808dda9d" title="ICEDB_getAppDirC" alt="" coords="351,893,489,920"/>
+<area shape="rect" id="node34" href="os__functions_8h.html#ae89455ed221fb5db9baf787f27d2ca3d" title="ICEDB_getAppPath" alt="" coords="351,944,489,970"/>
+<area shape="rect" id="node35" href="os__functions_8h.html#aa64af1022f9daebf465cf66f1a0b9cf2" title="ICEDB_getAppPathC" alt="" coords="345,994,495,1021"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8a673763b0d4d07fe7a56b441512beba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a673763b0d4d07fe7a56b441512beba">&#9670;&nbsp;</a></span>malloc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T* icedb::malloc </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numBytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="util_8hpp_source.html#l00013">13</a> of file <a class="el" href="util_8hpp_source.html">util.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="util_8cpp_source.html#l00130">_free()</a>, <a class="el" href="util_8cpp_source.html#l00129">_malloc()</a>, and <a class="el" href="defs_8h_source.html#l00124">DL_ICEDB</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="util_8cpp_source.html#l00090">ICEDB_malloc()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                               {</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        T* res = <span class="keyword">static_cast&lt;</span>T*<span class="keyword">&gt;</span>(<a class="code" href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320">_malloc</a>(numBytes));</div><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;        <span class="keywordflow">return</span> res;</div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    }</div><div class="ttc" id="namespaceicedb_html_a2cd1f80c4c0771adf6665083598e8320"><div class="ttname"><a href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320">icedb::_malloc</a></div><div class="ttdeci">ICEDB_SYMBOL_SHARED void * _malloc(size_t numBytes)</div><div class="ttdef"><b>Definition:</b> <a href="util_8cpp_source.html#l00129">util.cpp:129</a></div></div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_cgraph.png" border="0" usemap="#namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_cgraph" alt=""/></div>
+<map name="namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_cgraph" id="namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_cgraph">
+<area shape="rect" id="node2" href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="160,31,251,57"/>
+<area shape="rect" id="node5" href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="152,81,259,108"/>
+<area shape="rect" id="node3" href="util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="315,5,408,32"/>
+<area shape="rect" id="node4" href="namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="464,31,547,57"/>
+<area shape="rect" id="node6" href="util_8cpp.html#ab8cdc0bdd69235af5e6f92fa50da3ee2" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="307,119,416,145"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_icgraph.png" border="0" usemap="#namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_icgraph" alt=""/></div>
+<map name="namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_icgraph" id="namespaceicedb_a8a673763b0d4d07fe7a56b441512beba_icgraph">
+<area shape="rect" id="node2" href="util_8h.html#a96af861b569d0cb7ba1390fdd6e771a5" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="152,233,261,260"/>
+<area shape="rect" id="node3" href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="359,5,466,32"/>
+<area shape="rect" id="node4" href="error__context_8cpp.html#ab91d2c431ffceaa265e9ed357126be81" title="error_context_append" alt="" coords="339,56,486,83"/>
+<area shape="rect" id="node5" href="error__context_8cpp.html#ab905211e79f36291dd563e1ad2c49935" title="error_context_copy" alt="" coords="346,107,479,133"/>
+<area shape="rect" id="node6" href="error__context_8cpp.html#a3724d26e6300b0ccbd2f484530e02b3d" title="error_context_create_impl" alt="" coords="327,157,499,184"/>
+<area shape="rect" id="node7" href="error_8cpp.html#aebe12860da5e74e35d52efe056493e97" title="error_context_to_message" alt="" coords="325,208,501,235"/>
+<area shape="rect" id="node8" href="error_8cpp.html#a5a3a9d3bdece33a87ff23af77470304f" title="error_context_to_message_size" alt="" coords="309,259,516,285"/>
+<area shape="rect" id="node9" href="error__context_8cpp.html#a75a056618d2ef987f2e8cd63f4538d6b" title="error_context_widen" alt="" coords="343,309,482,336"/>
+<area shape="rect" id="node10" href="util_8h.html#acf805dcc80e9dd2d78603efe35f613f2" title="ICEDB_COMPAT_strdup_s" alt="" coords="320,360,505,387"/>
+<area shape="rect" id="node12" href="os__functions_8h.html#a7f6122f5c995bc31d7cf26ac84630937" title="ICEDB_enumModules" alt="" coords="571,411,723,437"/>
+<area shape="rect" id="node13" href="util_8h.html#a339d3af7c011d56db36f35a982bb6a13" title="ICEDB_COMPAT_wcsdup_s" alt="" coords="315,461,510,488"/>
+<area shape="rect" id="node14" href="namespaceicedb_1_1os__functions.html#a0dcb2270cb121fb0365afe0bc026e051" title="icedb::os_functions\l::populateOSstrings" alt="" coords="344,513,481,554"/>
+<area shape="rect" id="node11" href="error__context_8cpp.html#aafb4e48d1c9ffff824a2a1770a52fc8a" title="error_context_add_string" alt="" coords="565,360,730,387"/>
+<area shape="rect" id="node15" href="os__functions_8h.html#a6087906119ecc126971b483bf6816022" title="ICEDB_getUserName" alt="" coords="571,463,723,489"/>
+<area shape="rect" id="node17" href="os__functions_8h.html#abae6c009622be4322436383382db19e3" title="ICEDB_getHostName" alt="" coords="571,517,723,544"/>
+<area shape="rect" id="node19" href="os__functions_8h.html#a6c6f63e439496d41afc7095cb7baa21c" title="ICEDB_getAppConfigDir" alt="" coords="564,575,731,601"/>
+<area shape="rect" id="node21" href="os__functions_8h.html#abd4d9eb9bb021c2e081864f1c66247aa" title="ICEDB_getHomeDir" alt="" coords="577,632,718,659"/>
+<area shape="rect" id="node16" href="namespaceicedb_1_1os__functions.html#afd122db35c7bc46804a85de67faa72f0" title="icedb::os_functions\l::getUserName" alt="" coords="779,441,913,482"/>
+<area shape="rect" id="node18" href="namespaceicedb_1_1os__functions.html#aee2d308b703fb2c702d3734955136561" title="icedb::os_functions\l::getHostName" alt="" coords="779,506,913,547"/>
+<area shape="rect" id="node20" href="namespaceicedb_1_1os__functions.html#aa77028c184adaba90c27cd5fefc3d38f" title="icedb::os_functions\l::getAppConfigDir" alt="" coords="779,571,913,613"/>
+<area shape="rect" id="node22" href="namespaceicedb_1_1os__functions.html#affed33c077d37990f568af9efb095a7a" title="icedb::os_functions\l::getHomeDir" alt="" coords="779,637,913,678"/>
+</map>
+</div>
 
 </div>
 </div>

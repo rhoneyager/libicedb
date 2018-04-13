@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">icedb
-   &#160;<span id="projectnumber">version 0.4.2</span>
+   &#160;<span id="projectnumber">version 0.5.1</span>
    </div>
    <div id="projectbrief">Snow particle scattering database API</div>
   </td>
@@ -65,49 +65,61 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">util.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;memory&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="defs_8h_source.html">defs.h</a>&quot;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
 <code>#include &lt;new&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for util.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="util_8hpp__incl.png" border="0" usemap="#lib_2icedb_2util_8hpp" alt=""/></div>
+<map name="lib_2icedb_2util_8hpp" id="lib_2icedb_2util_8hpp">
+<area shape="rect" id="node2" href="defs_8h.html" title="defs.h" alt="" coords="11,80,69,107"/>
+</map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="util_8hpp__dep__incl.png" border="0" usemap="#lib_2icedb_2util_8hppdep" alt=""/></div>
 <map name="lib_2icedb_2util_8hppdep" id="lib_2icedb_2util_8hppdep">
-<area shape="rect" id="node2" href="hdf5__supplemental_8hpp.html" title="lib/private/hdf5_supplemental.hpp" alt="" coords="354,155,570,181"/>
-<area shape="rect" id="node11" href="Database_8hpp.html" title="lib/icedb/Database.hpp" alt="" coords="785,155,939,181"/>
-<area shape="rect" id="node14" href="Group_8hpp.html" title="lib/icedb/Group.hpp" alt="" coords="900,80,1035,107"/>
-<area shape="rect" id="node26" href="util_8cpp.html" title="lib/src/util.cpp" alt="" coords="1059,80,1161,107"/>
-<area shape="rect" id="node3" href="Attributes_8cpp.html" title="lib/src/Attributes.cpp" alt="" coords="180,237,323,263"/>
-<area shape="rect" id="node4" href="databases_8cpp.html" title="lib/src/databases.cpp" alt="" coords="645,326,791,353"/>
-<area shape="rect" id="node5" href="Database__impl_8hpp.html" title="lib/private/Database\l_impl.hpp" alt="" coords="649,229,787,271"/>
-<area shape="rect" id="node6" href="export-hdf5_8cpp.html" title="lib/src/export&#45;hdf5.cpp" alt="" coords="5,237,156,263"/>
-<area shape="rect" id="node7" href="Groups_8cpp.html" title="lib/src/Groups.cpp" alt="" coords="913,237,1041,263"/>
-<area shape="rect" id="node8" href="Shapes_8cpp.html" title="lib/src/Shapes.cpp" alt="" coords="1421,326,1551,353"/>
-<area shape="rect" id="node9" href="Tables_8cpp.html" title="lib/src/Tables.cpp" alt="" coords="499,237,625,263"/>
-<area shape="rect" id="node10" href="beta_2shapes-main_8cpp.html" title="apps/3d_structures\l_beta/shapes&#45;main.cpp" alt="" coords="1583,408,1741,449"/>
-<area shape="rect" id="node12" href="shapes-main_8cpp.html" title="apps/3d_structures\l/shapes&#45;main.cpp" alt="" coords="1241,229,1374,271"/>
-<area shape="rect" id="node13" href="fs-test_8cpp.html" title="apps/testing/database\l/fs&#45;test.cpp" alt="" coords="1065,229,1216,271"/>
-<area shape="rect" id="node15" href="Group__impl_8hpp.html" title="lib/private/Group_impl.hpp" alt="" coords="1014,155,1187,181"/>
-<area shape="rect" id="node17" href="lib_2icedb_2shape_8hpp.html" title="lib/icedb/shape.hpp" alt="" coords="1481,155,1616,181"/>
-<area shape="rect" id="node16" href="Shape__impl_8hpp.html" title="lib/private/Shape_impl.hpp" alt="" coords="1399,237,1573,263"/>
-<area shape="rect" id="node18" href="apps_23d__structures_2shape_8hpp.html" title="apps/3d_structures\l/shape.hpp" alt="" coords="1699,229,1833,271"/>
-<area shape="rect" id="node21" href="apps_23d__structures__beta_2shape_8hpp.html" title="apps/3d_structures\l_beta/shape.hpp" alt="" coords="2245,229,2378,271"/>
-<area shape="rect" id="node19" href="shapeIOtext_8cpp.html" title="apps/3d_structures\l/shapeIOtext.cpp" alt="" coords="1699,319,1833,360"/>
-<area shape="rect" id="node20" href="shapeIOtextParsers_8cpp.html" title="apps/3d_structures\l/shapeIOtextParsers.cpp" alt="" coords="1857,319,2024,360"/>
-<area shape="rect" id="node22" href="beta_2shapeIOtext_8cpp.html" title="apps/3d_structures\l_beta/shapeIOtext.cpp" alt="" coords="2610,408,2765,449"/>
-<area shape="rect" id="node23" href="beta_2shapeIOtext_8hpp.html" title="apps/3d_structures\l_beta/shapeIOtext.hpp" alt="" coords="2553,319,2707,360"/>
-<area shape="rect" id="node24" href="beta_2shapeIOtextParsers_8cpp.html" title="apps/3d_structures\l_beta/shapeIOtextParsers.cpp" alt="" coords="2099,319,2297,360"/>
-<area shape="rect" id="node25" href="shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_beta/shapeIOtextParsers2.cpp" alt="" coords="2321,319,2528,360"/>
+<area shape="rect" id="node2" href="hdf5__supplemental_8hpp.html" title="lib/private/hdf5_supplemental.hpp" alt="" coords="355,155,571,181"/>
+<area shape="rect" id="node11" href="Database_8hpp.html" title="lib/icedb/Database.hpp" alt="" coords="818,155,973,181"/>
+<area shape="rect" id="node15" href="Group_8hpp.html" title="lib/icedb/Group.hpp" alt="" coords="933,80,1068,107"/>
+<area shape="rect" id="node33" href="util_8cpp.html" title="lib/src/util.cpp" alt="" coords="1092,80,1195,107"/>
+<area shape="rect" id="node3" href="Attributes_8cpp.html" title="lib/src/Attributes.cpp" alt="" coords="5,237,148,263"/>
+<area shape="rect" id="node4" href="databases_8cpp.html" title="lib/src/databases.cpp" alt="" coords="646,333,793,360"/>
+<area shape="rect" id="node5" href="Database__impl_8hpp.html" title="lib/private/Database\l_impl.hpp" alt="" coords="650,229,789,271"/>
+<area shape="rect" id="node6" href="export-hdf5_8cpp.html" title="lib/src/export&#45;hdf5.cpp" alt="" coords="224,237,375,263"/>
+<area shape="rect" id="node7" href="Groups_8cpp.html" title="lib/src/Groups.cpp" alt="" coords="965,237,1093,263"/>
+<area shape="rect" id="node8" href="Shapes_8cpp.html" title="lib/src/Shapes.cpp" alt="" coords="914,333,1045,360"/>
+<area shape="rect" id="node9" href="Tables_8cpp.html" title="lib/src/Tables.cpp" alt="" coords="501,237,626,263"/>
+<area shape="rect" id="node10" href="3d__structures__multithreaded_2shapes-main_8cpp.html" title="apps/3d_structures\l_multithreaded/shapes\l&#45;main.cpp" alt="" coords="1005,423,1159,479"/>
+<area shape="rect" id="node12" href="3d__structures__singlefile_2shapes-main_8cpp.html" title="apps/3d_structures\l_singlefile/shapes&#45;main.cpp" alt="" coords="1865,430,2048,471"/>
+<area shape="rect" id="node13" href="3d__structures__singlethreaded_2shapes-main_8cpp.html" title="apps/3d_structures\l_singlethreaded/shapes\l&#45;main.cpp" alt="" coords="2541,423,2700,479"/>
+<area shape="rect" id="node14" href="fs-test_8cpp.html" title="apps/testing/database\l/fs&#45;test.cpp" alt="" coords="1117,229,1268,271"/>
+<area shape="rect" id="node16" href="Group__impl_8hpp.html" title="lib/private/Group_impl.hpp" alt="" coords="1047,155,1221,181"/>
+<area shape="rect" id="node18" href="lib_2icedb_2shape_8hpp.html" title="lib/icedb/shape.hpp" alt="" coords="1549,155,1684,181"/>
+<area shape="rect" id="node17" href="Shape__impl_8hpp.html" title="lib/private/Shape_impl.hpp" alt="" coords="1292,237,1467,263"/>
+<area shape="rect" id="node19" href="apps_23d__structures__multithreaded_2shape_8hpp.html" title="apps/3d_structures\l_multithreaded/shape.hpp" alt="" coords="1593,229,1763,271"/>
+<area shape="rect" id="node24" href="apps_23d__structures__singlefile_2shape_8hpp.html" title="apps/3d_structures\l_singlefile/shape.hpp" alt="" coords="2038,229,2182,271"/>
+<area shape="rect" id="node28" href="apps_23d__structures__singlethreaded_2shape_8hpp.html" title="apps/3d_structures\l_singlethreaded/shape.hpp" alt="" coords="2689,229,2867,271"/>
+<area shape="rect" id="node20" href="3d__structures__multithreaded_2shapeIOtext_8cpp.html" title="apps/3d_structures\l_multithreaded/shapeIOtext.cpp" alt="" coords="1273,430,1480,471"/>
+<area shape="rect" id="node21" href="3d__structures__multithreaded_2shapeIOtext_8hpp.html" title="apps/3d_structures\l_multithreaded/shapeIOtext.hpp" alt="" coords="1171,326,1377,367"/>
+<area shape="rect" id="node22" href="shapeIOtextParsers_8cpp.html" title="apps/3d_structures\l_multithreaded/shapeIOtext\lParsers.cpp" alt="" coords="1504,319,1687,375"/>
+<area shape="rect" id="node23" href="3d__structures__multithreaded_2shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_multithreaded/shapeIOtext\lParsers2.cpp" alt="" coords="1711,319,1893,375"/>
+<area shape="rect" id="node25" href="3d__structures__singlefile_2shapeIOtext_8cpp.html" title="apps/3d_structures\l_singlefile/shapeIOtext.cpp" alt="" coords="2097,430,2277,471"/>
+<area shape="rect" id="node26" href="3d__structures__singlefile_2shapeIOtext_8hpp.html" title="apps/3d_structures\l_singlefile/shapeIOtext.hpp" alt="" coords="2020,326,2200,367"/>
+<area shape="rect" id="node27" href="3d__structures__singlefile_2shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_singlefile/shapeIOtextParsers2.cpp" alt="" coords="2275,326,2507,367"/>
+<area shape="rect" id="node29" href="3d__structures__singlethreaded_2shapeIOtext_8hpp.html" title="apps/3d_structures\l_singlethreaded/shapeIOtext.hpp" alt="" coords="2897,326,3110,367"/>
+<area shape="rect" id="node31" href="3d__structures__singlethreaded_2shapeIOtext_8cpp.html" title="apps/3d_structures\l_singlethreaded/shapeIOtext.cpp" alt="" coords="3041,430,3254,471"/>
+<area shape="rect" id="node32" href="3d__structures__singlethreaded_2shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_singlethreaded/shapeIOtext\lParsers2.cpp" alt="" coords="2684,319,2872,375"/>
+<area shape="rect" id="node30" href="shapeIOpsu_8cpp.html" title="apps/3d_structures\l_singlethreaded/shapeIOpsu.cpp" alt="" coords="2804,430,3016,471"/>
 </map>
 </div>
 </div>
@@ -119,6 +131,19 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceicedb_1_1mem"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb_1_1mem.html">icedb::mem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a2cd1f80c4c0771adf6665083598e8320"><td class="memItemLeft" align="right" valign="top"><a class="el" href="defs_8h.html#a9fa71cff718bbe10634bb07b8e8a003a">ICEDB_SYMBOL_SHARED</a> void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320">icedb::_malloc</a> (size_t numBytes)</td></tr>
+<tr class="separator:a2cd1f80c4c0771adf6665083598e8320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a673763b0d4d07fe7a56b441512beba"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a8a673763b0d4d07fe7a56b441512beba"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba">icedb::malloc</a> (size_t numBytes)</td></tr>
+<tr class="separator:a8a673763b0d4d07fe7a56b441512beba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c72382b614c366705909934c70daf6e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="defs_8h.html#a9fa71cff718bbe10634bb07b8e8a003a">ICEDB_SYMBOL_SHARED</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#a9c72382b614c366705909934c70daf6e">icedb::_free</a> (void *obj)</td></tr>
+<tr class="separator:a9c72382b614c366705909934c70daf6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe3b6f8813a7e6ea428f5b5aa0bd34e7"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:afe3b6f8813a7e6ea428f5b5aa0bd34e7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7">icedb::free</a> (T *obj)</td></tr>
+<tr class="separator:afe3b6f8813a7e6ea428f5b5aa0bd34e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

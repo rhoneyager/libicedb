@@ -1,0 +1,10 @@
+<map id="icedb::os_functions::getAppConfigDir" name="icedb::os_functions::getAppConfigDir">
+<area shape="rect" id="node2" href="$os__functions_8cpp.html#ae5cc04c909985dc43dfb0f3312941603" title="ICEDB_getAppConfigDir" alt="" coords="188,81,355,108"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1os__functions.html#a0dcb2270cb121fb0365afe0bc026e051" title="icedb::os_functions\l::populateOSstrings" alt="" coords="403,74,540,115"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#ab8cdc0bdd69235af5e6f92fa50da3ee2" title="Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted..." alt="" coords="588,56,697,83"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="1047,56,1140,83"/>
+<area shape="rect" id="node5" href="$namespaceicedb.html#a8a673763b0d4d07fe7a56b441512beba" title="icedb::malloc" alt="" coords="745,5,844,32"/>
+<area shape="rect" id="node6" href="$namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="900,5,991,32"/>
+<area shape="rect" id="node9" href="$namespaceicedb.html#a2cd1f80c4c0771adf6665083598e8320" title="icedb::_malloc" alt="" coords="892,56,999,83"/>
+<area shape="rect" id="node8" href="$namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="1188,31,1271,57"/>
+</map>

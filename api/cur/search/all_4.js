@@ -11,6 +11,10 @@ var searchData=
   ['databases_2emd',['databases.md',['../databases_8md.html',1,'']]],
   ['datacontainertype',['DataContainerType',['../namespaceicedb_1_1fs_1_1hdf5.html#a72a254318f9f9138c62b81c9070f9bf8',1,'icedb::fs::hdf5']]],
   ['datasetexists',['datasetExists',['../namespaceicedb_1_1fs_1_1hdf5.html#a0e2c4a63425f8036737628686856d711',1,'icedb::fs::hdf5']]],
+  ['debug_5fpreamble',['debug_preamble',['../namespaceicedb_1_1versioning.html#a59ff1190b60f407896a1db70ceb50eb0',1,'icedb::versioning::debug_preamble(const versionInfo &amp;v, std::ostream &amp;out=std::cerr)'],['../namespaceicedb_1_1versioning.html#a04448fa0ac7880392e671657d50e131a',1,'icedb::versioning::debug_preamble(std::ostream &amp;out=std::cerr)']]],
+  ['debugchannel',['debugChannel',['../structicedb_1_1logging_1_1log__properties.html#a898347c169cdf8ef00b10b2f6b04af36',1,'icedb::logging::log_properties']]],
+  ['debuggerlogthreshold',['debuggerLogThreshold',['../structicedb_1_1logging_1_1log__properties.html#af643e8bbe7acdf61b8887583973903f9',1,'icedb::logging::log_properties']]],
+  ['debyedry',['debyeDry',['../namespaceicedb_1_1refract.html#a81bc46eec5c9efbe7147780de8955b9e',1,'icedb::refract']]],
   ['defs_2eh',['defs.h',['../defs_8h.html',1,'']]],
   ['deleteattribute',['deleteAttribute',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a75393edad25db53293d82bd19b9eec84',1,'icedb::Attributes::CanHaveAttributes']]],
   ['deletegroup',['deleteGroup',['../classicedb_1_1Groups_1_1Group.html#a929bd772a5db4649d00208afec169798',1,'icedb::Groups::Group::deleteGroup()'],['../classicedb_1_1Groups_1_1Group__impl.html#ab6e5b45931c580692f776e3418297838',1,'icedb::Groups::Group_impl::deleteGroup()']]],
@@ -22,5 +26,11 @@ var searchData=
   ['doesattributeexist',['doesAttributeExist',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#ad7b31d1a3780871e833230ea6ba64e58',1,'icedb::Attributes::CanHaveAttributes::doesAttributeExist(const std::string &amp;attributeName) const'],['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#abac6431c5506fcbf65c3fb1473dcc882',1,'icedb::Attributes::CanHaveAttributes::doesAttributeExist(gsl::not_null&lt; const H5::H5Object *&gt; parent, const std::string &amp;attributeName)']]],
   ['doesgroupexist',['doesGroupExist',['../classicedb_1_1Groups_1_1Group.html#adbc559854a349792103ff3e18fcb0a0b',1,'icedb::Groups::Group::doesGroupExist()'],['../classicedb_1_1Groups_1_1Group__impl.html#ad280ee09e14155933242c5815affbdfa',1,'icedb::Groups::Group_impl::doesGroupExist()']]],
   ['doestableexist',['doesTableExist',['../classicedb_1_1Tables_1_1CanHaveTables.html#ae7aade90339d578cb6694b0f509435c8',1,'icedb::Tables::CanHaveTables']]],
+  ['dotypes',['DOTYPES',['../error_8cpp.html#a330aa92da80a66664f0b65189a4b6a7e',1,'DOTYPES():&#160;error.cpp'],['../options_8cpp.html#a330aa92da80a66664f0b65189a4b6a7e',1,'DOTYPES():&#160;options.cpp'],['../splitSet_8cpp.html#a330aa92da80a66664f0b65189a4b6a7e',1,'DOTYPES():&#160;splitSet.cpp'],['../namespaceicedb_1_1error.html#abe4453dd2f53d17b4b14103ade6dd5fe',1,'icedb::error::DOTYPES()'],['../namespaceicedb_1_1registry.html#a3d17815dfe6ac515c44d04bd540cfc85',1,'icedb::registry::DOTYPES()'],['../namespaceicedb_1_1splitSet.html#a6a2610a5295e9eea1d8be163712597f7',1,'icedb::splitSet::DOTYPES(SPEC_SPLITSET_A)'],['../namespaceicedb_1_1splitSet.html#a6f3f36b3d71cbf52e0a99a4e619fb4c6',1,'icedb::splitSet::DOTYPES(SPEC_SPLITSET_INTERVAL)'],['../namespaceicedb_1_1splitSet.html#a28bea5fde4d5ede32618d18fc07f1414',1,'icedb::splitSet::DOTYPES(SPEC_SPLITSET)'],['../namespaceicedb_1_1splitSet.html#aac89afe62b7e106945b9be8b59b59f74',1,'icedb::splitSet::DOTYPES(IMPL_INTS)']]],
+  ['dowaitonexit',['doWaitOnExit',['../namespaceicedb_1_1os__functions_1_1vars.html#a22e804c5479f7c80cc5de13d79d4bb92',1,'icedb::os_functions::vars']]],
+  ['dowaitonexitquerieddefault',['doWaitOnExitQueriedDefault',['../namespaceicedb_1_1os__functions_1_1vars.html#a72421d27dc2c0be574b4dc2f1e3b66bb',1,'icedb::os_functions::vars']]],
+  ['dust_5flike_5fim',['DUST_LIKE_IM',['../namespaceanonymous__namespace_02refractImpl_8cpp_03.html#ac80165bc33f8bd3b927215015709e5d8a519d8da7495e9ebbc1183c5ac36e9a2b',1,'anonymous_namespace{refractImpl.cpp}']]],
+  ['dust_5flike_5fre',['DUST_LIKE_RE',['../namespaceanonymous__namespace_02refractImpl_8cpp_03.html#ac80165bc33f8bd3b927215015709e5d8a978b722d3daa7236b965e4bcb683fbd0',1,'anonymous_namespace{refractImpl.cpp}']]],
+  ['dvec',['dVec',['../linterp_8h.html#a5851017ea18e381fe232dfd91d88583b',1,'linterp.h']]],
   ['databases',['databases',['../md_docs_databases.html',1,'']]]
 ];

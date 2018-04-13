@@ -1,0 +1,18 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1fs_1_1impl.html#ae58335756c72cfc8f4f13eae099c969a" title="icedb::fs::impl::collect\lDatasetFiles" alt="" coords="121,64,271,105"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1Examples_1_1Shapes.html#ab56cd487345b13b70d602fd92eb2c6ab" title="Reads a Penn State&#45;style geometry file. " alt="" coords="111,173,281,215"/>
+<area shape="rect" id="node9" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106" title="icedb::Examples::Shapes\l::readTextFile" alt="" coords="111,239,281,280"/>
+<area shape="rect" id="node15" href="$structicedb_1_1Examples_1_1Shapes_1_1ShapeDataBasic.html#a4c185f8431b7f865f7a8eda66f8d30af" title="Make a new shape under the group. " alt="" coords="104,349,288,391"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1fs_1_1impl.html#af0cc17c58406b9ca481838b4cd1bbfa7" title="Like resolveSymLinks, but throw if the resulting path does not exist. " alt="" coords="336,5,523,47"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1fs_1_1impl.html#ae5c49e76db60602cedd6dd8317bceec1" title="Finds out where a symbolic link points to. " alt="" coords="601,24,755,65"/>
+<area shape="rect" id="node6" href="$structicedb_1_1Examples_1_1Shapes_1_1ScopedHandles_1_1ScopedHandle.html#a0e24612a673e66a513d040a905d314d8" title="icedb::Examples::Shapes\l::ScopedHandles::ScopedHandle\l::valid" alt="" coords="571,107,785,163"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1Examples_1_1Shapes.html#aabe8f07a066c407dcce5f20aa4be7e2f" title="icedb::Examples::Shapes\l::readDataset" alt="" coords="344,173,515,215"/>
+<area shape="rect" id="node8" href="$classicedb_1_1error_1_1xError.html#a81ecdbb0e97d6d13ec37f4a0fb061b9d" title="icedb::error::xError::add" alt="" coords="599,187,757,214"/>
+<area shape="rect" id="node10" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a2a5d401c61b223e36383d283c836a956" title="icedb::Examples::Shapes\l::readRawText" alt="" coords="344,239,515,280"/>
+<area shape="rect" id="node12" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af4f846f5268e26fe554768d8e0844f0d" title="icedb::Examples::Shapes\l::readDDSCAT" alt="" coords="344,304,515,345"/>
+<area shape="rect" id="node11" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="833,283,996,353"/>
+<area shape="rect" id="node13" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a0c7e41d500cd4ceb231b65841914ba2e" title="icedb::Examples::Shapes\l::readHeader" alt="" coords="593,293,763,335"/>
+<area shape="rect" id="node14" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af97042755647e1f2610ca4301c1eb91a" title="Read ddscat text contents. " alt="" coords="585,359,771,400"/>
+<area shape="rect" id="node16" href="$classicedb_1_1Shapes_1_1Shape.html#ad7130fa2f27db8354d10986e58697699" title="Create a new shape. " alt="" coords="354,395,505,436"/>
+<area shape="rect" id="node17" href="$classicedb_1_1Groups_1_1Group.html#a2f0d4c7ed3cd13dbe49410872455d1b9" title="Get the fundamental HDF5 object that the group is built on. " alt="" coords="605,424,751,465"/>
+</map>

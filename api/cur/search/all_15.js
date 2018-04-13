@@ -1,17 +1,15 @@
 var searchData=
 [
-  ['_7ecanhaveattributes',['~CanHaveAttributes',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a2183bf6ae715c519385518ab40ef8d0a',1,'icedb::Attributes::CanHaveAttributes']]],
-  ['_7ecanhaveattributes_5fimpl',['~CanHaveAttributes_impl',['../classicedb_1_1Attributes_1_1CanHaveAttributes__impl.html#a521d4687be08f61d12ab6e33bedff687',1,'icedb::Attributes::CanHaveAttributes_impl']]],
-  ['_7ecanhavetables',['~CanHaveTables',['../classicedb_1_1Tables_1_1CanHaveTables.html#adb3ec74790d59a260e9f9b722e55f123',1,'icedb::Tables::CanHaveTables']]],
-  ['_7ecanhavetables_5fimpl',['~CanHaveTables_impl',['../classicedb_1_1Tables_1_1CanHaveTables__impl.html#a9643817dd5334359cc124a48d250cfbf',1,'icedb::Tables::CanHaveTables_impl']]],
-  ['_7edatabase',['~Database',['../classicedb_1_1Databases_1_1Database.html#ac0e50bc014532748a724a6016fa22a4f',1,'icedb::Databases::Database']]],
-  ['_7edatabase_5fimpl',['~Database_impl',['../classicedb_1_1Databases_1_1Database__impl.html#af42cda90ef026757c0bbfc465243681e',1,'icedb::Databases::Database_impl']]],
-  ['_7efile_5fimage',['~file_image',['../classicedb_1_1Databases_1_1file__image.html#ad02afbd20cf762f097248c6fe967b94e',1,'icedb::Databases::file_image']]],
-  ['_7egroup',['~Group',['../classicedb_1_1Groups_1_1Group.html#a03dcb55e7b239e9f30df0c911edfb896',1,'icedb::Groups::Group']]],
-  ['_7egroup_5fimpl',['~Group_impl',['../classicedb_1_1Groups_1_1Group__impl.html#ae4d4e17a77d8cdbe0fdaa2e2ed8f0542',1,'icedb::Groups::Group_impl']]],
-  ['_7eshape',['~Shape',['../classicedb_1_1Shapes_1_1Shape.html#a10e9353505306b43dfa5782d00029a91',1,'icedb::Shapes::Shape']]],
-  ['_7eshape_5fimpl',['~Shape_impl',['../classicedb_1_1Shapes_1_1Shape__impl.html#a15592bac3f44315f87327cb3779ff105',1,'icedb::Shapes::Shape_impl']]],
-  ['_7eshape_5ftext_5fhandle',['~shape_text_handle',['../structscatdb_1_1plugins_1_1builtin_1_1shape_1_1shape__text__handle.html#a51ccf1d6d13b3db42bc4bb1c8904bd57',1,'scatdb::plugins::builtin::shape::shape_text_handle']]],
-  ['_7etable',['~Table',['../classicedb_1_1Tables_1_1Table.html#aea82925f3c0a78bf2f179e6b7b2df114',1,'icedb::Tables::Table']]],
-  ['_7etable_5fimpl',['~Table_impl',['../classicedb_1_1Tables_1_1Table__impl.html#ab050b44f8568b074c84b472324bd7430',1,'icedb::Tables::Table_impl']]]
+  ['waitonexit',['waitOnExit',['../namespaceicedb_1_1os__functions.html#a4a8c89f2f39ccdc14e43dac92d249fa5',1,'icedb::os_functions::waitOnExit(bool val)'],['../namespaceicedb_1_1os__functions.html#a5108a856d1598ec201804d9ac1dc8216',1,'icedb::os_functions::waitOnExit()']]],
+  ['water_5fim',['WATER_IM',['../namespaceanonymous__namespace_02refractImpl_8cpp_03.html#adbb2712eb7760c2c555f1160dac61fceab1bfa45424d325384a4e7bbde2c3beab',1,'anonymous_namespace{refractImpl.cpp}']]],
+  ['water_5fre',['WATER_RE',['../namespaceanonymous__namespace_02refractImpl_8cpp_03.html#adbb2712eb7760c2c555f1160dac61fcea21ed2659a54c059e31bc92376a6e26a5',1,'anonymous_namespace{refractImpl.cpp}']]],
+  ['what',['what',['../classicedb_1_1error_1_1xError.html#af25b78ef6ba6c35f389800bb321602cd',1,'icedb::error::xError']]],
+  ['widen',['widen',['../structICEDB__error__context__container__ftable.html#aba24c4cd7fbac1b99cfe918849b2e553',1,'ICEDB_error_context_container_ftable']]],
+  ['writeall',['writeAll',['../classicedb_1_1Tables_1_1Table.html#a9a3b2d0856fa207acf193dc3b236c3c7',1,'icedb::Tables::Table::writeAll(const gsl::span&lt; const DataType &gt; &amp;outData) const'],['../classicedb_1_1Tables_1_1Table.html#acb1d4393fb7544bcb806f7ff8f856454',1,'icedb::Tables::Table::writeAll(const gsl::span&lt; DataType &gt; &amp;outData) const'],['../classicedb_1_1Tables_1_1Table.html#a1cd069ca06693b18af68e5cf99fce243',1,'icedb::Tables::Table::writeAll(const std::vector&lt; DataType &gt; &amp;outData) const']]],
+  ['writeallinner',['writeAllInner',['../classicedb_1_1Tables_1_1Table.html#af2a984731fbf16af5278c14a06846988',1,'icedb::Tables::Table']]],
+  ['writeattribute',['writeAttribute',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a05bdda8bd150c0a4789beaff186e56e3',1,'icedb::Attributes::CanHaveAttributes::writeAttribute(const Attribute&lt; DataType &gt; &amp;attribute)'],['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#ad2e190d1b65822c4b92ce6c02c836feb',1,'icedb::Attributes::CanHaveAttributes::writeAttribute(const std::string &amp;name, std::initializer_list&lt; size_t &gt; dims, std::initializer_list&lt; DataType &gt; data)']]],
+  ['writeattributedata',['writeAttributeData',['../classicedb_1_1Attributes_1_1CanHaveAttributes.html#a141ff056368bf7328a0260c71291bdc0',1,'icedb::Attributes::CanHaveAttributes']]],
+  ['writedatasetarray',['writeDatasetArray',['../namespaceicedb_1_1fs_1_1hdf5.html#a5f0234a6c5f7f4a56704307f21c547bc',1,'icedb::fs::hdf5']]],
+  ['writeddscat',['writeDDSCAT',['../namespaceicedb_1_1Examples_1_1Shapes.html#a9e1550513b6ba45dcc21c457ebaef7ec',1,'icedb::Examples::Shapes']]],
+  ['writetextraw',['writeTextRaw',['../namespaceicedb_1_1Examples_1_1Shapes.html#ada655bbe1a5eec60651e64f0bc9fa245',1,'icedb::Examples::Shapes']]]
 ];

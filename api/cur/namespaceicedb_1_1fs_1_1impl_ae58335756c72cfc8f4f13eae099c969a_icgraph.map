@@ -1,6 +1,6 @@
 <map id="icedb::fs::impl::collectDatasetFiles" name="icedb::fs::impl::collectDatasetFiles">
 <area shape="rect" id="node2" href="$namespaceicedb_1_1fs_1_1impl.html#ab57ef8e3a8c29a60a36cbbf701bcb66f" title="Like collectDatasetFiles for HDF5 files, but then check that these files are, indeed, HDF5 files. " alt="" coords="204,49,355,91"/>
-<area shape="rect" id="node8" href="$beta_2shapes-main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="The main body of the program. " alt="" coords="254,115,305,142"/>
+<area shape="rect" id="node8" href="$3d__structures__multithreaded_2shapes-main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="The main body of the program. " alt="" coords="254,115,305,142"/>
 <area shape="rect" id="node3" href="$classicedb_1_1Databases_1_1Database.html#ad4d1c9f1ae657eb7c0604f2d9cb71fe3" title="icedb::Databases::Database\l::indexDatabase" alt="" coords="403,5,591,47"/>
 <area shape="rect" id="node5" href="$classicedb_1_1Databases_1_1Database.html#a005c40e8b6cb0a0a5a0c96256bede0b8" title="icedb::Databases::Database\l::openDatabase" alt="" coords="403,92,591,133"/>
 <area shape="rect" id="node4" href="$fs-test_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="This is an example application that illustrates how to manipulate the most basic features of an icedb..." alt="" coords="875,41,925,67"/>

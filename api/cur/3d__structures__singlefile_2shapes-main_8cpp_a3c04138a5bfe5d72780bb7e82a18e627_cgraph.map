@@ -1,0 +1,8 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106" title="icedb::Examples::Shapes\l::readTextFile" alt="" coords="104,39,275,80"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a2a5d401c61b223e36383d283c836a956" title="icedb::Examples::Shapes\l::readRawText" alt="" coords="323,5,493,47"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af4f846f5268e26fe554768d8e0844f0d" title="icedb::Examples::Shapes\l::readDDSCAT" alt="" coords="323,71,493,112"/>
+<area shape="rect" id="node4" href="$namespaceanonymous__namespace_02shapeIOtextParsers_8cpp_03.html#a705c1ebc6b7a4f400cb8d225dfd2d26b" title="Parses space&#45;separated shapefile entries. " alt="" coords="776,53,939,124"/>
+<area shape="rect" id="node6" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a0c7e41d500cd4ceb231b65841914ba2e" title="icedb::Examples::Shapes\l::readHeader" alt="" coords="549,64,720,105"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af97042755647e1f2610ca4301c1eb91a" title="Read ddscat text contents. " alt="" coords="541,129,728,171"/>
+</map>

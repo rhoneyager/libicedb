@@ -1,4 +1,26 @@
 var searchData=
 [
-  ['matchattributetypetype',['MatchAttributeTypeType',['../namespaceicedb_1_1fs_1_1hdf5.html#ac4b0a23834eec302fd24c1625a388d4d',1,'icedb::fs::hdf5']]]
+  ['icedb_5ferror_5fcode',['ICEDB_error_code',['../group__errs.html#gadddd6ae1a55af04f2db08563f6b325c8',1,'error.h']]],
+  ['icedb_5ferror_5fcode_5fto_5fmessage_5ff',['ICEDB_error_code_to_message_f',['../group__errs.html#ga4730c82cf0a9c77044c063bce7bd535c',1,'error.h']]],
+  ['icedb_5ferror_5fcode_5fto_5fmessage_5fsize_5ff',['ICEDB_error_code_to_message_size_f',['../group__errs.html#gaff68c6aa5629655a1b7d79b2dc90b550',1,'error.h']]],
+  ['icedb_5ferror_5fcode_5fto_5fstream_5ff',['ICEDB_error_code_to_stream_f',['../group__errs.html#ga37e35de70af80066d6f52aa70bb6ed2f',1,'error.h']]],
+  ['icedb_5ferror_5fcontext_5fadd_5fstring2a_5ff',['ICEDB_error_context_add_string2A_f',['../group__errs.html#ga9431a84861141424d1f1272d41f2004d',1,'error_context.h']]],
+  ['icedb_5ferror_5fcontext_5fadd_5fstringa_5ff',['ICEDB_error_context_add_stringA_f',['../group__errs.html#gabf2f3bf9209b02b9eef023b80aff6af2',1,'error_context.h']]],
+  ['icedb_5ferror_5fcontext_5fappend_5fstra_5ff',['ICEDB_error_context_append_strA_f',['../group__errs.html#ga8c12b63281969e7c85131ceaccd80e57',1,'error_context.h']]],
+  ['icedb_5ferror_5fcontext_5fappenda_5ff',['ICEDB_error_context_appendA_f',['../group__errs.html#gae68213453b2531565ba4b4cf5767f569',1,'error_context.h']]],
+  ['icedb_5ferror_5fcontext_5fcopy_5ff',['ICEDB_error_context_copy_f',['../group__errs.html#ga700b0f691c3f6638cd5659da4ddb4c29',1,'error_context.h']]],
+  ['icedb_5ferror_5fcontext_5fcreate_5fimpl_5ff',['ICEDB_error_context_create_impl_f',['../group__errs.html#gacc97954cbf59eca82bc71655440b2dc4',1,'error_context.h']]],
+  ['icedb_5ferror_5fcontext_5fdeallocate_5ff',['ICEDB_error_context_deallocate_f',['../group__errs.html#ga1adfaf6f20c052678e9cc6ed533df70a',1,'error.h']]],
+  ['icedb_5ferror_5fcontext_5fto_5fcode_5ff',['ICEDB_error_context_to_code_f',['../group__errs.html#gad2f8839305603a41714d982a84df6dac',1,'error.h']]],
+  ['icedb_5ferror_5fcontext_5fto_5fmessage_5ff',['ICEDB_error_context_to_message_f',['../group__errs.html#ga1bf8084ed2e6a048a76f8793e927e75f',1,'error.h']]],
+  ['icedb_5ferror_5fcontext_5fto_5fmessage_5fsize_5ff',['ICEDB_error_context_to_message_size_f',['../group__errs.html#gaa1af7dd8af2cc31d261758662d885140',1,'error.h']]],
+  ['icedb_5ferror_5fcontext_5fto_5fstream_5ff',['ICEDB_error_context_to_stream_f',['../group__errs.html#ga72a9ea2b7aecd1971497210f0aeebdf1',1,'error.h']]],
+  ['icedb_5ferror_5fcontext_5fwiden_5ff',['ICEDB_error_context_widen_f',['../group__errs.html#gaf4a120f414ee3b6834c8ad8b373a432d',1,'error_context.h']]],
+  ['icedb_5ferror_5fgetosname_5ff',['ICEDB_error_getOSname_f',['../group__errs.html#gaf7f5b2eb174d1631ea5c4b34381b34fd',1,'error.h']]],
+  ['icedb_5ferror_5ftest_5ff',['ICEDB_error_test_f',['../group__errs.html#gabe151d901a6de8537133df6c0bd2c113',1,'error.h']]],
+  ['icedb_5fget_5ferror_5fcontext_5fthread_5flocal_5ff',['ICEDB_get_error_context_thread_local_f',['../group__errs.html#ga4753542364d5cdfad59a43e11305c4aa',1,'error.h']]],
+  ['icedb_5fversioninfo_5fp',['ICEDB_VersionInfo_p',['../versioningForwards_8h.html#aefad70f9324fb9dc4d8813c234666fe0',1,'versioningForwards.h']]],
+  ['int8data_5ft',['Int8Data_t',['../namespaceicedb_1_1Examples_1_1Shapes.html#a71efd4b697c2c5a3fdd35fa478cf9b77',1,'icedb::Examples::Shapes']]],
+  ['intdata_5ft',['IntData_t',['../namespaceicedb_1_1Examples_1_1Shapes.html#aa460f7749af211088a23d67e65b536c7',1,'icedb::Examples::Shapes']]],
+  ['ivec',['iVec',['../linterp_8h.html#a4c58b2db47df1a130f9d1e0f55f8f661',1,'linterp.h']]]
 ];

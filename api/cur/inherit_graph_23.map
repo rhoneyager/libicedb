@@ -1,0 +1,12 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classicedb_1_1Attributes_1_1CanHaveAttributes.html" title="This is a virtual base class for objects that can have attributes. This includes tables, groups and HDF5 files. " alt="" coords="40,57,173,98"/>
+<area shape="rect" id="node2" href="$classicedb_1_1Attributes_1_1CanHaveAttributes__impl.html" title="icedb::Attributes::\lCanHaveAttributes_impl" alt="" coords="291,57,455,98"/>
+<area shape="rect" id="node6" href="$classicedb_1_1Groups_1_1Group.html" title="A group is similar to a folder / directory. It can have Attributes and Tables. " alt="" coords="299,123,446,149"/>
+<area shape="rect" id="node8" href="$classicedb_1_1Tables_1_1Table.html" title="icedb::Tables::Table" alt="" coords="303,5,443,32"/>
+<area shape="rect" id="node3" href="$classicedb_1_1Groups_1_1Group__impl.html" title="icedb::Groups::Group_impl" alt="" coords="537,169,715,196"/>
+<area shape="rect" id="node5" href="$classicedb_1_1Tables_1_1Table__impl.html" title="icedb::Tables::Table_impl" alt="" coords="541,35,711,61"/>
+<area shape="rect" id="node4" href="$classicedb_1_1Shapes_1_1Shape__impl.html" title="icedb::Shapes::Shape_impl" alt="" coords="763,144,944,171"/>
+<area shape="rect" id="node7" href="$classicedb_1_1Shapes_1_1Shape.html" title="A high&#45;level class to manipulate particle shapes. " alt="" coords="551,119,701,145"/>
+<area shape="rect" id="node9" href="$classicedb_1_1Tables_1_1CanHaveTables.html" title="The virtual base class used in all objects that can contain tables (groups and datasets). " alt="" coords="5,148,208,175"/>
+<area shape="rect" id="node10" href="$classicedb_1_1Tables_1_1CanHaveTables__impl.html" title="icedb::Tables::CanHaveTables_impl" alt="" coords="256,173,489,200"/>
+</map>

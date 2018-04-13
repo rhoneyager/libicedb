@@ -1,10 +1,8 @@
 <map id="icedb::Examples::Shapes::readDDSCAT" name="icedb::Examples::Shapes::readDDSCAT">
-<area shape="rect" id="node2" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7ba95df610ff97a8da3586e4eada1730" title="icedb::Examples::Shapes\l::m_atoi" alt="" coords="677,128,848,170"/>
-<area shape="rect" id="node3" href="$namespacescatdb_1_1registry.html#a4283824114a448d3dabc96dc79bea32d" title="scatdb::registry::read\l_file_type_multi\&lt;::scatdb\l::shape::shapeIO \&gt;" alt="" coords="225,37,393,93"/>
-<area shape="rect" id="node4" href="$namespaceicedb_1_1Examples_1_1Shapes.html#af97042755647e1f2610ca4301c1eb91a" title="Read ddscat text contents. " alt="" coords="443,95,629,136"/>
-<area shape="rect" id="node5" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a2a5d401c61b223e36383d283c836a956" title="icedb::Examples::Shapes\l::readRawText" alt="" coords="451,160,621,202"/>
-<area shape="rect" id="node6" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106" title="icedb::Examples::Shapes\l::readTextFile" alt="" coords="224,219,395,260"/>
-<area shape="rect" id="node7" href="$beta_2shapes-main_8cpp.html#ae40c007b788d66f509cf4110d9c98e2a" title="This is the primary function in each thread devoted to reading shapes. Usually, about three of these ..." alt="" coords="500,277,572,304"/>
-<area shape="rect" id="node8" href="$beta_2shapes-main_8cpp.html#a6285f7490b6dd81ce98e2527e0620413" title="Convenience function to build a pool of threads for parsing shapes and writing to the hdf5 file..." alt="" coords="687,277,838,304"/>
-<area shape="rect" id="node9" href="$beta_2shapes-main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="The main body of the program. " alt="" coords="896,277,947,304"/>
+<area shape="rect" id="node2" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7ba95df610ff97a8da3586e4eada1730" title="icedb::Examples::Shapes\l::m_atoi" alt="" coords="443,5,613,47"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1Examples_1_1Shapes.html#a7bc9f6fc2a9e7cab2a01c3ef5af40106" title="icedb::Examples::Shapes\l::readTextFile" alt="" coords="224,64,395,105"/>
+<area shape="rect" id="node4" href="$3d__structures__multithreaded_2shapes-main_8cpp.html#ae40c007b788d66f509cf4110d9c98e2a" title="This is the primary function in each thread devoted to reading shapes. Usually, about three of these ..." alt="" coords="492,71,564,98"/>
+<area shape="rect" id="node7" href="$3d__structures__singlefile_2shapes-main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="503,122,553,149"/>
+<area shape="rect" id="node5" href="$3d__structures__multithreaded_2shapes-main_8cpp.html#a6285f7490b6dd81ce98e2527e0620413" title="Convenience function to build a pool of threads for parsing shapes and writing to the hdf5 file..." alt="" coords="661,71,812,98"/>
+<area shape="rect" id="node6" href="$3d__structures__multithreaded_2shapes-main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="The main body of the program. " alt="" coords="860,71,911,98"/>
 </map>

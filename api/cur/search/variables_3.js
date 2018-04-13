@@ -1,5 +1,23 @@
 var searchData=
 [
-  ['data',['data',['../classicedb_1_1Attributes_1_1Attribute.html#aecf87c5421d27b63d8d733f43403070a',1,'icedb::Attributes::Attribute']]],
-  ['dimensionality',['dimensionality',['../classicedb_1_1Attributes_1_1Attribute.html#af7cd92070586cdc6d339bc339eba540c',1,'icedb::Attributes::Attribute']]]
+  ['canconvert',['canConvert',['../classicedb_1_1units_1_1implementations_1_1Converter__registry__provider.html#a5bfba668f0acb7f7320d796c4e26ca0e',1,'icedb::units::implementations::Converter_registry_provider']]],
+  ['charmax',['charmax',['../structicedb_1_1versioning_1_1versionInfo.html#a1bcc23eea356013f146e59a3c1e1e921',1,'icedb::versioning::versionInfo']]],
+  ['code',['code',['../structICEDB__error__context.html#a3953e1372e11fc0efea7d5a880707d41',1,'ICEDB_error_context']]],
+  ['codetocstr',['codeToCstr',['../structICEDB__error__container__ftable.html#abffac2fb45a40d48f28511d21f14fbf7',1,'ICEDB_error_container_ftable']]],
+  ['codetocstrsize',['codeToCstrSize',['../structICEDB__error__container__ftable.html#af5976119b87ae90672670db76464254e',1,'ICEDB_error_container_ftable']]],
+  ['codetostream',['codeToStream',['../structICEDB__error__container__ftable.html#ad13c27e658140ab959aa88abd09c91db',1,'ICEDB_error_container_ftable']]],
+  ['common_5fhdf5_5fextensions',['common_hdf5_extensions',['../namespaceicedb_1_1fs_1_1impl.html#a5e43bab2defcb8381771e2a632a19eea',1,'icedb::fs::impl']]],
+  ['consolelogthreshold',['consoleLogThreshold',['../structicedb_1_1logging_1_1log__properties.html#aa6473ca01b2d474f57aed73e1788eab0',1,'icedb::logging::log_properties']]],
+  ['constructconverter',['constructConverter',['../classicedb_1_1units_1_1implementations_1_1Converter__registry__provider.html#a96f2a41b7a473a0ca35d24473f6c4944',1,'icedb::units::implementations::Converter_registry_provider']]],
+  ['contextfree',['contextFree',['../structICEDB__error__container__ftable.html#a8df97d5ce15799ec3c4ff1123858a9ae',1,'ICEDB_error_container_ftable']]],
+  ['contexttocode',['contextToCode',['../structICEDB__error__container__ftable.html#a8c3367e71edba94579dea9a426e47e81',1,'ICEDB_error_container_ftable']]],
+  ['contexttocstr',['contextToCstr',['../structICEDB__error__container__ftable.html#ab1387a460dc4acbc3f6d5aeeb9aef4d1',1,'ICEDB_error_container_ftable']]],
+  ['contexttocstrsize',['contextToCstrSize',['../structICEDB__error__container__ftable.html#a6c9960237b344e3a85abcb3c4f883266',1,'ICEDB_error_container_ftable']]],
+  ['contexttostream',['contextToStream',['../structICEDB__error__container__ftable.html#a481368a914264cd2da61000df2cbf16a',1,'ICEDB_error_container_ftable']]],
+  ['copy',['copy',['../structICEDB__error__context__container__ftable.html#a152415a134a8fe416525d827d36f10aa',1,'ICEDB_error_context_container_ftable']]],
+  ['countcurrentreading',['countCurrentReading',['../3d__structures__multithreaded_2shapes-main_8cpp.html#a6e46e701431fdc40f70f68212577e809',1,'shapes-main.cpp']]],
+  ['createimpl',['createImpl',['../structICEDB__error__context__container__ftable.html#a06e4bf916a4e1473883299832939eea4',1,'ICEDB_error_context_container_ftable']]],
+  ['cur',['cur',['../classicedb_1_1error_1_1error__options__inner.html#a3ad70413e51054e2608b64adc68e8329',1,'icedb::error::error_options_inner']]],
+  ['cval',['cval',['../namespaceicedb_1_1fs_1_1hdf5_1_1zlib.html#a77df5ea92819537840894b7fbe85bcb6',1,'icedb::fs::hdf5::zlib']]],
+  ['cwd',['CWD',['../namespaceicedb_1_1os__functions_1_1vars.html#a6c07c54e8595233141f837f708b6d1c5',1,'icedb::os_functions::vars']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['newshapecommonoptionalproperties',['NewShapeCommonOptionalProperties',['../structicedb_1_1Shapes_1_1NewShapeCommonOptionalProperties.html',1,'icedb::Shapes']]],
-  ['newshaperequiredproperties',['NewShapeRequiredProperties',['../structicedb_1_1Shapes_1_1NewShapeRequiredProperties.html',1,'icedb::Shapes']]]
+  ['group',['Group',['../classicedb_1_1Groups_1_1Group.html',1,'icedb::Groups']]],
+  ['group_5fimpl',['Group_impl',['../classicedb_1_1Groups_1_1Group__impl.html',1,'icedb::Groups']]]
 ];

@@ -1,0 +1,19 @@
+<map id="icedb::refract::findProviderByName" name="icedb::refract::findProviderByName">
+<area shape="rect" id="node2" href="$namespaceicedb_1_1refract_1_1implementations.html#a50f5d55412e080679ba49cfdff1605d0" title="icedb::refract::implementations\l::_init" alt="" coords="228,365,429,407"/>
+<area shape="rect" id="node3" href="$structicedb_1_1refract_1_1provider__s.html#ab3759da74a6e3f6e38ae7fa1af19dff9" title="icedb::refract::provider\l_s::generate" alt="" coords="502,5,654,47"/>
+<area shape="rect" id="node4" href="$namespaceicedb_1_1refract_1_1implementations.html#a02c1e587807024933bc0ea461ed59c56" title="icedb::refract::implementations\l::mWaterLiebe" alt="" coords="477,71,679,112"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1refract_1_1implementations.html#a6c886aa40f36b10c13702b9c197d9e8f" title="icedb::refract::implementations\l::mWaterFreshMeissnerWentz" alt="" coords="477,136,679,177"/>
+<area shape="rect" id="node6" href="$namespaceicedb_1_1refract_1_1implementations.html#a749dcdc20e3e1c2aa4d21842d5f9cde3" title="icedb::refract::implementations\l::mIceMatzler" alt="" coords="477,201,679,243"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1refract_1_1implementations.html#adca5029f9d82dd996da2f45ae06f703d" title="Ice complex refractive index for microwave/uv. " alt="" coords="477,267,679,308"/>
+<area shape="rect" id="node10" href="$namespaceicedb_1_1refract_1_1implementations.html#a4991d5ca57c34a06470cac862571c615" title="Water complex refractive index for ir/vis. " alt="" coords="477,332,679,373"/>
+<area shape="rect" id="node12" href="$namespaceicedb_1_1refract_1_1implementations.html#a18b38e433d7f0bc96a530c22b4890bb8" title="Ice complex refractive index for ir/vis. " alt="" coords="477,397,679,439"/>
+<area shape="rect" id="node13" href="$namespaceicedb_1_1refract_1_1implementations.html#a8030797d2cbd3a7ab22718372426da0d" title="Sodium chloride refractive index for ir/vis. " alt="" coords="477,463,679,504"/>
+<area shape="rect" id="node14" href="$namespaceicedb_1_1refract_1_1implementations.html#aa923869ef512e698acbcc266c51f3e74" title="Sea salt refractive index for ir/vis. " alt="" coords="477,528,679,569"/>
+<area shape="rect" id="node15" href="$namespaceicedb_1_1refract_1_1implementations.html#aeafbc4db439ee64663a2b445daba9537" title="Dust&#45;like particle refractive index for ir/vis. " alt="" coords="477,593,679,635"/>
+<area shape="rect" id="node17" href="$namespaceicedb_1_1refract_1_1implementations.html#a2f889140f3e9dcef8c4dff9f1ac18fc3" title="Sand O&#45;ray refractvie index for ir/vis (birefringent) " alt="" coords="477,659,679,700"/>
+<area shape="rect" id="node18" href="$namespaceicedb_1_1refract_1_1implementations.html#abe632612f9e23ecfea9f6d13e5f6ee59" title="Sand E&#45;ray refractive index for ir/vis (birefringent) " alt="" coords="477,724,679,765"/>
+<area shape="rect" id="node8" href="$classicedb_1_1units_1_1converter.html#a1c9b1abbfef26eb425ee2124c2f4f451" title="icedb::units::converter\l::convert" alt="" coords="733,267,883,308"/>
+<area shape="rect" id="node9" href="$classicedb_1_1units_1_1converter.html#a5d1ffe72a6cb174356a6e45b40a7eb7a" title="Is this conversion valid? " alt="" coords="937,267,1088,308"/>
+<area shape="rect" id="node11" href="$namespaceanonymous__namespace_02refractImpl_8cpp_03.html#a35f03ce70e90ed63debdc86f046672e8" title="anonymous_namespace\l\{refractImpl::cpp\}::\lsetupHanelA" alt="" coords="727,423,889,479"/>
+<area shape="rect" id="node16" href="$namespaceanonymous__namespace_02refractImpl_8cpp_03.html#acf2ad82c34bb4568de4986539989f461" title="anonymous_namespace\l\{refractImpl::cpp\}::\lsetupHanelB" alt="" coords="727,651,889,707"/>
+</map>

@@ -1,7 +1,10 @@
 <map id="lib/icedb/fs_backend.hpp" name="lib/icedb/fs_backend.hpp">
-<area shape="rect" id="node2" href="$databases_8cpp.html" title="lib/src/databases.cpp" alt="" coords="5,87,152,114"/>
-<area shape="rect" id="node3" href="$fs__backend_8cpp.html" title="lib/src/fs_backend.cpp" alt="" coords="177,87,330,114"/>
-<area shape="rect" id="node4" href="$shapes-main_8cpp.html" title="apps/3d_structures\l/shapes&#45;main.cpp" alt="" coords="355,80,488,121"/>
-<area shape="rect" id="node5" href="$shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_beta/shapeIOtextParsers2.cpp" alt="" coords="513,80,719,121"/>
-<area shape="rect" id="node6" href="$beta_2shapes-main_8cpp.html" title="apps/3d_structures\l_beta/shapes&#45;main.cpp" alt="" coords="744,80,901,121"/>
+<area shape="rect" id="node2" href="$databases_8cpp.html" title="lib/src/databases.cpp" alt="" coords="5,95,152,121"/>
+<area shape="rect" id="node3" href="$fs__backend_8cpp.html" title="lib/src/fs_backend.cpp" alt="" coords="177,95,330,121"/>
+<area shape="rect" id="node4" href="$3d__structures__multithreaded_2shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_multithreaded/shapeIOtext\lParsers2.cpp" alt="" coords="354,80,537,136"/>
+<area shape="rect" id="node5" href="$3d__structures__multithreaded_2shapes-main_8cpp.html" title="apps/3d_structures\l_multithreaded/shapes\l&#45;main.cpp" alt="" coords="561,80,714,136"/>
+<area shape="rect" id="node6" href="$3d__structures__singlefile_2shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_singlefile/shapeIOtextParsers2.cpp" alt="" coords="739,87,971,129"/>
+<area shape="rect" id="node7" href="$3d__structures__singlefile_2shapes-main_8cpp.html" title="apps/3d_structures\l_singlefile/shapes&#45;main.cpp" alt="" coords="995,87,1178,129"/>
+<area shape="rect" id="node8" href="$3d__structures__singlethreaded_2shapeIOtextParsers2_8cpp.html" title="apps/3d_structures\l_singlethreaded/shapeIOtext\lParsers2.cpp" alt="" coords="1202,80,1390,136"/>
+<area shape="rect" id="node9" href="$3d__structures__singlethreaded_2shapes-main_8cpp.html" title="apps/3d_structures\l_singlethreaded/shapes\l&#45;main.cpp" alt="" coords="1414,80,1573,136"/>
 </map>

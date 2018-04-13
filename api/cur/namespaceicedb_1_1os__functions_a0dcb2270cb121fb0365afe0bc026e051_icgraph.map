@@ -1,0 +1,10 @@
+<map id="icedb::os_functions::populateOSstrings" name="icedb::os_functions::populateOSstrings">
+<area shape="rect" id="node2" href="$os__functions_8h.html#a6c6f63e439496d41afc7095cb7baa21c" title="ICEDB_getAppConfigDir" alt="" coords="191,21,357,47"/>
+<area shape="rect" id="node4" href="$os__functions_8h.html#abd4d9eb9bb021c2e081864f1c66247aa" title="ICEDB_getHomeDir" alt="" coords="203,82,345,109"/>
+<area shape="rect" id="node6" href="$os__functions_8h.html#abae6c009622be4322436383382db19e3" title="ICEDB_getHostName" alt="" coords="198,139,350,166"/>
+<area shape="rect" id="node8" href="$os__functions_8h.html#a6087906119ecc126971b483bf6816022" title="ICEDB_getUserName" alt="" coords="198,197,350,223"/>
+<area shape="rect" id="node3" href="$namespaceicedb_1_1os__functions.html#aa77028c184adaba90c27cd5fefc3d38f" title="icedb::os_functions\l::getAppConfigDir" alt="" coords="405,5,540,47"/>
+<area shape="rect" id="node5" href="$namespaceicedb_1_1os__functions.html#affed33c077d37990f568af9efb095a7a" title="icedb::os_functions\l::getHomeDir" alt="" coords="405,71,540,112"/>
+<area shape="rect" id="node7" href="$namespaceicedb_1_1os__functions.html#aee2d308b703fb2c702d3734955136561" title="icedb::os_functions\l::getHostName" alt="" coords="405,136,540,177"/>
+<area shape="rect" id="node9" href="$namespaceicedb_1_1os__functions.html#afd122db35c7bc46804a85de67faa72f0" title="icedb::os_functions\l::getUserName" alt="" coords="405,201,540,243"/>
+</map>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hidden_5ficedb',['HIDDEN_ICEDB',['../defs_8h.html#a849938687a87137d6b3a0edb22e338f7',1,'defs.h']]]
+  ['expand_5fand_5fquote',['EXPAND_AND_QUOTE',['../versioning_8hpp.html#aa1383d86e1b2c4442514026fd7ce2307',1,'versioning.hpp']]]
 ];

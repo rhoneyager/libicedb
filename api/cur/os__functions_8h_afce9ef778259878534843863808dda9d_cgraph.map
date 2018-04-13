@@ -1,0 +1,7 @@
+<map id="ICEDB_getAppDirC" name="ICEDB_getAppDirC">
+<area shape="rect" id="node2" href="$os__functions_8cpp.html#af4f62d181caf9309ba6cfe857eff8aa5" title="ICEDB_getAppDirI" alt="" coords="192,31,325,57"/>
+<area shape="rect" id="node3" href="$os__functions_8cpp.html#a072eda66ec9ae905d23b2e8608fdc868" title="ICEDB_getPID" alt="" coords="373,5,485,32"/>
+<area shape="rect" id="node4" href="$namespaceicedb.html#afe3b6f8813a7e6ea428f5b5aa0bd34e7" title="icedb::free" alt="" coords="388,56,471,83"/>
+<area shape="rect" id="node5" href="$namespaceicedb.html#a9c72382b614c366705909934c70daf6e" title="icedb::_free" alt="" coords="533,31,624,57"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a544a70a2fcffd7aeed87148396273bb6" title="Free memory region. Should not be double&#45;freed. " alt="" coords="672,56,765,83"/>
+</map>

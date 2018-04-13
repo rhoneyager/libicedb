@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">icedb
-   &#160;<span id="projectnumber">version 0.4.2</span>
+   &#160;<span id="projectnumber">version 0.5.1</span>
    </div>
    <div id="projectbrief">Snow particle scattering database API</div>
   </td>
@@ -65,7 +65,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_todo000010"></a>Class <a class="el" href="classicedb_1_1Attributes_1_1Checked__Existing__Attribute.html">icedb::Attributes::Checked_Existing_Attribute</a>  </dt>
+<dt><a class="anchor" id="_todo000011"></a>Class <a class="el" href="classicedb_1_1Attributes_1_1Checked__Existing__Attribute.html">icedb::Attributes::Checked_Existing_Attribute</a>  </dt>
 <dd>Candidate class. Needs an implementation.  </dd>
 <dt><a class="anchor" id="_todo000001"></a>Member <a class="el" href="namespaceicedb_1_1Attributes.html#a23f721867d20ffaf5de7a554ff4d2ba4">icedb::Attributes::pullData</a>  (const std::string &amp;attributeName, std::vector&lt; size_t &gt; &amp;dims, std::vector&lt; DataType &gt; &amp;tdata, gsl::not_null&lt; const H5::H5Object *&gt; obj)</dt>
 <dd><p class="startdd">Use <a class="el" href="classicedb_1_1Attributes_1_1Checked__Existing__Attribute.html" title="An encapsulating class that ensures that an attribute exists before it is accessed. ">Checked_Existing_Attribute</a> </p>
@@ -76,22 +76,22 @@ $(function() {
 <dd>Re-work the internal logic to allow multiple string writes into a single attribute.  </dd>
 <dt><a class="anchor" id="_todo000004"></a>Member <a class="el" href="classicedb_1_1Databases_1_1Database.html#ad4d1c9f1ae657eb7c0604f2d9cb71fe3">icedb::Databases::Database::indexDatabase</a>  (const std::string &amp;location)</dt>
 <dd>createGroupStructure cannot currently handle passing back an H5File (in the no groups case). It is a bug in HDF5. Once fixed, the if-else cases should be collapsed into one.  </dd>
+<dt><a class="anchor" id="_todo000012"></a>Member <a class="el" href="namespaceicedb_1_1Examples_1_1Shapes.html#ab56cd487345b13b70d602fd92eb2c6ab">icedb::Examples::Shapes::readPSUfile</a>  (const std::string &amp;filename)</dt>
+<dd>Convert to using my "HDF for Humans" interface once it is ready.  </dd>
+<dt><a class="anchor" id="_todo000013"></a>Class <a class="el" href="structicedb_1_1Examples_1_1Shapes_1_1ScopedHandles_1_1ScopedHandle.html">icedb::Examples::Shapes::ScopedHandles::ScopedHandle&lt; HandleType, InvalidValueClass, CloseMethod &gt;</a>  </dt>
+<dd>Extend with SFINAE and constexpr type detection for InvalidValueClass and CloseMethod. If these are not specified as template parameters, then they must be passed in the constructor.  </dd>
 <dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="namespaceicedb_1_1fs_1_1hdf5.html#add74346b9c2eb7dd133928d598f69225">icedb::fs::hdf5::getHDF5IOflags</a>  (<a class="el" href="namespaceicedb_1_1fs.html#a8aa7e58f411602b31b0de41c424e278f">fs::IOopenFlags</a> flags)</dt>
 <dd>Candidate for constexpr inlining  </dd>
 <dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="namespaceicedb_1_1fs_1_1impl.html#ae58335756c72cfc8f4f13eae099c969a">icedb::fs::impl::collectDatasetFiles</a>  (const sfs::path &amp;base, const ExtensionsMatching_Type &amp;valid_extensions)</dt>
 <dd>Once std::filesystem adds the lexically_proximate method to all compilers, change the path decomposition to the standard method.  </dd>
 <dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="classicedb_1_1Shapes_1_1Shape.html#aaf0300a0218cb7318678b7b6c299f1a7">icedb::Shapes::Shape::isValid</a>  (gsl::not_null&lt; H5::Group *&gt; group, std::ostream *out=nullptr)</dt>
 <dd>Finish this, and tucn checks on attributes and variables into template functions!!!  </dd>
-<dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="classicedb_1_1Tables_1_1CanHaveTables.html#a2239650a143079927f0d8d3955794b9f">icedb::Tables::CanHaveTables::getChunkStrategy</a>  (const std::vector&lt; size_t &gt; &amp;dims)</dt>
+<dt><a class="anchor" id="_todo000010"></a>Member <a class="el" href="classicedb_1_1Tables_1_1CanHaveTables.html#a2239650a143079927f0d8d3955794b9f">icedb::Tables::CanHaveTables::getChunkStrategy</a>  (const std::vector&lt; size_t &gt; &amp;dims)</dt>
 <dd>Use a more intelligent strategy  </dd>
-<dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="classicedb_1_1Tables_1_1Table.html#af083d70aef16dd5c453df177b31b7340">icedb::Tables::Table::getNumDimensions</a>  () const</dt>
+<dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="classicedb_1_1Tables_1_1Table.html#af083d70aef16dd5c453df177b31b7340">icedb::Tables::Table::getNumDimensions</a>  () const</dt>
 <dd>Need to ensure that tables have dimension scales attached in all cases. Required for netCDF compatibility.  </dd>
-<dt><a class="anchor" id="_todo000012"></a>Member <a class="el" href="namespacescatdb_1_1plugins_1_1builtin_1_1shape.html#adbc023784c23dc829b045f608861aae9">scatdb::plugins::builtin::shape::readDDSCAT</a>  (const char *in)</dt>
-<dd>Change ingest to show absolute path  </dd>
-<dt><a class="anchor" id="_todo000012"></a>Member <a class="el" href="namespacescatdb_1_1plugins_1_1builtin_1_1shape.html#adbc023784c23dc829b045f608861aae9">scatdb::plugins::builtin::shape::readDDSCAT</a>  (const char *in)</dt>
-<dd>Change ingest to show absolute path  </dd>
-<dt><a class="anchor" id="_todo000011"></a>Member <a class="el" href="namespacescatdb_1_1registry.html#ab6be0f60daf4cfced0decc25ea801ef1">scatdb::registry::write_file_type_multi&lt;::scatdb::shape::shapeIO &gt;</a>  (std::shared_ptr&lt; IOhandler &gt; sh, std::shared_ptr&lt; options &gt; opts, const std::shared_ptr&lt; const ::scatdb::shape::shapeIO &gt; s)</dt>
-<dd>If no exporttype, attempt to guess from the file extension? </dd>
+<dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="error_8hpp.html#aa1e90ffb52010ae451bd11acce255967">ICEDB_throw</a>  (x)</dt>
+<dd>Detect if inherits from std::exception or not. If inheritable, check if it is an xError. If yes, push a new context. If not inheritable, push a new context with what() as the expression. If not an exception, then create a new xError and push the appropriate type in a context. </dd>
 </dl>
 </div></div><!-- contents -->
 <!-- start footer part -->
