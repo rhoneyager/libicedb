@@ -29,7 +29,7 @@ target_include_directories(icedb-3d_structures_singlethreaded SYSTEM
 target_compile_definitions(icedb-3d_structures_singlethreaded
 	PRIVATE ${HDF5_DEFINITIONS})
 
-target_link_libraries(icedb-3d_structures_singlethreaded icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(icedb-3d_structures_singlethreaded icedb ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 addapp(icedb-3d_structures_singlethreaded Level_0)
 storebin(icedb-3d_structures_singlethreaded)

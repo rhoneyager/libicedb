@@ -141,7 +141,11 @@ namespace icedb {
 				// The particle index is not specific enough. Let's use the filename for an id.
 				boost::filesystem::path p(filename);
 				auto pfile = p.filename();
+#if BOOST_VERSION < 104600
+				string id = pfile.c_str(); // Needed for older RHEL machines
+#else
 				string id = pfile.string().c_str(); // Totally assuming a lack of non-Latin characters in the path.
+#endif
 
 				ScopedHandles::H5F_handle hFile(H5Fopen(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
 				if (!hFile.valid()) ICEDB_throw(icedb::error::error_types::xBadInput)

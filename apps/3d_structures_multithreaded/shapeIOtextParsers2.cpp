@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <cmath>
 
 #include <icedb/fs_backend.hpp>
 #include <boost/lexical_cast.hpp>
