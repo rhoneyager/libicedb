@@ -152,6 +152,7 @@ namespace icedb {
 #else
 				string id = pfile.string().c_str(); // Totally assuming a lack of non-Latin characters in the path.
 #endif
+				std::cout << "Reading id " << id << std::endl;
 
 				ScopedHandles::H5F_handle hFile(H5Fopen(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
 				if (!hFile.valid()) ICEDB_throw(icedb::error::error_types::xBadInput)
@@ -218,11 +219,11 @@ namespace icedb {
 					if (numPoints != zs.size()) ICEDB_throw(icedb::error::error_types::xAssert);
 					if (numPoints != sphere_indices.size()) ICEDB_throw(icedb::error::error_types::xAssert);
 
-					// Finally, pack the data in the shpdata structure.
-					shpdata.required.number_of_particle_scattering_elements = static_cast<uint64_t>(numPoints);
-					shpdata.required.number_of_particle_constituents = 1;
-					shpdata.required.particle_id = filename; // TODO: improve this
-					shpdata.required.particle_scattering_element_coordinates_are_integral = false;
+				// Finally, pack the data in the shpdata structure.
+				shpdata.required.number_of_particle_scattering_elements = static_cast<uint64_t>(numPoints);
+				shpdata.required.number_of_particle_constituents = 1;
+				shpdata.required.particle_id = id;
+				shpdata.required.particle_scattering_element_coordinates_are_integral = false;
 
 					/// VARIABLE: Cartesian coordinates of the center of each scattering element
 					/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
@@ -267,7 +268,7 @@ namespace icedb {
 					// Finally, pack the data in the shpdata structure.
 					shpdata.required.number_of_particle_scattering_elements = static_cast<uint64_t>(numPoints);
 					shpdata.required.number_of_particle_constituents = 1;
-					shpdata.required.particle_id = filename; // TODO: improve this
+					shpdata.required.particle_id = id;
 					shpdata.required.particle_scattering_element_coordinates_are_integral = true;
 
 					/// VARIABLE: Cartesian coordinates of the center of each scattering element
