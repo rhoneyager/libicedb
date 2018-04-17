@@ -58,7 +58,10 @@ namespace icedb {
 		};
 		/// Structure containing a list of all of the common optional data for creating a new shape in the database.
 		struct NewShapeCommonOptionalProperties {
-			/// DIMENSION: The id number for each scattering element. Single dimension.
+			/// \brief DIMENSION: The id number for each scattering element. Single dimension.
+			/// \note This variable has to exist in the HDF5 dataset, even if it contains no data.
+			///		  This is because it is used as a NetCDF dimension. If no data are written, then
+			///		  it uses no storage space.
 			gsl::span<const uint64_t> particle_scattering_element_number;
 			/// DIMENSION: The id number of each particle's constituent. Single dimension.
 			gsl::span<const uint8_t> particle_constituent_number;

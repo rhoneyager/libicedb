@@ -269,13 +269,14 @@ namespace icedb {
 			// Write required dimensions
 
 			// This table is created, but if it is trivial, then it is unset (i.e. internally set only to the fill value)
-			bool createTblPSEN = false;
+			bool createTblPSEN = false; // NOTE: NetCDF compatability requires this variable!
 			if (optional) {
 				if (optional->particle_scattering_element_number.size()) createTblPSEN = true;
 			}
-			if (required->NC4_compat) createTblPSEN = true;
+			if (required->NC4_compat) createTblPSEN = true; // NOTE: NetCDF compatability requires this variable!
 
 			std::unique_ptr<icedb::Tables::Table> tblPSEN;
+			// NOTE: NetCDF compat. requires this variable! Will be unset only when NetCDF compat is turned off.
 			if (createTblPSEN) {
 				tblPSEN = res->createTable<uint64_t>("particle_scattering_element_number",
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements) });
@@ -285,6 +286,7 @@ namespace icedb {
 					}
 				}
 				// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
+				// They never implemented trivial sequences (1, 2, 3, 4, ...) in the HDF5 library.
 				tblPSEN->setDimensionScale("particle_scattering_element_number");
 			}
 
