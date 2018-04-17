@@ -59,7 +59,13 @@ namespace icedb {
 					HandleType h = 0;
 					bool valid() const { return !InvalidValueClass::isInvalid(h); }
 					~ScopedHandle() {
-						if (valid()) CloseMethod::Close(h);
+						try {
+							if (valid()) CloseMethod::Close(h);
+						}
+						catch (...) {
+							// Need to catch all throws in a destructor.
+							abort();
+						}
 						h = 0;
 					}
 					ScopedHandle(HandleType newh) : h(newh) {}
