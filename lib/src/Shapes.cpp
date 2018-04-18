@@ -304,10 +304,10 @@ namespace icedb {
 				}
 				if (!added) {
 					// Create "dummy" constituent numbers and write.
-					std::vector<uint64_t> dummyPCNs(required->number_of_particle_constituents);
+					std::vector<uint8_t> dummyPCNs(required->number_of_particle_constituents);
 					for (size_t i = 0; i < required->number_of_particle_constituents; ++i)
-						dummyPCNs[i] = i + 1;
-					tblPCN->writeAll<uint64_t>(dummyPCNs);
+						dummyPCNs[i] = static_cast<uint8_t>(i + 1);
+					tblPCN->writeAll<uint8_t>(dummyPCNs);
 				}
 				tblPCN->setDimensionScale("particle_constituent_number");
 			}
