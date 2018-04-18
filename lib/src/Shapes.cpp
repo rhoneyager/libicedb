@@ -268,40 +268,46 @@ namespace icedb {
 
 			// Write required dimensions
 
-			// This table is created, but if it is trivial, then it is unset (i.e. internally set only to the fill value)
-			bool createTblPSEN = false;
-			if (optional) {
-				if (optional->particle_scattering_element_number.size()) createTblPSEN = true;
-			}
-			if (required->NC4_compat) createTblPSEN = true;
-
 			std::unique_ptr<icedb::Tables::Table> tblPSEN;
-			if (createTblPSEN) {
+			{
 				tblPSEN = res->createTable<uint64_t>("particle_scattering_element_number",
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements) });
+				bool added = false;
 				if (optional) {
 					if (!optional->particle_scattering_element_number.empty()) {
 						tblPSEN->writeAll<uint64_t>(optional->particle_scattering_element_number);
+						added = true;
 					}
 				}
+				if (!added) {
+					// Create "dummy" element numbers and write.
+					std::vector<uint64_t> dummyPSENs(required->number_of_particle_scattering_elements);
+					for (size_t i = 0; i < required->number_of_particle_scattering_elements; ++i)
+						dummyPSENs[i] = i + 1;
+					tblPSEN->writeAll<uint64_t>(dummyPSENs);
+				}
 				// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
+				// However, netCDF should have these values.
 				tblPSEN->setDimensionScale("particle_scattering_element_number");
 			}
 
-			bool createTblPCN = false;
-			if (optional) {
-				if (optional->particle_constituent_number.size()) createTblPCN = true;
-			}
-			if (required->NC4_compat) createTblPCN = true;
-
 			std::unique_ptr<icedb::Tables::Table> tblPCN;
-			if (createTblPCN) {
+			{
 				tblPCN = res->createTable<uint8_t>("particle_constituent_number",
 				{ static_cast<size_t>(required->number_of_particle_constituents) });
+				bool added = false;
 				if (optional) {
 					if (!optional->particle_constituent_number.empty()) {
 						tblPCN->writeAll<uint8_t>(optional->particle_constituent_number);
+						added = true;
 					}
+				}
+				if (!added) {
+					// Create "dummy" constituent numbers and write.
+					std::vector<uint8_t> dummyPCNs(required->number_of_particle_constituents);
+					for (size_t i = 0; i < required->number_of_particle_constituents; ++i)
+						dummyPCNs[i] = static_cast<uint8_t>(i + 1);
+					tblPCN->writeAll<uint8_t>(dummyPCNs);
 				}
 				tblPCN->setDimensionScale("particle_constituent_number");
 			}
@@ -319,6 +325,10 @@ namespace icedb {
 			
 			// Determine if we can store the data as integers.
 			// If non-integral coordinates, no.
+			// If we can store the data as integers, then write the variable using the smallest
+			// available integer storage type.
+			/// \todo With HDFforHumans, be sure to add support for using minimal-sized types.
+			/// \todo Auto-detect if we are using integral scattering element coordinates.
 			bool considerInts = (required->particle_scattering_element_coordinates_are_integral) ? true : false;
 			bool useUint16s = false, useUint8s = false;
 			if (considerInts) {
