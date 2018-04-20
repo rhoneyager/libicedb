@@ -14,15 +14,15 @@ At the recent [snowfall workshop in Cologne](http://www.geomet.uni-koeln.de/fors
 
 - Level 0: Lowest level of processing
 
-..1. Level 0a: Contains the 3D structure
-..2. Level 0b: Contains amplitude scattering matrix (following Mischenko convention)
+  1. Level 0a: Contains the 3D structure
+  2. Level 0b: Contains amplitude scattering matrix (following Mischenko convention)
 
 - Level 1: Phase Matrix (to be discussed)
 
 - Level 2: Essential scattering properties (to be discussed)
 
-..1. Details need to be further discussed
-..2. General idea: provide similar content as Liu database (cross sections, phase function, angle averaged quantities)
+  1. Details need to be further discussed
+  2. General idea: provide similar content as Liu database (cross sections, phase function, angle averaged quantities)
 
 - Level 3: Scattering properties integrated over PSD (to be discussed)
 
