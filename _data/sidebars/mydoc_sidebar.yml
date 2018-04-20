@@ -103,6 +103,10 @@ entries:
     - title: Discussion notes
       url: /notes.html
       output: web, pdf
+      
+    - title: Communication and Data exchange
+      url: /comm_data.html
+      output: web, pdf 
 
   - title: Database File Structure
     output: web, pdf
