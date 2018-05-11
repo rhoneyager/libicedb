@@ -6,6 +6,9 @@
 #include <fstream>
 #include <cmath>
 
+#include<cerrno>
+#include<cstdlib>
+
 #include <icedb/fs_backend.hpp>
 #include <boost/lexical_cast.hpp>
 //#include <boost/iostreams/copy.hpp>
@@ -424,7 +427,21 @@ namespace icedb {
 						//np = macros::m_atoi<size_t>(&(lin.data()[posa]), len);
 					}
 					break;
-					case 6: // Junk line
+					case 6: // In case of DDSCAT6 this is the first valid dipole
+					        // This method is not super robust, but if line 7 matches the pattern of 7 integers it should be recognized as a dipole
+					{
+					    std::istringstream iss(lin);
+					    size_t number_of_words = 0;
+					    bool isInteger=true;
+					    while (iss and isInteger)
+					    {
+					        std::string word;
+					        iss>>word;
+					        number_of_words++;
+					        isInteger = (word.find_first_not_of( "-+0123456789" ) == string::npos);
+					    }
+					    if (number_of_words == 8) pend = pstart; // If I count seven integers I put back the buffer to the line start
+					}
 					default:
 						break;
 					case 2: // a1
