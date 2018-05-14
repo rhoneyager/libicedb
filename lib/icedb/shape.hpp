@@ -39,7 +39,7 @@ namespace icedb {
 			/// Are the particle_scattering_element_coordinates integers?
 			/// This allows for optimization when writing.
 			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
-			uint64_t particle_scattering_element_coordinates_are_integral = 0;
+			uint8_t particle_scattering_element_coordinates_are_integral = 0;
 			
 
 			// The ATTRIBUTES
@@ -59,7 +59,7 @@ namespace icedb {
 		/// Structure containing a list of all of the common optional data for creating a new shape in the database.
 		struct NewShapeCommonOptionalProperties {
 			/// DIMENSION: The id number for each scattering element. Single dimension.
-			gsl::span<const uint64_t> particle_scattering_element_number;
+			gsl::span<const int64_t> particle_scattering_element_number;
 			/// DIMENSION: The id number of each particle's constituent. Single dimension.
 			gsl::span<const uint8_t> particle_constituent_number;
 
