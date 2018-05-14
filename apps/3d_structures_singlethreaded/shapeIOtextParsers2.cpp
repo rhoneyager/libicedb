@@ -428,19 +428,10 @@ namespace icedb {
 					}
 					break;
 					case 6: // In case of DDSCAT6 this is the first valid dipole
-					        // This method is not super robust, but if line 7 matches the pattern of 7 integers it should be recognized as a dipole
+					        // This method is not super robust: what if line 7 contains just numbers but not a dipole coordinate
 					{
-					    std::istringstream iss(lin);
-					    size_t number_of_words = 0;
-					    bool isInteger=true;
-					    while (iss and isInteger)
-					    {
-					        std::string word;
-					        iss>>word;
-					        number_of_words++;
-					        isInteger = (word.find_first_not_of( "-+0123456789" ) == string::npos);
-					    }
-					    if (number_of_words == 8) pend = pstart; // If I count seven integers I put back the buffer to the line start
+					    bool isNotHeaderLine = (lin.find_first_not_of(" \t-+0123456789") == std::string::npos);
+					    if (isNotHeaderLine) pend = pstart; // I assume not header line implies a dipole thus I put back the buffer to the line start
 					}
 					default:
 						break;
