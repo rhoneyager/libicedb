@@ -505,15 +505,16 @@ namespace icedb {
 				p.required.number_of_particle_constituents = static_cast<uint8_t>(constituents.size());
 
 				for (size_t i = 0; i < numPoints; ++i)
-				{
+				{   
 					size_t pIndex = 7 * i;
-					uint64_t substance_id = static_cast<uint64_t>(parser_vals[pIndex + 4]);
-					size_t offset = 0;
+					uint8_t substance_id = static_cast<uint8_t>(parser_vals[pIndex + 4]);
+					uint8_t offset = 0;
 					for (auto it = constituents.cbegin(); it != constituents.cend(); ++it, ++offset) {
 						if ((*it) == substance_id) break;
 					}
-					size_t idx = (i*constituents.size()) + offset;
-					p.optional.particle_scattering_element_composition_whole[idx] = 1;
+					//size_t idx = (i*constituents.size()) + offset;
+					//p.optional.particle_scattering_element_composition_whole[idx] = 1;
+					p.optional.particle_scattering_element_composition_whole[i] = offset;
 				}
 				p.required.particle_scattering_element_coordinates_are_integral = 1;
 				p.optional.hint_max_scattering_element_dimension = max_element;

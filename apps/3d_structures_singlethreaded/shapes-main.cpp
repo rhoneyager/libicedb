@@ -101,7 +101,17 @@ int main(int argc, char** argv) {
 				else ICEDB_throw(icedb::error::error_types::xBadInput)
 					.add("Description", "Unknown input file format. See program help for a list of valid formats.")
 					.add("Current-format", informat);
-
+                /*std::cout<<data.required.number_of_particle_scattering_elements<<std::endl;
+                //std::cout<<data.required.number_of_particle_constituents<<std::endl;
+                //std::cout<<data.required.particle_scattering_element_coordinates_are_integral<<std::endl;
+                //for (std::vector<float>::const_iterator i = data.required.particle_scattering_element_coordinates.begin(); i != data.required.particle_scattering_element_coordinates.end(); ++i) std::cout << *i << " ";
+                //std::cout<<data.required.particle_id<<std::endl<<"Number constituent ";
+                //for (std::vector<uint8_t>::const_iterator i = data.optional.particle_constituent_number.begin(); i != data.optional.particle_constituent_number.end(); ++i) std::cout << static_cast<int>(*i) << " ";
+                //std::cout<<std::endl<<"whole: ";
+                //for (std::vector<uint8_t>::const_iterator i = data.optional.particle_scattering_element_composition_whole.begin(); i != data.optional.particle_scattering_element_composition_whole.end(); ++i) std::cout << static_cast<int>(*i) << " ";
+                //std::cout<<std::endl<<"num: ";
+                //for (std::vector<uint64_t>::const_iterator i = data.optional.particle_scattering_element_number.begin(); i != data.optional.particle_scattering_element_number.end(); ++i) std::cout << static_cast<int>(*i) << " ";
+                std::cout<<std::endl<<"End particle properties"<<std::endl;*/
 				// Set a basic particle id. This id is used when writing the shape to the output file.
 				// In this example, objects in the output file are named according to their ids.
 				if (data.required.particle_id.size() == 0)
