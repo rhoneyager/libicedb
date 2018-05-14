@@ -16,6 +16,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <iomanip>
 #include <icedb/shape.hpp>
 #include <icedb/Database.hpp>
 #include <icedb/error.hpp>
@@ -41,7 +43,7 @@ int main(int argc, char** argv) {
 		// Read program options
 
 		namespace po = boost::program_options;
-		po::options_description desc("Allowed options");
+		po::options_description desc("General options"), mdata("Shape metadata");
 		desc.add_options()
 			("help,h", "produce help message")
 			("from", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
@@ -52,6 +54,12 @@ int main(int argc, char** argv) {
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			("from-format", po::value<string>()->default_value("text"), "The format of the input files. Options: text, psu.")
 			;
+		mdata.add_options()
+			("author", po::value<string>(), "Name(s) of the person/group who generated the shape.")
+			("contact-information", po::value<string>(), "Affiliation, Contact information including email of the person/group who generated the scattering data.")
+			("scattering-method", po::value<string>(), "Method applied to the shape to calculate the scattering properties.")
+			;
+		desc.add(mdata);
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
 		po::notify(vm);
@@ -75,6 +83,22 @@ int main(int argc, char** argv) {
 		string dbpath = vm["db-path"].as<string>();
 		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 		string informat = vm["from-format"].as<string>();
+
+		// Metadata
+		string sAuthor, sContact, sScattMeth;
+		if (vm.count("author")) sAuthor = vm["author"].as<string>();
+		if (vm.count("contact-information")) sContact = vm["contact-information"].as<string>();
+		if (vm.count("scattering-method")) sScattMeth = vm["scattering-method"].as<string>();
+		auto now = std::chrono::system_clock::now();
+		auto in_time_t = std::chrono::system_clock::to_time_t(now);
+		std::ostringstream ssIngestTime;
+		// TODO: Replace gmtime with gmtime_s, but add the checks to see if it is supported on different compilers.
+		ssIngestTime << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %H:%M:%S %Z"); // or "%c %Z"
+		string sIngestTime = ssIngestTime.str();
+
+		if (!sAuthor.size() || !sContact.size() || !sScattMeth.size())
+			cout << "Note: it is recommended that you set the metadata that describes the shapes that you are importing!" << endl;
+
 
 		// Create the output database if it does not exist
 		auto iof = fs::IOopenFlags::READ_WRITE;
@@ -115,6 +139,12 @@ int main(int argc, char** argv) {
 				auto shpgrp = basegrp->createGroup(data.required.particle_id);
 				std::cout << "Writing shape " << data.required.particle_id << std::endl;
 				auto shp = data.toShape(data.required.particle_id, shpgrp->getHDF5Group());
+
+				// Apply metadata
+				if (sAuthor.size()) shp->writeAttribute<std::string>("author", { 1 }, { sAuthor });
+				if (sContact.size()) shp->writeAttribute<std::string>("contact_information", { 1 }, { sContact });
+				if (sScattMeth.size()) shp->writeAttribute<std::string>("scattering_method", { 1 }, { sScattMeth });
+				shp->writeAttribute<std::string>("date_of_icedb_ingest", { 1 }, { sIngestTime });
 			}
 		}
 	}

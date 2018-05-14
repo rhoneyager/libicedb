@@ -116,6 +116,7 @@ namespace icedb {
 		public:
 			/// Each shape 'group' has an attribute with this identifier. Used for shape collection and searching.
 			static const std::string _icedb_obj_type_shape_identifier;
+			static const uint16_t _icedb_current_shape_schema_version;
 			virtual ~Shape();
 			/// \brief Is this object a shape?
 			/// \param owner is the parent group

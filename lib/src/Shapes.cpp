@@ -159,6 +159,7 @@ namespace icedb {
 		Shape::~Shape() {}
 		Shape::Shape(const std::string &uid) : particle_unique_id{ uid } {}
 		const std::string Shape::_icedb_obj_type_shape_identifier = "shape";
+		const uint16_t Shape::_icedb_current_shape_schema_version = 0;
 
 		bool Shape::isShape(Groups::Group &owner, const std::string &name) {
 			if (!owner.doesGroupExist(name)) return false;
@@ -264,6 +265,7 @@ namespace icedb {
 			
 			// Write required attributes
 			res->writeAttribute<std::string>(Group::_icedb_obj_type_identifier, { 1 }, { Shape::_icedb_obj_type_shape_identifier });
+			res->writeAttribute<uint16_t>("_icedb_shape_schema_version", { 1 }, { Shape::_icedb_current_shape_schema_version });
 			res->writeAttribute<std::string>("particle_id", { 1 }, { required->particle_id });
 
 			// Write required dimensions
