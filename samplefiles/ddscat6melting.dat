@@ -1,0 +1,15 @@
+Aggregate with Dmax= 404.582 and aeff= 104.877
+9  = NAT
+1.000	0.000	0.000	= target vector a1 (in TF)
+0.000	1.000	0.000	= target vector a1 (in TF)
+1.	1.	1.	= d_x/d d_y/d d_z/d (normally 1 1 1)
+J	JX	JY	JZ	ICMPX	ICMPY	ICMPZ
+  1   1   1   1   1   1   1
+  2   0   1   1   2   2   2
+  3  -1   1   1   1   1   1
+  4   1   0   1   1   1   1
+  5   0   1   1   1   1   1
+  6  -1   0  -0   2   2   2
+  7   1   1  -1   1   1   1
+  8   0   1  -0   1   1   1
+  9  -1   0  -0   2   2   2
