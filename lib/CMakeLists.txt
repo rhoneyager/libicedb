@@ -3,27 +3,6 @@ include(addapp)
 include(addlib)
 include(generaterc)
 
-# This is a tiny executable consumed by the build system.
-# It reads the HDF5 version information and writes a header
-# that describes certain unstable aspects of the HDF5 C++
-# interface.
-add_executable(icedb-h5tests related/h5tests/h5tests.cpp)
-set_target_properties(icedb-h5tests PROPERTIES CXX_STANDARD 11)
-target_include_directories(icedb-h5tests SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
-	)
-addapp_base(icedb-h5tests Build_System_Internal)
-# storebin(h5tests) # This temporary binary never gets installed.
-
-# icedb_h5.h is system-specific and defines parameters only used
-# by the core library. It is private.
-add_custom_command(TARGET icedb-h5tests POST_BUILD
-	#OUTPUT ${CMAKE_BINARY_DIR}/icedb_h5.h
-	COMMAND icedb-h5tests
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	COMMENT "Generate HDF5 definitions for function matching"
-	)
-
 # These are the files required by the library, placed into groups.
 set(related_cmake_objects
 	../CMakeRules/addapp.cmake
@@ -47,6 +26,13 @@ set(gsl_objs
 	icedb/compat/gsl/span
 	icedb/compat/gsl/string_span
 	)
+set (hh_objs
+	icedb/compat/HH/Groups.hpp
+	icedb/compat/HH/Handles.hpp
+	icedb/compat/HH/Handles_HDF.hpp
+	icedb/compat/HH/Handles_Valid.hpp
+	icedb/compat/HH/Tags.hpp
+	icedb/compat/HH/Types.hpp)
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
@@ -108,7 +94,7 @@ set(error_objs
 	src/errorCodes.cpp
 	src/errorTypes.cpp
 	src/error_context.cpp
-)
+	)
 set(lib_objs
 	icedb/Data_Types.hpp
 	icedb/defs.h
@@ -140,6 +126,7 @@ generaterc("libicedb" "dll"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
 source_group("GSL" FILES ${gsl_objs})
+source_group("HH" FILES ${hh_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
 source_group("Errors" FILES ${error_objs})
@@ -155,7 +142,7 @@ source_group("CMake" FILES ${related_cmake_objects})
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
 	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
-	${related_cmake_objects}
+	${related_cmake_objects} ${hh_objs}
 	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
 IF (WIN32 AND NOT CYGWIN)
@@ -165,8 +152,7 @@ source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
 add_library(icedb STATIC ${libsrcs})
-add_dependencies(icedb icedb-h5tests) # Ensures that icedb_h5.h is generated before build.
-# compat contains the GSL.
+# compat contains the GSL and HH.
 target_include_directories(icedb SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP} icedb/compat)
 #target_include_directories(icedb SYSTEM

@@ -47,17 +47,17 @@ namespace HH {
 			return H5T_handle{ H5Tcreate(H5T_STRING, gsl::narrow_cast<size_t>(strtlen)) };
 		}
 
-		template<> H5_Handle GetHDF5Type<char>(void*);
-		template<> H5_Handle GetHDF5Type<int8_t>(void*);
-		template<> H5_Handle GetHDF5Type<uint8_t>(void*);
-		template<> H5_Handle GetHDF5Type<int16_t>(void*);
-		template<> H5_Handle GetHDF5Type<uint16_t>(void*);
-		template<> H5_Handle GetHDF5Type<int32_t>(void*);
-		template<> H5_Handle GetHDF5Type<uint32_t>(void*);
-		template<> H5_Handle GetHDF5Type<int64_t>(void*);
-		template<> H5_Handle GetHDF5Type<uint64_t>(void*);
-		template<> H5_Handle GetHDF5Type<float>(void*);
-		template<> H5_Handle GetHDF5Type<double>(void*);
+		template<> inline H5_Handle GetHDF5Type<char>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_CHAR }; }
+		template<> inline H5_Handle GetHDF5Type<int8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT8 }; }
+		template<> inline H5_Handle GetHDF5Type<uint8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT8 }; }
+		template<> inline H5_Handle GetHDF5Type<int16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT16 }; }
+		template<> inline H5_Handle GetHDF5Type<uint16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT16 }; }
+		template<> inline H5_Handle GetHDF5Type<int32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT32 }; }
+		template<> inline H5_Handle GetHDF5Type<uint32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT32 }; }
+		template<> inline H5_Handle GetHDF5Type<int64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT64 }; }
+		template<> inline H5_Handle GetHDF5Type<uint64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT64 }; }
+		template<> inline H5_Handle GetHDF5Type<float>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_FLOAT }; }
+		template<> inline H5_Handle GetHDF5Type<double>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_DOUBLE }; }
 
 	}
 }

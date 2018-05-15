@@ -12,6 +12,7 @@ namespace HH {
 		struct Handle_base_b {}; ///< For containerization
 		template <typename HandleType, class InvalidValueClass>
 		struct Handle_base : public Handle_base_b {
+		public:
 			typedef Handle_base<HandleType, InvalidValueClass> Handle_base_t;
 			typedef std::function<bool(HandleType)> InvalidValueFunction_t;
 			//InvalidValueFunction_t InvalidValueFunction_f = InvalidValueClass::isInvalid;
@@ -117,7 +118,7 @@ namespace HH {
 
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5File, InvalidHDF5Handle> H5F_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataset, InvalidHDF5Handle> H5D_ScopedHandle;
-		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataspace, InvalidHDF5Handle> H5DS_ScopedHandle;
+		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataspace, InvalidHDF5Handle> H5S_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Datatype, InvalidHDF5Handle> H5T_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Group, InvalidHDF5Handle> H5G_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Attribute, InvalidHDF5Handle> H5A_ScopedHandle;

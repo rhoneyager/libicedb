@@ -2,10 +2,9 @@
 #include <map>
 #include <memory>
 #include <string>
-#include "compat/gsl/span"
-#include "compat/gsl/pointers"
+#include <gsl/span>
+#include <gsl/pointers>
 #include "util.hpp"
-#include "Data_Types.hpp"
 #include "fs.hpp"
 #include "Group.hpp"
 
