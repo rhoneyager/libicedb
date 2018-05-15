@@ -43,11 +43,15 @@ namespace icedb {
 
 			/// File path, relative mount point
 			typedef std::vector<std::pair<sfs::path, std::string> > CollectedFilesRet_Type;
-			/// Find all files under the base location that have matching extensions.
+			/// \brief Find all files under the base location that have matching extensions.
 			/// Used to collect files for reading.
+			/// \param base is the base path
+			/// \param fileExtensionsToMatch is a list of file extensions that are matched
+			/// \param MatchOnAnySingleFile is a flag that forces a match if a single file is specified.
 			CollectedFilesRet_Type collectDatasetFiles(
 				const sfs::path &base,
-				const ExtensionsMatching_Type &fileExtensionsToMatch = common_hdf5_extensions);
+				const ExtensionsMatching_Type &fileExtensionsToMatch = common_hdf5_extensions,
+				bool MatchOnAnySingleFile = true);
 
 			/// Like resolveSymLinks, but throw if the resulting path does not exist.
 			sfs::path resolveSymlinkPathandForceExists(const std::string &location);
