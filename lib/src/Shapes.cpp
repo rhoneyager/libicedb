@@ -114,7 +114,6 @@ namespace icedb {
 				}
 			}
 			
-			
 			if (this->particle_scattering_element_radius.size()) {
 				if (this->particle_scattering_element_radius.size() != required->number_of_particle_scattering_elements) {
 					good = false;
@@ -131,11 +130,13 @@ namespace icedb {
 				if (out) (*out) << "particle_constituent_single_name is a valid attribute only when a single non-ice constituent exists."
 					<< std::endl;
 			}
+
 			if (particle_constituent_single_name.size() && this->particle_constituent_name.size()) {
 				good = false;
 				if (out) (*out) << "particle_constituent_single_name and particle_constituent_name are mutually exclusive."
 					<< std::endl;
 			}
+
 			if (this->particle_constituent_name.size()) {
 				if (this->particle_constituent_name.size() != required->number_of_particle_constituents) {
 					good = false;
@@ -144,6 +145,7 @@ namespace icedb {
 						<< std::endl;
 				}
 			}
+
 			if (required->number_of_particle_constituents > 1 && this->particle_constituent_name.empty()) {
 				good = false;
 				if (out) (*out) << "number_of_particle_constituents > 1, so particle_constituent_name "
@@ -259,7 +261,7 @@ namespace icedb {
 			Expects(required->isValid(&(std::cerr)));
 			if (required->requiresOptionalPropertiesStruct()) Expects(optional);
 			if (optional) Expects(optional->isValid(required));
-			
+
 			Shape::Shape_Type res = std::make_unique<Shape_impl>(uid, newShapeLocation);
 			
 			// Write required attributes
@@ -270,7 +272,7 @@ namespace icedb {
 
 			std::unique_ptr<icedb::Tables::Table> tblPSEN;
 			{
-				tblPSEN = res->createTable<int64_t>("particle_scattering_element_number",
+				tblPSEN = res->createTable<uint64_t>("particle_scattering_element_number",
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements) });
 				bool added = false;
 				if (optional) {
@@ -281,7 +283,7 @@ namespace icedb {
 				}
 				if (!added) {
 					// Create "dummy" element numbers and write.
-					std::vector<int64_t> dummyPSENs(required->number_of_particle_scattering_elements);
+					std::vector<uint64_t> dummyPSENs(required->number_of_particle_scattering_elements);
 					for (size_t i = 0; i < required->number_of_particle_scattering_elements; ++i)
 						dummyPSENs[i] = i + 1;
 					tblPSEN->writeAll(dummyPSENs);
