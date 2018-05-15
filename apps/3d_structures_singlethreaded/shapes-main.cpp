@@ -94,7 +94,9 @@ int main(int argc, char** argv) {
 		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 		string informat = vm["from-format"].as<string>();
 		bool from_nosearch = vm["from-nosearch"].as<bool>();
-		vector<string> vCustomFileFormats = vm["from-matching-extensions"].as<vector<string>>();
+		vector<string> vCustomFileFormats;
+		if (vm.count("from-matching-extensions"))
+			vCustomFileFormats = vm["from-matching-extensions"].as<vector<string>>();
 		std::set<sfs::path> customFileFormats;
 		for (const auto &c : vCustomFileFormats) customFileFormats.insert(c);
 
