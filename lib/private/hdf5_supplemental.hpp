@@ -1,4 +1,5 @@
 #pragma once
+#error "This file is superseded"
 #include <memory>
 #include <set>
 #include <string>
@@ -9,7 +10,6 @@
 #include <iostream> // For debugging
 
 #include "../icedb/compat/gsl/gsl"
-#include "icedb_h5.h" // Auto-generated. Gets installed in the correct location.
 #include "hdf5_load.h"
 #include "../icedb/fs.hpp"
 #include "../icedb/util.hpp"
