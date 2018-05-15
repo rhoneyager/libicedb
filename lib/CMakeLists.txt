@@ -168,7 +168,7 @@ add_library(icedb STATIC ${libsrcs})
 add_dependencies(icedb icedb-h5tests) # Ensures that icedb_h5.h is generated before build.
 # compat contains the GSL.
 target_include_directories(icedb SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP})
+	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP} icedb/compat)
 #target_include_directories(icedb SYSTEM
 #	PUBLIC
 #	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat>
