@@ -59,7 +59,13 @@ namespace icedb {
 					HandleType h = 0;
 					bool valid() const { return !InvalidValueClass::isInvalid(h); }
 					~ScopedHandle() {
-						if (valid()) CloseMethod::Close(h);
+						try {
+							if (valid()) CloseMethod::Close(h);
+						}
+						catch (...) {
+							// Need to catch all throws in a destructor.
+							abort();
+						}
 						h = 0;
 					}
 					ScopedHandle(HandleType newh) : h(newh) {}
@@ -157,6 +163,7 @@ namespace icedb {
 				// particle_index has one row, one column.
 				// The rest have one column, and a number of rows that correspond to the number of spheres used to represent the particle.
 
+				
 				auto verifyDatasetExists = [](hid_t file_id, const char* dataset_name) -> bool {
 					if ((H5Lexists(file_id, dataset_name, H5P_DEFAULT) <= 0)) return false;
 					H5O_info_t objinfo;
@@ -165,9 +172,10 @@ namespace icedb {
 					return true;
 				};
 
+				// Aggregate files have these datasets: particle_index, sphere_index, r, x, y, z.
+				// Non-aggregate particles have: dipole_index, particle_index, x, y, z.
+
 				if (!verifyDatasetExists(hFile.h, "/particle_index")
-					|| !verifyDatasetExists(hFile.h, "/sphere_index")
-					|| !verifyDatasetExists(hFile.h, "/r")
 					|| !verifyDatasetExists(hFile.h, "/x")
 					|| !verifyDatasetExists(hFile.h, "/y")
 					|| !verifyDatasetExists(hFile.h, "/z"))
@@ -175,24 +183,41 @@ namespace icedb {
 					.add("Reason", "This file does not have the proper structure for a Penn State geometry file.")
 					.add("Filename", filename);
 
-				// Open all of the datasets. Make sure that they have the correct dimensionality.
-				// Read the data into vectors. Verify that the data have the appropriate sizes.
-				vector<float> xs, ys, zs, rs;
-				vector<int32_t> sphere_indices;
+				bool isAggregateShape = false;
+				bool isNonAggregateShape = false;
+				if (verifyDatasetExists(hFile.h, "/sphere_index")
+					&& verifyDatasetExists(hFile.h, "/r"))
+					isAggregateShape = true;
+				else if (verifyDatasetExists(hFile.h, "/dipole_index"))
+					isNonAggregateShape = true;
 
-				// No need to read particle_index. Not being used.
-				readDataset<int32_t>(hFile.h, "/sphere_index", sphere_indices);
-				readDataset<float>(hFile.h, "/r", rs);
-				readDataset(hFile.h, "/x", xs);
-				readDataset(hFile.h, "/y", ys);
-				readDataset(hFile.h, "/z", zs);
+				if (isAggregateShape && isNonAggregateShape)
+					ICEDB_throw(icedb::error::error_types::xBadInput)
+					.add("Reason", "This file does not have the proper structure for a Penn State geometry file.")
+					.add("Filename", filename);
 
-				// Check that the read arrays have matching sizes.
-				const size_t numPoints = rs.size();
-				if (numPoints != xs.size()) ICEDB_throw(icedb::error::error_types::xAssert);
-				if (numPoints != ys.size()) ICEDB_throw(icedb::error::error_types::xAssert);
-				if (numPoints != zs.size()) ICEDB_throw(icedb::error::error_types::xAssert);
-				if (numPoints != sphere_indices.size()) ICEDB_throw(icedb::error::error_types::xAssert);
+				// The processing logic varies depending on whether the shape is an aggregate or not.
+				// The files use different storage types depending on this.
+
+				if (isAggregateShape) {
+					// Open all of the datasets. Make sure that they have the correct dimensionality.
+					// Read the data into vectors. Verify that the data have the appropriate sizes.
+					vector<float> xs, ys, zs, rs;
+					vector<int32_t> sphere_indices;
+
+					// No need to read particle_index. Not being used.
+					readDataset<int32_t>(hFile.h, "/sphere_index", sphere_indices);
+					readDataset<float>(hFile.h, "/r", rs);
+					readDataset(hFile.h, "/x", xs);
+					readDataset(hFile.h, "/y", ys);
+					readDataset(hFile.h, "/z", zs);
+
+					// Check that the read arrays have matching sizes.
+					const size_t numPoints = rs.size();
+					if (numPoints != xs.size()) ICEDB_throw(icedb::error::error_types::xAssert);
+					if (numPoints != ys.size()) ICEDB_throw(icedb::error::error_types::xAssert);
+					if (numPoints != zs.size()) ICEDB_throw(icedb::error::error_types::xAssert);
+					if (numPoints != sphere_indices.size()) ICEDB_throw(icedb::error::error_types::xAssert);
 
 				// Finally, pack the data in the shpdata structure.
 				shpdata.required.number_of_particle_scattering_elements = static_cast<uint64_t>(numPoints);
@@ -200,20 +225,78 @@ namespace icedb {
 				shpdata.required.particle_id = id;
 				shpdata.required.particle_scattering_element_coordinates_are_integral = false;
 
-				/// VARIABLE: Cartesian coordinates of the center of each scattering element
-				/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
-				/// Dimensions of [number_of_particle_scattering_elements][axis]
-				shpdata.required.particle_scattering_element_coordinates.resize(3 * numPoints);
-				for (size_t i = 0; i < numPoints; ++i) {
-					shpdata.required.particle_scattering_element_coordinates[(3 * i) + 0] = xs[i];
-					shpdata.required.particle_scattering_element_coordinates[(3 * i) + 1] = ys[i];
-					shpdata.required.particle_scattering_element_coordinates[(3 * i) + 2] = zs[i];
+					/// VARIABLE: Cartesian coordinates of the center of each scattering element
+					/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
+					/// Dimensions of [number_of_particle_scattering_elements][axis]
+					shpdata.required.particle_scattering_element_coordinates.resize(3 * numPoints);
+					shpdata.optional.particle_scattering_element_number.resize(numPoints);
+					bool areDipoleIndicesTrivial = true;
+					for (size_t i = 0; i < numPoints; ++i) {
+						shpdata.required.particle_scattering_element_coordinates[(3 * i) + 0] = xs[i];
+						shpdata.required.particle_scattering_element_coordinates[(3 * i) + 1] = ys[i];
+						shpdata.required.particle_scattering_element_coordinates[(3 * i) + 2] = zs[i];
+						// These arrays have different types. Widening cast in all cases.
+						shpdata.optional.particle_scattering_element_number[i] = sphere_indices[i];
+						if (sphere_indices[i] != i + 1) areDipoleIndicesTrivial = false;
+					}
+					// No need to store if these are trivial.
+					if (areDipoleIndicesTrivial) shpdata.optional.particle_scattering_element_number.clear();
+
+					shpdata.optional.particle_constituent_single_name = "ice";
+					shpdata.optional.particle_scattering_element_spacing = 0.001f; // 1 mm
+					shpdata.optional.particle_scattering_element_radius = rs;
+
 				}
+				else if (isNonAggregateShape) {
+					// Not an aggregate!!! Note the different data types.
+					// Open all of the datasets. Make sure that they have the correct dimensionality.
+					// Read the data into vectors. Verify that the data have the appropriate sizes.
+					vector<int32_t> dipole_indices, xs, ys, zs;
 
-				shpdata.optional.particle_constituent_single_name = "ice";
-				shpdata.optional.particle_scattering_element_spacing = 0.001f; // 1 mm
-				shpdata.optional.particle_scattering_element_radius = rs;
+					// No need to read particle_index. Not being used.
+					readDataset<int32_t>(hFile.h, "/dipole_index", dipole_indices);
+					readDataset(hFile.h, "/x", xs);
+					readDataset(hFile.h, "/y", ys);
+					readDataset(hFile.h, "/z", zs);
 
+					// Check that the read arrays have matching sizes.
+					const size_t numPoints = dipole_indices.size();
+					if (numPoints != xs.size()) ICEDB_throw(icedb::error::error_types::xAssert);
+					if (numPoints != ys.size()) ICEDB_throw(icedb::error::error_types::xAssert);
+					if (numPoints != zs.size()) ICEDB_throw(icedb::error::error_types::xAssert);
+
+					// Finally, pack the data in the shpdata structure.
+					shpdata.required.number_of_particle_scattering_elements = static_cast<uint64_t>(numPoints);
+					shpdata.required.number_of_particle_constituents = 1;
+					shpdata.required.particle_id = id;
+					shpdata.required.particle_scattering_element_coordinates_are_integral = true;
+
+					/// VARIABLE: Cartesian coordinates of the center of each scattering element
+					/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
+					/// Dimensions of [number_of_particle_scattering_elements][axis]
+					shpdata.required.particle_scattering_element_coordinates.resize(3 * numPoints);
+					shpdata.optional.particle_scattering_element_number.resize(numPoints);
+					bool areDipoleIndicesTrivial = true;
+					for (size_t i = 0; i < numPoints; ++i) {
+						// Note gsl::narrow_cast<float>. int32_t and float have the same storage size, so a float may lose some precision.
+						// This cast will abort the program if truncation occurs.
+						shpdata.required.particle_scattering_element_coordinates[(3 * i) + 0] = gsl::narrow_cast<float>(xs[i]);
+						shpdata.required.particle_scattering_element_coordinates[(3 * i) + 1] = gsl::narrow_cast<float>(ys[i]);
+						shpdata.required.particle_scattering_element_coordinates[(3 * i) + 2] = gsl::narrow_cast<float>(zs[i]);
+						// These arrays have different types. Widening cast in all cases.
+						shpdata.optional.particle_scattering_element_number[i] = dipole_indices[i];
+						if (dipole_indices[i] != i+1) areDipoleIndicesTrivial = false;
+					}
+					// No need to store if these are trivial.
+					if (areDipoleIndicesTrivial) shpdata.optional.particle_scattering_element_number.clear();
+
+					shpdata.optional.particle_constituent_single_name = "ice";
+					shpdata.optional.particle_scattering_element_spacing = 0.001f; // 1 mm
+
+				}
+				else ICEDB_throw(icedb::error::error_types::xBadInput)
+					.add("Reason", "This file does not have the proper structure for a Penn State geometry file.")
+					.add("Filename", filename);
 
 				return shpdata;
 			}
