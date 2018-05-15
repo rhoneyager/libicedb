@@ -39,7 +39,7 @@ namespace icedb {
 			/// Are the particle_scattering_element_coordinates integers?
 			/// This allows for optimization when writing.
 			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
-			uint64_t particle_scattering_element_coordinates_are_integral = 0;
+			uint8_t particle_scattering_element_coordinates_are_integral = 0;
 			
 
 			// The ATTRIBUTES
