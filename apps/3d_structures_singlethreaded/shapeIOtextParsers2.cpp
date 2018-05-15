@@ -13,6 +13,7 @@
 #include <boost/lexical_cast.hpp>
 //#include <boost/iostreams/copy.hpp>
 //#include <boost/iostreams/filtering_stream.hpp>
+#include <icedb/error.hpp>
 #include "shape.hpp"
 namespace icedb {
 	namespace Examples {
@@ -355,20 +356,53 @@ namespace icedb {
 				std::string s(sz, ' ');
 				in.read(&s[0], sz);
 
-				auto end = s.find_first_of("\n\0");
-				Expects(end != std::string::npos);
-				std::string ssub = s.substr(0, end);
-				auto spos = ssub.find_first_not_of("0123456789. \t\n");
+				enum class DetectResults {
+					DDSCAT,
+					RAW,
+					INCONCLUSIVE
+				};
+				auto DetectTextFormat = [](const std::string &sampleLine) -> DetectResults
+				{
+					// Empty line
+					if (sampleLine.size() < 4) return DetectResults::INCONCLUSIVE;
+					// If this is a comment line, then the test is inconclusive
+					/// \todo Collect comment line definitions into a single place
+					size_t hasComment = sampleLine.find_first_of("#!%");
+					if (hasComment != std::string::npos) return DetectResults::INCONCLUSIVE;
+					auto spos = sampleLine.find_first_not_of("0123456789. \t\n");
+					if (std::string::npos == spos) // This is a raw text file
+						return DetectResults::RAW;
+					return DetectResults::DDSCAT;
+				};
 
-				if (std::string::npos == spos) // This is a raw text file
+				size_t detectStart = 0;
+				size_t detectEnd = 0;
+				DetectResults fileType = DetectResults::INCONCLUSIVE;
+				while (fileType == DetectResults::INCONCLUSIVE)
+				{
+					if (detectStart >= sz) break;
+					if (detectStart == std::string::npos) break;
+					detectEnd = s.find_first_of("\n\0", detectStart);
+					if (detectEnd == std::string::npos) break;
+
+					std::string ssub = s.substr(detectStart, detectEnd - detectStart);
+					fileType = DetectTextFormat(ssub);
+					detectStart = detectEnd + 1;
+				}
+
+				if (fileType == DetectResults::RAW) // This is a raw text file
 					return readRawText(s.c_str());
-				else return readDDSCAT(s.c_str()); // This is a DDSCAT file
+				else if (fileType == DetectResults::DDSCAT)
+					return readDDSCAT(s.c_str()); // This is a DDSCAT file
 												   //if ((std::string::npos != spos) && (spos < end)) {
 												   //	return readDDSCAT(s.c_str());
 												   //}
 												   //else {
 												   //	return readTextRaw(s.c_str());
 												   //}
+				else
+					ICEDB_throw(icedb::error::error_types::xBadInput)
+					.add("Description", "Unknown input file format.");
 			}
 
 			ShapeDataBasic readDDSCAT(const char* in)
@@ -535,7 +569,7 @@ namespace icedb {
 				// Search for the first line that is not a comment.
 				// Nmat lines for ADDA are also ignored.
 				while ((pNumStart[0] == '#' || pNumStart[0] == 'N' || pNumStart[0] == 'n') && pNumStart < pb) {
-					const char* lineEnd = strchr(pNumStart + 1, 'n');
+					const char* lineEnd = strchr(pNumStart + 1, '\n');
 					pNumStart = lineEnd + 1;
 				}
 				if (pNumStart >= pb) throw(std::invalid_argument("Cannot find any points in a shapefile."));
@@ -545,7 +579,7 @@ namespace icedb {
 				// The implementation using std::count is unfortunately slow
 				//int guessNumPoints = (int) std::count(pNumStart, pb, '\n');
 				// This is much faster, and allows for auto-vectorization
-				int guessNumPoints = 1; // Just in case there is a missing newline at the end
+				int guessNumPoints = 2; // Just in case there is a missing newline at the end
 				// This format does not pre-specify the number of points.
 				for (const char* c = pNumStart; c != pb; ++c)
 					if (c[0] == '\n') guessNumPoints++;
@@ -573,7 +607,7 @@ namespace icedb {
 				if (!good) throw (std::invalid_argument("Bad read"));
 
 				size_t actualNumPoints = actualNumReads / numCols;
-				assert(actualNumPoints == guessNumPoints);
+				//assert(actualNumPoints == guessNumPoints);
 				
 
 				res.required.number_of_particle_scattering_elements = actualNumPoints;
