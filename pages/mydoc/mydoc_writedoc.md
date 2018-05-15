@@ -9,70 +9,102 @@ permalink: writedoc.html
 folder: mydoc
 ---
 
-This is a step by step guide for wants quikly to start contributing to this documentation in the most effective way.  
-Unfortunately it not ment to be general. It addresses immediately Ubuntu Linux users, but it is easy to extend to other OS.  
+This is a step by step guide for whoever wants quikly to start contributing to this documentation website and might have little experience with git and jekyll.
+Unfortunately it not ment to be general. It addresses immediately Ubuntu Linux users, but it is easy to extend to other OS.
 
-This guide will give you a straight path to install jekyll and make a new page in the documentation.
-By running jekyll on your local machine you will have a direct evaluation of what your modification would look like on the website
-Jekyll automatically recognize whenever you modify something in the file tree and updates the served html pages
+## Clone and branch the repository
 
+We assume you have installed a git client and have access to the github repository.
+Following the next steps you will clone the repository to your machine, switch to the documentation branch gh-pages and make a new derivative branch of it.
 
-### 1) Clone and branch the repository
+```
+git clone https://github.com/rhoneyager/libicedb.git
+git checkout -b gh-pages-MYDOC gh-pages
+git push -u origin gh-pages-MYDOC
+```
+You will be asked for your github credentials
+This will create a new branch gh-pages-MYDOC out of gh-pages which is the current state of the documentation. Also working directory is switched to the new branch and the upstream github repository is updated.
 
-We assume you have installed a git client and have access to the github repository.  
-Following the next steps you will clone the repository to your machine, switch to the documentation branch gh-pages and make a new derivative branch of it
-
-...
-,,,
-...
-
-
-### 2) Install and run Jekyll
+## Install and run Jekyll
 
 This documentation website is hosted on github and the web engine behind it is called jekyll.  
 The most effective way to contribute to the documentation is to install jekyll on your machine and run it locally so that you can see the rendering of the changes you make to the webpages.  
+By running jekyll on your local machine you will have a direct evaluation of what your modification would look like on the website
+Jekyll automatically recognize whenever you modify something in the file tree and updates the served html pages
 
-Install all of the requirements listed at the page [requirements](https://jekyllrb.com/docs/installation/#requirements)  
-Be patient, it might take some time to install jekyll and bunlder
+Install all of the requirements listed at the page [requirements](https://jekyllrb.com/docs/installation/#requirements) and follow the instructions to install the packages on your system. For Ubuntu linux user those are reported here for your convenience
+```
+sudo apt install ruby ruby-dev build-essential
+echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc
+echo 'export GEM_HOME=$HOME/gems' >> ~/.bashrc
+echo 'export PATH=$HOME/gems/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+gem install jekyll bundler
+```
 
-Now you should be ready to run jekyll on your system. cd to the libicedb folder and try
+Be patient, it might take some time to install jekyll and bunlder. We need some additional packages in order to run everything without troubles.  cd to the libicedb folder and run
 
-bundle exec jekyll serve
-
-On Ubuntu 16.04 it does not work at first, but it tells you to run first
-
+```
 bundle install
-
-and then run 
-
 bundle update
+```
+This will download the github-pages layout that will make your local website looking exactly how it would appear once set upstream. Follow the instructions to install possible missing "gems" (gems are packages for the ruby programming language).
 
-to get the github-pages layout that will make your local website looking exactly how it would appear once set upstream
+Now you should be ready to run jekyll on your system.  cd to the libicedb folder and run
+```
+bundle exec jekyll serve --baseurl /
+```
 
-to install missing "gems" (gems are packages for the ruby programming language). After that try again the previous command
+Visit [http://127.0.0.1:4000/index.html](http://127.0.0.1:4000/index.html) on your preferred browser. You should see a copy of this website
+From now on, whenever you make a modification to the website files the Jekyll server automatically updates the html and you should be able to se the modifications appearing on your browser after page refresh
 
 ## Write a new page
 
-### ad an entry on the side bar
+### Add an entry on the side bar
 
-This part may be skiped if you are willing to just add or modify on exhisting pages
+This part may be skipped if you are willing to just add or modify on exhisting pages
 
 Edit the file _data/sidebars/mydoc_sidebar.yml
+The file as a tree structure (indentation matters). Add the new page here in the correct location
 
-The file as a tree structure (indentation matters). Add the new page here in the right location
+### Write the page
 
-### write a new page
+Write a new .md file under the location /pages/mydoc/
 
-Write a new file in the location ...
+Put in the header something like
+```
+---
+title: How to write documentation
+tags: [getting_started, troubleshooting, collaboration]
+last_updated: May 15, 2018
+keywords: git, jekyll, documentation
+summary: "Step by step guide for documentation contributors"
+sidebar: mydoc_sidebar
+permalink: writedoc.html
+folder: mydoc
+---
+```
+{% include note.html content="The permalink address has to match what you put in the sidebar url entry" %}
 
-Put in the header ...
+Write using [markdown formatting](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 
-Write using markdown formatting, find hints about markdown here [...] 
+## Commit your changes and make a pull request
+If you have added a new page
+```
+git add /PATH/TO/NEWPAGE.md
+```
+And repeat for each new page you have added since your last commit. Then you have to commit your modifications and push them upstream
+```
+git commit -am "A GOOD MESSAGE EXPLAINING YOUR MODIFICATIONS"
+git push origin gh-pages-MYDOC
+```
+You will be asked for your github credentials
 
-## TROUBLESHOOTING
+Visit https://github.com/rhoneyager/libicedb/tree/gh-pages-MYDOC and clic on the button **New pull request**
 
-On my implementation running bundle install overwrite Gemfile.lock which is important for something, and messes with paths, so when I visit localhost I always get error 404
+On the top rectangle seclect gh-pages as the base branch
+Add a title and a description of your pull request
+Eventually, use the menu on the right to ask for specfic reviewers (from the list of contributors), label the request or assign it to a specific project
 
-git checkout Gemfile.lock
-
-to fix it
+## Troubleshooting
+...
