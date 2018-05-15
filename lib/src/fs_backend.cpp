@@ -25,7 +25,8 @@ namespace icedb {
 
 			CollectedFilesRet_Type collectDatasetFiles(
 				const sfs::path &base,
-				const ExtensionsMatching_Type &valid_extensions)
+				const ExtensionsMatching_Type &valid_extensions,
+				bool MatchOnAnySingleFile)
 			{
 				std::string sBase = base.string();
 				std::replace(sBase.begin(), sBase.end(), '\\', '/');
@@ -33,7 +34,7 @@ namespace icedb {
 				std::vector<std::pair<sfs::path, std::string> > res;
 				auto sbase = resolveSymlinkPathandForceExists(base.string());
 				if (sfs::is_regular_file(sbase)) {
-					if (valid_extensions.count(base.extension()) > 0) {
+					if (valid_extensions.count(base.extension()) > 0 || MatchOnAnySingleFile) {
 						res.push_back(std::pair<sfs::path, std::string>(sbase, "/"));
 					}
 				}
