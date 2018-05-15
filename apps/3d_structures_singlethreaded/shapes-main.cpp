@@ -27,7 +27,7 @@
 
 // A list of valid shapefile output formats
 const std::map<std::string, std::set<sfs::path> > file_formats = {
-	{"text", {".dat", ".shp", ".txt", ".shape"} },
+	{"text", {".dat", ".shp", ".txt", ".shape", ".geom", ".adda"} },
 	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} },
 	{"psu", {".nc"}}
 };
