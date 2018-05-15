@@ -39,7 +39,7 @@ namespace icedb {
 			/// Are the particle_scattering_element_coordinates integers?
 			/// This allows for optimization when writing.
 			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
-			uint64_t particle_scattering_element_coordinates_are_integral = 0;
+			uint8_t particle_scattering_element_coordinates_are_integral = 0;
 			
 
 			// The ATTRIBUTES
@@ -116,6 +116,7 @@ namespace icedb {
 		public:
 			/// Each shape 'group' has an attribute with this identifier. Used for shape collection and searching.
 			static const std::string _icedb_obj_type_shape_identifier;
+			static const uint16_t _icedb_current_shape_schema_version;
 			virtual ~Shape();
 			/// \brief Is this object a shape?
 			/// \param owner is the parent group

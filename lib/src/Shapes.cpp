@@ -114,7 +114,6 @@ namespace icedb {
 				}
 			}
 			
-			
 			if (this->particle_scattering_element_radius.size()) {
 				if (this->particle_scattering_element_radius.size() != required->number_of_particle_scattering_elements) {
 					good = false;
@@ -131,11 +130,13 @@ namespace icedb {
 				if (out) (*out) << "particle_constituent_single_name is a valid attribute only when a single non-ice constituent exists."
 					<< std::endl;
 			}
+
 			if (particle_constituent_single_name.size() && this->particle_constituent_name.size()) {
 				good = false;
 				if (out) (*out) << "particle_constituent_single_name and particle_constituent_name are mutually exclusive."
 					<< std::endl;
 			}
+
 			if (this->particle_constituent_name.size()) {
 				if (this->particle_constituent_name.size() != required->number_of_particle_constituents) {
 					good = false;
@@ -144,6 +145,7 @@ namespace icedb {
 						<< std::endl;
 				}
 			}
+
 			if (required->number_of_particle_constituents > 1 && this->particle_constituent_name.empty()) {
 				good = false;
 				if (out) (*out) << "number_of_particle_constituents > 1, so particle_constituent_name "
@@ -159,6 +161,7 @@ namespace icedb {
 		Shape::~Shape() {}
 		Shape::Shape(const std::string &uid) : particle_unique_id{ uid } {}
 		const std::string Shape::_icedb_obj_type_shape_identifier = "shape";
+		const uint16_t Shape::_icedb_current_shape_schema_version = 0;
 
 		bool Shape::isShape(Groups::Group &owner, const std::string &name) {
 			if (!owner.doesGroupExist(name)) return false;
@@ -220,7 +223,7 @@ namespace icedb {
 		}
 
 		Shape::Shape_Type Shape::openShape(Groups::Group &owner, const std::string &name) {
-			assert(owner.doesGroupExist(name));
+			Expects(owner.doesGroupExist(name));
 			return openShape(owner.openGroup(name)->getHDF5Group());
 		}
 		
@@ -259,11 +262,12 @@ namespace icedb {
 			Expects(required->isValid(&(std::cerr)));
 			if (required->requiresOptionalPropertiesStruct()) Expects(optional);
 			if (optional) Expects(optional->isValid(required));
-			
+
 			Shape::Shape_Type res = std::make_unique<Shape_impl>(uid, newShapeLocation);
 			
 			// Write required attributes
 			res->writeAttribute<std::string>(Group::_icedb_obj_type_identifier, { 1 }, { Shape::_icedb_obj_type_shape_identifier });
+			res->writeAttribute<uint16_t>("_icedb_shape_schema_version", { 1 }, { Shape::_icedb_current_shape_schema_version });
 			res->writeAttribute<std::string>("particle_id", { 1 }, { required->particle_id });
 
 			// Write required dimensions
@@ -275,7 +279,7 @@ namespace icedb {
 				bool added = false;
 				if (optional) {
 					if (!optional->particle_scattering_element_number.empty()) {
-						tblPSEN->writeAll<uint64_t>(optional->particle_scattering_element_number);
+						tblPSEN->writeAll(optional->particle_scattering_element_number);
 						added = true;
 					}
 				}
@@ -284,7 +288,7 @@ namespace icedb {
 					std::vector<uint64_t> dummyPSENs(required->number_of_particle_scattering_elements);
 					for (size_t i = 0; i < required->number_of_particle_scattering_elements; ++i)
 						dummyPSENs[i] = i + 1;
-					tblPSEN->writeAll<uint64_t>(dummyPSENs);
+					tblPSEN->writeAll(dummyPSENs);
 				}
 				// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
 				// However, netCDF should have these values.
@@ -329,47 +333,16 @@ namespace icedb {
 			// available integer storage type.
 			/// \todo With HDFforHumans, be sure to add support for using minimal-sized types.
 			/// \todo Auto-detect if we are using integral scattering element coordinates.
-			bool considerInts = (required->particle_scattering_element_coordinates_are_integral) ? true : false;
-			bool useUint16s = false, useUint8s = false;
-			if (considerInts) {
-				// This minmax check is very slow.....
-				//const auto bounds = std::minmax_element(required->particle_scattering_element_coordinates.cbegin(), required->particle_scattering_element_coordinates.cend());
-				//if (*(bounds.first) > 0) {
-				//	if (*(bounds.second) < UINT8_MAX - 2) useUint8s = true;
-				//	else if (*(bounds.second) < UINT16_MAX - 2) useUint16s = true;
-				//}
-				float mx = -1;
-				if (optional) {
-					if (optional->hint_max_scattering_element_dimension > 0) {
-						mx = optional->hint_max_scattering_element_dimension > 0;
-					}
-				}
-				if (mx < 0) {
-					auto me = std::max_element(required->particle_scattering_element_coordinates.cbegin(), required->particle_scattering_element_coordinates.cend());
-					mx = *me;
-				}
-				if (mx < UINT8_MAX - 2) useUint8s = true;
-					else if (mx < UINT16_MAX - 2) useUint16s = true;
-			}
+			bool useInts = (required->particle_scattering_element_coordinates_are_integral) ? true : false;
 			
-			if (useUint8s) {
-				std::vector<uint8_t> crds_ints(required->number_of_particle_scattering_elements * 3);
+			if (useInts) {
+				std::vector<int32_t> crds_ints(required->number_of_particle_scattering_elements*3);
 				for (size_t i = 0; i < crds_ints.size(); ++i) {
-					crds_ints[i] = static_cast<uint8_t>(required->particle_scattering_element_coordinates[i]);
+					// Narrow cast will check that the representation remains the same.
+					// If the values change, then the cast will fail and the program will abort.
+					crds_ints[i] = gsl::narrow_cast<int32_t>(required->particle_scattering_element_coordinates[i]);
 				}
-				auto tblPSEC = res->createTable<uint8_t>(
-					"particle_scattering_element_coordinates",
-					{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
-					crds_ints, &chunks);
-				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
-				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
-			}
-			else if (useUint16s) {
-				std::vector<uint16_t> crds_ints(required->number_of_particle_scattering_elements*3);
-				for (size_t i = 0; i < crds_ints.size(); ++i) {
-					crds_ints[i] = static_cast<uint16_t>(required->particle_scattering_element_coordinates[i]);
-				}
-				auto tblPSEC = res->createTable<uint16_t>(
+				auto tblPSEC = res->createTable<int32_t>(
 					"particle_scattering_element_coordinates",
 					{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
 					crds_ints, &chunks);
@@ -383,12 +356,9 @@ namespace icedb {
 				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
 			}
 
-
 			if (optional) {
 
 				// TODO: if (optional->particle_constituent_name.size()) {}
-
-
 				if (optional->particle_constituent_single_name.size()) {
 					res->writeAttribute<std::string>("particle_single_constituent_name",
 						{ 1 }, { optional->particle_constituent_single_name });

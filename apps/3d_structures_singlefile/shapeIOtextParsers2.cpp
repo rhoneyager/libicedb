@@ -21,18 +21,23 @@ namespace icedb {
 				max_element = 0;
 				size_t curout = 0;
 				// Accepts numbers of the form: [0-9]*
-				// No negatives, exponents or decimals.
+				// Handles negatives, No exponents or decimals.
 
 				float numerator = 0;
 				assert(in);
 				const char* end = in + inlen;
 				bool readnums = false;
+				bool negative = false;
 				for (const char* cur = in; (cur <= end) && (curout < outlen); ++cur) {
-					if ((*cur <= '9') && (*cur >= '0')) {
+				    if (*cur == '-') {
+				        negative = true;
+				    } else if ((*cur <= '9') && (*cur >= '0')) {
 						numerator *= 10;
 						numerator += (*cur - '0');
 						readnums = true;
 					} else if(readnums){
+					    if (negative) numerator = -numerator;
+					    negative = false;
 						out[curout] = numerator;
 						if (numerator > max_element) max_element = numerator;
 						curout++;
@@ -42,7 +47,6 @@ namespace icedb {
 				}
 				return curout;
 			}
-
 
 			size_t array_to_floats(
 				const char* in, const size_t inlen, float* out, const size_t outlen)
