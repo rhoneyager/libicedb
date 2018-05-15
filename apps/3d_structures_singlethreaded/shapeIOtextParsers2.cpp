@@ -6,6 +6,9 @@
 #include <fstream>
 #include <cmath>
 
+#include<cerrno>
+#include<cstdlib>
+
 #include <icedb/fs_backend.hpp>
 #include <boost/lexical_cast.hpp>
 //#include <boost/iostreams/copy.hpp>
@@ -424,7 +427,12 @@ namespace icedb {
 						//np = macros::m_atoi<size_t>(&(lin.data()[posa]), len);
 					}
 					break;
-					case 6: // Junk line
+					case 6: // In case of DDSCAT6 this is the first valid dipole
+					        // This method is not super robust: what if line 7 contains just numbers but not a dipole coordinate
+					{
+					    bool isNotHeaderLine = (lin.find_first_not_of(" \t-+0123456789") == std::string::npos);
+					    if (isNotHeaderLine) pend = pstart; // I assume not header line implies a dipole thus I put back the buffer to the line start
+					}
 					default:
 						break;
 					case 2: // a1
