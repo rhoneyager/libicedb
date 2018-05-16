@@ -106,6 +106,10 @@ entries:
       
     - title: Communication and Data exchange
       url: /comm_data.html
+      output: web, pdf
+      
+    - title: HOWTO contribute to this documentation
+      url: /writedoc.html
       output: web, pdf 
 
   - title: Database File Structure
