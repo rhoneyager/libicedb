@@ -9,7 +9,7 @@ shapes.
 
 To import a file or folder (shape.dat, shape.nc) into a database (shape.hdf5):
 ```
-3d_structures_singlethreaded --from shape.dat --to shape.hdf5
+3d_structures_importer --from shape.dat --to shape.hdf5
 ```
 
 ## Program options
