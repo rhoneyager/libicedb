@@ -109,7 +109,8 @@ int main(int argc, char** argv) {
 		auto in_time_t = std::chrono::system_clock::to_time_t(now);
 		std::ostringstream ssIngestTime;
 		// TODO: Replace gmtime with gmtime_s, but add the checks to see if it is supported on different compilers.
-		ssIngestTime << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %H:%M:%S %Z"); // or "%c %Z"
+		// gmtime is in UTC. %Z would give the local timezone... Ingest time assumes UTC.
+		ssIngestTime << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %H:%M:%S"); // or "%c %Z"
 		string sIngestTime = ssIngestTime.str();
 
 		if (!sAuthor.size() || !sContact.size() || !sScattMeth.size())
