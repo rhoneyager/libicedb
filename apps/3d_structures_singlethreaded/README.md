@@ -16,6 +16,7 @@ To import a file or folder (shape.dat, shape.nc) into a database (shape.hdf5):
 
 | Group | Option | Input type | Description |
 | ----- | -----  | ---------- | ----------- |
+| General | config-file | string | Use this option to read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs. |
 | I/O   | from   | strings     | Path where shapes are read from. This may be a list of folders and files. If a directory is encountered, then it is recursively searched for shapes. The recursive search behavior is controlled by the from-matching-extensions option. |
 | I/O   | from-format | string | The format of the input files. The format of the input files. This needs to be specified when the inputs are NetCDF or HDF5 files, as there are multiple conventions for these files that cannot be easily autodetected. Options: text, psu. |
 | I/O   | from-nosearch | boolean | Set this option if you want to read in a set of files whose paths are exactly specified on the command line. This option allows for the finest control of input file selection. |
