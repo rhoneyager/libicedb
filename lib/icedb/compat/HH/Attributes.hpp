@@ -11,30 +11,30 @@
 #include "Types.hpp"
 
 namespace HH {
-	namespace Attributes {
-		using namespace HH::Handles;
-		using namespace gsl;
-		using std::initializer_list;
-		using std::tuple;
-
+	struct Attributes_Container
+	{
+	private:
+		// This is a weak object. It does not close.
+		not_invalid<HH_hid_t> base;
+	public:
 		/// @name General Functions
 		/// @{
 		/// Does an attribute with the specified name exist?
-		[[nodiscard]] inline htri_t exists(not_invalid<HH_hid_t> base, not_null<const char*> attname)
+		[[nodiscard]] static htri_t exists(not_invalid<HH_hid_t> base, not_null<const char*> attname)
 		{
 			return H5Aexists(base().h, attname.get());
 		}
 		/// Delete an attribute with the specified name.
 		/// \note The base HDF5 function is H5Adelete, but delete is a reserved name in C++.
 		/// \returns false on error, true on success.
-		[[nodiscard]] inline bool remove(not_invalid<HH_hid_t> base, not_null<const char*> attname)
+		[[nodiscard]] static bool remove(not_invalid<HH_hid_t> base, not_null<const char*> attname)
 		{
 			herr_t err = H5Adelete(base().h, attname.get());
 			if (err >= 0) return true;
 			return false;
 		}
 		/// \\brief Open an attribute
-		[[nodiscard]] inline H5A_ScopedHandle&& open(
+		[[nodiscard]] static Attributes open(
 			const not_invalid<HH_hid_t> &base,
 			not_null<const char*> name,
 			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT)
@@ -59,7 +59,7 @@ namespace HH {
 				H5Screate_simple(
 					gsl::narrow_cast<int>(dimensions.size()),
 					hdims.data(),
-					nullptr)};
+					nullptr) };
 
 			return std::move(H5A_ScopedHandle(H5Acreate(
 				base().h,
@@ -68,14 +68,29 @@ namespace HH {
 				dspace.get(),
 				AttributeCreationPlist.get(),
 				AttributeAccessPlist.get()
-				));
+			));
 		}
 
+	};
+
+	struct Attribute {
+	private:
+		not_invalid<HH_hid_t> attr;
+	public:
+		using namespace HH::Handles;
+		using namespace gsl;
+		using std::initializer_list;
+		using std::tuple;
+
+		Attributes(not_invalid<HH_hid_t> hnd_attr) : attr(hnd_attr) {}
+		virtual ~Attributes() {}
+
+		
+		
 		/// \brief Write data to an attribute
 		/// \note Writing attributes is an all-or-nothing process.
 		template <class DataType>
 		[[nodiscard]] herr_t write(
-			not_invalid<HH_hid_t> attr,
 			span<DataType> data,
 			not_invalid<HH_hid_t> in_memory_dataType = GetHDF5Type<DataType>())
 		{
@@ -88,7 +103,6 @@ namespace HH {
 		/// \note Reading attributes is an all-or-nothing process.
 		template <class DataType>
 		[[nodiscard]] herr_t read(
-			not_invalid<HH_hid_t> attr,
 			span<DataType> data,
 			not_invalid<HH_hid_t> in_memory_dataType = GetHDF5Type<DataType>())
 		{
@@ -98,10 +112,10 @@ namespace HH {
 		}
 
 		// Get an attribute's name
-		[[nodiscard]] ssize_t get_name(not_invalid<HH_hid_t> attr, size_t buf_size, char* buf);
+		[[nodiscard]] ssize_t get_name(size_t buf_size, char* buf);
 
 		// Rename an attribute
-		[[nodiscard]] htri_t rename(not_invalid<HH_hid_t> attr, not_null<const char*> newName);
+		[[nodiscard]] htri_t rename(not_null<const char*> newName);
 
 		/// @}
 
@@ -109,15 +123,14 @@ namespace HH {
 		/// @{
 		/// Get attribute type, as an HDF5 type object.
 		/// \see Types.hpp for the functions to compare the HDF5 type with a system type.
-		[[nodiscard]] H5T_ScopedHandle getAttributeType(
-			const not_invalid<H5A_ScopedHandle> &attr);
+		[[nodiscard]] H5T_ScopedHandle getAttributeType();
 
 		/// Convenience function to check an attribute's type. 
 		/// \returns True if the type matches
 		/// \returns False (0) if the type does not match
 		/// \returns <0 if an error occurred.
 		template <class DataType>
-		[[nodiscard]] htri_t IsAttributeOfType(not_invalid<HH_hid_t> attr);
+		[[nodiscard]] htri_t IsAttributeOfType();
 
 		/// Get an attribute's size
 
