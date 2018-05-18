@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
 		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options");
 		desc.add_options()
 			("help,h", "produce help message")
+			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
 			("to", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
@@ -73,6 +74,12 @@ int main(int argc, char** argv) {
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
 		po::notify(vm);
+		if (vm.count("config-file")) {
+			string configfile = vm["config-file"].as<string>();
+			po::store(po::parse_config_file<char>(configfile.c_str(), desc, false), vm);
+			po::notify(vm);
+		}
+		
 
 		auto doHelp = [&](const string& s)->void
 		{
@@ -109,7 +116,8 @@ int main(int argc, char** argv) {
 		auto in_time_t = std::chrono::system_clock::to_time_t(now);
 		std::ostringstream ssIngestTime;
 		// TODO: Replace gmtime with gmtime_s, but add the checks to see if it is supported on different compilers.
-		ssIngestTime << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %H:%M:%S %Z"); // or "%c %Z"
+		// gmtime is in UTC. %Z would give the local timezone... Ingest time assumes UTC.
+		ssIngestTime << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %H:%M:%S"); // or "%c %Z"
 		string sIngestTime = ssIngestTime.str();
 
 		if (!sAuthor.size() || !sContact.size() || !sScattMeth.size())
