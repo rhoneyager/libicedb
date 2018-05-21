@@ -8,10 +8,8 @@
 //#define BOOST_TEST_MAIN
 #define BOOST_TEST_DYN_LINK
 
-#include "globals.h"
-
+#include "globals.hpp"
 #include <boost/test/unit_test.hpp>
-//#include <boost/test/included/unit_test.hpp>
 
 BOOST_GLOBAL_FIXTURE(globals);
 

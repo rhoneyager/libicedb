@@ -1,6 +1,4 @@
 #pragma once
-//#include <locale>
-//#include <codecvt>
 #include <tuple>
 #include <typeinfo>
 #include <typeindex>
@@ -18,8 +16,9 @@ namespace HH {
 	private:
 		/// The attribute container manages its own view of the attribute.
 		/// It takes ownership.
-		/// Copying is prohibited?
-		not_invalid<HH_hid_t> attr;
+		/// Copying should be prohibited!!!!!
+		/// Must release to transfer the handle!!!!!
+		HH_hid_t attr;
 	public:
 		using namespace HH::Handles;
 		using namespace gsl;

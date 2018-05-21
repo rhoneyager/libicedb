@@ -8,7 +8,7 @@
 #include <sstream>
 #include <set>
 
-#include "globals.h"
+#include "globals.hpp"
 #include <icedb/defs.h>
 
 globals::globals()
@@ -34,7 +34,7 @@ globals::~globals()
 	BOOST_TEST_MESSAGE("Unloading globals");
 }
 
-
+/*
 void globals::findDirs()
 {
 	using namespace std;
@@ -91,7 +91,7 @@ void globals::loadConfig()
 		BOOST_FAIL("Cannot load testing rtmath.conf file! Many tests cannot proceed.");
 	}
 }
-
+*/
 
 
 globals*& globals::instance()

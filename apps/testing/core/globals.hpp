@@ -12,7 +12,7 @@ public:
 	globals();
 	~globals();
 	static globals*& instance();
-	void findDirs();
-	void loadConfig();
+	//void findDirs();
+	//void loadConfig();
 };
 

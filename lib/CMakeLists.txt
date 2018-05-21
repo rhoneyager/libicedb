@@ -96,7 +96,7 @@ set(error_objs
 	src/error_context.cpp
 	)
 set(lib_objs
-	icedb/Data_Types.hpp
+	#icedb/Data_Types.hpp
 	icedb/defs.h
 	icedb/optionsForwards.hpp
 	icedb/util.hpp

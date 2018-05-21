@@ -13,7 +13,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 # Global definitions
-set(CMAKE_CXX_STANDARD 14) # TODO: Switch to 11?
+set(CMAKE_CXX_STANDARD 17) # TODO: Switch to 11?
 set(CMAKE_CXX_STANDARD_REQUIRED YES) # Force compiler switches
 set(CMAKE_CXX_EXTENSIONS OFF) # No compiler-specific extensions
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON) # Building dynamic libraries

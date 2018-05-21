@@ -1,6 +1,8 @@
 #pragma once
 #include <typeindex>
 #include <typeinfo>
+#include <string>
+#include <string_view>
 #include <gsl/gsl_util>
 #include <hdf5.h>
 #include "Handles.hpp"
@@ -9,6 +11,7 @@ namespace HH {
 	namespace Types {
 		using namespace HH::Handles;
 		/// \todo extend to UTF-8 strings, as HDF5 supports these. No support for UTF-16, but conversion functions may be applied.
+		/// \todo Fix for "const std::string".
 		template<typename T>
 		struct is_string :
 			public std::integral_constant<bool,
@@ -30,7 +33,7 @@ namespace HH {
 		/// \todo Change these signatures to allow for user extensibility into custom structs,
 		/// or even objects like std::complex<T>.
 		template <class DataType>
-		H5_Handle GetHDF5Type(
+		HH_hid_t GetHDF5Type(
 			typename std::enable_if<!is_string<DataType>::value>::type* = 0)
 		{
 			static_assert(false, "GetHDF5Type does not understand this data type.");
@@ -38,7 +41,7 @@ namespace HH {
 		}
 		/// For fundamental string types.
 		template <class DataType, int String_Type_Length = constants::_Unlimited_Length>
-		H5_Handle GetHDF5Type(
+		HH_hid_t GetHDF5Type(
 			int Runtime_String_Type_Length = constants::_Unspecified,
 			typename std::enable_if<is_string<DataType>::value>::type* = 0)
 		{
@@ -47,17 +50,17 @@ namespace HH {
 			return H5T_handle{ H5Tcreate(H5T_STRING, gsl::narrow_cast<size_t>(strtlen)) };
 		}
 
-		template<> inline H5_Handle GetHDF5Type<char>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_CHAR }; }
-		template<> inline H5_Handle GetHDF5Type<int8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT8 }; }
-		template<> inline H5_Handle GetHDF5Type<uint8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT8 }; }
-		template<> inline H5_Handle GetHDF5Type<int16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT16 }; }
-		template<> inline H5_Handle GetHDF5Type<uint16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT16 }; }
-		template<> inline H5_Handle GetHDF5Type<int32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT32 }; }
-		template<> inline H5_Handle GetHDF5Type<uint32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT32 }; }
-		template<> inline H5_Handle GetHDF5Type<int64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT64 }; }
-		template<> inline H5_Handle GetHDF5Type<uint64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT64 }; }
-		template<> inline H5_Handle GetHDF5Type<float>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_FLOAT }; }
-		template<> inline H5_Handle GetHDF5Type<double>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_DOUBLE }; }
+		template<> inline HH_hid_t GetHDF5Type<char>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_CHAR }; }
+		template<> inline HH_hid_t GetHDF5Type<int8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT8 }; }
+		template<> inline HH_hid_t GetHDF5Type<uint8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT8 }; }
+		template<> inline HH_hid_t GetHDF5Type<int16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT16 }; }
+		template<> inline HH_hid_t GetHDF5Type<uint16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT16 }; }
+		template<> inline HH_hid_t GetHDF5Type<int32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT32 }; }
+		template<> inline HH_hid_t GetHDF5Type<uint32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT32 }; }
+		template<> inline HH_hid_t GetHDF5Type<int64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT64 }; }
+		template<> inline HH_hid_t GetHDF5Type<uint64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT64 }; }
+		template<> inline HH_hid_t GetHDF5Type<float>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_FLOAT }; }
+		template<> inline HH_hid_t GetHDF5Type<double>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_DOUBLE }; }
 
 	}
 }

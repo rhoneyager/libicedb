@@ -99,9 +99,12 @@ namespace HH {
 			ScopedHandle(HandleType newh, bool isInvalid = false, bool noClose = false)
 				: ClosableHandle(newh, isInvalid, noClose)
 			{}
-			ScopedHandle(const ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &rhs)
-				: ScopedHandle(rhs.h, rhs.valid(), true)
-			{}
+			/// \todo Document the cases when this constructor is valid.
+			/// This is used to construct temporary objects (temporarily construct a weak
+			/// handle)
+			///ScopedHandle(const ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &rhs)
+			///	: ScopedHandle(rhs.h, rhs.valid(), true)
+			///{}
 			ScopedHandle(ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &&old)
 				: ScopedHandle(old.h, old.valid(), old.DoesNotClose()) {
 				if (!old.valid()) _invalidate();
@@ -116,6 +119,27 @@ namespace HH {
 			}
 		};
 
+		template <typename HandleType, class CloseMethod, class InvalidValueClass>
+		struct WeakHandle
+			: public ScopedHandle<HandleType, CloseMethod, InvalidValueClass>
+		{
+			~WeakHandle() {}
+			WeakHandle(HandleType newh, bool isInvalid = false, bool noClose = false)
+				: ScopedHandle(newh, isInvalid, noClose)
+			{}
+
+			/// \todo Document the cases when this constructor is valid.
+			WeakHandle(const ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &rhs)
+				: ScopedHandle(rhs.h, rhs.valid(), true)
+			{}
+
+			WeakHandle(ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &&old)
+				: ScopedHandle(old.h, old.valid(), old.DoesNotClose()) {
+				if (!old.valid()) _invalidate();
+				old._invalidate();
+			}
+		};
+
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5File, InvalidHDF5Handle> H5F_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataset, InvalidHDF5Handle> H5D_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataspace, InvalidHDF5Handle> H5S_ScopedHandle;
@@ -126,11 +150,5 @@ namespace HH {
 		typedef ScopedHandle<hid_t, Closers::DoNotClose, InvalidHDF5Handle> H5_fundamental_ScopedHandle;
 		typedef Handle_base<hid_t, InvalidHDF5Handle> HH_hid_t;
 
-
-		typedef HH_hid_t H5_Handle;
-
-		inline H5_Handle getPlist_default() {
-			return H5_Handle{ H5P_DEFAULT };
-		}
 	}
 }
