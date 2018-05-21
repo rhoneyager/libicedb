@@ -58,6 +58,13 @@ namespace HH {
 					return true;
 				}
 			};
+			struct CloseHDF5PropertyList {
+				static inline bool Close(hid_t h) {
+					herr_t err = H5Pclose(h);
+					if (err < 0) return false;
+					return true;
+				}
+			};
 			struct DoNotClose {
 				static inline bool Close(hid_t) { return true; }
 			};

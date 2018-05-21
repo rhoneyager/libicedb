@@ -122,6 +122,7 @@ namespace HH {
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Datatype, InvalidHDF5Handle> H5T_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Group, InvalidHDF5Handle> H5G_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Attribute, InvalidHDF5Handle> H5A_ScopedHandle;
+		typedef ScopedHandle<hid_t, Closers::CloseHDF5PropertyList, InvalidHDF5Handle> H5P_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::DoNotClose, InvalidHDF5Handle> H5_fundamental_ScopedHandle;
 		typedef Handle_base<hid_t, InvalidHDF5Handle> HH_hid_t;
 
