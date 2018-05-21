@@ -39,6 +39,33 @@ We will keep the discussions ongoing via web meetings to work out the details of
 
 **ENTRIES ARE IN REVERSE CHRONOLOGICAL ORDER**
 
+## Notes from the 5th Scattering WebEx Meeting (17 May 2018)
+
+PARTICIPANTS: Ryan - Eugene - Stefan - Davide - Ian - Jussi
+
+Ryan attempted to share some slides beforehand, but we had problems with the mailing list see issue [#29](https://github.com/rhoneyager/libicedb/issues/29).
+
+[MEETING SLIDES](https://github.com/rhoneyager/libicedb/files/1929718/2018-05-17.Scattering.Meeting.Slides.pdf-MISSING)
+
+We had a lot of traffic on the libicedb github site recently (20 different IPs and more than 1000 page views)
+
+1. Particle shape metadata
+  * The import routines are running well for ordinary DDA and GMM shapefiles, but we are still missing a lot of metadata and variable description like popular netcdf attributes like *long_name* and *units*
+  * Particle orientation should be moved to scattering quantities files since they are related to those properties.
+  * The *command-line* argument parser is now taking a substantial number of inputs. We will move to inputfiles (text files with ARGUMENT:value pairs)
+  * The Universal Unique IDentifier was a main point of discussion and still missing. Our original idea to generate it by parsing the shapefile is not efficient in case of GMM particles which have floating-point scattering element coordinates. We will rather make a unique identifier by combining *DATASET_ID* + *SHAPE_ID* + 4integers_version. The database provider will be responsible for non overlapping shape IDs within the datase (we will provide an optional hashing function for DDA particles)
+  * Kwo's database files import might be trickier and will require some time
+  * *scaling_factor* The concept of interdipole spacing is DDA based. We rather move to scaling factor: something that translates integer coordinates into physical units. In order to be consistent with netcdf standard (units should be an attribute) we will have a scaling_factor (value) and scaling_factor_units (meters for SI convention). This is not required for GMM floating point coordinates but we will add it in any case for consistency.
+  * Chalmer's University asked for passing effective radius instead of dipole spacing. We agreed that it is important to have one (scaling_factor) as a required attribute and effective radius might be added as an optional attribute. Moreover it might be possible (for easier shapes) to implement an automatic conversion in the future
+2. Next development steps
+  * The natural step forward is to include some physical properties (level 0b)
+  * Ryan will code the library interface and a template so that anybody can take the chance to contribute to the development of the library by adding some algorithm to compute physical properties of the scatterer
+3. Miscellaneous
+  * We really need to review the spreadsheets with the description of the standard
+  * Ryan asks for people looking at the additional programs built ontop of the library
+  * Whoever works on something on the library he/she should mention that in the project tab on the github repository. A step-by-step guide on how to use git and contribute to the repository will be published on the documentation website soon
+  * **NEXT MEETING** 14 June 2018 17:00 CET (1500 UTC)
+
 ## Notes from the 4th Scattering WebEx Meeting (17 April 2018)
 NASA Goddard WebEx seems to not work with PC audio but does with phones. Screen sharing is working. WebEx is
 notoriously bad on Linux platforms, as it generally requires 32-bit implementations of Java packages which
