@@ -45,9 +45,9 @@ PARTICIPANTS: Ryan - Eugene - Stefan - Davide - Ian - Jussi
 
 Ryan attempted to share some slides beforehand, but we had problems with the mailing list see issue [#29](https://github.com/rhoneyager/libicedb/issues/29).
 
-[MEETING SLIDES](https://github.com/rhoneyager/libicedb/files/1929718/2018-05-17.Scattering.Meeting.Slides.pdf-MISSING)
+[MEETING SLIDES](https://drive.google.com/open?id=1_YgqeKC4D4QKaqLLnMb607QCfcff8cvP)
 
-We had a lot of traffic on the libicedb github site recently (20 different IPs and more than 1000 page views)
+We had a lot of traffic on the libicedb Github site recently (20 different IPs and more than 1000 page views)
 
 1. Particle shape metadata
   * The import routines are running well for ordinary DDA and GMM shapefiles, but we are still missing a lot of metadata and variable description like popular netcdf attributes like *long_name* and *units*
