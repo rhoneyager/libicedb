@@ -154,14 +154,23 @@ namespace HH {
 		};
 		*/
 
+		/// Scoped handle for files
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5File, InvalidHDF5Handle> H5F_ScopedHandle;
+		/// Scoped handle for datasets
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataset, InvalidHDF5Handle> H5D_ScopedHandle;
+		/// Scoped handle for dataspaces
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataspace, InvalidHDF5Handle> H5S_ScopedHandle;
+		/// Scoped handle for datatypes
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Datatype, InvalidHDF5Handle> H5T_ScopedHandle;
+		/// Scoped handle for groups
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Group, InvalidHDF5Handle> H5G_ScopedHandle;
+		/// Scoped handle for attributes
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Attribute, InvalidHDF5Handle> H5A_ScopedHandle;
+		/// Scoped handle for property lists
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5PropertyList, InvalidHDF5Handle> H5P_ScopedHandle;
+		/// Scoped handle for HDF5 intrinsic objects (constant objects built-in to the HDF5 headers)
 		typedef ScopedHandle<hid_t, Closers::DoNotClose, InvalidHDF5Handle> H5_fundamental_ScopedHandle;
+		/// General handle for encapsulated HDF5 objects.
 		typedef Handle_base<hid_t, InvalidHDF5Handle> HH_hid_t;
 
 	}
