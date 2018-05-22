@@ -109,9 +109,11 @@ namespace HH {
 			}
 			*/
 
+			/*
 			constexpr not_invalid(T& t) : _ptr(t) {
 				Expects(_ptr.valid());
 			}
+			*/
 
 			template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>>
 			constexpr not_invalid(const not_invalid<U>& other) : not_invalid(other.get())

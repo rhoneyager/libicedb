@@ -86,15 +86,15 @@ BOOST_AUTO_TEST_CASE(io_ni_move) {
 // Create an in-memory-only file
 BOOST_AUTO_TEST_CASE(io_inmemfile) {
 	auto pl = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) };
+	auto wh = pl.getWeakHandle();
 	auto f = HH::Files::create_file_image(
 		"testing_hh_file_io_inmemfile",
 		10000000,
 		false,
-		pl.getWeakHandle());
+		wh);
 
 	BOOST_CHECK_EQUAL(f.valid(), true);
 }
-
 
 // Attempt to open a nonexistent file
 

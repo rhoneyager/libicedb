@@ -80,7 +80,7 @@ namespace HH {
 		/// \param filename is the file to write, if backing_store_in_file == true
 		/// \param block_allocation_len is the size of each new allocation as the file grows
 		/// \param backing_store_in_file determines whether a physical file is written upon close.
-		[[nodiscard]] inline H5F_ScopedHandle&& create_file_image(
+		[[nodiscard]] inline H5F_ScopedHandle create_file_image(
 			not_null<const char*> filename,
 			size_t block_allocation_len = 10000000, // 10 MB
 			bool backing_store_in_file = false,
@@ -92,8 +92,9 @@ namespace HH {
 			// This new memory-only dataset needs to always be writable. The flags parameter
 			// has little meaning in this context.
 			/// \todo Check if truncation actually removes the file on the disk!!!!!
-			auto res = H5F_ScopedHandle(H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, h));
-			return std::move(res);
+			return H5F_ScopedHandle(H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, h));
+			//auto res = H5F_ScopedHandle(H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, h));
+			//return std::move(res);
 		}
 
 		// TODO: Creates a new file image (i.e. a file that exists purely in memory)
