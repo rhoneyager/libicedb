@@ -26,7 +26,7 @@ namespace HH {
 		using std::tuple;
 
 		/// \todo Ensure that this takes ownership / move constructor only.
-		Attribute(not_invalid<HH_hid_t>&& hnd_attr) : attr(hnd_attr) {}
+		Attribute(not_invalid<HH_hid_t>&& hnd_attr) : attr(hnd_attr.get()) {}
 		virtual ~Attribute() {}
 
 		/// \brief Write data to an attribute
