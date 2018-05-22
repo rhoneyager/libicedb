@@ -37,6 +37,8 @@ target_link_libraries(icedb-testing-core
 	${Boost_PROGRAM_OPTIONS_LIBRARY}
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_SYSTEM_LIBRARY}
+	${HDF5_LIBRARIES}
+	${HDF5_HL_LIBRARIES}
 	)
 
 addapp(icedb-testing-core Testing)

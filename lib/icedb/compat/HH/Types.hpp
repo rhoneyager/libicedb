@@ -47,7 +47,7 @@ namespace HH {
 		{
 			int strtlen = String_Type_Length;
 			if (Runtime_String_Type_Length != constants::_Unspecified) strtlen = Runtime_String_Type_Length;
-			return H5T_handle{ H5Tcreate(H5T_STRING, gsl::narrow_cast<size_t>(strtlen)) };
+			return HH_hid_t{ H5Tcreate(H5T_STRING, gsl::narrow_cast<size_t>(strtlen)) };
 		}
 
 		template<> inline HH_hid_t GetHDF5Type<char>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_CHAR }; }

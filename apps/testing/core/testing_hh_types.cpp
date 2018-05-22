@@ -30,6 +30,35 @@ BOOST_AUTO_TEST_CASE(types_are_they_string_types) {
 	BOOST_CHECK_EQUAL(is_string<char[]>::value, true);
 }
 
+// Just make sure that the types generate, and are not invalid
+BOOST_AUTO_TEST_CASE(types_fundamental_are_valid) {
+	using namespace HH::Types;
+	BOOST_CHECK_EQUAL(GetHDF5Type<char>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<int8_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<uint8_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<int16_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<uint16_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<int32_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<uint32_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<int64_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<uint64_t>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<float>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<double>().isInvalid(), false);
+}
+
+BOOST_AUTO_TEST_CASE(types_strings_are_valid) {
+	using namespace HH::Types;
+	BOOST_CHECK_EQUAL(GetHDF5Type<std::string>().isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<const char*>().isInvalid(), false);
+	// For some reason, an extra set of parentheses are needed here. Macro fun.
+	BOOST_CHECK_EQUAL((GetHDF5Type<std::string,15>().isInvalid()), false);
+	BOOST_CHECK_EQUAL((GetHDF5Type<const char*, 15>().isInvalid()), false);
+
+	BOOST_CHECK_EQUAL(GetHDF5Type<std::string>(16).isInvalid(), false);
+	BOOST_CHECK_EQUAL(GetHDF5Type<const char*>(16).isInvalid(), false);
+}
+
+
 // Construct various types, and do equality checks
 
 // Construct a custom struct as a type
