@@ -65,33 +65,39 @@ namespace HH {
 				"To use not_invalid, you must use a class that provides the valid() method.");
 			constexpr T& get() const {
 				bool isValid = _ptr.valid();
-				Expects(isValid);
+				if (!isValid) { // Lazy extra check to allow me to easily break into a debug shell.
+					Expects(isValid);
+				}
 				return _ptr;
 			}
 			constexpr T& operator()() const { return get(); }
 			constexpr T* operator->() const { return &(get()); }
 			constexpr decltype(auto) operator*() const { return (get()); }
 
-			constexpr not_invalid(T&& t) : _ptr(std::forward<T>(t)) {
-				Expects(_ptr.valid());
-			}
 
-			template <typename U>//, typename = std::enable_if_t<std::is_convertible<U, T>::value>,
-								//typename = std::enable_if_t<!std::is_reference_v<U>> >
-			/// \note Should this need a move reference? Otherwise, it triggers u's destructor.
-			/// Or, is thould be a weak reference -> one that does not trigger a close.
-			/// \todo Better support for weak references.
-			constexpr not_invalid(U&& u) : _heldObj{ std::make_unique<T>(u) }, _ptr{ *_heldObj.get() }
+			constexpr not_invalid(T t) : _heldObj{ std::make_unique<T>(t) }, _ptr{ *_heldObj.get() }
 			{
-				bool isValid = _ptr.valid();
+				const bool isValid = _ptr.valid();
 				Expects(isValid);
 			}
-			// Original:
-			//constexpr not_invalid(U u) : _heldObj{ std::make_unique<T>(u) }, _ptr{ *_heldObj.get() }
-			//{
-			//	bool isValid = _ptr.valid();
-			//	Expects(isValid);
-			//}
+
+			/*
+			constexpr not_invalid(T&& t) : _ptr(std::forward<T>(t)) {
+				const bool isValid = _ptr.valid();
+				Expects(isValid);
+			}
+			*/
+
+			/// \note This _cannot_ use a move _reference_, as I can't pass the conversion properly using non-pointer objects.
+			/// cannot convert 'HH::Handles::not_invalid<HH::Handles::HH_hid_t>' to 'hid_t'
+			/// \note Beware of inserting a ScopedHandle into not_invalid! Check that you do not instead want a WeakHandle!
+			template <typename U>//, typename = std::enable_if_t<std::is_convertible<U, T>::value>,
+								//typename = std::enable_if_t<!std::is_reference_v<U>> >
+			constexpr not_invalid(U u) : _heldObj{ std::make_unique<T>(u) }, _ptr{ *_heldObj.get() }
+			{ // u will be destroyed. Note difference between ScopedHandle (will close) and WeakHandle (will not close) as input objects. 
+				const bool isValid = _ptr.valid();
+				Expects(isValid);
+			}
 
 			/*
 			template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>,

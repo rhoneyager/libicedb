@@ -61,10 +61,15 @@ namespace HH {
 
 		template <typename HandleType, class CloseMethod, class InvalidValueClass>
 		struct ScopedHandle;
+		//template <typename HandleType, class CloseMethod, class InvalidValueClass>
+		//struct WeakHandle;
+		template <typename HandleType, class InvalidValueClass>
+		using WeakHandle = Handle_base<HandleType, InvalidValueClass>;
 
 		/// A class that encapsulates a handle in a shared-memory object.
 		/// Handle is released immediately when the last object copy closes.
 		/// \note Potentially unsafe across DLL boundaries.
+		/// \todo Finish
 		template <typename HandleType, class CloseMethod, class InvalidValueClass>
 		struct SharedHandle :
 			public ClosableHandle<HandleType, CloseMethod, InvalidValueClass>,
@@ -88,14 +93,18 @@ namespace HH {
 		};
 
 		/// A scoped handle container. The handle is released immediately when out of scope.
+		///
+		/// The ScopedHandle HAS OWNERSHIP of its object.
+		/// \see WeakHandle for a convertible class that does NOT get ownership, and which can be transferred.
 		template <typename HandleType, class CloseMethod, class InvalidValueClass>
 		struct ScopedHandle :
 			public ClosableHandle<HandleType, CloseMethod, InvalidValueClass>
 		{
 			typedef ScopedHandle<HandleType, CloseMethod, InvalidValueClass> thisScopedHandle_t;
 			typedef std::shared_ptr<ScopedHandle<HandleType, CloseMethod, InvalidValueClass> > thisSharedHandle_t;
+			typedef WeakHandle<HandleType, InvalidValueClass> thisWeakHandle_t;
 
-			~ScopedHandle() {}
+			virtual ~ScopedHandle() {}
 			ScopedHandle(HandleType newh, bool isInvalid = false, bool noClose = false)
 				: ClosableHandle(newh, isInvalid, noClose)
 			{}
@@ -119,29 +128,29 @@ namespace HH {
 			//thisSharedHandle_t make_shared() {
 			//	return thisSharedHandle_t(std::move(*this));
 			//}
-		};
 
-		/// \todo Finish the implementation.
-		template <typename HandleType, class CloseMethod, class InvalidValueClass>
-		struct WeakHandle
-			: public ScopedHandle<HandleType, CloseMethod, InvalidValueClass>
-		{
-			~WeakHandle() {}
-			WeakHandle(HandleType newh, bool isInvalid = false, bool noClose = false)
-				: ScopedHandle(newh, isInvalid, noClose)
-			{}
-
-			/// \todo Document the cases when this constructor is valid.
-			WeakHandle(const ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &rhs)
-				: ScopedHandle(rhs.h, rhs.valid(), true)
-			{}
-
-			WeakHandle(ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &&old)
-				: ScopedHandle(old.h, old.valid(), old.DoesNotClose()) {
-				if (!old.valid()) _invalidate();
-				old._invalidate();
+			thisWeakHandle_t getWeakHandle() const {
+				bool isValid = valid();
+				auto wh = thisWeakHandle_t(h, !isValid);
+				return wh;
 			}
 		};
+
+		
+		/*
+		//typedef Handle_base<HandleType, InvalidValueClass> WeakHandle;
+
+		/// A handle that does not retain ownership. Really just an alias
+		template <typename HandleType, class CloseMethod, class InvalidValueClass>
+		struct WeakHandle
+			: public Handle_base<HandleType, InvalidValueClass>
+		{
+			virtual ~WeakHandle() {}
+			WeakHandle(HandleType newh, bool isInvalid = false)
+				: Handle_base(newh, isInvalid)
+			{}
+		};
+		*/
 
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5File, InvalidHDF5Handle> H5F_ScopedHandle;
 		typedef ScopedHandle<hid_t, Closers::CloseHDF5Dataset, InvalidHDF5Handle> H5D_ScopedHandle;
