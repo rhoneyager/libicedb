@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cstdio>
 #include <gsl/multi_span>
 #include <gsl/pointers>
 #include <tuple>
@@ -76,30 +76,35 @@ namespace HH {
 			return std::move(H5F_ScopedHandle(H5LTopen_file_image(buf_ptr.get(), buf_size, flags)));
 		}
 
-		/// \brief Creates a new file image (i.e. a file that exists purely in memory)
-		/// \param buffer_ptr is a pointer to the buffer to be manipulated. If null, then *buf_len is set to the minimum size, in bytes, needed to create this image.
-		/// \param WritePhysicalFileOnClose determines whether a physical file is written upon close.
+		/// \brief Create a new file image (i.e. a file that exists purely in memory)
+		/// \param filename is the file to write, if backing_store_in_file == true
+		/// \param block_allocation_len is the size of each new allocation as the file grows
+		/// \param backing_store_in_file determines whether a physical file is written upon close.
 		[[nodiscard]] inline H5F_ScopedHandle&& create_file_image(
 			not_null<const char*> filename,
-			void* buffer_ptr,
-			size_t buffer_len,
+			size_t block_allocation_len = 10000000, // 10 MB
 			bool backing_store_in_file = false,
-			not_invalid<HH_hid_t> ImageCreationPlist = H5P_FILE_ACCESS)
+			not_invalid<HH_hid_t> ImageCreationPlist = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) })
 		{
-			const auto h5Result = H5Pset_fapl_core(ImageCreationPlist.get().h, buffer_len, backing_store_in_file);
+			hid_t h = ImageCreationPlist.get().h; // Separated from next line for easier debugging.
+			const auto h5Result = H5Pset_fapl_core(h, block_allocation_len, backing_store_in_file);
 			Expects(h5Result >= 0 && "H5Pset_fapl_core failed");
 			// This new memory-only dataset needs to always be writable. The flags parameter
 			// has little meaning in this context.
 			/// \todo Check if truncation actually removes the file on the disk!!!!!
-			return std::move(H5F_ScopedHandle(H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, ImageCreationPlist.get().h)));
+			auto res = H5F_ScopedHandle(H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, h));
+			return std::move(res);
 		}
+
+		// TODO: Creates a new file image (i.e. a file that exists purely in memory)
+		// Add a function that will use only a pre-allocated buffer. No filename needed, as this will NEVER be written.
 
 		/// \brief Get name of the file to which an object belongs
 		/// \brief Is this path an HDF5 file?
 		/// \breif Is this file opened for read/write or read/only access?
 		/// \brief Reopen an already-open file (i.e. to strip mountpoints)
 
-
+		/*
 		class File
 		{
 			H5F_ScopedHandle::thisSharedHandle_t h;
@@ -128,6 +133,7 @@ namespace HH {
 				return f;
 			}
 		};
+		*/
 	}
 
 }

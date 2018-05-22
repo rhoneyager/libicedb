@@ -106,19 +106,22 @@ namespace HH {
 			///	: ScopedHandle(rhs.h, rhs.valid(), true)
 			///{}
 			ScopedHandle(ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &&old)
-				: ScopedHandle(old.h, old.valid(), old.DoesNotClose()) {
-				if (!old.valid()) _invalidate();
+				: ScopedHandle(old.h, !old.valid(), old.DoesNotClose()) {
+				if (!old.valid()) {
+					_invalidate();
+				}
 				old._invalidate();
 			}
 			bool operator==(const thisScopedHandle_t&) = delete;
 			bool operator!=(const thisScopedHandle_t&) = delete;
 			bool operator<(const thisScopedHandle_t&) = delete;
 			thisScopedHandle_t& operator=(const thisScopedHandle_t&) = delete; ///< Handles can be moved, not copied.
-			thisSharedHandle_t make_shared() {
-				return std::make_shared<thisSharedHandle_t>(std::move(*this));
-			}
+			//thisSharedHandle_t make_shared() {
+			//	return thisSharedHandle_t(std::move(*this));
+			//}
 		};
 
+		/// \todo Finish the implementation.
 		template <typename HandleType, class CloseMethod, class InvalidValueClass>
 		struct WeakHandle
 			: public ScopedHandle<HandleType, CloseMethod, InvalidValueClass>

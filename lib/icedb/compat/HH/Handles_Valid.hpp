@@ -64,7 +64,8 @@ namespace HH {
 			static_assert(has_valid<T> == true,
 				"To use not_invalid, you must use a class that provides the valid() method.");
 			constexpr T& get() const {
-				Ensures(_ptr.valid());
+				bool isValid = _ptr.valid();
+				Expects(isValid);
 				return _ptr;
 			}
 			constexpr T& operator()() const { return get(); }
@@ -75,13 +76,22 @@ namespace HH {
 				Expects(_ptr.valid());
 			}
 
-			template <typename U//, typename = std::enable_if_t<std::is_convertible<U, T>::value>,
+			template <typename U>//, typename = std::enable_if_t<std::is_convertible<U, T>::value>,
 								//typename = std::enable_if_t<!std::is_reference_v<U>> >
-			>
-				constexpr not_invalid(U u) : _heldObj{ std::make_unique<T>(u) }, _ptr{ *_heldObj.get() }
+			/// \note Should this need a move reference? Otherwise, it triggers u's destructor.
+			/// Or, is thould be a weak reference -> one that does not trigger a close.
+			/// \todo Better support for weak references.
+			constexpr not_invalid(U&& u) : _heldObj{ std::make_unique<T>(u) }, _ptr{ *_heldObj.get() }
 			{
-				Expects(_ptr.valid());
+				bool isValid = _ptr.valid();
+				Expects(isValid);
 			}
+			// Original:
+			//constexpr not_invalid(U u) : _heldObj{ std::make_unique<T>(u) }, _ptr{ *_heldObj.get() }
+			//{
+			//	bool isValid = _ptr.valid();
+			//	Expects(isValid);
+			//}
 
 			/*
 			template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>,

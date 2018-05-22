@@ -7,7 +7,10 @@ namespace HH {
 		struct InvalidHDF5Handle {
 			static inline bool isValid(hid_t h) {
 				htri_t res = H5Iis_valid(h);
-				if (res <= 0) return false;
+				if (res <= 0)
+				{
+					return false;
+				}
 				return true;
 			}
 			static inline bool isInvalid(hid_t h) {
