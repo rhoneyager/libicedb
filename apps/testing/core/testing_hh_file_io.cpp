@@ -74,29 +74,27 @@ void io_ni_move_2(HH::Handles::not_invalid<HH::Handles::HH_hid_t> ImageCreationP
 BOOST_AUTO_TEST_CASE(io_ni_move) {
 	auto p = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) };
 	io_ni_move_2(p.h);
-	HH::Handles::not_invalid<HH::Handles::HH_hid_t> q{ std::move(p) };
+	HH::Handles::not_invalid<HH::Handles::HH_hid_t> q{ p.getWeakHandle() };
 	io_ni_move_2(q.get().h);
-	HH::Handles::not_invalid<HH::Handles::HH_hid_t> r{ std::move(q) };
+	HH::Handles::not_invalid<HH::Handles::HH_hid_t> r{ q };
 	io_ni_move_2(r.get().h);
 	auto s = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) };
-	io_ni_move_2(std::move(s));
-	BOOST_CHECK_EQUAL(1, 1);
+	io_ni_move_2(s.getWeakHandle());
+	BOOST_CHECK_EQUAL(1, 1); // This test really 'succeeds' if the code executes without aborting the program.
 }
 
 // Create an in-memory-only file
-/*
 BOOST_AUTO_TEST_CASE(io_inmemfile) {
 	auto pl = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) };
-	auto pm = std::move(pl);
 	auto f = HH::Files::create_file_image(
 		"testing_hh_file_io_inmemfile",
 		10000000,
 		false,
-		pm);
+		pl.getWeakHandle());
 
 	BOOST_CHECK_EQUAL(f.valid(), true);
 }
-*/
+
 
 // Attempt to open a nonexistent file
 

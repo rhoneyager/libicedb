@@ -26,7 +26,7 @@ namespace HH {
 				std::swap(this->_isInvalid, rhs._isInvalid);
 			}
 
-			Handle_base(HandleType newh, bool isInvalid = false) : h(newh), _isInvalid(isInvalid) {}
+			Handle_base(HandleType newh, bool DoNotInvalidate = true) : h(newh), _isInvalid(!DoNotInvalidate) {}
 			bool isInvalid() const { return _isInvalid; }
 		protected:
 			bool _isInvalid = false;
@@ -43,8 +43,8 @@ namespace HH {
 				bool res = close();
 				if (!res) abort();
 			}
-			ClosableHandle(HandleType newh, bool isInvalid = false, bool noClose = false)
-				: Handle_base(newh, isInvalid), _noClose(noClose) {}
+			ClosableHandle(HandleType newh, bool DoNotInvalidate = true, bool noClose = false)
+				: Handle_base(newh, DoNotInvalidate), _noClose(noClose) {}
 			bool close() {
 				if (!valid()) return true; // Lie
 				if (_noClose) return true;
@@ -105,8 +105,8 @@ namespace HH {
 			typedef WeakHandle<HandleType, InvalidValueClass> thisWeakHandle_t;
 
 			virtual ~ScopedHandle() {}
-			ScopedHandle(HandleType newh, bool isInvalid = false, bool noClose = false)
-				: ClosableHandle(newh, isInvalid, noClose)
+			ScopedHandle(HandleType newh, bool DoNotInvalidate = true, bool noClose = false)
+				: ClosableHandle(newh, DoNotInvalidate, noClose)
 			{}
 			/// \todo Document the cases when this constructor is valid.
 			/// This is used to construct temporary objects (temporarily construct a weak
@@ -115,11 +115,13 @@ namespace HH {
 			///	: ScopedHandle(rhs.h, rhs.valid(), true)
 			///{}
 			ScopedHandle(ScopedHandle<HandleType, CloseMethod, InvalidValueClass> &&old)
-				: ScopedHandle(old.h, !old.valid(), old.DoesNotClose()) {
-				if (!old.valid()) {
-					_invalidate();
-				}
-				old._invalidate();
+				: ScopedHandle(old.h, old.valid(), old.DoesNotClose())
+			{
+				old._invalidate(); // Odd infinite loop here.
+				//if (!old.valid()) {
+				//	_invalidate();
+				//}
+				//else old._invalidate(); // Need the "else", otherwise beware of infinite freeing loops.
 			}
 			bool operator==(const thisScopedHandle_t&) = delete;
 			bool operator!=(const thisScopedHandle_t&) = delete;
@@ -131,7 +133,7 @@ namespace HH {
 
 			thisWeakHandle_t getWeakHandle() const {
 				bool isValid = valid();
-				auto wh = thisWeakHandle_t(h, !isValid);
+				auto wh = thisWeakHandle_t(h, isValid);
 				return wh;
 			}
 		};

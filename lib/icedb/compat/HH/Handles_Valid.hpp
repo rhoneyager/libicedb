@@ -53,12 +53,13 @@ namespace HH {
 
 
 
-		/// Ensures that a handle is not invalid.
+		/// \brief Ensures that a handle is not invalid.
+		/// \todo Add implicit construction of a weak handle intermediate, when checking validity.
 		template <class T>
 		class not_invalid
 		{
 		private:
-			std::unique_ptr<T> _heldObj;
+			std::shared_ptr<T> _heldObj;
 			T& _ptr;
 		public:
 			static_assert(has_valid<T> == true,
@@ -75,7 +76,7 @@ namespace HH {
 			constexpr decltype(auto) operator*() const { return (get()); }
 
 
-			constexpr not_invalid(T t) : _heldObj{ std::make_unique<T>(t) }, _ptr{ *_heldObj.get() }
+			constexpr not_invalid(T t) : _heldObj{ std::make_shared<T>(t) }, _ptr{ *_heldObj.get() }
 			{
 				const bool isValid = _ptr.valid();
 				Expects(isValid);
@@ -93,7 +94,7 @@ namespace HH {
 			/// \note Beware of inserting a ScopedHandle into not_invalid! Check that you do not instead want a WeakHandle!
 			template <typename U>//, typename = std::enable_if_t<std::is_convertible<U, T>::value>,
 								//typename = std::enable_if_t<!std::is_reference_v<U>> >
-			constexpr not_invalid(U u) : _heldObj{ std::make_unique<T>(u) }, _ptr{ *_heldObj.get() }
+			constexpr not_invalid(U u) : _heldObj{ std::make_shared<T>(u) }, _ptr{ *_heldObj.get() }
 			{ // u will be destroyed. Note difference between ScopedHandle (will close) and WeakHandle (will not close) as input objects. 
 				const bool isValid = _ptr.valid();
 				Expects(isValid);
@@ -116,6 +117,8 @@ namespace HH {
 			constexpr not_invalid(const not_invalid<U>& other) : not_invalid(other.get())
 			{
 			}
+
+			
 		};
 
 	}

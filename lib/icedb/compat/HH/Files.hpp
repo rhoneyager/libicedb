@@ -84,7 +84,7 @@ namespace HH {
 			not_null<const char*> filename,
 			size_t block_allocation_len = 10000000, // 10 MB
 			bool backing_store_in_file = false,
-			not_invalid<HH_hid_t> ImageCreationPlist = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) })
+			not_invalid<HH_hid_t> ImageCreationPlist = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) }.getWeakHandle())
 		{
 			hid_t h = ImageCreationPlist.get().h; // Separated from next line for easier debugging.
 			const auto h5Result = H5Pset_fapl_core(h, block_allocation_len, backing_store_in_file);
