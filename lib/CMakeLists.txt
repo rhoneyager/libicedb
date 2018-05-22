@@ -27,6 +27,7 @@ set(gsl_objs
 	icedb/compat/gsl/string_span
 	)
 set (hh_objs
+	icedb/compat/hh/Attributes.hpp
 	icedb/compat/HH/Groups.hpp
 	icedb/compat/HH/Handles.hpp
 	icedb/compat/HH/Handles_HDF.hpp

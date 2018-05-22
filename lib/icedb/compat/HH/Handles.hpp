@@ -25,7 +25,7 @@ namespace HH {
 				std::swap(this->h, rhs.h);
 				std::swap(this->_isInvalid, rhs._isInvalid);
 			}
-
+			HandleType release() { HandleType i = h; _invalidate(); return i; }
 			Handle_base(HandleType newh, bool DoNotInvalidate = true) : h(newh), _isInvalid(!DoNotInvalidate) {}
 			bool isInvalid() const { return _isInvalid; }
 		protected:

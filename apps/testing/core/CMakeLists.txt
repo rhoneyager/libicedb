@@ -12,6 +12,7 @@ set(srcs
 	globals.cpp
 	globals.hpp
 	testing_hh_file_io.cpp
+	testing_hh_objects.cpp
 	testing_hh_tags.cpp
 	testing_hh_types.cpp
 	#testing_refract.cpp
