@@ -12,6 +12,7 @@
 
 namespace HH {
 	using namespace HH::Handles;
+	using namespace HH::Types;
 	using namespace gsl;
 	using std::initializer_list;
 	using std::tuple;
@@ -38,23 +39,54 @@ namespace HH {
 		template <class DataType>
 		[[nodiscard]] herr_t write(
 			span<DataType> data,
-			not_invalid<HH_hid_t> in_memory_dataType = GetHDF5Type<DataType>())
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
 		{
 			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
 			Expects((data.size_bytes() == in_memory_size_bytes) && "Memory alignment error");
-			return H5Awrite(attr().h, in_memory_dataType().h, data.data());
+			return H5Awrite(attr.h, in_memory_dataType().h, data.data());
 		}
+		template <class DataType>
+		[[nodiscard]] herr_t write(
+			DataType data,
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+		{
+			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
+			return H5Awrite(attr.h, in_memory_dataType().h, &data);
+		}
+
+		/// \todo Change reads to verify the data type being read.
+		/// Add a force attribute to skip this check.
 
 		/// \brief Read data from an attribute
 		/// \note Reading attributes is an all-or-nothing process.
 		template <class DataType>
 		[[nodiscard]] herr_t read(
 			span<DataType> data,
-			not_invalid<HH_hid_t> in_memory_dataType = GetHDF5Type<DataType>()) const
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
 			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
 			Expects((data.size_bytes() == in_memory_size_bytes) && "Memory alignment error");
-			return H5Aread(attr().h, in_memory_dataType().h, data.data());
+			return H5Aread(attr.h, in_memory_dataType().h, data.data());
+		}
+
+		/// Read into a single value (convenience function)
+		template <class DataType>
+		[[nodiscard]] herr_t read(
+			DataType &data,
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
+		{
+			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
+			Expects((sizeof(DataType) == in_memory_size_bytes) && "Memory alignment error");
+			return H5Aread(attr.h, in_memory_dataType().h, &data);
+		}
+
+		template <class DataType>
+		[[nodiscard]] DataType read(not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
+		{
+			DataType res;
+			herr_t err = read<DataType>(res, in_memory_dataType);
+			Expects((err >= 0) && "Attribute read error");
+			return res;
 		}
 
 		/// \brief Get an attribute's name
@@ -164,7 +196,7 @@ namespace HH {
 			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
 			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT)
 		{
-			auto dtype = GetHDF5Type<DataType>();
+			auto dtype = HH::Types::GetHDF5Type<DataType>();
 
 			std::vector<hsize_t> hdims;
 			for (const auto &d : dimensions)
@@ -178,10 +210,10 @@ namespace HH {
 			return Attribute(std::move(H5A_ScopedHandle(H5Acreate(
 				base.h,
 				attrname.get(),
-				dtype.get(),
-				dspace.get(),
-				AttributeCreationPlist.get(),
-				AttributeAccessPlist.get()
+				dtype.h,
+				dspace.h,
+				AttributeCreationPlist.get().h,
+				AttributeAccessPlist.get().h
 			))));
 		}
 
@@ -201,16 +233,67 @@ namespace HH {
 		Attribute add(
 			not_null<const char*> attrname,
 			span<DataType> data,
-			initializer_list<size_t> dimensions = { 1 },
+			initializer_list<size_t> dimensions,
 			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
 			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
 			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
 		{
-			H5A_ScopedHandle newAttr = create<DataType>(base.h, attrname.get(), dimensions,
+			auto newAttr = create<DataType>(attrname.get(), dimensions,
 				AttributeCreationPlist, AttributeAccessPlist);
-			Expects(newAttr.valid());
-			herr_t res = write<DataType>(newAttr().h, data, in_memory_dataType);
-			Expects(res == true);
+			herr_t res = newAttr.write<DataType>(data, in_memory_dataType);
+			return Attribute(std::move(newAttr));
+		}
+
+		template <class DataType>
+		Attribute add(
+			not_null<const char*> attrname,
+			initializer_list<DataType> data,
+			initializer_list<size_t> dimensions,
+			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+		{
+			auto newAttr = create<DataType>(attrname.get(), dimensions,
+				AttributeCreationPlist, AttributeAccessPlist);
+			herr_t res = newAttr.write<const DataType>(gsl::span<const DataType>(data.begin(), data.end()), in_memory_dataType);
+			return Attribute(std::move(newAttr));
+		}
+
+		template <class DataType>
+		Attribute add(
+			not_null<const char*> attrname,
+			span<DataType> data,
+			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+		{
+			return add<DataType> (attrname, data, {gsl::narrow_cast<size_t>(data.size())}, 
+				AttributeCreationPlist, AttributeAccessPlist, in_memory_dataType);
+		}
+		
+		template <class DataType>
+		Attribute add(
+			not_null<const char*> attrname,
+			initializer_list<DataType> data,
+			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+		{
+			return add<DataType>(attrname, data, { gsl::narrow_cast<size_t>(data.size()) },
+				AttributeCreationPlist, AttributeAccessPlist, in_memory_dataType);
+		}
+
+		template <class DataType>
+		Attribute add(
+			not_null<const char*> attrname,
+			DataType data,
+			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
+			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+		{
+			auto newAttr = create<DataType>(attrname.get(), { 1 },
+				AttributeCreationPlist, AttributeAccessPlist);
+			herr_t res = newAttr.write<DataType>(data, in_memory_dataType);
 			return Attribute(std::move(newAttr));
 		}
 

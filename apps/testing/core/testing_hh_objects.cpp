@@ -23,8 +23,21 @@ BOOST_AUTO_TEST_CASE(direct_attr_set) {
 	Has_Attributes atts(f.getWeakHandle());
 	vector<int16_t> data = { 1, 2, 3, 4, 5 };
 	gsl::span<int16_t> d(data);
-	//d.size();
-	atts.add<int16_t>("test_i16", data, { (size_t) d.size() });
+	atts.add<int16_t>("test_i16", d);
+	atts.add<int16_t>("test_i162", { 2, 3, 4, 1 });
+	atts.add<int16_t>("test_i163", 5);
+	atts.add("test_i164", d);
+	atts.add("j", { 1.0f }, { 1 });
+
+	auto attj = atts.open("j");
+	float vf = attj.read<float>();
+
+	//attj.read()
+	//atts.add()
+	//	<int8_t>("a", 1)
+	//	<uint32_t>("b", { 2,3,4 })
+	//	("c","test string")
+	//	;
 }
 
 
