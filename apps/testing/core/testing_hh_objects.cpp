@@ -5,7 +5,7 @@
 #include <HH/Attributes.hpp>
 //#include <HH/Datasets.hpp>
 #include <HH/Files.hpp>
-//#include <HH/Groups.hpp>
+#include <HH/Groups.hpp>
 #include <HH/Handles_HDF.hpp>
 #include <HH/Handles_Valid.hpp>
 #include <HH/Tags.hpp>
@@ -32,6 +32,7 @@ BOOST_AUTO_TEST_CASE(direct_attr_set) {
 	auto attj = atts.open("j");
 	float vf = attj.read<float>();
 
+	//HH::Group(nullptr).atts.exists("a");
 	//attj.read()
 	//atts.add()
 	//	<int8_t>("a", 1)

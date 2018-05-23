@@ -2,8 +2,45 @@
 #include <hdf5.h>
 #include <gsl/pointers>
 #include "Handles.hpp"
+#include "Types.hpp"
+#include "Attributes.hpp"
 
 namespace HH {
+	using namespace HH::Handles;
+	using namespace HH::Types;
+	using namespace gsl;
+	using std::initializer_list;
+	using std::tuple;
+	struct Has_Groups;
+	struct Group {
+	private:
+		H5G_ScopedHandle grp;
+	public:
+		Group(H5G_ScopedHandle&& hnd_grp) : grp(std::move(hnd_grp)), atts(grp.getWeakHandle()), grps(grp.getWeakHandle()) {}
+		Group(not_invalid<HH_hid_t> hnd) : grp(hnd.get().release()), atts(grp.getWeakHandle()), grps(grp.getWeakHandle()) {}
+		Group(Group &&old) : grp(-1, false), atts(grp.getWeakHandle()), grps(grp.getWeakHandle()) {
+			grp.swap(old.grp);
+			/// \todo Check how weak objects behave on swap!
+			//atts.swap
+		}
+		virtual ~Group() {}
+
+		Has_Attributes atts;
+		Has_Groups grps;
+		//Has_Mountpoints mnts;
+	};
+
+	struct Has_Groups {
+	private:
+		typedef WeakHandle<hid_t, InvalidHDF5Handle> base_t;
+		/// \note This is a weak object! It does not close.
+		base_t base;
+	public:
+		Has_Groups(base_t obj) : base(obj) {}
+		virtual ~Has_Groups() {}
+
+	};
+
 	namespace Groups {
 		using namespace Handles;
 		using namespace gsl;

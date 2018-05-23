@@ -11,6 +11,7 @@
 #include "Types.hpp"
 
 namespace HH {
+	/// \todo Switch to explicit namespace specification.
 	using namespace HH::Handles;
 	using namespace HH::Types;
 	using namespace gsl;
@@ -153,6 +154,7 @@ namespace HH {
 
 	};
 
+	/// \todo Add move constructors.
 	struct Has_Attributes
 	{
 	private:
@@ -180,6 +182,8 @@ namespace HH {
 			return false;
 		}
 		
+
+		/// \todo open, create and add should also give a scoped handle return object as an option.
 		/// \\brief Open an attribute
 		[[nodiscard]] Attribute open(
 			not_null<const char*> name,
@@ -297,6 +301,8 @@ namespace HH {
 			return Attribute(std::move(newAttr));
 		}
 
+
+		/// \todo Switch to attribute objects. Keep raw object as an option.
 		/// Open and read an attribute, for expected dimensions.
 		template <class DataType>
 		H5A_ScopedHandle&& read(
