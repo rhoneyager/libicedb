@@ -112,6 +112,10 @@ entries:
       url: /writedoc.html
       output: web, pdf 
 
+    - title: HOWTO use git and code libicedb
+      url: /usegit.html
+      output: web, pdf
+
   - title: Database File Structure
     output: web, pdf
 
