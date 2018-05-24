@@ -1,5 +1,5 @@
 ---
-title: How to use git and contribute to libicedb
+title: How to use Git and contribute to libicedb
 tags: [getting_started, troubleshooting, collaboration]
 last_updated: May 23, 2018
 keywords: git, jekyll, documentation
@@ -9,29 +9,29 @@ permalink: usegit.html
 folder: mydoc
 ---
 
-This is a step by step guide on how to setup git on your system and start contributing to the libicedb code library. Unfortunately it is not meant to be general. It addresses immediately Ubuntu Linux users, but it is easy to extend to other OS.
+This is a step by step guide on how to setup Git on your system and start contributing to the icedb library. Unfortunately, it is not meant to be general. This guide is targeted towards Ubuntu Linux users, but it is easy to extend to other operating systems.
 
-We do not want to dive too much into the concept and technicalities of git, for that, you might want to have a look at some more official [tutorial](https://services.github.com/on-demand/intro-to-github/)
+We do not want to dive too much into the concept and technicalities of Git, for that, you might want to have a look at some more official [tutorial](https://services.github.com/on-demand/intro-to-github/)
 
 You might find it worthwhile to learn how Git works. It is useful for any project where you want either version control or the ability to sync changes across multiple machines. It's perfect for both computer code and LaTeX documents.
 
-## Setup a git account and install git client
+## Setup a GitHub account and install the Git software
 
-If you are here, it is assumed you already have a github account. Another prerequisite to start contribute to *libicedb* code is to have installed a [git](https://en.wikipedia.org/wiki/Git) client on your system. In principle you can install whatever git client you prefer (some of them even have a GUI), but this instruction will cover the ordinary command-line client git which will be installed on ubuntu by typing on a terminal
+If you are here, it is assumed you already have a [GitHub account](https://www.github.com). Another prerequisite to start contribute to *icedb* code is to have installed [git](https://en.wikipedia.org/wiki/Git) on your system. In principle you can install whatever git client you prefer (some of them even have a GUI), but this instruction will cover the ordinary command-line git client which may be installed on Ubuntu by opening a terminal and typing:
 ```bash
 sudo apt install git
 ```
 
-## OPTIONAL (recommended): Setup SSH key pairs secure connection
+## OPTIONAL (but highly recommended): Setup SSH key pairs secure connection
 
-GitHub allows you to upload your changes through a secure, encrypted SSH connection. SSH allows for many different authentication methods. Some institutions might require a two factor authentication which would make this step mandatory. In the case of GitHub, both server and client have public and private keys. To upload your changes to GitHub, you first have to generate your own SSH key, and then will upload the public key to GitHub. Follow github [guide](https://help.github.com/articles/connecting-to-github-with-ssh/) on how to generate and upload ssh key pairs.
+GitHub allows you to upload your changes through a secure, encrypted SSH connection. SSH allows for many different authentication methods. Some institutions might require a two factor authentication which would make this step mandatory. In the case of GitHub, both server and client have public and private keys. To upload your changes to GitHub, you first have to generate your own SSH key, and then will upload the public key to GitHub. Follow [GitHub's guide](https://help.github.com/articles/connecting-to-github-with-ssh/) on how to generate and upload ssh key pairs.
 {% include note.html content="You will need to generate and upload a ssh key pair for each system (desktops, laptops, servers and tablets) you are working on" %}
 
 ## Clone and branch the repository
-If you want to contribute to the repository you first need to obtain the code and branch it.
-We do not want to dive into the technicalities of git. To really understand what is going on you might want to look at the official
+If you want to contribute to the repository, you first need to obtain the code and branch it.
+We do not want to dive into the technicalities of git. To really understand what is going on you might want to look at the official documentation.
 
-  1. The first time around execute
+  1. To get the initial copy of the repository:
   ```bash
       git clone https://github.com/rhoneyager/libicedb.git
   ```
@@ -58,10 +58,10 @@ We do not want to dive into the technicalities of git. To really understand what
         git checkout NEW-BRANCH-NAME
         git branch --set-upstream-to origin
      ```
-     For the seek of clearness you have first "created" a new branch out of the current branch (which would be the *master* branch if you followed these instructions) with the *git branch* command. Then you have "switched" to the new branch with *git checkout*. This does not produce visible effects because the new and the master branch are still identical. Finally *git branch --set-upstream* connects your "local" branch with the github server.
+     By executing these commands, you have first "created" a new branch out of the current branch (which would be the *master* branch if you followed these instructions) with the *git branch* command. Then you have "switched" to the new branch with *git checkout*. This does not produce visible effects because the new and the master branch are still identical. Finally *git branch --set-upstream* connects your "local" branch with the github server.
      
 ## Make your own changes.
-  You might want to change some of the existing .hpp or .cpp files or to create new ones. Unfortunately it is not possible to make here a comprehensive reference on how to code.
+  You might want to change some of the existing .hpp or .cpp files or to create new ones.
 
   1. Tell git that you have changed files
      ```bash
@@ -84,7 +84,7 @@ We do not want to dive into the technicalities of git. To really understand what
      ```bash
         git push origin NEW-BRANCH-NAME
      ```
-     Now your work is syncronized with the upstream repository and everybody can see it. You might want to ask for review or comments of your current work from other developers that might be really helpful.
+     Now your work is synchronized with the upstream repository and everybody can see it. You might want to ask for review or comments of your current work from other developers that might be really helpful.
      
   4. Ask for merging your changes
   
