@@ -23,6 +23,11 @@ BOOST_AUTO_TEST_CASE(direct_attr_set) {
 	Has_Attributes atts(f.getWeakHandle());
 	vector<int16_t> data = { 1, 2, 3, 4, 5 };
 	gsl::span<int16_t> d(data);
+	HH::HH_hid_t pl = H5P_DEFAULT;
+	auto t = HH::Types::GetHDF5Type<int16_t>();
+	bool tIsValid = t.valid();
+	atts.add<int16_t>("test_16", d, pl, pl, t);
+
 	atts.add<int16_t>("test_i16", d);
 	atts.add<int16_t>("test_i162", { 2, 3, 4, 1 });
 	atts.add<int16_t>("test_i163", 5);
