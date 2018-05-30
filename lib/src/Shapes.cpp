@@ -23,6 +23,10 @@ namespace icedb {
 				good = false;
 				if (out) (*out) << "Particle ID is not set." << std::endl;
 			}
+			if (!dataset_id.size()) {
+				good = false;
+				if (out) (*out) << "Dataset ID is not set." << std::endl;
+			}
 			
 			if (this->particle_scattering_element_coordinates.empty()) {
 				good = false;
@@ -43,8 +47,15 @@ namespace icedb {
 				if (out) (*out) << "number_of_particle_constituents is not set. "
 					"Particles need to have a composition." << std::endl;
 			}
+			if (this->particle_scattering_element_coordinates_scaling_factor <= 0) {
+				good = false;
+				if (out) (*out) << "particle_scattering_element_coordinates_scaling_factor is < 0. " << std::endl;
+			}
+			if (this->particle_scattering_element_coordinates_units == "") {
+				good = false;
+				if (out) (*out) << "particle_scattering_element_coordinates_units must be set. " << std::endl;
+			}
 			
-
 			return good;
 		}
 
@@ -73,45 +84,24 @@ namespace icedb {
 						"data depends on." << std::endl;
 				}
 
-				if (this->particle_scattering_element_composition_whole.empty() 
-					&& this->particle_scattering_element_composition_fractional.empty())
-				{
-					good = false;
-					if (out) (*out) << "particle_scattering_element_composition_whole and "
-						"particle_scattering_element_composition_fractional are not set, but one is required. "
-						<< std::endl;
-				}
-
-				if (!this->particle_scattering_element_composition_whole.empty()
-					&& !this->particle_scattering_element_composition_fractional.empty())
-				{
-					good = false;
-					if (out) (*out) << "particle_scattering_element_composition_whole and "
-						"particle_scattering_element_composition_fractional are both set, but only one is allowed. "
-						<< std::endl;
-				}
-
-				if (!this->particle_scattering_element_composition_whole.empty()) {
-					if (this->particle_scattering_element_composition_whole.size()
-						!= required->number_of_particle_scattering_elements)
-					{
-						good = false;
-						if (out) (*out) << "particle_scattering_element_composition_whole "
-							"has the wrong size. It should have a size of number_of_particle_scattering_elements."
-							<< std::endl;
-					}
-				}
-				if (!this->particle_scattering_element_composition_fractional.empty()) {
-					if (this->particle_scattering_element_composition_fractional.size() !=
+				
+				if (!this->particle_scattering_element_composition.empty()) {
+					if (this->particle_scattering_element_composition.size() !=
 						(required->number_of_particle_scattering_elements * required->number_of_particle_constituents)) {
 						good = false;
-						if (out) (*out) << "particle_scattering_element_composition_fractional has "
+						if (out) (*out) << "particle_scattering_element_composition has "
 							"the wrong dimensions. It should have dimensions of "
 							"[number_of_particle_scattering_elements][number_of_particle_constituents], yielding a total of "
 							<< required->number_of_particle_scattering_elements * required->number_of_particle_constituents << " elements. "
-							"Instead, it currently has " << this->particle_scattering_element_composition_fractional.size()
+							"Instead, it currently has " << this->particle_scattering_element_composition.size()
 							<< " elements." << std::endl;
 					}
+				}
+				else {
+					good = false;
+					if (out) (*out) << "particle_scattering_element_composition has "
+						"needs to be set for this shape. It should have dimensions of "
+						"[number_of_particle_scattering_elements][number_of_particle_constituents]." << std::endl;
 				}
 			}
 			
@@ -265,7 +255,7 @@ namespace icedb {
 			if (optional) Expects(optional->isValid(required));
 
 			Shape::Shape_Type res = std::make_unique<Shape_impl>(uid, newShapeLocation);
-			
+
 			// Write debug information
 			{
 				using namespace icedb::versioning;
@@ -281,6 +271,24 @@ namespace icedb {
 			res->writeAttribute<std::string>(Group::_icedb_obj_type_identifier, { 1 }, { Shape::_icedb_obj_type_shape_identifier });
 			res->writeAttribute<uint16_t>("_icedb_shape_schema_version", { 1 }, { Shape::_icedb_current_shape_schema_version });
 			res->writeAttribute<std::string>("particle_id", { 1 }, { required->particle_id });
+			res->writeAttribute<std::string>("dataset_id", { 1 }, { required->dataset_id });
+			res->writeAttribute<uint64_t>("dataset_version", { 3 },
+				{ required->dataset_version[0], required->dataset_version[1], required->dataset_version[2] });
+
+			res->writeAttribute<float>("particle_scattering_element_coordinates_scaling_factor", { 1 }, { required->particle_scattering_element_coordinates_scaling_factor });
+			res->writeAttribute<std::string>("particle_scattering_element_coordinates_scaling_factor__description", { 1 }, { "Factor to scale scattering element coordinates into physical dimensions." });
+			res->writeAttribute<std::string>("particle_scattering_element_coordinates_units", { 1 }, { required->particle_scattering_element_coordinates_units });
+			res->writeAttribute<std::string>("particle_scattering_element_coordinates_units__description", { 1 },
+				{"Units of the physical dimensions of the particle_scattering_element_coordinates."});
+			
+			{ // Candidate UUID
+				std::ostringstream oUUID;
+				oUUID << required->dataset_id << "_" << required->particle_id << "_"
+					<< required->dataset_version[0] << "." << required->dataset_version[1]
+					<< "." << required->dataset_version[2];
+				std::string sUUID = oUUID.str();
+				res->writeAttribute<std::string>("_icedb_particle_uuid_candidate", { 1 }, { sUUID });
+			}
 
 			// Write required dimensions
 
@@ -290,7 +298,7 @@ namespace icedb {
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements) });
 				tblPSEN->writeAttribute<std::string>("description", { 1 }, { "ID number of scattering element" });
 				tblPSEN->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPSEN->writeAttribute<std::string>("comments", { 1 }, { "" });
+				//tblPSEN->writeAttribute<std::string>("comments", { 1 }, { "" });
 
 				bool added = false;
 				if (optional) {
@@ -317,7 +325,7 @@ namespace icedb {
 				{ static_cast<size_t>(required->number_of_particle_constituents) });
 				tblPCN->writeAttribute<std::string>("description", { 1 }, { "ID number of the constituent material" });
 				tblPCN->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPCN->writeAttribute<std::string>("comments", { 1 }, { "" });
+				//tblPCN->writeAttribute<std::string>("comments", { 1 }, { "" });
 				bool added = false;
 				if (optional) {
 					if (!optional->particle_constituent_number.empty()) {
@@ -339,6 +347,7 @@ namespace icedb {
 			if (required->NC4_compat) {
 				tblXYZ = res->createTable<uint8_t>("particle_axis", { 3 }, { 0, 1, 2 });
 				tblXYZ->setDimensionScale("particle_axis");
+				tblXYZ->writeAttribute<std::string>("description", { 1 }, { "The {X,Y,Z} axes are used as dimensions for shape data." });
 			}
 
 			constexpr size_t max_x = 20000;
@@ -369,10 +378,10 @@ namespace icedb {
 				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
 				tblPSEC->writeAttribute<std::string>("description", { 1 }, { "Cartesian coordinates (x,y,z) of the center of the scattering element (dipole position, center of sphere, etc.)" });
 				tblPSEC->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPSEC->writeAttribute<std::string>("comments", { 1 }, {
-					"Equivalent to the coordinates given in a DDA shape-file (x,y,z-dimension) "
-					"so scattering computations can be easily repeated with the same structure; "
-					"for sphere methods the coordinates describe the center location of the sphere." });
+				//tblPSEC->writeAttribute<std::string>("comments", { 1 }, {
+				//	"Equivalent to the coordinates given in a DDA shape-file (x,y,z-dimension) "
+				//	"so scattering computations can be easily repeated with the same structure; "
+				//	"for sphere methods the coordinates describe the center location of the sphere." });
 			} else {
 				auto tblPSEC = res->createTable<float>("particle_scattering_element_coordinates",
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
@@ -381,10 +390,10 @@ namespace icedb {
 				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
 				tblPSEC->writeAttribute<std::string>("description", { 1 }, { "Cartesian coordinates (x,y,z) of the center of the scattering element (dipole position, center of sphere, etc.)" });
 				tblPSEC->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPSEC->writeAttribute<std::string>("comments", { 1 }, {
-					"Equivalent to the coordinates given in a DDA shape-file (x,y,z-dimension) "
-					"so scattering computations can be easily repeated with the same structure; "
-					"for sphere methods the coordinates describe the center location of the sphere." });
+				//tblPSEC->writeAttribute<std::string>("comments", { 1 }, {
+				//	"Equivalent to the coordinates given in a DDA shape-file (x,y,z-dimension) "
+				//	"so scattering computations can be easily repeated with the same structure; "
+				//	"for sphere methods the coordinates describe the center location of the sphere." });
 			}
 
 			if (optional) {
@@ -397,23 +406,24 @@ namespace icedb {
 						{ 1 }, { "This 3d structure is entirely composed of this material." });
 				}
 
-				if (optional->particle_scattering_element_composition_fractional.size()) {
+				if (optional->particle_scattering_element_composition.size()) {
 					const std::vector<size_t> cs{
 						(max_x < required->number_of_particle_scattering_elements) ?
 						max_x : required->number_of_particle_scattering_elements,
 						static_cast<size_t>(required->number_of_particle_constituents)
 					};
-					auto tblPSEC2a = res->createTable<float>("particle_scattering_element_composition_fractional",
+					auto tblPSEC2a = res->createTable<float>("particle_scattering_element_composition",
 					{ static_cast<size_t>(required->number_of_particle_scattering_elements),
 						static_cast<size_t>(required->number_of_particle_constituents) },
-						optional->particle_scattering_element_composition_fractional, &cs);
+						optional->particle_scattering_element_composition, &cs);
 					if (tblPSEN) tblPSEC2a->attachDimensionScale(0, tblPSEN.get());
 					if (tblPCN) tblPSEC2a->attachDimensionScale(1, tblPCN.get());
 					tblPSEC2a->writeAttribute<std::string>("description", { 1 }, { "Mass fractions of each constituent for each scattering element." });
 					tblPSEC2a->writeAttribute<std::string>("units", { 1 }, { "None" });
-					tblPSEC2a->writeAttribute<std::string>("comments", { 1 }, { "" });
+					//tblPSEC2a->writeAttribute<std::string>("comments", { 1 }, { "" });
 				}
 
+				/*
 				if (optional->particle_scattering_element_composition_whole.size()) {
 					const std::vector<size_t> cs{
 						(max_x < required->number_of_particle_scattering_elements) ?
@@ -426,17 +436,14 @@ namespace icedb {
 					if (tblPSEN) tblPSEC2b->attachDimensionScale(0, tblPSEN.get());
 					tblPSEC2b->writeAttribute<std::string>("description", { 1 }, { "The constituent material ID for each scattering element." });
 					tblPSEC2b->writeAttribute<std::string>("units", { 1 }, { "None" });
-					tblPSEC2b->writeAttribute<std::string>("comments", { 1 }, { "" });
+					//tblPSEC2b->writeAttribute<std::string>("comments", { 1 }, { "" });
 				}
+				*/
 
 				
 
 				// Write common optional attributes
-				if (optional->particle_scattering_element_spacing > 0) {
-					res->writeAttribute<float>("particle_scattering_element_spacing", { 1 }, { optional->particle_scattering_element_spacing });
-					res->writeAttribute<std::string>("particle_scattering_element_spacing__description", { 1 }, { "Physical spacing between adjacent grid points" });
-					res->writeAttribute<std::string>("particle_scattering_element_spacing__units", { 1 }, { "m" });
-				}
+				
 
 				// Write common optional variables
 				if (optional->particle_scattering_element_radius.size()) {

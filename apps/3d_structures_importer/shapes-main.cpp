@@ -32,9 +32,6 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 	{"psu", {".nc"}}
 };
 
-// These get set in main(int,char**).
-float resolution_um = 0; ///< The resolution of each shape lattice, in micrometers.
-
 icedb::Groups::Group::Group_ptr basegrp; ///< Shapes get written to this location in the output database.
 
 int main(int argc, char** argv) {
@@ -50,7 +47,6 @@ int main(int argc, char** argv) {
 			("to", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
-			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		input_matching.add_options()
@@ -59,15 +55,22 @@ int main(int argc, char** argv) {
 			("from-nosearch", po::value<bool>()->default_value(false),
 				"Set this option if you want to read in a set of files whose paths are exactly specified on the command line. "
 				"This option allows for far greater control of input file selection.")
-			("from-matching-extensions", po::value<vector<string> >()->multitoken(), 
-				"Specify the extensions of files to match (e.g. .adda .shp) when searching for valid shapes. If not "
-				"specified, then the defaults are: "
-				"(text: .dat, .shp, .txt, .shape) (psu: .nc).")
+				("from-matching-extensions", po::value<vector<string> >()->multitoken(),
+					"Specify the extensions of files to match (e.g. .adda .shp) when searching for valid shapes. If not "
+					"specified, then the defaults are: "
+					"(text: .dat, .shp, .txt, .shape) (psu: .nc).")
 			;
 		mdata.add_options()
 			("author", po::value<string>(), "Name(s) of the person/group who generated the shape.")
 			("contact-information", po::value<string>(), "Affiliation, Contact information including email of the person/group who generated the scattering data.")
-			("scattering-method", po::value<string>(), "Method applied to the shape to calculate the scattering properties.")
+			//("scattering-method", po::value<string>(), "Method applied to the shape to calculate the scattering properties.")
+			("dataset-id", po::value<string>(), "The ID of the dataset")
+			//("dataset-version", po::value<string>(), "The version of the dataset, expressed as MAJOR.MINOR.REVISION.")
+			("dataset-version-major", po::value<uint64_t>(), "The major version of the dataset")
+			("dataset-version-minor", po::value<uint64_t>(), "The minor version of the dataset")
+			("dataset-version-revision", po::value<uint64_t>(), "The revision number of the dataset")
+			("scattering_element_coordinates_scaling_factor", po::value<float>(), "Lattice spacing for the shape")
+			("scattering_element_coordinates_units", po::value<std::string>()->default_value("m"), "Lattice units")
 			;
 		desc.add(mdata);
 		desc.add(input_matching);
@@ -79,7 +82,7 @@ int main(int argc, char** argv) {
 			po::store(po::parse_config_file<char>(configfile.c_str(), desc, false), vm);
 			po::notify(vm);
 		}
-		
+
 
 		auto doHelp = [&](const string& s)->void
 		{
@@ -89,7 +92,14 @@ int main(int argc, char** argv) {
 		};
 		if (vm.count("help")) doHelp("");
 		if (!vm.count("from") || !vm.count("to")) doHelp("Need to specify to/from locations.");
-
+		if (!vm.count("author")) doHelp("Need to specify author name");
+		if (!vm.count("contact-information")) doHelp("Need to specify contact information");
+		if (!vm.count("dataset-id")) doHelp("Need to specify dataset id");
+		if (!vm.count("dataset-version-major")) doHelp("Need to specify dataset major version");
+		if (!vm.count("dataset-version-minor")) doHelp("Need to specify dataset minor version");
+		if (!vm.count("dataset-version-revision")) doHelp("Need to specify dataset revision number");
+		if (!vm.count("scattering_element_coordinates_scaling_factor")) doHelp("scattering_element_coordinates_scaling_factor is unspecified.");
+		
 		using namespace icedb;
 
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
@@ -98,7 +108,6 @@ int main(int argc, char** argv) {
 		
 		sfs::path pToRaw(sToRaw);
 		string dbpath = vm["db-path"].as<string>();
-		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 		string informat = vm["from-format"].as<string>();
 		bool from_nosearch = vm["from-nosearch"].as<bool>();
 		vector<string> vCustomFileFormats;
@@ -108,10 +117,17 @@ int main(int argc, char** argv) {
 		for (const auto &c : vCustomFileFormats) customFileFormats.insert(c);
 
 		// Metadata
-		string sAuthor, sContact, sScattMeth;
-		if (vm.count("author")) sAuthor = vm["author"].as<string>();
-		if (vm.count("contact-information")) sContact = vm["contact-information"].as<string>();
-		if (vm.count("scattering-method")) sScattMeth = vm["scattering-method"].as<string>();
+		string sAuthor = vm["author"].as<string>();
+		string sContact = vm["contact-information"].as<string>();
+		//string sScattMeth = vm["scattering-method"].as<string>();
+		string sDatasetID = vm["dataset-id"].as<string>();
+		array<uint64_t, 3> dataset_version;
+		dataset_version[0] = vm["dataset-version-major"].as<uint64_t>();
+		dataset_version[1] = vm["dataset-version-minor"].as<uint64_t>();
+		dataset_version[2] = vm["dataset-version-revision"].as<uint64_t>();
+		float scattering_element_coordinates_scaling_factor = vm["scattering_element_coordinates_scaling_factor"].as<float>();
+		string scalingUnits = vm["scattering_element_coordinates_units"].as<string>();
+
 		auto now = std::chrono::system_clock::now();
 		auto in_time_t = std::chrono::system_clock::to_time_t(now);
 		std::ostringstream ssIngestTime;
@@ -120,9 +136,7 @@ int main(int argc, char** argv) {
 		ssIngestTime << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %H:%M:%S"); // or "%c %Z"
 		string sIngestTime = ssIngestTime.str();
 
-		if (!sAuthor.size() || !sContact.size() || !sScattMeth.size())
-			cout << "Note: it is recommended that you set the metadata that describes the shapes that you are importing!" << endl;
-
+		
 
 		// Create the output database if it does not exist
 		auto iof = fs::IOopenFlags::READ_WRITE;
@@ -161,9 +175,18 @@ int main(int argc, char** argv) {
 				// In this example, objects in the output file are named according to their ids.
 				if (data.required.particle_id.size() == 0)
 					data.required.particle_id = f.first.filename().string();
-				if (resolution_um)
-					data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
-
+				
+				
+				data.required.author = sAuthor;
+				data.required.contact_information = sContact;
+				
+				data.required.dataset_id = sDatasetID;
+				data.required.dataset_version = dataset_version;
+				data.required.particle_scattering_element_coordinates_scaling_factor = scattering_element_coordinates_scaling_factor;
+				data.required.particle_scattering_element_coordinates_units = scalingUnits;
+				//if (resolution_um)
+				//	data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
+				
 				// Writing the shape to the HDF5/netCDF file
 
 				std::cout << "Creating group " << data.required.particle_id << std::endl;
@@ -172,9 +195,6 @@ int main(int argc, char** argv) {
 				auto shp = data.toShape(data.required.particle_id, shpgrp->getHDF5Group());
 
 				// Apply metadata
-				if (sAuthor.size()) shp->writeAttribute<std::string>("author", { 1 }, { sAuthor });
-				if (sContact.size()) shp->writeAttribute<std::string>("contact_information", { 1 }, { sContact });
-				if (sScattMeth.size()) shp->writeAttribute<std::string>("scattering_method", { 1 }, { sScattMeth });
 				shp->writeAttribute<std::string>("date_of_icedb_ingest", { 1 }, { sIngestTime });
 			}
 		}

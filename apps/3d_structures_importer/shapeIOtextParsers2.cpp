@@ -539,7 +539,7 @@ namespace icedb {
 
 				}
 				p.optional.particle_constituent_number = Int8Data_t(constituents.begin(), constituents.end());
-				p.optional.particle_scattering_element_composition_whole.resize(numPoints);
+				p.optional.particle_scattering_element_composition.resize(numPoints*constituents.size());
 				if (constituents.size() >= UINT8_MAX) throw (std::invalid_argument("Shape has too many constituents."));
 				p.required.number_of_particle_constituents = static_cast<uint8_t>(constituents.size());
 
@@ -552,10 +552,10 @@ namespace icedb {
 						if ((*it) == substance_id) break;
 					}
 					size_t idx = (i*constituents.size()) + offset;
-					p.optional.particle_scattering_element_composition_whole[idx] = 1;
+					p.optional.particle_scattering_element_composition[idx] = 1;
 				}
 				p.required.particle_scattering_element_coordinates_are_integral = 1;
-				p.optional.hint_max_scattering_element_dimension = max_element;
+				//p.optional.hint_max_scattering_element_dimension = max_element;
 			}
 
 
@@ -635,19 +635,20 @@ namespace icedb {
 						res.optional.particle_constituent_number[i] = static_cast<uint8_t>(i + 1); // assert-checked before
 
 					res.required.particle_scattering_element_coordinates.resize(actualNumPoints * 3);
-					res.optional.particle_scattering_element_composition_whole.resize(actualNumPoints);
+					res.optional.particle_scattering_element_composition.resize(actualNumPoints * res.required.number_of_particle_constituents);
 					for (size_t i = 0; i < actualNumPoints; ++i) {
 						size_t crdindex = (3 * i);
 						size_t parserindex = (4 * i);
 						res.required.particle_scattering_element_coordinates[crdindex + 0] = parser_vals[parserindex + 0];
 						res.required.particle_scattering_element_coordinates[crdindex + 1] = parser_vals[parserindex + 1];
 						res.required.particle_scattering_element_coordinates[crdindex + 2] = parser_vals[parserindex + 2];
-						res.optional.particle_scattering_element_composition_whole[i] = static_cast<uint8_t>(parser_vals[parserindex + 3]);
+						auto constitNumber = parser_vals[parserindex + 3];
+						res.optional.particle_scattering_element_composition[i+ constitNumber] = 1.f;
 					}
 				}
 
 				res.required.particle_id = "";
-				res.optional.hint_max_scattering_element_dimension = max_element;
+				//res.optional.hint_max_scattering_element_dimension = max_element;
 
 				return res;
 			}

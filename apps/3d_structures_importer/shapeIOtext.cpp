@@ -17,6 +17,13 @@ namespace icedb {
 				p.number_of_particle_scattering_elements = number_of_particle_scattering_elements;
 				p.particle_scattering_element_coordinates = this->particle_scattering_element_coordinates;
 				p.particle_scattering_element_coordinates_are_integral = this->particle_scattering_element_coordinates_are_integral;
+				p.author = this->author;
+				p.contact_information = this->contact_information;
+				p.dataset_id = this->dataset_id;
+				p.dataset_version = this->dataset_version;
+				p.particle_scattering_element_coordinates_scaling_factor = this->particle_scattering_element_coordinates_scaling_factor;
+				p.particle_scattering_element_coordinates_units = this->particle_scattering_element_coordinates_units;
+
 			}
 			void ShapeCommonOptionalData::apply(icedb::Shapes::NewShapeCommonOptionalProperties& p) const {
 				// When applying these, check for the trivial cases. If these occur, then do not
@@ -38,19 +45,9 @@ namespace icedb {
 				p.particle_constituent_name = this->particle_constituent_name;
 				p.particle_constituent_single_name = this->particle_constituent_single_name;
 				
-				p.particle_scattering_element_composition_fractional = particle_scattering_element_composition_fractional;
+				p.particle_scattering_element_composition = particle_scattering_element_composition;
 
-				// If p.particle_scattering_element_composition_whole is specified, and it is all ones, then it is trivial.
-				bool comp_whole_is_trivial = false;
-				if (std::all_of(particle_scattering_element_composition_whole.begin(),
-					particle_scattering_element_composition_whole.end(),
-					[](uint8_t v)->bool { return (v == 1) ? true : false; }))
-					comp_whole_is_trivial = true;
-				if (!comp_whole_is_trivial)
-					p.particle_scattering_element_composition_whole = particle_scattering_element_composition_whole;
-
-				p.particle_scattering_element_spacing = this->particle_scattering_element_spacing;
-				p.hint_max_scattering_element_dimension = this->hint_max_scattering_element_dimension;
+				
 			}
 			icedb::Shapes::Shape::Shape_Type ShapeDataBasic::toShape(
 				const std::string &name, std::shared_ptr<H5::Group> grp) const

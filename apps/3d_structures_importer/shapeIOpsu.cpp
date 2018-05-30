@@ -211,7 +211,8 @@ namespace icedb {
 				}
 
 				shpdata.optional.particle_constituent_single_name = "ice";
-				shpdata.optional.particle_scattering_element_spacing = 0.001f; // 1 mm
+				shpdata.required.particle_scattering_element_coordinates_scaling_factor = 0.001f; // 1 mm
+				shpdata.required.particle_scattering_element_coordinates_units = "m";
 				shpdata.optional.particle_scattering_element_radius = rs;
 
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include "fs.hpp"
 #include "Table.hpp"
 #include "Attribute.hpp"
@@ -39,14 +40,25 @@ namespace icedb {
 			/// Are the particle_scattering_element_coordinates integers?
 			/// This allows for optimization when writing.
 			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
-			uint8_t particle_scattering_element_coordinates_are_integral = 0;
+			bool particle_scattering_element_coordinates_are_integral = false;
 			
 
 			// The ATTRIBUTES
 
 			/// ATTRIBUTE: Unique Particle Identifier
 			std::string particle_id;
+			/// ATTRIBUTE: Dataset Identifier
+			std::string dataset_id;
+			/// ATTRIBUTE: Dataset Version
+			std::array<uint64_t, 3> dataset_version;
 
+			/// ATTRIBUTES: Author and contact information
+			std::string author, contact_information;
+
+			/// ATTRIBUTE: Scaling factor for particle_scattering_element_coordinates. Used for DDA.
+			float particle_scattering_element_coordinates_scaling_factor = 1;
+			/// ATTRIBUTE: Units for particle_scattering_element_coordinates.
+			std::string particle_scattering_element_coordinates_units = "m";
 
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
@@ -81,24 +93,16 @@ namespace icedb {
 			std::string particle_constituent_single_name;
 
 			/// OPTIONAL VARIABLE: Mass fractions of each constituent for each scattering element.
-			/// Either this or particle_scattering_element_composition_whole is
-			/// is required _only_ if there is more than one constituent
-			/// CANNOT COEXIST with particle_scattering_element_composition_whole.
+			/// Required _only_ if there is more than one constituent.
 			/// Dimensions of [particle_scattering_element_number][particle_constituent_number]
-			gsl::span<const float> particle_scattering_element_composition_fractional;
+			gsl::span<const float> particle_scattering_element_composition;
 			/// OPTIONAL VARIABLE: The constituent of each scattering element
 			/// This table is used when scattering elements can only be a single substance (not fractional).
 			/// This CANNOT COEXIST with particle_scattering_element_composition_fractional.
 			/// It exists to save space when non-compressed data is stored.
-			gsl::span<const uint8_t> particle_scattering_element_composition_whole;
+			//gsl::span<const uint8_t> particle_scattering_element_composition_whole;
 
-			/// OPTIONAL ATTRIBUTE: Physical spacing between adjacent grid points (in meters). Used in DDA.
-			float particle_scattering_element_spacing = -1;
-
-
-			/// EXPERIMENTAL HINT: Specify the maximum scattering element dimension
-			float hint_max_scattering_element_dimension = -1;
-
+			
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
 			bool isValid(gsl::not_null<const NewShapeRequiredProperties*> required, std::ostream *errout = nullptr) const;

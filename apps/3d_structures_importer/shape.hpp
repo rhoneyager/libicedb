@@ -1,5 +1,6 @@
 #pragma once
 //#include <Eigen/Dense>
+#include <array>
 #include <memory>
 #include <map>
 #include <string>
@@ -18,9 +19,14 @@ namespace icedb {
 				uint64_t number_of_particle_scattering_elements = 0;
 				uint8_t number_of_particle_constituents = 0;
 
-				uint8_t particle_scattering_element_coordinates_are_integral = 0;
+				bool particle_scattering_element_coordinates_are_integral = false;
 				FloatData_t particle_scattering_element_coordinates;
 				std::string particle_id;
+				std::string dataset_id;
+				std::string author, contact_information;
+				std::array<uint64_t, 3> dataset_version;
+				float particle_scattering_element_coordinates_scaling_factor = 1;
+				std::string particle_scattering_element_coordinates_units;
 				void apply(icedb::Shapes::NewShapeRequiredProperties&) const;
 				//void fromShapeObject(const icedb::Shapes::Shape&);
 			};
@@ -32,10 +38,7 @@ namespace icedb {
 				StringData_t particle_constituent_name;
 				std::string particle_constituent_single_name;
 
-				FloatData_t particle_scattering_element_composition_fractional;
-				Int8Data_t particle_scattering_element_composition_whole;
-				float hint_max_scattering_element_dimension = -1;
-				float particle_scattering_element_spacing = -1;
+				FloatData_t particle_scattering_element_composition;
 				void apply(icedb::Shapes::NewShapeCommonOptionalProperties&) const;
 				//void fromShapeObject(const icedb::Shapes::Shape&);
 			};
