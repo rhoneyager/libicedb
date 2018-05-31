@@ -9,29 +9,36 @@ namespace icedb {
 	/// All facilities to manipulate particle shapes
 	namespace Shapes {
 
-		/// Strucure containing a list of all of the required data needed to create a new shape in the database
+		/// Structure containing a list of all of the required data needed to create a new shape in the database
 		struct NewShapeRequiredProperties {
 			/// Do we want NetCDF-4 compatability? Should always be yes.
 			/// \deprecated This will be removed
 			bool NC4_compat = true;
 
-			// The DIMENSIONS
+			/** @name Dimensions
+			*  These are dimensions.
+			*/
+			///@{
 
 			/// DIMENSION: The number of scattering elements.
 			/// If these have non-trivial ids (i.e. not 1, 2, 3, 4, ...), then define the
-			/// optional attribute particle_scattering_element_number.
+			/// optional variable particle_scattering_element_number.
 			uint64_t number_of_particle_scattering_elements = 0;
 
 			/// DIMENSION: The number of distinct constituents in the particle.
 			/// If these have non-trivial ids (i.e. not 1, 2, 3, 4, ...), then define the
-			/// optional attribute particle_constituent_number.
+			/// optional variable particle_constituent_number.
 			uint8_t number_of_particle_constituents = 0;
 
 			// Each particle has three axes (X, Y and Z). As these are trivial, only the
 			// scale lables are written; the scale does not have an explicit dataset filled with values.
-			
-			// The VARIABLES
+			///@}
 
+
+			/** @name Variables
+			*  These are variables.
+			*/
+			///@{
 			/// VARIABLE: Cartesian coordinates of the center of each scattering element
 			/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
 			/// Dimensions of [number_of_particle_scattering_elements][axis]
@@ -41,10 +48,12 @@ namespace icedb {
 			/// This allows for optimization when writing.
 			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
 			bool particle_scattering_element_coordinates_are_integral = false;
-			
+			///@}
 
-			// The ATTRIBUTES
-
+			/** @name Attributes
+			*  These are attributes.
+			*/
+			///@{
 			/// ATTRIBUTE: Unique Particle Identifier
 			std::string particle_id;
 			/// ATTRIBUTE: Dataset Identifier
@@ -59,6 +68,7 @@ namespace icedb {
 			float particle_scattering_element_coordinates_scaling_factor = 1;
 			/// ATTRIBUTE: Units for particle_scattering_element_coordinates.
 			std::string particle_scattering_element_coordinates_units = "m";
+			///@}
 
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
@@ -70,12 +80,20 @@ namespace icedb {
 		};
 		/// Structure containing a list of all of the common optional data for creating a new shape in the database.
 		struct NewShapeCommonOptionalProperties {
+			/** @name Dimensions
+			*  These are dimensions.
+			*/
+			///@{
 			/// DIMENSION: The id number for each scattering element. Single dimension.
 			gsl::span<const uint64_t> particle_scattering_element_number;
 			/// DIMENSION: The id number of each particle's constituent. Single dimension.
 			gsl::span<const uint8_t> particle_constituent_number;
+			///@}
 
-
+			/** @name Variables
+			*  These are variables.
+			*/
+			///@{
 			/// OPTIONAL VARIABLE: Physical radius of the scattering sphere, in meters.
 			/// Dimensions: [particle_scattering_element_number]
 			gsl::span<const float> particle_scattering_element_radius;
@@ -87,11 +105,9 @@ namespace icedb {
 			/// Dimensions of [particle_constituent_number]
 			/// \note Currently ignored because I have to redo the HDF5 string writing functions.
 			gsl::span<const std::string> particle_constituent_name;
+			
 
-			/// OPTIONAL ATTRIBUTE: The name of the single constituent of the particle
-			/// Used only if there is a single constituent, and if this constituent is NOT ice.
-			std::string particle_constituent_single_name;
-
+			
 			/// OPTIONAL VARIABLE: Mass fractions of each constituent for each scattering element.
 			/// Required _only_ if there is more than one constituent.
 			/// Dimensions of [particle_scattering_element_number][particle_constituent_number]
@@ -102,7 +118,17 @@ namespace icedb {
 			/// It exists to save space when non-compressed data is stored.
 			//gsl::span<const uint8_t> particle_scattering_element_composition_whole;
 
-			
+			///@}
+
+			/** @name Attributes
+			*  These are attributes.
+			*/
+			///@{
+			/// OPTIONAL ATTRIBUTE: The name of the single constituent of the particle
+			/// Used only if there is a single constituent, and if this constituent is NOT ice.
+			std::string particle_constituent_single_name;
+			///@}
+
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
 			bool isValid(gsl::not_null<const NewShapeRequiredProperties*> required, std::ostream *errout = nullptr) const;
