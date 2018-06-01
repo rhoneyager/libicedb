@@ -50,17 +50,17 @@ namespace HH {
 			return HH_hid_t{ H5Tcreate(H5T_STRING, gsl::narrow_cast<size_t>(strtlen)) };
 		}
 
-		template<> inline HH_hid_t GetHDF5Type<char>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_CHAR }; }
-		template<> inline HH_hid_t GetHDF5Type<int8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT8 }; }
-		template<> inline HH_hid_t GetHDF5Type<uint8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT8 }; }
-		template<> inline HH_hid_t GetHDF5Type<int16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT16 }; }
-		template<> inline HH_hid_t GetHDF5Type<uint16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT16 }; }
-		template<> inline HH_hid_t GetHDF5Type<int32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT32 }; }
-		template<> inline HH_hid_t GetHDF5Type<uint32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT32 }; }
-		template<> inline HH_hid_t GetHDF5Type<int64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT64 }; }
-		template<> inline HH_hid_t GetHDF5Type<uint64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT64 }; }
-		template<> inline HH_hid_t GetHDF5Type<float>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_FLOAT }; }
-		template<> inline HH_hid_t GetHDF5Type<double>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_DOUBLE }; }
+		template<> inline HH_hid_t GetHDF5Type<char>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_CHAR, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<int8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT8, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<uint8_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT8, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<int16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT16, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<uint16_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT16, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<int32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT32, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<uint32_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT32, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<int64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_INT64, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<uint64_t>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_UINT64, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<float>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_FLOAT, true, false, true }; }
+		template<> inline HH_hid_t GetHDF5Type<double>(void*) { return H5_fundamental_ScopedHandle{ H5T_NATIVE_DOUBLE, true, false, true }; }
 
 	}
 }

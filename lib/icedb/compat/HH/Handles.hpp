@@ -18,18 +18,21 @@ namespace HH {
 			//InvalidValueFunction_t InvalidValueFunction_f = InvalidValueClass::isInvalid;
 			HandleType h = NULL;
 			bool valid() const {
+				if (_AlwaysValid) return true;
 				if (_isInvalid) return false;
 				return !InvalidValueClass::isInvalid(h);
 			}
 			void swap(Handle_base_t& rhs) {
 				std::swap(this->h, rhs.h);
 				std::swap(this->_isInvalid, rhs._isInvalid);
+				std::swap(this->_AlwaysValid, rhs._AlwaysValid);
 			}
 			HandleType release() { HandleType i = h; _invalidate(); return i; }
-			Handle_base(HandleType newh, bool DoNotInvalidate = true) : h(newh), _isInvalid(!DoNotInvalidate) {}
+			Handle_base(HandleType newh, bool DoNotInvalidate = true, bool AlwaysValid = false) : h(newh), _isInvalid(!DoNotInvalidate), _AlwaysValid(AlwaysValid) {}
 			bool isInvalid() const { return _isInvalid; }
 		protected:
 			bool _isInvalid = false;
+			bool _AlwaysValid = false;
 			/// Only call from the containing class. Used when transfering the scoped handle to
 			/// another container. Prevents the close routine from activating.
 			void _invalidate() { h = NULL; _isInvalid = true; }
@@ -43,8 +46,8 @@ namespace HH {
 				bool res = close();
 				if (!res) abort();
 			}
-			ClosableHandle(HandleType newh, bool DoNotInvalidate = true, bool noClose = false)
-				: Handle_base(newh, DoNotInvalidate), _noClose(noClose) {}
+			ClosableHandle(HandleType newh, bool DoNotInvalidate = true, bool noClose = false, bool AlwaysValid = false)
+				: Handle_base(newh, DoNotInvalidate, AlwaysValid), _noClose(noClose) {}
 			bool close() {
 				if (!valid()) return true; // Lie
 				if (_noClose) return true;
@@ -105,8 +108,8 @@ namespace HH {
 			typedef WeakHandle<HandleType, InvalidValueClass> thisWeakHandle_t;
 
 			virtual ~ScopedHandle() {}
-			ScopedHandle(HandleType newh, bool DoNotInvalidate = true, bool noClose = false)
-				: ClosableHandle(newh, DoNotInvalidate, noClose)
+			ScopedHandle(HandleType newh, bool DoNotInvalidate = true, bool noClose = false, bool AlwaysValid = false)
+				: ClosableHandle(newh, DoNotInvalidate, noClose, AlwaysValid)
 			{}
 			/// \todo Document the cases when this constructor is valid.
 			/// This is used to construct temporary objects (temporarily construct a weak
