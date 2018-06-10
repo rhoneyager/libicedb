@@ -9,7 +9,7 @@
 namespace HH {
 	namespace Handles {
 
-		struct Handle_base_b {}; ///< For containerization
+		struct All_Handle_Base {}; ///< For containerization
 		template <typename HandleType, class InvalidValueClass>
 		struct Handle_base : public Handle_base_b {
 		public:
