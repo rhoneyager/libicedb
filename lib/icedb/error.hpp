@@ -39,7 +39,7 @@ namespace icedb {
 		// The possible exceptions involve use of shared pointers and C++ strings.
 
 		/** Defines an error condition. This is an integer. Zero (0) indicates that there is no error. **/
-		typedef ICEDB_error_code error_code_t;
+		typedef int error_code_t;
 
 		DL_ICEDB void stringify(error_code_t err, std::string &);
 		DL_ICEDB void stringify(error_code_t err, char* const*);

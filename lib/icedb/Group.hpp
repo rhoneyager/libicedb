@@ -1,4 +1,5 @@
 #pragma once
+#error "Replaced for now"
 #include <memory>
 #include <set>
 #include <gsl/gsl>

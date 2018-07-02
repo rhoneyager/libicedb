@@ -6,8 +6,8 @@
 #include <fstream>
 #include <cmath>
 
-#include<cerrno>
-#include<cstdlib>
+#include <cerrno>
+#include <cstdlib>
 
 #include <icedb/fs_backend.hpp>
 #include <boost/lexical_cast.hpp>

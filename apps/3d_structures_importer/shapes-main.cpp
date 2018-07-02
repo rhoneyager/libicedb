@@ -19,9 +19,10 @@
 #include <chrono>
 #include <iomanip>
 #include <icedb/shape.hpp>
-#include <icedb/Database.hpp>
 #include <icedb/error.hpp>
 #include <icedb/fs_backend.hpp>
+#include <icedb/compat/HH/Groups.hpp>
+#include <icedb/compat/HH/Files.hpp>
 #include "shape.hpp"
 #include "shapeIOtext.hpp"
 
@@ -35,7 +36,8 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 // These get set in main(int,char**).
 float resolution_um = 0; ///< The resolution of each shape lattice, in micrometers.
 
-icedb::Groups::Group::Group_ptr basegrp; ///< Shapes get written to this location in the output database.
+HH::Group basegrp(HH::HH_hid_t(-1, HH::Closers::DoNotClose::CloseP)); ///< Shapes get written to this location in the output database.
+//icedb::Groups::Group::Group_ptr basegrp;
 
 int main(int argc, char** argv) {
 	try {
@@ -124,14 +126,24 @@ int main(int argc, char** argv) {
 			cout << "Note: it is recommended that you set the metadata that describes the shapes that you are importing!" << endl;
 
 
-		// Create the output database if it does not exist
-		auto iof = fs::IOopenFlags::READ_WRITE;
-		if (vm.count("create")) iof = fs::IOopenFlags::CREATE;
-		if (vm.count("truncate")) iof = fs::IOopenFlags::TRUNCATE;
-		if (!sfs::exists(pToRaw)) iof = fs::IOopenFlags::CREATE;
-		Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
+		// Create the output file if it does not exist
+		HH::File file(HH::HH_hid_t(-1, HH::Closers::DoNotClose::CloseP)); // Dummy parameter gets replaced always.
+		if (vm.count("create"))
+			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_CREAT);
+		else if (vm.count("truncate")) 
+			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
+		else {
+			if (!sfs::exists(pToRaw))
+				file = HH::File::openFile(pToRaw.string().c_str(), H5F_ACC_CREAT);
+			else file = HH::File::openFile(pToRaw.string().c_str(), H5F_ACC_RDWR);
+		}
+		//Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		std::cout << "Creating base group " << dbpath << std::endl;
-		basegrp = db->createGroupStructure(dbpath);
+		// TODO: Make this call easier to invoke.
+		// TODO: property list passing should not need the final () - change signature and required type.
+		basegrp = file.create(dbpath.c_str(),
+			HH::PL::PL::createLinkCreation().setLinkCreationPList(HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
+		//basegrp = db->createGroupStructure(dbpath);
 	
 		for (const auto &sFromRaw : vsFromRaw)
 		{
@@ -167,15 +179,15 @@ int main(int argc, char** argv) {
 				// Writing the shape to the HDF5/netCDF file
 
 				std::cout << "Creating group " << data.required.particle_id << std::endl;
-				auto shpgrp = basegrp->createGroup(data.required.particle_id);
+				//auto shpgrp = basegrp.create(data.required.particle_id.c_str());
 				std::cout << "Writing shape " << data.required.particle_id << std::endl;
-				auto shp = data.toShape(data.required.particle_id, shpgrp->getHDF5Group());
+				icedb::Shapes::Shape shp = data.toShape(basegrp.get(), data.required.particle_id);
 
 				// Apply metadata
-				if (sAuthor.size()) shp->writeAttribute<std::string>("author", { 1 }, { sAuthor });
-				if (sContact.size()) shp->writeAttribute<std::string>("contact_information", { 1 }, { sContact });
-				if (sScattMeth.size()) shp->writeAttribute<std::string>("scattering_method", { 1 }, { sScattMeth });
-				shp->writeAttribute<std::string>("date_of_icedb_ingest", { 1 }, { sIngestTime });
+				if (sAuthor.size()) shp.atts.add<std::string>("author", { sAuthor });
+				if (sContact.size()) shp.atts.add<std::string>("contact_information", { sContact });
+				if (sScattMeth.size()) shp.atts.add<std::string>("scattering_method", { sScattMeth });
+				shp.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
 			}
 		}
 	}

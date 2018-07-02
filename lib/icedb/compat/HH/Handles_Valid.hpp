@@ -84,8 +84,8 @@ namespace HH {
 
 			/*
 			constexpr not_invalid(T&& t) : _ptr(std::forward<T>(t)) {
-				const bool isValid = _ptr.valid();
-				Expects(isValid);
+			const bool isValid = _ptr.valid();
+			Expects(isValid);
 			}
 			*/
 
@@ -93,7 +93,7 @@ namespace HH {
 			/// cannot convert 'HH::Handles::not_invalid<HH::Handles::HH_hid_t>' to 'hid_t'
 			/// \note Beware of inserting a ScopedHandle into not_invalid! Check that you do not instead want a WeakHandle!
 			template <typename U>//, typename = std::enable_if_t<std::is_convertible<U, T>::value>,
-								//typename = std::enable_if_t<!std::is_reference_v<U>> >
+								 //typename = std::enable_if_t<!std::is_reference_v<U>> >
 			constexpr not_invalid(U u) : _heldObj{ std::make_shared<T>(u) }, _ptr{ *_heldObj.get() }
 			{ // u will be destroyed. Note difference between ScopedHandle (will close) and WeakHandle (will not close) as input objects. 
 				const bool isValid = _ptr.valid();
@@ -111,7 +111,7 @@ namespace HH {
 
 			/*
 			constexpr not_invalid(T& t) : _ptr(t) {
-				Expects(_ptr.valid());
+			Expects(_ptr.valid());
 			}
 			*/
 
@@ -120,7 +120,7 @@ namespace HH {
 			{
 			}
 
-			
+
 		};
 
 	}

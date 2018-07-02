@@ -3,12 +3,19 @@
 #include <typeinfo>
 #include <typeindex>
 #include <vector>
+#include <ostream>
+#include <iostream>
 #include <gsl/gsl>
+//#include <tl/Expected.hpp>
 #include <hdf5.h>
 
 #include "Handles.hpp"
-//#include "Tags.hpp"
+#include "Tags.hpp"
 #include "Types.hpp"
+
+/* TODOS:
+- add, write and read attributes from Eigen objects
+*/
 
 namespace HH {
 	/// \todo Switch to explicit namespace specification.
@@ -25,64 +32,115 @@ namespace HH {
 		/// It takes ownership.
 		/// Copying should be prohibited!!!!!
 		/// Must release to transfer the handle!!!!!
-		H5A_ScopedHandle attr;
+		HH_hid_t attr;
 	public:
-		/// \todo Ensure that this takes ownership / move constructor only.
-		Attribute(H5A_ScopedHandle&& hnd_attr) : attr(std::move(hnd_attr)) {}
-		Attribute(not_invalid<HH_hid_t> hnd) : attr(hnd.get().release()) {}
-		Attribute(Attribute &&old) : attr(-1, false) {
-			attr.swap(old.attr);
-		}
+		Attribute(HH_hid_t hnd_attr) : attr(hnd_attr) {}
 		virtual ~Attribute() {}
+
+		HH_hid_t get() const { return attr; }
 
 		/// \brief Write data to an attribute
 		/// \note Writing attributes is an all-or-nothing process.
-		template <class DataType>
+		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
 		[[nodiscard]] herr_t write(
-			span<DataType> data,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+			::gsl::span<const DataType> data,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
 		{
-			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
-			Expects((data.size_bytes() == in_memory_size_bytes) && "Memory alignment error");
-			return H5Awrite(attr.h, in_memory_dataType().h, data.data());
+			Marshaller m;
+			auto d = m.serialize(data);
+			return H5Awrite(attr(), in_memory_dataType(), d);
+			//return 0;
+			//return H5Awrite(attr(), in_memory_dataType(), data.data());
 		}
-		template <class DataType>
+		template <class DataType> //, class Marshaller = HH::Types::Object_Accessor<DataType> >
 		[[nodiscard]] herr_t write(
 			DataType data,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
 		{
-			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
-			return H5Awrite(attr.h, in_memory_dataType().h, &data);
+			/// \note Compiler bug: if write( is used instead of write<DataType>, the compiler enters into an infinite allocation loop.
+			return write<DataType>(gsl::make_span(&data, 1), in_memory_dataType);
 		}
 
 		/// \todo Change reads to verify the data type being read.
 		/// Add a force attribute to skip this check.
 
+	private:
+		template //<class MarshaledType, 
+			<class DataType>
+			herr_t _read(HH_hid_t in_memory_dataType, size_t flsize, gsl::span<DataType> data) const {
+			//MarshaledType m(flsize);
+			herr_t ret = H5Aread(attr(), in_memory_dataType(), data.data());
+			return ret;
+		}
+	public:
 		/// \brief Read data from an attribute
 		/// \note Reading attributes is an all-or-nothing process.
 		template <class DataType>
 		[[nodiscard]] herr_t read(
 			span<DataType> data,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
-			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
-			Expects((data.size_bytes() == in_memory_size_bytes) && "Memory alignment error");
-			return H5Aread(attr.h, in_memory_dataType().h, data.data());
+			// For basic data-types, size in bytes is enough.
+			// For VLA / struct / string / compund data-types, I need to get the 
+			// size of the contained dataspace and datatype.
+			//auto space = getSpace();
+			auto ftype = getType();
+			H5T_class_t type_class = H5Tget_class(ftype());
+			// Detect if this is a variable-length array string type:
+			bool isVLenArrayType = false;
+			if (type_class == H5T_STRING) {
+				htri_t i = H5Tis_variable_str(ftype());
+				if (i > 0) isVLenArrayType = true;
+			}
+			auto flsize = H5Tget_size(ftype()); // Separate meaning if vlan type
+												// Separate marshalling treatment based on type
+			if (isVLenArrayType) return _read //<HH::Types::Object_Accessor<DataType*>, 
+				<DataType>
+				(in_memory_dataType, flsize, data);
+			else return _read<DataType> //<HH::Types::Object_Accessor<DataType>>
+				(in_memory_dataType, flsize, data);
+		}
+
+		/// \brief Vector read convenience function
+		/// \note Assuming that there will never be an array typr of variable-length strings, or other oddities.
+		template <class DataType>
+		[[nodiscard]] herr_t read(
+			std::vector<DataType> &data,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
+		{
+			auto space = getSpace();
+			auto ftype = getType();
+			H5T_class_t type_class = H5Tget_class(ftype());
+			//HH_hid_t type_class(H5Tget_class(ftype()), Closers::CloseHDF5Datatype::CloseP);
+			// Detect if this is a variable-length array string type:
+			bool isVLenArrayType = false;
+			if (type_class == H5T_STRING) {
+				htri_t i = H5Tis_variable_str(ftype());
+				if (i > 0) isVLenArrayType = true;
+			}
+			auto flsize = H5Tget_size(ftype()); // Separate meaning if vlan type
+
+												// Currently, all dataspaces are simple. May change in the future.
+			Expects(H5Sis_simple(space()) > 0);
+			hssize_t numPoints = H5Sget_simple_extent_npoints(space());
+			if (isVLenArrayType) numPoints *= flsize;
+
+			data.resize(gsl::narrow_cast<size_t>(numPoints));
+			return read(gsl::make_span(data.data(), data.size()), in_memory_dataType);
 		}
 
 		/// Read into a single value (convenience function)
 		template <class DataType>
 		[[nodiscard]] herr_t read(
 			DataType &data,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
-			const size_t in_memory_size_bytes = H5Tget_size(in_memory_dataType().h);
-			Expects((sizeof(DataType) == in_memory_size_bytes) && "Memory alignment error");
-			return H5Aread(attr.h, in_memory_dataType().h, &data);
+			return read<DataType>(gsl::make_span(&data, 1), in_memory_dataType);
 		}
 
+		/// Read into a single value (convenience function)
 		template <class DataType>
-		[[nodiscard]] DataType read(not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
+		[[nodiscard]] DataType read(HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
 			DataType res;
 			herr_t err = read<DataType>(res, in_memory_dataType);
@@ -93,7 +151,7 @@ namespace HH {
 		/// \brief Get an attribute's name
 		[[nodiscard]] ssize_t get_name(size_t buf_size, char* buf) const
 		{
-			return H5Aget_name(attr.h, buf_size, buf);
+			return H5Aget_name(attr(), buf_size, buf);
 		}
 		/// \brief Get an attribute's name.
 		/// \returns the name of the attribute, as either an ASCII or UTF-8 string.
@@ -105,14 +163,13 @@ namespace HH {
 			// Null-terminated always
 			return std::string(res.data());
 		}
-		enum class att_name_encoding {ASCII, UTF8};
+		enum class att_name_encoding { ASCII, UTF8 };
 		att_name_encoding get_char_encoding() const {
 			// See https://support.hdfgroup.org/HDF5/doc/Advanced/UsingUnicode/index.html
 			// HDF5 encodes in only either ASCII or UTF-8.
-			H5P_ScopedHandle pl(H5Aget_create_plist(attr.h));
-			Expects(pl.valid());
+			HH_hid_t pl(H5Aget_create_plist(attr()), Closers::CloseHDF5PropertyList::CloseP);
 			H5T_cset_t encoding;
-			herr_t encerr = H5Pget_char_encoding(pl.h, &encoding);
+			herr_t encerr = H5Pget_char_encoding(pl(), &encoding);
 			Expects(encerr >= 0);
 			// encoding is either H5T_CSET_ASCII or H5T_CSET_UTF8.
 			if (encoding == H5T_CSET_ASCII) return att_name_encoding::ASCII;
@@ -126,43 +183,81 @@ namespace HH {
 		/// @{
 		/// Get attribute type, as an HDF5 type object.
 		/// \see Types.hpp for the functions to compare the HDF5 type with a system type.
-		[[nodiscard]] H5T_ScopedHandle getAttributeType() const
+		[[nodiscard]] HH_hid_t getType() const
 		{
-			return H5T_ScopedHandle(H5Aget_type(attr.h));
+			return HH_hid_t(H5Aget_type(attr()), Closers::CloseHDF5Datatype::CloseP);
 		}
 
 		/// Convenience function to check an attribute's type. 
 		/// \returns True if the type matches
 		/// \returns False (0) if the type does not match
 		/// \returns <0 if an error occurred.
+		/// \todo Implement this.
 		template <class DataType>
-		[[nodiscard]] htri_t IsAttributeOfType();
-
-		/// Get an attribute's dataspace
-		[[nodiscard]] H5S_ScopedHandle getAttributeSpace() const
-		{
-			return H5S_ScopedHandle(H5Aget_space(attr.h));
+		[[nodiscard]] htri_t IsOfType() {
+			static_assert(false, "TODO: Implement IsOfType.");
 		}
 
-		/// Get the amount of storage space required for an attribute
+		/// Get an attribute's dataspace
+		[[nodiscard]] HH_hid_t getSpace() const
+		{
+			return HH_hid_t(H5Aget_space(attr()), Closers::CloseHDF5Dataspace::CloseP);
+		}
+
+		/// Get the amount of storage space used INSIDE HDF5 for an attribute
 		[[nodiscard]] hsize_t getStorageSize() const
 		{
-			return H5Aget_storage_size(attr.h);
+			return H5Aget_storage_size(attr());
+		}
+
+		/// Get attribute's dimensions
+		std::tuple<
+			Tags::ObjSizes::t_dimensions_current,
+			Tags::ObjSizes::t_dimensions_max,
+			Tags::ObjSizes::t_dimensionality,
+			Tags::ObjSizes::t_numpoints>
+			//std::tuple<std::vector<hsize_t>, int, hssize_t>
+			getDimensions()
+		{
+			std::vector<hsize_t> dims;
+			auto space = getSpace();
+			Expects(H5Sis_simple(space()) > 0);
+			hssize_t numPoints = H5Sget_simple_extent_npoints(space());
+			int dimensionality = H5Sget_simple_extent_ndims(space());
+			Expects(dimensionality >= 0);
+			dims.resize(dimensionality);
+			int err = H5Sget_simple_extent_dims(space(), dims.data(), nullptr);
+			Expects(err >= 0);
+
+			return std::make_tuple(
+				Tags::ObjSizes::t_dimensions_current(dims),
+				Tags::ObjSizes::t_dimensions_max(dims),
+				Tags::ObjSizes::t_dimensionality(dimensionality),
+				Tags::ObjSizes::t_numpoints(numPoints));
+			//dims, dimensionality, numPoints);
 		}
 
 		/// @}
 
+		void describe(std::ostream &out = std::cout) {
+			auto d = getDimensions();
+			using namespace Tags::ObjSizes;
+			using namespace std;
+			cout << "Attribute has:\n\tnPoints:\t" << ::std::get<t_numpoints>(d).data
+				<< "\n\tDimensionality:\t" << ::std::get<t_dimensionality>(d).data
+				<< "\n\tDimensions:\t[\t";
+			for (const auto &d : ::std::get<t_dimensions_current>(d).data)
+				cout << d << "\t";
+			cout << "]" << endl;
+		}
 	};
 
-	/// \todo Add move constructors.
 	struct Has_Attributes
 	{
 	private:
-		typedef WeakHandle<hid_t, InvalidHDF5Handle> base_t;
-		/// \note This is a weak object! It does not close.
-		base_t base;
+		HH_hid_t base;
 	public:
-		Has_Attributes(base_t obj) : base(obj) {}
+		Has_Attributes(HH_hid_t obj) : base(obj) {}
 		virtual ~Has_Attributes() {}
 
 		/// @name General Functions
@@ -170,62 +265,70 @@ namespace HH {
 		/// Does an attribute with the specified name exist?
 		[[nodiscard]] htri_t exists(not_null<const char*> attname)
 		{
-			return H5Aexists(base.h, attname.get());
+			return H5Aexists(base(), attname.get());
 		}
 		/// Delete an attribute with the specified name.
 		/// \note The base HDF5 function is H5Adelete, but delete is a reserved name in C++.
 		/// \returns false on error, true on success.
 		[[nodiscard]] bool remove(not_null<const char*> attname)
 		{
-			herr_t err = H5Adelete(base.h, attname.get());
+			herr_t err = H5Adelete(base(), attname.get());
 			if (err >= 0) return true;
 			return false;
 		}
-		
+
 
 		/// \todo open, create and add should also give a scoped handle return object as an option.
 		/// \\brief Open an attribute
 		[[nodiscard]] Attribute open(
 			not_null<const char*> name,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT)
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
-			return Attribute(H5A_ScopedHandle(H5Aopen(base.h, name.get(), AttributeAccessPlist.get().h)));
-			//return std::move(H5A_ScopedHandle(H5Aopen(base().h, name.get(), AttributeAccessPlist.get().h)));
+			/// \todo Check for failure
+			return Attribute(HH_hid_t(
+				H5Aopen(base(), name.get(), AttributeAccessPlist()),
+				Closers::CloseHDF5Attribute::CloseP
+			));
 		}
 		/// \brief Create an attribute, without setting its data.
 		template <class DataType>
 		[[nodiscard]] Attribute create(
 			not_null<const char*> attrname,
 			initializer_list<size_t> dimensions = { 1 },
-			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT)
+			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t AttributeCreationPlist = H5P_DEFAULT,
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
-			auto dtype = HH::Types::GetHDF5Type<DataType>();
-
+			//HH_hid_t dtypeb = HH::Types::GetHDF5Type<DataType>(); // For debugging...
 			std::vector<hsize_t> hdims;
 			for (const auto &d : dimensions)
 				hdims.push_back(gsl::narrow_cast<hsize_t>(d));
-			H5S_ScopedHandle dspace{
+			HH_hid_t dspace{
 				H5Screate_simple(
 					gsl::narrow_cast<int>(dimensions.size()),
 					hdims.data(),
-					nullptr) };
+					nullptr),
+				Closers::CloseHDF5Dataspace::CloseP };
 
-			return Attribute(std::move(H5A_ScopedHandle(H5Acreate(
-				base.h,
-				attrname.get(),
-				dtype.h,
-				dspace.h,
-				AttributeCreationPlist.get().h,
-				AttributeAccessPlist.get().h
-			))));
+			auto attI = HH_hid_t(
+				H5Acreate(
+					base(),
+					attrname.get(),
+					dtype(),
+					dspace(),
+					AttributeCreationPlist(),
+					AttributeAccessPlist()),
+				Closers::CloseHDF5Attribute::CloseP
+			);
+			Expects(H5Iis_valid(attI()));
+			return Attribute(attI);
 		}
 
 		/// \brief Rename an attribute
 		/// \note This can be in UTF-8... must match the attribute's creation property list.
 		[[nodiscard]] herr_t rename(not_null<const char*> oldName, not_null<const char*> newName) const
 		{
-			return H5Arename(base.h, oldName.get(), newName.get());
+			return H5Arename(base(), oldName.get(), newName.get());
 		}
 
 
@@ -235,104 +338,140 @@ namespace HH {
 		/// Create and write an attribute, for arbitrary dimensions.
 		template <class DataType>
 		Attribute add(
-			not_null<const char*> attrname,
-			span<DataType> data,
-			initializer_list<size_t> dimensions,
-			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+			::gsl::not_null<const char*> attrname,
+			::gsl::span<const DataType> data,
+			::std::initializer_list<size_t> dimensions,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t AttributeCreationPlist = H5P_DEFAULT,
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT
+		)
 		{
-			auto newAttr = create<DataType>(attrname.get(), dimensions,
+			auto newAttr = create<DataType>(
+				attrname.get(),
+				dimensions,
+				in_memory_dataType,
 				AttributeCreationPlist, AttributeAccessPlist);
+			/// \todo Already checked validity. Check again.
+			//Expects(newAttr.get());
 			herr_t res = newAttr.write<DataType>(data, in_memory_dataType);
+			Expects(res >= 0);
 			return Attribute(std::move(newAttr));
 		}
 
 		template <class DataType>
 		Attribute add(
-			not_null<const char*> attrname,
-			initializer_list<DataType> data,
-			initializer_list<size_t> dimensions,
-			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+			::gsl::not_null<const char*> attrname,
+			::std::initializer_list<const DataType> data,
+			::std::initializer_list<size_t> dimensions,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t AttributeCreationPlist = H5P_DEFAULT,
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
-			auto newAttr = create<DataType>(attrname.get(), dimensions,
+			//HH_hid_t in_memory_dataType_debug = HH::Types::GetHDF5Type<DataType>(); // debugging
+			auto newAttr = create<DataType>(
+				attrname.get(),
+				dimensions,
+				in_memory_dataType,
 				AttributeCreationPlist, AttributeAccessPlist);
-			herr_t res = newAttr.write<const DataType>(gsl::span<const DataType>(data.begin(), data.end()), in_memory_dataType);
+			/// \todo Attribute creation check handled already. Check again.
+			herr_t res = newAttr.write<DataType>(
+				::gsl::make_span(data.begin(), data.size()),
+				in_memory_dataType);
+			Expects(res >= 0);
 			return Attribute(std::move(newAttr));
 		}
 
 		template <class DataType>
 		Attribute add(
-			not_null<const char*> attrname,
-			span<DataType> data,
-			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+			::gsl::not_null<const char*> attrname,
+			::gsl::span<const DataType> data,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t AttributeCreationPlist = H5P_DEFAULT,
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
-			return add<DataType> (attrname, data, {gsl::narrow_cast<size_t>(data.size())}, 
-				AttributeCreationPlist, AttributeAccessPlist, in_memory_dataType);
+			//HH_hid_t in_memory_dataType_check = HH::Types::GetHDF5Type<DataType>(); // debugging
+			return add<DataType>(attrname, data, { gsl::narrow_cast<size_t>(data.size()) },
+				in_memory_dataType, AttributeCreationPlist, AttributeAccessPlist);
 		}
-		
+
 		template <class DataType>
 		Attribute add(
-			not_null<const char*> attrname,
-			initializer_list<DataType> data,
-			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+			::gsl::not_null<const char*> attrname,
+			::std::initializer_list<const DataType> data,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t AttributeCreationPlist = H5P_DEFAULT,
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
 			return add<DataType>(attrname, data, { gsl::narrow_cast<size_t>(data.size()) },
-				AttributeCreationPlist, AttributeAccessPlist, in_memory_dataType);
+				in_memory_dataType, AttributeCreationPlist, AttributeAccessPlist);
 		}
 
 		template <class DataType>
 		Attribute add(
-			not_null<const char*> attrname,
+			::gsl::not_null<const char*> attrname,
 			DataType data,
-			not_invalid<HH_hid_t> AttributeCreationPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t AttributeCreationPlist = H5P_DEFAULT,
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
 			auto newAttr = create<DataType>(attrname.get(), { 1 },
+				in_memory_dataType,
 				AttributeCreationPlist, AttributeAccessPlist);
+			/// \todo Check for failure
+			//Expects(newAttr.);
 			herr_t res = newAttr.write<DataType>(data, in_memory_dataType);
-			return Attribute(std::move(newAttr));
+			Expects(res >= 0);
+			return Attribute(newAttr);
 		}
 
 
 		/// \todo Switch to attribute objects. Keep raw object as an option.
 		/// Open and read an attribute, for expected dimensions.
 		template <class DataType>
-		H5A_ScopedHandle&& read(
-			not_invalid<HH_hid_t> base,
+		herr_t read(
 			not_null<const char*> attrname,
 			span<DataType> data,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> in_memory_dataType = GetHDF5Type<DataType>())
+			HH_hid_t in_memory_dataType = GetHDF5Type<DataType>(),
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
-			auto attr = open(base, attrname, AttributeAccessPlist);
-			Expects(attr.valid());
-			auto res = read(attr(), data, in_memory_dataType);
-			Expects(res >= 0);
-			return std::move(res);
+			Attribute attr = open(attrname, AttributeAccessPlist);
+			return attr.read(data, in_memory_dataType);
 		}
 
 		/// Open and read an attribute, with unknown dimensions
 		template <class DataType>
-		H5A_ScopedHandle&& read(
-			not_invalid<HH_hid_t> base,
+		herr_t read(
 			not_null<const char*> attrname,
 			std::vector<DataType> &data,
-			not_invalid<HH_hid_t> AttributeAccessPlist = H5P_DEFAULT)
+			HH_hid_t in_memory_dataType = GetHDF5Type<DataType>(),
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
 			data.clear();
-			static_assert(false, "FINISH");
-			// Query the data dimensions.
-			// Resize
-			return read(base, attrname, make_span(data.data(), data.size()));
+			Attribute attr = open(attrname, AttributeAccessPlist);
+			auto d = attr.getDimensions();
+			using namespace Tags::ObjSizes;
+			using namespace std;
+			t_numpoints::value_type nPoints = get<t_numpoints>(d).data;
+			data.resize(gsl::narrow_cast<size_t>(nPoints));
+			return attr.read(gsl::make_span(data.data(), data.size()), in_memory_dataType);
+			//static_assert(false, "FINISH THIS");
+			//return read(base, attrname, make_span(data.data(), data.size()));
 		}
+
+		/// Read an attribute
+		template <class DataType>
+		[[nodiscard]] DataType read(
+			not_null<const char*> attrname,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
+		{
+			DataType res;
+			Attribute attr = open(attrname, AttributeAccessPlist);
+			herr_t err = attr.read<DataType>(res, in_memory_dataType);
+			Expects((err >= 0) && "Attribute read error");
+			return res;
+		}
+
 
 		/// @}
 	};

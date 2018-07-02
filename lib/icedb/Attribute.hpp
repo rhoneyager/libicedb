@@ -1,4 +1,5 @@
 #pragma once
+#error "deprecated"
 #include <memory>
 #include <set>
 #include <string>

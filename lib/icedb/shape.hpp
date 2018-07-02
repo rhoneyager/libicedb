@@ -1,8 +1,6 @@
 #pragma once
 #include "fs.hpp"
-#include "Table.hpp"
-#include "Attribute.hpp"
-#include "Group.hpp"
+#include <HH/Groups.hpp>
 
 namespace icedb {
 	/// All facilities to manipulate particle shapes
@@ -10,10 +8,6 @@ namespace icedb {
 
 		/// Strucure containing a list of all of the required data needed to create a new shape in the database
 		struct NewShapeRequiredProperties {
-			/// Do we want NetCDF-4 compatability? Should always be yes.
-			/// \deprecated This will be removed
-			bool NC4_compat = true;
-
 			// The DIMENSIONS
 
 			/// DIMENSION: The number of scattering elements.
@@ -109,26 +103,23 @@ namespace icedb {
 		/// Shapes are implemented as a set of tables and attributes, contained within a discrete Group.
 		/// This class provides a higl-level interface to accessing and manipulating shapes.
 		/// It acts as an "overlay" to an alreagy-existing group. It adds additional functions and "value".
-		class Shape : virtual public Groups::Group
+		class Shape : virtual public HH::Group
 		{
-		protected:
-			Shape(const std::string &uid);
 		public:
 			/// Each shape 'group' has an attribute with this identifier. Used for shape collection and searching.
 			static const std::string _icedb_obj_type_shape_identifier;
 			static const uint16_t _icedb_current_shape_schema_version;
+
+			// OPEN an already-existing shape. Validity not guaranteed.
+			Shape(HH::HH_hid_t hnd_grp) : HH::Group(hnd_grp) { Expects(isShape()); }
+
+			/// This is the unique identifier for this shape
+			const std::string particle_unique_id;
+
 			virtual ~Shape();
 			/// \brief Is this object a shape?
-			/// \param owner is the parent group
-			/// \param name is the sub-group that is being tested
-			/// \throws if the group "name" does not exist
 			/// \returns true if it is a shape, false otherwise.
-			static bool isShape(Groups::Group &owner, const std::string &name);
-			/// \brief Is this object a group?
-			/// \param group is the HDF5 group
-			/// \throws if the object pointed to by group is not a valid HDF5 group.
-			/// \returns true if it is a shape, false otherwise
-			static bool isShape(gsl::not_null<H5::Group*> group);
+			static bool isShape(HH::HH_hid_t group);
 			/// \brief Is this object actually a shape?
 			bool isShape() const;
 			/// \brief Is "group" a valid shape, according to the spec.?
@@ -136,63 +127,31 @@ namespace icedb {
 			/// \throws if the object pointed to by group is not a valid HDF5 group.
 			/// \param out is an output stream to which diagnostic messages can be written. Diagnostics include why an object is not a shape (e.g. missing an essential parameter).
 			/// \throws if the output stream is somehow invalid
-			static bool isValid(gsl::not_null<H5::Group*> group, std::ostream *out = nullptr);
+			static bool isValid(HH::HH_hid_t grp, std::ostream *out = nullptr);
 			/// \brief Is this object a valid shape, according to the spec?
 			/// \param out is an output stream to which diagnostic messages can be written. Diagnostics include why an object is not a shape (e.g. missing an essential parameter).
 			/// \throws if the output stream is somehow invalid
 			bool isValid(std::ostream *out = nullptr) const;
 
 			/// The preferred C++ type for referencing a shape
-			typedef std::unique_ptr<Shape> Shape_Type;
-
-			/// Re-open a group as a shape
-			/// \returns the shape object on success
-			/// \throws if the group is not a valid shape
-			static Shape_Type openShape(Groups::Group &grpshp);
-			/// Open a group's subgroup as a shape
-			static Shape_Type openShape(Groups::Group &owner, const std::string &name);
-			/// Re-open an open HDF5 group as a shape
-			static Shape_Type openShape(Groups::Group::Group_HDF_shared_ptr shape);
+			//typedef std::shared_ptr<Shape> Shape_Type;
 
 			/// \brief Create a new shape
-			/// \param uid is a unique name for the shape
-			/// \param grpshp is the opened group that is converted into a shape
+			/// \param newLocationAsEmptyGroup is the empty group that is converted into a shape
 			/// \throws if the group has any already-existing tables or attributes that conflict with the new shape object
 			/// \param required is a pointer to the NewShapeRequiredProperties structure, that provides the "required" shape data.
 			/// \param optional is a pointer to the Common Optional Properties structure, that provides optional, supplementary data.
 			/// \returns the new shape on success
 			/// \throws on failure
-			static Shape_Type createShape(Groups::Group &grpshp, const std::string &uid, 
+			static Shape createShape(
+				HH::HH_hid_t newLocationAsEmptyGroup,
 				gsl::not_null<const NewShapeRequiredProperties*> required,
 				const NewShapeCommonOptionalProperties* optional = nullptr);
-			/// \brief Create a new shape
-			/// \param owner is the "parent" of the shape - a shape is constructed as a child of the owner
-			/// \param name is the name of the new group that gets created
-			/// \param uid is a unique name for the shape
-			/// \throws if the group has any already-existing tables or attributes that conflict with the new shape object
-			/// \param required is a pointer to the NewShapeRequiredProperties structure, that provides the "required" shape data.
-			/// \param optional is a pointer to the Common Optional Properties structure, that provides optional, supplementary data.
-			/// \returns the new shape on success
-			/// \throws on failure
-			static Shape_Type createShape(Groups::Group &owner, const std::string &name,
-				const std::string &uid,
+			static Shape createShape(
+				HH::HH_hid_t baseGrpID,
+				gsl::not_null<const char*> shapeGrp,
 				gsl::not_null<const NewShapeRequiredProperties*> required,
 				const NewShapeCommonOptionalProperties* optional = nullptr);
-			/// \brief Create a new shape
-			/// \param newShapeLocation is the "parent" of the shape - a shape is constructed as a child of the owner
-			/// \param uid is a unique name for the shape
-			/// \throws if the group has any already-existing tables or attributes that conflict with the new shape object
-			/// \param required is a pointer to the NewShapeRequiredProperties structure, that provides the "required" shape data.
-			/// \param optional is a pointer to the Common Optional Properties structure, that provides optional, supplementary data.
-			/// \returns the new shape on success
-			/// \throws on failure
-			static Shape_Type createShape(Groups::Group::Group_HDF_shared_ptr newShapeLocation,
-				const std::string &uid,
-				gsl::not_null<const NewShapeRequiredProperties*> required,
-				const NewShapeCommonOptionalProperties* optional = nullptr);
-
-			/// This is the unique identifier for this shape
-			const std::string particle_unique_id;
 
 			/*
 			Tables::Table::Table_Type getTable_ParticleScatteringElementNumber() const;

@@ -41,12 +41,14 @@ namespace HH {
 						: rdcc_nslots(rdcc_nslots), rdcc_nbytes(rdcc_nbytes), rdcc_w0(rdcc_w0) {}
 					tag_filecacheparams_data() {}
 				};
+				struct tag_create_intermediate_group {};
 			}
 			typedef Tag<_detail::tag_LinkCreationPlist, HH_hid_t> t_LinkCreationPlist;
 			typedef Tag<_detail::tag_DatasetCreationPlist, HH_hid_t> t_DatasetCreationPlist;
 			typedef Tag<_detail::tag_DatasetAccessPlist, HH_hid_t> t_DatasetAccessPlist;
 			typedef Tag<_detail::tag_xferPlist, HH_hid_t> t_xferPlist;
 
+			typedef Tag<_detail::tag_create_intermediate_group, bool> t_create_intermediate_group;
 			typedef Tag<_detail::tag_chunking, std::initializer_list<hsize_t> > t_Chunking;
 			typedef Tag<_detail::tag_szip_options, bool> t_DoShuffle;
 			typedef Tag<_detail::tag_compression_type, PL::CompressionType> t_CompressionType;
@@ -112,6 +114,12 @@ namespace HH {
 			HH_hid_t base;
 		public:
 			PL(HH_hid_t newbase) : base(newbase), filters(newbase) {}
+			static PL create(hid_t typ) {
+				hid_t plid = H5Pcreate(typ);
+				Expects(plid >= 0);
+				HH_hid_t pl(plid, Handles::Closers::CloseHDF5PropertyList::CloseP);
+				return PL(pl);
+			}
 			static PL createDatasetCreation() {
 				hid_t plid = H5Pcreate(H5P_DATASET_CREATE);
 				Expects(plid >= 0);
@@ -120,6 +128,12 @@ namespace HH {
 			}
 			static PL createFileAccess() {
 				hid_t plid = H5Pcreate(H5P_FILE_ACCESS);
+				Expects(plid >= 0);
+				HH_hid_t pl(plid, Handles::Closers::CloseHDF5PropertyList::CloseP);
+				return PL(pl);
+			}
+			static PL createLinkCreation() {
+				hid_t plid = H5Pcreate(H5P_LINK_CREATE);
 				Expects(plid >= 0);
 				HH_hid_t pl(plid, Handles::Closers::CloseHDF5PropertyList::CloseP);
 				return PL(pl);
@@ -401,6 +415,30 @@ namespace HH {
 			PL setFileAccessPList(Args... args) {
 				auto t = std::make_tuple(args...);
 				return setFileAccessPList<Args...>(t);
+			}
+
+			template <class ... Args>
+			PL setLinkCreationPList(std::tuple<Args...> vals)
+			{
+				using namespace Tags;
+				using namespace Tags::PropertyLists;
+				typedef std::tuple<Args...> vals_t;
+
+				constexpr bool hasCreateIntGrp = Tags::has_type<t_create_intermediate_group, vals_t >::value;
+				if (hasCreateIntGrp) {
+					t_create_intermediate_group cps; getOptionalValue(cps, vals);
+					if (cps.data == true)
+						Expects(0 <= H5Pset_create_intermediate_group(base(), 1));
+					else 
+						Expects(0 <= H5Pset_create_intermediate_group(base(), -1));
+				}
+
+				return *this;
+			}
+			template <class ... Args>
+			PL setLinkCreationPList(Args... args) {
+				auto t = std::make_tuple(args...);
+				return setLinkCreationPList<Args...>(t);
 			}
 
 		};

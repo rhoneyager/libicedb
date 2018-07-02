@@ -14,7 +14,6 @@ namespace icedb {
 			typedef std::vector<std::string> StringData_t;
 
 			struct ShapeRequiredData {
-				bool NC4_compat = true;
 				uint64_t number_of_particle_scattering_elements = 0;
 				uint8_t number_of_particle_constituents = 0;
 
@@ -43,7 +42,9 @@ namespace icedb {
 				ShapeRequiredData required;
 				ShapeCommonOptionalData optional;
 				/// Make a new shape under the group
-				icedb::Shapes::Shape::Shape_Type toShape(const std::string &name, std::shared_ptr<H5::Group>) const;
+				icedb::Shapes::Shape toShape(
+					HH::HH_hid_t baseGrpID,
+					const std::string &name) const;
 				//void fromShape(icedb::Groups::Group::Group_ptr);
 			};
 		}

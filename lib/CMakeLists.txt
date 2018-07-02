@@ -28,40 +28,45 @@ set(gsl_objs
 	)
 set (hh_objs
 	icedb/compat/hh/Attributes.hpp
+	icedb/compat/hh/Datasets.hpp
+	icedb/compat/hh/defs.hpp
+	icedb/compat/hh/Files.hpp
 	icedb/compat/HH/Groups.hpp
 	icedb/compat/HH/Handles.hpp
 	icedb/compat/HH/Handles_HDF.hpp
 	icedb/compat/HH/Handles_Valid.hpp
+	icedb/compat/hh/HH.hpp
+	icedb/compat/hh/PropertyLists.hpp
 	icedb/compat/HH/Tags.hpp
 	icedb/compat/HH/Types.hpp)
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
-	private/Shape_impl.hpp
+	#private/Shape_impl.hpp
 	src/Shapes.cpp)
-set(grp_objs
-	icedb/Group.hpp
-	private/Group_impl.hpp
-	src/Groups.cpp)
-set(att_objs
-	icedb/Attribute.hpp
-	private/Attribute_impl.hpp
-	src/Attributes.cpp)
-set(tbl_objs
-	icedb/Table.hpp
-	private/Table_impl.hpp
-	src/Tables.cpp)
+#set(grp_objs
+	#icedb/Group.hpp
+	#private/Group_impl.hpp
+	#src/Groups.cpp)
+#set(att_objs
+#	icedb/Attribute.hpp
+#	private/Attribute_impl.hpp
+#	src/Attributes.cpp)
+#set(tbl_objs
+#	icedb/Table.hpp
+#	private/Table_impl.hpp
+#	src/Tables.cpp)
 set(db_objs
-	icedb/Database.hpp
-	private/Database_impl.hpp
-	src/databases.cpp
+#	icedb/Database.hpp
+#	private/Database_impl.hpp
+#	src/databases.cpp
 	icedb/fs_backend.hpp
 	src/fs_backend.cpp
 	icedb/fs.hpp)
-set(hdf_objs
-	private/hdf5_supplemental.hpp
-	private/hdf5_load.h
-	src/export-hdf5.cpp)
+#set(hdf_objs
+#	private/hdf5_supplemental.hpp
+#	private/hdf5_load.h
+#	src/export-hdf5.cpp)
 set(units_objs
 	icedb/units/units.hpp
 	icedb/units/unitsPlugins.hpp
@@ -131,17 +136,18 @@ source_group("HH" FILES ${hh_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
 source_group("Errors" FILES ${error_objs})
-source_group("Groups" FILES ${grp_objs})
-source_group("Attributes" FILES ${att_objs})
-source_group("Tables" FILES ${tbl_objs})
+#source_group("Groups" FILES ${grp_objs})
+#source_group("Attributes" FILES ${att_objs})
+#source_group("Tables" FILES ${tbl_objs})
 source_group("Databases" FILES ${db_objs})
-source_group("HDF5" FILES ${hdf_objs})
+#source_group("HDF5" FILES ${hdf_objs})
 source_group("Units" FILES ${units_objs})
 source_group("Refract" FILES ${refract_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
-set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${grp_objs}
-	${att_objs} ${tbl_objs} ${db_objs} ${hdf_objs}
+set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} #${grp_objs}
+	#${att_objs} ${tbl_objs} 
+	${db_objs} #${hdf_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
 	${related_cmake_objects} ${hh_objs}
 	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.

@@ -1,4 +1,5 @@
 #pragma once
+#error "Replaced for now"
 #include "Attribute.hpp"
 #include "compat/gsl/gsl"
 #include "compat/gsl/gsl_assert"

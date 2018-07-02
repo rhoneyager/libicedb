@@ -9,92 +9,99 @@
 #include "Handles.hpp"
 //#include "Tags.hpp"
 #include "Types.hpp"
-//#include "Groups.hpp"
+#include "Groups.hpp"
+#include "Attributes.hpp"
+#include "Datasets.hpp"
 
 namespace HH {
-	namespace Files {
-		using namespace Handles;
-		using namespace gsl;
+	using namespace Handles;
+	using namespace gsl;
+	using namespace HH::Handles;
+	using namespace HH::Types;
+	using namespace gsl;
+	using std::initializer_list;
+	using std::tuple;
 
+	struct File : public Group {
+	private:
+		HH_hid_t base;
+	public:
+		File(HH_hid_t hnd) : base(hnd), atts(hnd), Group(hnd), dsets(hnd) {}
+		virtual ~File() {}
+		HH_hid_t get() const { return base; }
 
-		[[nodiscard]] inline H5F_ScopedHandle&& open(
+		Has_Attributes atts;
+		//Has_Groups grps;
+		Has_Datasets dsets;
+
+		[[nodiscard]] herr_t get_info(H5F_info_t &info) const {
+			herr_t err = H5Fget_info(base(), &info);
+			if (err < 0) return err;
+			return 1;
+		}
+
+		/// \note Should ideally be open, but the Group::open functions get masked.
+		[[nodiscard]] static File openFile(
 			not_null<const char*> filename,
 			unsigned int FileOpenFlags,
-			not_invalid<HH_hid_t> FileAccessPlist = H5P_DEFAULT)
+			HH_hid_t FileAccessPlist = H5P_DEFAULT)
 		{
-			H5F_ScopedHandle res(H5Fopen(filename, FileOpenFlags, FileAccessPlist.get().h));
-			return std::move(res);
+			hid_t res = H5Fopen(filename, FileOpenFlags, FileAccessPlist());
+			Expects(res >= 0);
+			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 
-		[[nodiscard]] inline H5F_ScopedHandle&& create(
+		/// \note Should ideally be create, but the Group::create functions get masked.
+		[[nodiscard]] static File createFile(
 			not_null<const char*> filename,
 			unsigned int FileCreateFlags,
-			not_invalid<HH_hid_t> FileCreationPlist = H5P_DEFAULT,
-			not_invalid<HH_hid_t> FileAccessPlist = H5P_DEFAULT)
+			HH_hid_t FileCreationPlist = H5P_DEFAULT,
+			HH_hid_t FileAccessPlist = H5P_DEFAULT)
 		{
-			H5F_ScopedHandle res(H5Fcreate(filename, FileCreateFlags,
-				FileCreationPlist.get().h, FileAccessPlist.get().h));
-			return std::move(res);
-		}
-
-		/// \brief Mount a file into a group
-		/// \returns >=0 on success, negative on failure
-		[[nodiscard]] inline herr_t mount(
-			not_invalid<HH_hid_t> destination_base,
-			not_null<const char*> destination_groupname,
-			not_invalid<HH_hid_t> source_file,
-			not_invalid<HH_hid_t> FileMountPlist = H5P_DEFAULT)
-		{
-			return H5Fmount(destination_base.get().h, destination_groupname.get(),
-				source_file().h, FileMountPlist.get().h);
-		}
-
-		/// \brief Unmount a file from a group
-		/// \returns >=0 success, negative on failure
-		[[nodiscard]] inline herr_t unmount(
-			not_invalid<HH_hid_t> base_location,
-			const char* mountpoint)
-		{
-			return H5Funmount(base_location.get().h, mountpoint);
+			hid_t res = H5Fcreate(filename, FileCreateFlags,
+				FileCreationPlist(), FileAccessPlist());
+			Expects(res >= 0);
+			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 
 		/// \brief Load an image of an already-opened HDF5 file into system memory
-		[[nodiscard]] inline ssize_t get_file_image(
-			not_invalid<HH_hid_t> file_id,
+		[[nodiscard]] static ssize_t get_file_image(
+			HH_hid_t file_id,
 			void* buf_ptr,
 			size_t buf_len)
 		{
-			return H5Fget_file_image(file_id.get().h, buf_ptr, buf_len);
+			return H5Fget_file_image(file_id(), buf_ptr, buf_len);
 		}
 
 		/// \brief Open a file image that is loaded into system memory as a regular HDF5 file
-		[[nodiscard]] inline H5F_ScopedHandle&& open_file_image(
+		[[nodiscard]] static File open_file_image(
 			not_null<void*> buf_ptr,
 			size_t buf_size,
 			unsigned int flags)
 		{
-			return std::move(H5F_ScopedHandle(H5LTopen_file_image(buf_ptr.get(), buf_size, flags)));
+			hid_t res = H5LTopen_file_image(buf_ptr.get(), buf_size, flags);
+			Expects(res >= 0);
+			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 
 		/// \brief Create a new file image (i.e. a file that exists purely in memory)
 		/// \param filename is the file to write, if backing_store_in_file == true
 		/// \param block_allocation_len is the size of each new allocation as the file grows
 		/// \param backing_store_in_file determines whether a physical file is written upon close.
-		[[nodiscard]] inline H5F_ScopedHandle create_file_image(
+		[[nodiscard]] static File create_file_image(
 			not_null<const char*> filename,
 			size_t block_allocation_len = 10000000, // 10 MB
 			bool backing_store_in_file = false,
-			not_invalid<HH_hid_t> ImageCreationPlist = HH::Handles::H5P_ScopedHandle{ H5Pcreate(H5P_FILE_ACCESS) }.getWeakHandle())
+			HH_hid_t ImageCreationPlist = HH_hid_t(H5Pcreate(H5P_FILE_ACCESS), Closers::CloseHDF5PropertyList::CloseP))
 		{
-			hid_t h = ImageCreationPlist.get().h; // Separated from next line for easier debugging.
-			const auto h5Result = H5Pset_fapl_core(h, block_allocation_len, backing_store_in_file);
+			const auto h5Result = H5Pset_fapl_core(ImageCreationPlist(), block_allocation_len, backing_store_in_file);
 			Expects(h5Result >= 0 && "H5Pset_fapl_core failed");
 			// This new memory-only dataset needs to always be writable. The flags parameter
 			// has little meaning in this context.
 			/// \todo Check if truncation actually removes the file on the disk!!!!!
-			return H5F_ScopedHandle(H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, h));
-			//auto res = H5F_ScopedHandle(H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, h));
-			//return std::move(res);
+			hid_t res = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, ImageCreationPlist());
+			Expects(res >= 0);
+			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 
 		// TODO: Creates a new file image (i.e. a file that exists purely in memory)
@@ -105,36 +112,7 @@ namespace HH {
 		/// \breif Is this file opened for read/write or read/only access?
 		/// \brief Reopen an already-open file (i.e. to strip mountpoints)
 
-		/*
-		class File
-		{
-			H5F_ScopedHandle::thisSharedHandle_t h;
-		public:
-			File() {}
-			virtual ~File() {}
-			static inline File open(
-				not_null<const char*> filename,
-				unsigned int FileOpenFlags,
-				not_invalid<HH_hid_t> FileAccessPlist = H5P_DEFAULT
-			) {
-				auto hh = HH::Files::open(filename, FileOpenFlags, FileAccessPlist.get());
-				File f;
-				f.h = hh.make_shared();
-				return f;
-			}
-			static inline File create(
-				not_null<const char*> filename,
-				unsigned int FileCreateFlags,
-				not_invalid<HH_hid_t> FileCreationPlist = H5P_DEFAULT,
-				not_invalid<HH_hid_t> FileAccessPlist = H5P_DEFAULT
-			) {
-				auto hh = HH::Files::create(filename, FileCreateFlags, FileCreationPlist.get(), FileAccessPlist.get());
-				File f;
-				f.h = hh.make_shared();
-				return f;
-			}
-		};
-		*/
-	}
+	};
+
 
 }

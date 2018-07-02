@@ -1,4 +1,5 @@
 #pragma once
+#error "To be removed"
 #include "Group_impl.hpp"
 #include "../icedb/shape.hpp"
 namespace icedb {
