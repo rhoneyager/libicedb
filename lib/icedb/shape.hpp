@@ -72,7 +72,7 @@ namespace icedb {
 
 			/// OPTIONAL ATTRIBUTE: The name of the single constituent of the particle
 			/// Used only if there is a single constituent, and if this constituent is NOT ice.
-			std::string particle_constituent_single_name;
+			[[deprecated]] std::string particle_constituent_single_name;
 
 			/// OPTIONAL VARIABLE: Mass fractions of each constituent for each scattering element.
 			/// Either this or particle_scattering_element_composition_whole is
