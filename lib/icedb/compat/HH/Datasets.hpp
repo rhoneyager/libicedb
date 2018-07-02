@@ -108,7 +108,7 @@ namespace HH {
 			HH_hid_t file_space_id = H5S_ALL,
 			HH_hid_t xfer_plist_id = H5P_DEFAULT)
 		{
-			return write<DataType, Marshaller>(gsl::span(data.data(), data.size()),
+			return write<DataType, Marshaller>(gsl::span(data.begin(), data.size()),
 				in_memory_dataType, mem_space_id, file_space_id, xfer_plist_id);
 		}
 
@@ -293,6 +293,7 @@ namespace HH {
 			//herr_t err = H5Oget_info(obj(), &oinfo);
 			//if (err < 0) return false;
 			//if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) return true;
+			return false;
 		}
 		bool isDataset() const { return isDataset(base); }
 
@@ -365,7 +366,11 @@ namespace HH {
 			// Optionally, write the data: t_data_span, t_data_initializer_list, t_data_eigen
 			constexpr bool has_span = has_type<t_data_span<DataType>, vals_t >::value;
 			constexpr bool has_initializer_list = has_type<t_data_initializer_list<DataType>, vals_t >::value;
+#if __has_include(<Eigen/Dense>)
 			constexpr bool has_eigen = has_type<t_data_eigen<DataType>, vals_t >::value;
+#else
+			constexpr bool has_eigen = false;
+#endif
 			constexpr unsigned int num_initializers =
 				((has_span) ? 1 : 0) + ((has_initializer_list) ? 1 : 0) + ((has_eigen) ? 1 : 0);
 			static_assert(num_initializers <= 1, "You are trying to set the data in a dataset using "

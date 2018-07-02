@@ -38,6 +38,7 @@ namespace HH {
 			//herr_t err = H5Oget_info(obj(), &oinfo);
 			//if (err < 0) return false;
 			//if (oinfo.type == H5O_type_t::H5O_TYPE_GROUP) return true;
+			return false;
 		}
 		bool isGroup() const { return isGroup(base); }
 

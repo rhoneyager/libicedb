@@ -50,6 +50,7 @@ namespace HH {
 			{
 				return get();
 			}
+			static HH_hid_t dummy() { return HH::Handles::HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP); }
 		};
 	}
 	using Handles::HH_hid_t;
