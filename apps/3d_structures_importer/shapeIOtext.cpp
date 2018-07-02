@@ -11,7 +11,6 @@ namespace icedb {
 	namespace Examples {
 		namespace Shapes {
 			void ShapeRequiredData::apply(icedb::Shapes::NewShapeRequiredProperties& p) const {
-				p.NC4_compat = this->NC4_compat;
 				p.particle_id = particle_id;
 				p.number_of_particle_constituents = number_of_particle_constituents;
 				p.number_of_particle_scattering_elements = number_of_particle_scattering_elements;
@@ -52,14 +51,18 @@ namespace icedb {
 				p.particle_scattering_element_spacing = this->particle_scattering_element_spacing;
 				p.hint_max_scattering_element_dimension = this->hint_max_scattering_element_dimension;
 			}
-			icedb::Shapes::Shape::Shape_Type ShapeDataBasic::toShape(
-				const std::string &name, std::shared_ptr<H5::Group> grp) const
+			icedb::Shapes::Shape ShapeDataBasic::toShape(
+				HH::HH_hid_t parentGrpID,
+				const std::string &name) const
 			{
 				icedb::Shapes::NewShapeRequiredProperties nreq;
 				required.apply(nreq);
 				icedb::Shapes::NewShapeCommonOptionalProperties nopt;
 				optional.apply(nopt);
-				return icedb::Shapes::Shape::createShape(grp, name, &nreq, &nopt);
+				HH::Group gParent(parentGrpID);
+				Expects(0 == gParent.exists(name.c_str()));
+				auto gShp = gParent.create(name.c_str());
+				return icedb::Shapes::Shape::createShape(gShp.get(), &nreq, &nopt);
 			}
 		}
 	}

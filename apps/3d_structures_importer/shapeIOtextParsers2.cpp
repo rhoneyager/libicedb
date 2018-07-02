@@ -15,6 +15,7 @@
 //#include <boost/iostreams/filtering_stream.hpp>
 #include <icedb/error.hpp>
 #include "shape.hpp"
+#include "shapeIOtext.hpp"
 namespace icedb {
 	namespace Examples {
 		namespace Shapes {
@@ -344,13 +345,6 @@ namespace icedb {
 				return res;
 			}
 
-
-			ShapeDataBasic readTextFile(const std::string &filename);
-			ShapeDataBasic readDDSCAT(const char* in);
-			void readHeader(const char* in, std::string &desc, size_t &np, size_t &headerEnd);
-			void readDDSCATtextContents(const char *iin, size_t numExpectedPoints, size_t headerEnd, ShapeDataBasic& p);
-			ShapeDataBasic readRawText(const char *iin);
-
 			ShapeDataBasic readTextFile(
 				const std::string &filename) {
 				// Open the file and copy to a string. Check the first few lines to see if any
@@ -399,12 +393,6 @@ namespace icedb {
 					return readRawText(s.c_str());
 				else if (fileType == DetectResults::DDSCAT)
 					return readDDSCAT(s.c_str()); // This is a DDSCAT file
-												   //if ((std::string::npos != spos) && (spos < end)) {
-												   //	return readDDSCAT(s.c_str());
-												   //}
-												   //else {
-												   //	return readTextRaw(s.c_str());
-												   //}
 				else
 					ICEDB_throw(icedb::error::error_types::xBadInput)
 					.add("Description", "Unknown input file format.");

@@ -43,7 +43,7 @@ namespace icedb {
 				ShapeCommonOptionalData optional;
 				/// Make a new shape under the group
 				icedb::Shapes::Shape toShape(
-					HH::HH_hid_t baseGrpID,
+					HH::HH_hid_t parentGrpID,
 					const std::string &name) const;
 				//void fromShape(icedb::Groups::Group::Group_ptr);
 			};

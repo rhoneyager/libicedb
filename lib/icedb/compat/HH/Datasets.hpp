@@ -51,13 +51,14 @@ namespace HH {
 		}
 
 		/// Get current and maximum dimensions, and number of total points.
-		std::tuple<
-			Tags::ObjSizes::t_dimensions_current,
-			Tags::ObjSizes::t_dimensions_max,
-			Tags::ObjSizes::t_dimensionality,
-			Tags::ObjSizes::t_numpoints>
-			getDimensions() const
-			//std::tuple<std::vector<hsize_t>, std::vector<hsize_t>, hssize_t > getDimensions()
+		struct Dimensions {
+			std::vector<hsize_t> dimsCur, dimsMax;
+			size_t dimensionality;
+			size_t numElements;
+			Dimensions(const std::vector<hsize_t>& dimscur, const std::vector<hsize_t> &dimsmax, size_t dality, size_t np)
+				: dimsCur(dimscur), dimsMax(dimsmax), dimensionality(dality), numElements(np) {}
+		};
+		Dimensions getDimensions() const
 		{
 			std::vector<hsize_t> dimsCur, dimsMax;
 			auto space = getSpace();
@@ -70,12 +71,7 @@ namespace HH {
 			int err = H5Sget_simple_extent_dims(space(), dimsCur.data(), dimsMax.data());
 			Expects(err >= 0);
 
-			return std::make_tuple(
-				Tags::ObjSizes::t_dimensions_current(dimsCur),
-				Tags::ObjSizes::t_dimensions_max(dimsMax),
-				Tags::ObjSizes::t_dimensionality((hsize_t)dimsCur.size()),
-				Tags::ObjSizes::t_numpoints(numPoints)
-			);
+			return Dimensions(dimsCur, dimsMax, dimsCur.size(), numPoints);
 		}
 
 		// Resize the dataset?
@@ -292,21 +288,9 @@ namespace HH {
 			return Dataset(HH_hid_t(dsetid, Closers::CloseHDF5Dataset::CloseP));
 		}
 
-
-		/*
-		template <class ... Args>
-		HH_hid_t generateDatasetCreationPList_typical(std::tuple<Args...> vals) {
-		typedef std::tuple<Args...> vals_t;
-		auto optional_float = options_f(-1.f);
-		bool gotVal = getOptionalValue(optional_float, vals);
+		Dataset operator[](gsl::not_null<const char*> dsetname) {
+			return open(dsetname);
 		}
-		template <class ... Args>
-		HH_hid_t generateDatasetCreationPList_typical(Args... args) {
-		auto t = std::make_tuple(args...);
-		return generateDatasetCreationPList_typical(t);
-		}
-		*/
-
 
 		/// \brief Create a dataset
 		template <class DataType>
@@ -432,95 +416,6 @@ namespace HH {
 		Dataset create(Args... args) {
 			auto t = std::make_tuple(args...);
 			return create<DataType, Args...>(t);
-		}
-
-		/// \todo This is a strong candidate for a tagged function call.
-		template <class DataType>
-		Dataset createWithData(
-			gsl::not_null<const char*> dsetname,
-			gsl::span<const DataType> data,
-			initializer_list<size_t> dimensions = { 0 },
-			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>(),
-			HH_hid_t LinkCreationPlist = H5P_DEFAULT,
-			HH_hid_t DatasetCreationPlist = H5P_DEFAULT,
-			HH_hid_t DatasetAccessPlist = H5P_DEFAULT,
-			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
-			HH_hid_t mem_space_id = H5S_ALL,
-			HH_hid_t file_space_id = H5S_ALL,
-			HH_hid_t xfer_plist_id = H5P_DEFAULT)
-		{
-			if ((dimensions.size() == 1) && (*(dimensions.begin()) == 0))
-			{
-				dimensions = initializer_list<size_t>{ gsl::narrow_cast<size_t>(data.size()) };
-			}
-			Dataset d = create<DataType>(dsetname, dimensions, dtype,
-				LinkCreationPlist, DatasetCreationPlist, DatasetAccessPlist);
-			Expects(0 <= d.write<DataType>(data, in_memory_dataType, mem_space_id,
-				file_space_id, xfer_plist_id));
-			return d;
-		}
-
-		/// \todo This is a strong candidate for a tagged function call.
-		template <class DataType>
-		Dataset createWithData(
-			gsl::not_null<const char*> dsetname,
-			initializer_list<DataType> data,
-			initializer_list<size_t> dimensions = { 0 },
-			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>(),
-			HH_hid_t LinkCreationPlist = H5P_DEFAULT,
-			HH_hid_t DatasetCreationPlist = H5P_DEFAULT,
-			HH_hid_t DatasetAccessPlist = H5P_DEFAULT,
-			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
-			HH_hid_t mem_space_id = H5S_ALL,
-			HH_hid_t file_space_id = H5S_ALL,
-			HH_hid_t xfer_plist_id = H5P_DEFAULT)
-		{
-			return createWithData(dsetname, gsl::make_span(data.begin(), data.size()),
-				dimensions, dtype, LinkCreationPlist, DatasetCreationPlist,
-				DatasetAccessPlist, in_memory_dataType,
-				mem_space_id, file_space_id, xfer_plist_id);
-		}
-
-		/// \brief An easy specialization for Eigen objects
-		/// \todo Tags
-		/// \note Ensures that the data follows the appropriate row/column major format. This may involve a memory copy.
-		/// \todo Dimensionality. Are there 0, 1 or 2 dimensions? If indeterminate, take the user's selection.
-		template <class EigenDataType>
-		Dataset createWithEigen(
-			gsl::not_null<const char*> dsetname,
-			const EigenDataType &data,
-			HH_hid_t dtype = HH::Types::GetHDF5Type<typename EigenDataType::RealScalar>(),
-			bool collapseSingularDimensions = true,
-			HH_hid_t LinkCreationPlist = H5P_DEFAULT,
-			HH_hid_t DatasetCreationPlist = H5P_DEFAULT,
-			HH_hid_t DatasetAccessPlist = H5P_DEFAULT,
-			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<typename EigenDataType::RealScalar>(),
-			HH_hid_t mem_space_id = H5S_ALL,
-			HH_hid_t file_space_id = H5S_ALL,
-			HH_hid_t xfer_plist_id = H5P_DEFAULT)
-		{
-			typedef EigenDataType::RealScalar RealDataType;
-			bool isRowMajor = data.IsRowMajor;
-			auto rows = data.rows();
-			auto cols = data.cols();
-			if ((rows == 0) || (cols == 0)) throw;
-			std::initializer_list<size_t> mDims{ gsl::narrow_cast<hsize_t>(rows), gsl::narrow_cast<hsize_t>(cols) };
-			if (collapseSingularDimensions) {
-				if ((rows > 2) && (cols > 2)) mDims = std::initializer_list<size_t>{ gsl::narrow_cast<hsize_t>(rows), gsl::narrow_cast<hsize_t>(cols) };
-				else mDims = std::initializer_list<size_t>{ std::max(gsl::narrow_cast<hsize_t>(rows),gsl::narrow_cast<hsize_t>(cols)) };
-			}
-			if (isRowMajor) {
-				return createWithData<RealDataType>(dsetname, gsl::make_span(data.data(), data.size()), mDims,
-					dtype, LinkCreationPlist, DatasetCreationPlist, DatasetAccessPlist, in_memory_dataType,
-					mem_space_id, file_space_id, xfer_plist_id);
-			}
-			else {
-				// A memory copy shall occur...
-
-				return createWithData<RealDataType>(dsetname, gsl::make_span(data.data(), data.size()), mDims,
-					dtype, LinkCreationPlist, DatasetCreationPlist, DatasetAccessPlist, in_memory_dataType,
-					mem_space_id, file_space_id, xfer_plist_id);
-			}
 		}
 
 	};
