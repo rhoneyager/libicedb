@@ -8,6 +8,9 @@
 #include <hdf5.h>
 #include "Handles.hpp"
 
+// Note: using an icedb utility function ICEDB_COMPAT_strncpy_s
+#include "../../icedb/util.h"
+
 namespace HH {
 	namespace Types {
 		using namespace HH::Handles;
@@ -127,8 +130,9 @@ namespace HH {
 				_bufStrPointers.clear();
 				_bufStrs.clear();
 				for (const auto &s : d) {
-					std::unique_ptr<char[]> sobj(new char[s.size() + 1]);
-					strncpy(sobj.get(), s.data(), s.size() + 1);
+					size_t sz = s.size() + 1;
+					std::unique_ptr<char[]> sobj(new char[sz]);
+					ICEDB_COMPAT_strncpy_s(sobj.get(), sz, s.data(), sz);
 					_bufStrPointers.push_back(sobj.get());
 					_bufStrs.push_back(std::move(sobj));
 				}

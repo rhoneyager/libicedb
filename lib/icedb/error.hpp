@@ -12,27 +12,6 @@ namespace icedb {
 		class error_options_inner;
 		class xError;
 		typedef std::shared_ptr<xError> xError_ptr;
-		/// xError is the base class for icedb C++ exceptions.
-		/// C code should use the C interface.
-		class xError : public std::exception
-		{
-		protected:
-			std::shared_ptr<error_options_inner> ep;
-		public:
-			xError(error_types = error_types::xOtherError);
-			virtual ~xError();
-			virtual const char* what() const noexcept;
-
-			/// Insert a context of Errors.
-			//void push(::icedb::registry::const_options_ptr);
-			xError& push(::icedb::registry::options_ptr);
-			xError& push();
-
-			template <class T> xError& add(const std::string &key, const T value);
-
-		};
-
-
 
 		// The C++ interface to the C-style (non-exceptions) errors:
 		// These C++ functions may throw exceptions. Their C counterparts will not.
@@ -65,6 +44,28 @@ namespace icedb {
 		DL_ICEDB void stringify(const error_context_pt &err, std::string &);
 		DL_ICEDB std::string stringify(const error_context_pt &err);
 
+
+
+		/// xError is the base class for icedb C++ exceptions.
+		/// C code should use the C interface.
+		class xError : public std::exception
+		{
+		protected:
+			std::shared_ptr<error_options_inner> ep;
+		public:
+			xError(error_types = error_types::xOtherError);
+			xError(error_context_pt p);
+			virtual ~xError();
+			virtual const char* what() const noexcept;
+
+			/// Insert a context of Errors.
+			//void push(::icedb::registry::const_options_ptr);
+			xError& push(::icedb::registry::options_ptr);
+			xError& push();
+
+			template <class T> xError& add(const std::string &key, const T value);
+
+		};
 	}
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#error "Replaced for now"
+//#error "Replaced for now"
 #ifndef ICEDB_H_ERROR_CONTEXT
 #define ICEDB_H_ERROR_CONTEXT
 #include "defs.h"

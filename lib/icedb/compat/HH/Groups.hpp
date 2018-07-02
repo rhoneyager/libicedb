@@ -17,7 +17,7 @@ namespace HH {
 	private:
 		HH_hid_t base;
 	public:
-		Group(HH_hid_t hnd) : base(hnd), atts(hnd), dsets(hnd) {} //, grps(hnd) {}
+		Group(HH_hid_t hnd) : base(hnd), atts(hnd), dsets(hnd) { Expects(isGroup()); } //, grps(hnd) {}
 		virtual ~Group() {}
 		HH_hid_t get() const { return base; }
 
@@ -31,6 +31,15 @@ namespace HH {
 		Has_Attributes atts;
 		Has_Datasets dsets;
 
+		static bool isGroup(HH_hid_t obj) {
+			H5I_type_t typ = H5Iget_type(obj());
+			if ((typ == H5I_GROUP) || (typ == H5I_FILE)) return true;
+			//H5O_info_t oinfo;
+			//herr_t err = H5Oget_info(obj(), &oinfo);
+			//if (err < 0) return false;
+			//if (oinfo.type == H5O_type_t::H5O_TYPE_GROUP) return true;
+		}
+		bool isGroup() const { return isGroup(base); }
 
 		/// \brief Does a group exist at the specified path
 		/// \returns <0 on failure (e.g. parent path not found)

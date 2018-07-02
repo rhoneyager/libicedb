@@ -34,10 +34,17 @@ namespace HH {
 		/// Must release to transfer the handle!!!!!
 		HH_hid_t attr;
 	public:
-		Attribute(HH_hid_t hnd_attr) : attr(hnd_attr) {}
+		Attribute(HH_hid_t hnd_attr) : attr(hnd_attr) { Expects(isAttribute()); }
 		virtual ~Attribute() {}
 
 		HH_hid_t get() const { return attr; }
+
+		static bool isAttribute(HH_hid_t obj) {
+			H5I_type_t typ = H5Iget_type(obj());
+			if (typ == H5I_ATTR) return true;
+			return false;
+		}
+		bool isAttribute() const { return isAttribute(attr); }
 
 		/// \brief Write data to an attribute
 		/// \note Writing attributes is an all-or-nothing process.
@@ -183,10 +190,11 @@ namespace HH {
 		/// @{
 		/// Get attribute type, as an HDF5 type object.
 		/// \see Types.hpp for the functions to compare the HDF5 type with a system type.
-		[[nodiscard]] HH_hid_t getType() const
+		HH_hid_t getType() const
 		{
 			return HH_hid_t(H5Aget_type(attr()), Closers::CloseHDF5Datatype::CloseP);
 		}
+		inline HH_hid_t type() const { return getType(); }
 
 		/// Convenience function to check an attribute's type. 
 		/// \returns True if the type matches
@@ -194,18 +202,21 @@ namespace HH {
 		/// \returns <0 if an error occurred.
 		/// \todo Implement this.
 		template <class DataType>
-		[[nodiscard]] htri_t IsOfType() {
-			static_assert(false, "TODO: Implement IsOfType.");
+		htri_t IsOfType() {
+			auto ttype = HH::Types::GetHDF5Type<DataType>();
+			HH_hid_t otype = getType();
+			return H5Tequal(ttype(), otype());
 		}
 
 		/// Get an attribute's dataspace
-		[[nodiscard]] HH_hid_t getSpace() const
+		HH_hid_t getSpace() const
 		{
 			return HH_hid_t(H5Aget_space(attr()), Closers::CloseHDF5Dataspace::CloseP);
 		}
+		inline HH_hid_t space() const { return getSpace(); }
 
 		/// Get the amount of storage space used INSIDE HDF5 for an attribute
-		[[nodiscard]] hsize_t getStorageSize() const
+		hsize_t getStorageSize() const
 		{
 			return H5Aget_storage_size(attr());
 		}
@@ -263,7 +274,7 @@ namespace HH {
 		/// @name General Functions
 		/// @{
 		/// Does an attribute with the specified name exist?
-		[[nodiscard]] htri_t exists(not_null<const char*> attname)
+		htri_t exists(not_null<const char*> attname)
 		{
 			return H5Aexists(base(), attname.get());
 		}
@@ -280,7 +291,7 @@ namespace HH {
 
 		/// \todo open, create and add should also give a scoped handle return object as an option.
 		/// \\brief Open an attribute
-		[[nodiscard]] Attribute open(
+		Attribute open(
 			not_null<const char*> name,
 			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
 		{
@@ -290,6 +301,9 @@ namespace HH {
 				Closers::CloseHDF5Attribute::CloseP
 			));
 		}
+
+		Attribute operator[](not_null<const char*> name) { return open(name); }
+
 		/// \brief Create an attribute, without setting its data.
 		template <class DataType>
 		[[nodiscard]] Attribute create(

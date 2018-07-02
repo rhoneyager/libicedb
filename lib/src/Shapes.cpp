@@ -155,103 +155,75 @@ namespace icedb {
 		}
 
 		Shape::~Shape() {}
-		Shape::Shape(const std::string &uid) : particle_unique_id{ uid } {}
 		const std::string Shape::_icedb_obj_type_shape_identifier = "shape";
 		const uint16_t Shape::_icedb_current_shape_schema_version = 0;
 
-		bool Shape::isShape(Groups::Group &owner, const std::string &name) {
-			if (!owner.doesGroupExist(name)) return false;
-			auto grp = owner.openGroup(name);
-			return isShape(grp->getHDF5Group().get());
-		}
-		bool Shape::isShape(gsl::not_null<H5::Group*> group) {
-			if (!Attributes::CanHaveAttributes::doesAttributeExist(group, Group::_icedb_obj_type_identifier)) return false;
-			if (Attributes::CanHaveAttributes::getAttributeTypeId(group, Group::_icedb_obj_type_identifier) != typeid(std::string)) return false;
-			
-			Attributes::Attribute<std::string> obj_type
-				= Attributes::CanHaveAttributes::readAttribute<std::string>(group, Group::_icedb_obj_type_identifier);
-			if (obj_type.data.size() != 1) return false;
-			if (obj_type.data[0] != Shape::_icedb_obj_type_shape_identifier) return false;
+		bool Shape::isShape(HH::HH_hid_t group) {
+			// Get link type. If this is a group, then check the attributes.
+			H5O_info_t oinfo;
+			herr_t err = H5Oget_info(group(), &oinfo);
+			if (err < 0) return false;
+			if (oinfo.type != H5O_type_t::H5O_TYPE_GROUP) return false;
+
+			HH::Group g(group);
+
+			if (!g.atts.exists("_icedb_obj_type")) return false;
+			auto aType = g.atts["_icedb_obj_type"];
+			if (H5Tget_class(aType.type()()) != H5T_STRING) return false;
+			std::string sOType = aType.read<std::string>();
+			if (sOType != Shape::_icedb_obj_type_shape_identifier) return false;
 			return true;
 		}
 		bool Shape::isShape() const {
-			return isShape(getHDF5Group().get());
+			return isShape(get());
 		}
 
-		bool Shape::isValid(std::ostream *out) const { return isValid(this->getHDF5Group().get(), out); }
-		bool Shape::isValid(gsl::not_null<H5::Group*> group, std::ostream *out) {
+		bool Shape::isValid(std::ostream *out) const { return isValid(this->get(), out); }
+		bool Shape::isValid(HH::HH_hid_t gid, std::ostream *out) {
 			/// Check for the existence of the standard tables, dimensions and attributes, and that
 			/// they have the appropriate sizes.
 
-			/// \todo Finish this, and tucn checks on attributes and variables into template functions!!!
+			/// \todo Finish this, and turn checks on attributes and variables into template functions!!!
 
 			bool good = true;
-			if (!isShape(group)) {
+			if (!isShape(gid)) {
 				good = false;
-				if (out) (*out) << "This is not a valid shape. Missing the appropriate " 
-					<< Groups::Group::_icedb_obj_type_identifier << " attribute." << std::endl;
+				if (out) (*out) << "This is not a valid shape. Missing the appropriate icedb identifying attribute." << std::endl;
 				return good;
 			}
+			auto group = HH::Group(gid);
 
-			if (!Attributes::CanHaveAttributes::doesAttributeExist(group, "particle_id")) {
+			if (!group.atts.exists("particle_id")) {
 				good = false;
 				if (out) (*out) << "Missing the particle_id attribute." << std::endl;
 			}
-			else if (Attributes::CanHaveAttributes::getAttributeTypeId(group, "particle_id") != typeid(std::string)) {
+			else if (H5Tget_class(group.atts["particle_id"].type()()) != H5T_STRING) {
 				good = false;
 				if (out) (*out) << "The particle_id attribute has the wrong type." << std::endl;
-			}
-			else {
-				auto attr = Attributes::CanHaveAttributes::readAttribute<std::string>(group, "particle_id");
-				if (attr.data.size() != 1) {
-					good = false;
-					if (out) (*out) << "The particle_id attribute has the wrong size. It should be a scalar." << std::endl;
-				}
-				else {
-					if (!attr.data[0].size()) {
-						good = false;
-						if (out) (*out) << "The particle_id attribute is empty." << std::endl;
-					}
-				}
 			}
 			if (out) (*out) << "TODO: Finish these checks!" << std::endl;
 			return good;
 		}
 
-		Shape::Shape_Type Shape::openShape(Groups::Group &owner, const std::string &name) {
-			Expects(owner.doesGroupExist(name));
-			return openShape(owner.openGroup(name)->getHDF5Group());
-		}
-		
-		Shape::Shape_Type Shape::openShape(Groups::Group &grpshp) {
-			return openShape(grpshp.getHDF5Group());
-		}
-
-		Shape::Shape_Type Shape::createShape(Groups::Group &grpshp,
-			const std::string &uid,
+		Shape Shape::createShape(
+			HH::HH_hid_t baseGrpID,
+			gsl::not_null<const char*> shapeGrp,
 			gsl::not_null<const NewShapeRequiredProperties*> required,
 			const NewShapeCommonOptionalProperties* optional)
 		{
-			return createShape(grpshp.getHDF5Group(), uid, required, optional);
-		}
-
-		Shape::Shape_Type Shape::createShape(Groups::Group &owner, const std::string &name,
-			const std::string &uid,
-			gsl::not_null<const NewShapeRequiredProperties*> required,
-			const NewShapeCommonOptionalProperties* optional)
-		{
-			if (owner.doesGroupExist(name)) {
-				const auto grp = owner.openGroup(name);
-				return createShape(grp->getHDF5Group(), uid, required, optional);
+			Group base(baseGrpID);
+			if (base.exists(shapeGrp)) {
+				const auto grp = base.open(shapeGrp);
+				return createShape(grp.get(), required, optional);
 			}
 			else {
-				const auto grp = owner.createGroup(name);
-				return createShape(grp->getHDF5Group(), uid, required, optional);
+				const auto grp = base.create(shapeGrp);
+				return createShape(grp.get(), required, optional);
 			}
 		}
 
-		Shape::Shape_Type Shape::createShape(Groups::Group::Group_HDF_shared_ptr newShapeLocation,
-			const std::string &uid,
+		Shape Shape::createShape(
+			HH::HH_hid_t newLocationAsEmptyGroup,
 			gsl::not_null<const NewShapeRequiredProperties*> required,
 			const NewShapeCommonOptionalProperties* optional)
 		{
@@ -259,38 +231,49 @@ namespace icedb {
 			if (required->requiresOptionalPropertiesStruct()) Expects(optional);
 			if (optional) Expects(optional->isValid(required));
 
-			Shape::Shape_Type res = std::make_unique<Shape_impl>(uid, newShapeLocation);
-			
+			// newLocationAsEmptyGroup
+			HH::Group res(newLocationAsEmptyGroup);
+
 			// Write debug information
 			{
 				using namespace icedb::versioning;
 				using std::string;
 				auto libver = getLibVersionInfo();
 				string sLibVer(libver->vgithash);
-				res->writeAttribute<string>("_icedb_git_hash", { 1 }, { sLibVer });
-				res->writeAttribute("_icedb_version", { 3 },
-					{ libver->vn[versionInfo::V_MAJOR], libver->vn[versionInfo::V_MINOR], libver->vn[versionInfo::V_REVISION] });
+				res.atts.add<string>("_icedb_git_hash", sLibVer);
+				res.atts.add<uint64_t>("_icedb_version",
+					{ libver->vn[versionInfo::V_MAJOR], libver->vn[versionInfo::V_MINOR], libver->vn[versionInfo::V_REVISION] }, { 3 });
 			}
 
 			// Write required attributes
-			res->writeAttribute<std::string>(Group::_icedb_obj_type_identifier, { 1 }, { Shape::_icedb_obj_type_shape_identifier });
-			res->writeAttribute<uint16_t>("_icedb_shape_schema_version", { 1 }, { Shape::_icedb_current_shape_schema_version });
-			res->writeAttribute<std::string>("particle_id", { 1 }, { required->particle_id });
+			res.atts.add<std::string>("_icedb_obj_type", Shape::_icedb_obj_type_shape_identifier );
+			res.atts.add<uint16_t>("_icedb_shape_schema_version", Shape::_icedb_current_shape_schema_version );
+			res.atts.add<std::string>("particle_id", required->particle_id );
+
+			using namespace HH::Tags;
+			using namespace HH::Tags::PropertyLists;
+			constexpr size_t max_x = 20000;
+			const std::vector<hsize_t> chunks2d{
+				(max_x < required->number_of_particle_scattering_elements) ?
+				max_x : required->number_of_particle_scattering_elements, 3 };
+
+			auto pl2d = HH::PL::PL::createDatasetCreation().setDatasetCreationPList<uint64_t>(
+				//t_CompressionType(HH::PL::CompressionType::ANY)
+				t_Chunking({ chunks2d[0], chunks2d[1] })
+				);
 
 			// Write required dimensions
-
-			std::unique_ptr<icedb::Tables::Table> tblPSEN;
-			{
-				tblPSEN = res->createTable<uint64_t>("particle_scattering_element_number",
+			auto tblPSEN = res.dsets.create<uint64_t>(
+				"particle_scattering_element_number",
 				{ static_cast<size_t>(required->number_of_particle_scattering_elements) });
-				tblPSEN->writeAttribute<std::string>("description", { 1 }, { "ID number of scattering element" });
-				tblPSEN->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPSEN->writeAttribute<std::string>("comments", { 1 }, { "" });
+			{
+				tblPSEN.atts.add<std::string>("description", "ID number of scattering element");
+				tblPSEN.atts.add<std::string>("units", "None");
 
 				bool added = false;
 				if (optional) {
 					if (!optional->particle_scattering_element_number.empty()) {
-						tblPSEN->writeAll(optional->particle_scattering_element_number);
+						tblPSEN.write<uint64_t>(optional->particle_scattering_element_number);
 						added = true;
 					}
 				}
@@ -299,24 +282,22 @@ namespace icedb {
 					std::vector<uint64_t> dummyPSENs(required->number_of_particle_scattering_elements);
 					for (size_t i = 0; i < required->number_of_particle_scattering_elements; ++i)
 						dummyPSENs[i] = i + 1;
-					tblPSEN->writeAll(dummyPSENs);
+					tblPSEN.write<uint64_t>(dummyPSENs);
 				}
 				// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
 				// However, netCDF should have these values.
-				tblPSEN->setDimensionScale("particle_scattering_element_number");
+				tblPSEN.setIsDimensionScale("particle_scattering_element_number");
 			}
 
-			std::unique_ptr<icedb::Tables::Table> tblPCN;
-			{
-				tblPCN = res->createTable<uint8_t>("particle_constituent_number",
+			auto tblPCN = res.dsets.create<uint8_t>("particle_constituent_number",
 				{ static_cast<size_t>(required->number_of_particle_constituents) });
-				tblPCN->writeAttribute<std::string>("description", { 1 }, { "ID number of the constituent material" });
-				tblPCN->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPCN->writeAttribute<std::string>("comments", { 1 }, { "" });
+			{
+				tblPCN.atts.add<std::string>("description", "ID number of the constituent material");
+				tblPCN.atts.add<std::string>("units", "None" );
 				bool added = false;
 				if (optional) {
 					if (!optional->particle_constituent_number.empty()) {
-						tblPCN->writeAll<uint8_t>(optional->particle_constituent_number);
+						tblPCN.write<uint8_t>(optional->particle_constituent_number);
 						added = true;
 					}
 				}
@@ -325,22 +306,15 @@ namespace icedb {
 					std::vector<uint8_t> dummyPCNs(required->number_of_particle_constituents);
 					for (size_t i = 0; i < required->number_of_particle_constituents; ++i)
 						dummyPCNs[i] = static_cast<uint8_t>(i + 1);
-					tblPCN->writeAll<uint8_t>(dummyPCNs);
+					tblPCN.write<uint8_t>(dummyPCNs);
 				}
-				tblPCN->setDimensionScale("particle_constituent_number");
+				tblPCN.setIsDimensionScale("particle_constituent_number");
 			}
 
-			std::unique_ptr<icedb::Tables::Table> tblXYZ;
-			if (required->NC4_compat) {
-				tblXYZ = res->createTable<uint8_t>("particle_axis", { 3 }, { 0, 1, 2 });
-				tblXYZ->setDimensionScale("particle_axis");
-			}
+			auto tblXYZ = res.dsets.create<uint8_t>("particle_axis", { 3 });
+			tblXYZ.write<uint8_t>({ 0, 1, 2 });
+			tblXYZ.setIsDimensionScale("particle_axis");
 
-			constexpr size_t max_x = 20000;
-			const std::vector<size_t> chunks{ 
-				(max_x < required->number_of_particle_scattering_elements) ? 
-				max_x : required->number_of_particle_scattering_elements, 3 };
-			
 			// Determine if we can store the data as integers.
 			// If non-integral coordinates, no.
 			// If we can store the data as integers, then write the variable using the smallest
@@ -349,38 +323,33 @@ namespace icedb {
 			/// \todo Auto-detect if we are using integral scattering element coordinates.
 			bool useInts = (required->particle_scattering_element_coordinates_are_integral) ? true : false;
 			
+			HH::Dataset tblPSEC(HH::HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP)); // = res.dsets.create<uint8_t>("particle_axis", { 3 });
 			if (useInts) {
 				std::vector<int32_t> crds_ints(required->number_of_particle_scattering_elements*3);
-				for (size_t i = 0; i < crds_ints.size(); ++i) {
-					// Narrow cast will check that the representation remains the same.
-					// If the values change, then the cast will fail and the program will abort.
+				for (size_t i = 0; i < crds_ints.size(); ++i)
 					crds_ints[i] = gsl::narrow_cast<int32_t>(required->particle_scattering_element_coordinates[i]);
-				}
-				auto tblPSEC = res->createTable<int32_t>(
-					"particle_scattering_element_coordinates",
-					{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
-					crds_ints, &chunks);
-				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
-				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
-				tblPSEC->writeAttribute<std::string>("description", { 1 }, { "Cartesian coordinates (x,y,z) of the center of the scattering element (dipole position, center of sphere, etc.)" });
-				tblPSEC->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPSEC->writeAttribute<std::string>("comments", { 1 }, {
-					"Equivalent to the coordinates given in a DDA shape-file (x,y,z-dimension) "
-					"so scattering computations can be easily repeated with the same structure; "
-					"for sphere methods the coordinates describe the center location of the sphere." });
+				tblPSEC = res.dsets.create<int32_t>(
+					t_name("particle_scattering_element_coordinates"),
+					t_dimensions({ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 }),
+					t_DatasetCreationPlist(pl2d())
+					);
+				tblPSEC.write<int32_t>(crds_ints);
+				
 			} else {
-				auto tblPSEC = res->createTable<float>("particle_scattering_element_coordinates",
-				{ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 },
-					required->particle_scattering_element_coordinates, &chunks);
-				if (tblPSEN) tblPSEC->attachDimensionScale(0, tblPSEN.get());
-				if (tblXYZ) tblPSEC->attachDimensionScale(1, tblXYZ.get());
-				tblPSEC->writeAttribute<std::string>("description", { 1 }, { "Cartesian coordinates (x,y,z) of the center of the scattering element (dipole position, center of sphere, etc.)" });
-				tblPSEC->writeAttribute<std::string>("units", { 1 }, { "None" });
-				tblPSEC->writeAttribute<std::string>("comments", { 1 }, {
-					"Equivalent to the coordinates given in a DDA shape-file (x,y,z-dimension) "
-					"so scattering computations can be easily repeated with the same structure; "
-					"for sphere methods the coordinates describe the center location of the sphere." });
+				tblPSEC = res.dsets.create<float>(
+					t_name("particle_scattering_element_coordinates"),
+					t_dimensions({ static_cast<size_t>(required->number_of_particle_scattering_elements), 3 }),
+					t_DatasetCreationPlist(pl2d())
+					);
+				tblPSEC.write<float>(required->particle_scattering_element_coordinates);
 			}
+			tblPSEC.setDims(tblPSEN, tblXYZ);
+			tblPSEC.atts.add<std::string>("description", "Cartesian coordinates (x,y,z) of the center of the scattering element (dipole position, center of sphere, etc.)");
+			tblPSEC.atts.add<std::string>("units", "None");
+			//tblPSEC->writeAttribute<std::string>("comments", { 1 }, {
+			//	"Equivalent to the coordinates given in a DDA shape-file (x,y,z-dimension) "
+			//	"so scattering computations can be easily repeated with the same structure; "
+			//	"for sphere methods the coordinates describe the center location of the sphere." });
 
 			if (optional) {
 
@@ -446,18 +415,8 @@ namespace icedb {
 
 			}
 
-			return res;
+			return Shape(res.get());
 		}
 
-		Shape::Shape_Type Shape::openShape(Groups::Group::Group_HDF_shared_ptr shape) {
-			// Get UUID
-			//res->writeAttribute<std::string>("particle_id", { 1 }, { required->particle_id });
-			Expects(isShape(shape.get()));
-			//Expects(shape->attrExists("particle_id")); // Expects(isShape(shape.get())) subsumes this.
-			auto id = Attributes::CanHaveAttributes::readAttribute<std::string>(shape.get(),"particle_id");
-
-			Shape::Shape_Type res = std::make_unique<Shape_impl>(id.data[0], shape);
-			return res;
-		}
 	}
 }

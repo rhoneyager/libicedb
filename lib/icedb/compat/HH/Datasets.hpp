@@ -100,6 +100,17 @@ namespace HH {
 				  //data.data() // data
 			);
 		}
+		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
+		[[nodiscard]] herr_t write(
+			std::initializer_list<const DataType> data,
+			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t mem_space_id = H5S_ALL,
+			HH_hid_t file_space_id = H5S_ALL,
+			HH_hid_t xfer_plist_id = H5P_DEFAULT)
+		{
+			return write<DataType, Marshaller>(gsl::span(data.data(), data.size()),
+				in_memory_dataType, mem_space_id, file_space_id, xfer_plist_id);
+		}
 
 		/// \brief Read the dataset
 		/// \note Ensure that the correct dimension ordering is preserved
@@ -260,7 +271,7 @@ namespace HH {
 	private:
 		HH_hid_t base;
 	public:
-		Has_Datasets(HH_hid_t obj) : base(obj) {}
+		Has_Datasets(HH_hid_t obj) : base(obj) { Expects(isDataset()); }
 		virtual ~Has_Datasets() {}
 
 		/// \brief Does a dataset with the specified name exist?
@@ -274,6 +285,16 @@ namespace HH {
 			if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) return 1;
 			return 0;
 		}
+
+		static bool isDataset(HH_hid_t obj) {
+			H5I_type_t typ = H5Iget_type(obj());
+			if (typ == H5I_DATASET) return true;
+			//H5O_info_t oinfo;
+			//herr_t err = H5Oget_info(obj(), &oinfo);
+			//if (err < 0) return false;
+			//if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) return true;
+		}
+		bool isDataset() const { return isDataset(base); }
 
 		// Remove by name - handled by removing the link
 
