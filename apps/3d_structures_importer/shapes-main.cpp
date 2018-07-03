@@ -13,6 +13,10 @@
 #include <icedb/defs.h>
 #include <boost/program_options.hpp>
 #include <iostream>
+
+#include <fstream>
+#include <boost/tokenizer.hpp>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -89,8 +93,30 @@ int main(int argc, char** argv) {
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
 		po::notify(vm);
 		if (vm.count("config-file")) {
+			using namespace std;
 			string configfile = vm["config-file"].as<string>();
+#if BOOST_VERSION < 104600
+			// For RHEL's really old Boost distribution
+			ifstream ifs(configfile.c_str());
+			if (!ifs) {
+				cout << "Could no open the response file\n";
+				return 1;
+			}
+			// Read the whole file into a string
+			stringstream ss;
+			ss << ifs.rdbuf();
+			// Split the file content
+			using namespace boost;
+			char_separator<char> sep(" \n\r");
+			tokenizer<char_separator<char> > tok(ss.str(), sep);
+			vector<string> args;
+			copy(tok.begin(), tok.end(), back_inserter(args));
+			// Parse the file and store the options
+			po::store(po::command_line_parser(args).options(desc).run(), vm);
+#else
+			// For modern systems
 			po::store(po::parse_config_file<char>(configfile.c_str(), desc, false), vm);
+#endif
 			po::notify(vm);
 		}
 		
