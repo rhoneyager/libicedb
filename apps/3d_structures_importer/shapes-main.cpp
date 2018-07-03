@@ -70,6 +70,12 @@ int main(int argc, char** argv) {
 			("author", po::value<string>(), "Name(s) of the person/group who generated the shape.")
 			("contact-information", po::value<string>(), "Affiliation, Contact information including email of the person/group who generated the scattering data.")
 			("scattering-method", po::value<string>(), "Method applied to the shape to calculate the scattering properties.")
+			("dataset-id", po::value<string>(), "The dataset id")
+			("dataset-version-major", po::value<unsigned int>(), "Dataset version (major number)")
+			("dataset-version-minor", po::value<unsigned int>(), "Dataset version (minor number)")
+			("dataset-version-revision", po::value<unsigned int>(), "Dataset version (revision number)")
+			("scattering_element_coordinates_scaling_factor", po::value<float>()->default_value(1.0f), "Scaling factor")
+			("scattering_element_coordinates_units", po::value<string>()->default_value("m"), "Scaling factor units")
 			;
 		desc.add(mdata);
 		desc.add(input_matching);
@@ -100,7 +106,7 @@ int main(int argc, char** argv) {
 		
 		sfs::path pToRaw(sToRaw);
 		string dbpath = vm["db-path"].as<string>();
-		if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
+		//if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 		string informat = vm["from-format"].as<string>();
 		bool from_nosearch = vm["from-nosearch"].as<bool>();
 		vector<string> vCustomFileFormats;
@@ -110,10 +116,19 @@ int main(int argc, char** argv) {
 		for (const auto &c : vCustomFileFormats) customFileFormats.insert(c);
 
 		// Metadata
-		string sAuthor, sContact, sScattMeth;
+		string sAuthor, sContact, sScattMeth, sSFunits, sDatasetID;
+		float sSFfactor = 1.0f;
+		array<unsigned int, 3> version = { 1, 0, 0 };
 		if (vm.count("author")) sAuthor = vm["author"].as<string>();
 		if (vm.count("contact-information")) sContact = vm["contact-information"].as<string>();
 		if (vm.count("scattering-method")) sScattMeth = vm["scattering-method"].as<string>();
+		if (vm.count("dataset-id")) sDatasetID = vm["dataset-id"].as<string>();
+		if (vm.count("dataset-version-major")) version[0] = vm["dataset-version-major"].as<unsigned int>();
+		if (vm.count("dataset-version-minor")) version[1] = vm["dataset-version-minor"].as<unsigned int>();
+		if (vm.count("dataset-version-revision")) version[2] = vm["dataset-version-revision"].as<unsigned int>();
+		sSFfactor = vm["scattering_element_coordinates_scaling_factor"].as<float>();
+		sSFunits = vm["scattering_element_coordinates_units"].as<string>();
+
 		auto now = std::chrono::system_clock::now();
 		auto in_time_t = std::chrono::system_clock::to_time_t(now);
 		std::ostringstream ssIngestTime;
@@ -122,7 +137,7 @@ int main(int argc, char** argv) {
 		ssIngestTime << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %H:%M:%S"); // or "%c %Z"
 		string sIngestTime = ssIngestTime.str();
 
-		if (!sAuthor.size() || !sContact.size() || !sScattMeth.size())
+		if (!sAuthor.size() || !sContact.size() || !sScattMeth.size() || !sDatasetID.size())
 			cout << "Note: it is recommended that you set the metadata that describes the shapes that you are importing!" << endl;
 
 
@@ -173,9 +188,18 @@ int main(int argc, char** argv) {
 				// In this example, objects in the output file are named according to their ids.
 				if (data.required.particle_id.size() == 0)
 					data.required.particle_id = f.first.filename().string();
-				if (resolution_um)
-					data.optional.particle_scattering_element_spacing = resolution_um / 1.e6f;
-
+				if (data.optional.particle_constituent_name.size() == 0)
+					data.optional.particle_constituent_name = { "ice" };
+				if (data.optional.particle_constituent_number.size() == 0)
+					data.optional.particle_constituent_number = { 1 };
+				data.optional.scattering_element_coordinates_scaling_factor = sSFfactor;
+				data.optional.scattering_element_coordinates_units = sSFunits;
+				data.required.version = version;
+				data.required.dataset_id = sDatasetID;
+				data.required.author = sAuthor;
+				data.required.contact = sContact;
+				data.optional.scattering_method = sScattMeth;
+				
 				// Writing the shape to the HDF5/netCDF file
 
 				std::cout << "Creating group " << data.required.particle_id << std::endl;
@@ -183,10 +207,6 @@ int main(int argc, char** argv) {
 				std::cout << "Writing shape " << data.required.particle_id << std::endl;
 				icedb::Shapes::Shape shp = data.toShape(basegrp.get(), data.required.particle_id);
 
-				// Apply metadata
-				if (sAuthor.size()) shp.atts.add<std::string>("author", { sAuthor });
-				if (sContact.size()) shp.atts.add<std::string>("contact_information", { sContact });
-				if (sScattMeth.size()) shp.atts.add<std::string>("scattering_method", { sScattMeth });
 				shp.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
 			}
 		}

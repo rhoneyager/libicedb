@@ -17,12 +17,13 @@ namespace HH {
 	private:
 		HH_hid_t base;
 	public:
-		Group(HH_hid_t hnd) : base(hnd), atts(hnd), dsets(hnd) { Expects(isGroup()); } //, grps(hnd) {}
+		Group(HH_hid_t hnd) : base(hnd), atts(hnd), dsets(hnd) {} //, grps(hnd) {}
 		virtual ~Group() {}
 		HH_hid_t get() const { return base; }
 
 		/// \todo Redo this for C++17. Look at tl::Expected.
 		herr_t get_info(H5G_info_t &info) const {
+			Expects(isGroup());
 			herr_t err = H5Gget_info(base(), &info);
 			if (err < 0) return err;
 			return 1;
@@ -50,6 +51,7 @@ namespace HH {
 			not_null<const char*> name,
 			HH_hid_t LinkAccessPlist = H5P_DEFAULT)
 		{
+			Expects(isGroup());
 			htri_t linkExistsFlag = H5Lexists(base(), name.get(), LinkAccessPlist());
 			if (linkExistsFlag < 0) return -1;
 			if (linkExistsFlag == 0) return 0;
@@ -70,6 +72,7 @@ namespace HH {
 			HH_hid_t GroupCreationPlist = H5P_DEFAULT,
 			HH_hid_t GroupAccessPlist = H5P_DEFAULT)
 		{
+			Expects(isGroup());
 			hid_t res = H5Gcreate(
 				base(),
 				name.get(),
@@ -89,6 +92,7 @@ namespace HH {
 			not_null<const char*> name,
 			HH_hid_t GroupAccessPlist = H5P_DEFAULT)
 		{
+			Expects(isGroup());
 			hid_t g = H5Gopen(base(), name.get(), GroupAccessPlist());
 			Expects(g >= 0);
 			return Group(HH_hid_t(g, Closers::CloseHDF5Group::CloseP));

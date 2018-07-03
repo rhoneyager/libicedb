@@ -35,18 +35,32 @@ namespace HH {
 		virtual ~Dataset() {}
 		HH_hid_t get() const { return dset; }
 
+
+		static bool isDataset(HH_hid_t obj) {
+			H5I_type_t typ = H5Iget_type(obj());
+			if (typ == H5I_DATASET) return true;
+			//H5O_info_t oinfo;
+			//herr_t err = H5Oget_info(obj(), &oinfo);
+			//if (err < 0) return false;
+			//if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) return true;
+			return false;
+		}
+		bool isDataset() const { return isDataset(dset); }
+
 		/// Attributes
 		Has_Attributes atts;
 
 		// Get type
 		[[nodiscard]] HH_hid_t getType() const
 		{
+			Expects(isDataset());
 			return HH_hid_t(H5Dget_type(dset()), Closers::CloseHDF5Datatype::CloseP);
 		}
 
 		// Get dataspace
 		[[nodiscard]] HH_hid_t getSpace() const
 		{
+			Expects(isDataset());
 			return HH_hid_t(H5Dget_space(dset()), Closers::CloseHDF5Dataspace::CloseP);
 		}
 
@@ -60,6 +74,7 @@ namespace HH {
 		};
 		Dimensions getDimensions() const
 		{
+			Expects(isDataset());
 			std::vector<hsize_t> dimsCur, dimsMax;
 			auto space = getSpace();
 			Expects(H5Sis_simple(space()) > 0);
@@ -88,6 +103,7 @@ namespace HH {
 			HH_hid_t file_space_id = H5S_ALL,
 			HH_hid_t xfer_plist_id = H5P_DEFAULT)
 		{
+			Expects(isDataset());
 			Marshaller m;
 			auto d = m.serialize(data);
 			return H5Dwrite(
@@ -123,6 +139,7 @@ namespace HH {
 			HH_hid_t file_space_id = H5S_ALL,
 			HH_hid_t xfer_plist_id = H5P_DEFAULT)
 		{
+			Expects(isDataset());
 			return H5Dread(
 				dset(), // dataset id
 				in_memory_dataType(), // mem_type_id
@@ -138,6 +155,8 @@ namespace HH {
 		/// Attach a dimension scale to this table.
 		Dataset attachDimensionScale(unsigned int DimensionNumber, const Dataset& scale)
 		{
+			Expects(isDataset());
+			Expects(isDataset(scale.get()));
 			const herr_t res = H5DSattach_scale(dset(), scale.dset(), DimensionNumber);
 			Expects(res == 0);
 			return *this;
@@ -145,6 +164,8 @@ namespace HH {
 		/// Detach a dimension scale
 		Dataset detachDimensionScale(unsigned int DimensionNumber, const Dataset& scale)
 		{
+			Expects(isDataset());
+			Expects(isDataset(scale.get()));
 			const herr_t res = H5DSdetach_scale(dset(), scale.dset(), DimensionNumber);
 			Expects(res == 0);
 			return *this;
@@ -198,6 +219,7 @@ namespace HH {
 		Dataset AddSimpleAttributes(
 			NameType attname, AttType val)
 		{
+			Expects(isDataset());
 			atts.add<AttType>(attname, { val }, { 1 });
 			/// \todo Check return value
 			return *this;
@@ -212,6 +234,7 @@ namespace HH {
 
 		/// Is this Table used as a dimension scale?
 		bool isDimensionScale() const {
+			Expects(isDataset());
 			const htri_t res = H5DSis_scale(dset());
 			Expects(res >= 0);
 			if (res > 0) return true;
@@ -220,6 +243,7 @@ namespace HH {
 
 		/// Designate this table as a dimension scale
 		Dataset setIsDimensionScale(const std::string &dimensionScaleName) {
+			Expects(isDataset());
 			const htri_t res = H5DSset_scale(dset(), dimensionScaleName.c_str());
 			Expects(res == 0);
 			return *this;
@@ -227,6 +251,7 @@ namespace HH {
 		/// Set the axis label for the dimension designated by DimensionNumber
 		Dataset setDimensionScaleAxisLabel(unsigned int DimensionNumber, const std::string &label)
 		{
+			Expects(isDataset());
 			const htri_t res = H5DSset_label(dset(), DimensionNumber, label.c_str());
 			Expects(res == 0);
 			return *this;
@@ -235,6 +260,7 @@ namespace HH {
 		/// \todo See if there is ANY way to dynamically determine the label size. HDF5 docs do not discuss this.
 		std::string getDimensionScaleAxisLabel(unsigned int DimensionNumber) const
 		{
+			Expects(isDataset());
 			constexpr size_t max_label_size = 1000;
 			std::array<char, max_label_size> label;
 			label.fill('\0');
@@ -245,6 +271,7 @@ namespace HH {
 			return std::string(label.data());
 		}
 		Dataset getDimensionScaleAxisLabel(unsigned int DimensionNumber, std::string &res) const {
+			Expects(isDataset());
 			res = getDimensionScaleAxisLabel(DimensionNumber);
 			return *this;
 		}
@@ -252,6 +279,7 @@ namespace HH {
 		/// \todo See if there is ANY way to dynamically determine the label size. HDF5 docs do not discuss this.
 		std::string getDimensionScaleName() const
 		{
+			Expects(isDataset());
 			constexpr size_t max_label_size = 1000;
 			std::array<char, max_label_size> label;
 			label.fill('\0');
@@ -271,7 +299,7 @@ namespace HH {
 	private:
 		HH_hid_t base;
 	public:
-		Has_Datasets(HH_hid_t obj) : base(obj) { Expects(isDataset()); }
+		Has_Datasets(HH_hid_t obj) : base(obj) {  }
 		virtual ~Has_Datasets() {}
 
 		/// \brief Does a dataset with the specified name exist?
@@ -286,17 +314,7 @@ namespace HH {
 			return 0;
 		}
 
-		static bool isDataset(HH_hid_t obj) {
-			H5I_type_t typ = H5Iget_type(obj());
-			if (typ == H5I_DATASET) return true;
-			//H5O_info_t oinfo;
-			//herr_t err = H5Oget_info(obj(), &oinfo);
-			//if (err < 0) return false;
-			//if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) return true;
-			return false;
-		}
-		bool isDataset() const { return isDataset(base); }
-
+		
 		// Remove by name - handled by removing the link
 
 		// Rename - handled by a new hard link

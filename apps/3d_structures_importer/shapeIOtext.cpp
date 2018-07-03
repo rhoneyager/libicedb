@@ -11,11 +11,16 @@ namespace icedb {
 	namespace Examples {
 		namespace Shapes {
 			void ShapeRequiredData::apply(icedb::Shapes::NewShapeRequiredProperties& p) const {
-				p.particle_id = particle_id;
 				p.number_of_particle_constituents = number_of_particle_constituents;
 				p.number_of_particle_scattering_elements = number_of_particle_scattering_elements;
 				p.particle_scattering_element_coordinates = this->particle_scattering_element_coordinates;
 				p.particle_scattering_element_coordinates_are_integral = this->particle_scattering_element_coordinates_are_integral;
+				
+				p.particle_id = this->particle_id;
+				p.dataset_id = this->dataset_id;
+				p.author = this->author;
+				p.contact = this->contact;
+				p.version = this->version;
 			}
 			void ShapeCommonOptionalData::apply(icedb::Shapes::NewShapeCommonOptionalProperties& p) const {
 				// When applying these, check for the trivial cases. If these occur, then do not
@@ -34,8 +39,11 @@ namespace icedb {
 
 
 				p.particle_scattering_element_radius = this->particle_scattering_element_radius;
+
+				//if (this->particle_constituent_name.size() == 0)
+				//	this->particle_constituent_name.push_back("ice");
 				p.particle_constituent_name = this->particle_constituent_name;
-				p.particle_constituent_single_name = this->particle_constituent_single_name;
+				
 				
 				p.particle_scattering_element_composition_fractional = particle_scattering_element_composition_fractional;
 
@@ -48,8 +56,10 @@ namespace icedb {
 				if (!comp_whole_is_trivial)
 					p.particle_scattering_element_composition_whole = particle_scattering_element_composition_whole;
 
-				p.particle_scattering_element_spacing = this->particle_scattering_element_spacing;
-				p.hint_max_scattering_element_dimension = this->hint_max_scattering_element_dimension;
+				p.scattering_method = this->scattering_method;
+				p.scattering_element_coordinates_scaling_factor = this->scattering_element_coordinates_scaling_factor;
+				p.scattering_element_coordinates_units = this->scattering_element_coordinates_units;
+				//p.particle_scattering_element_spacing = this->particle_scattering_element_spacing;
 			}
 			icedb::Shapes::Shape ShapeDataBasic::toShape(
 				HH::HH_hid_t parentGrpID,

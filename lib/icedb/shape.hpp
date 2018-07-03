@@ -1,5 +1,6 @@
 #pragma once
 #include "fs.hpp"
+#include <Array>
 #include <HH/Groups.hpp>
 
 namespace icedb {
@@ -41,6 +42,18 @@ namespace icedb {
 			/// ATTRIBUTE: Unique Particle Identifier
 			std::string particle_id;
 
+			/// ATTRIBUTE: Dataset identifier
+			std::string dataset_id;
+
+			/// ATTRIBUTE: Author
+			std::string author;
+
+			/// ATTRIBUTE: Contact info
+			std::string contact;
+
+			/// ATTRIBUTE: Version information
+			std::array<unsigned int, 3> version;
+
 
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
@@ -64,15 +77,9 @@ namespace icedb {
 
 			/// VARIABLE: The name of each particle's constituent. Single dimension.
 			/// Becomes REQUIRED if there is more than one constituent. If there is
-			/// only one constituent, then this constituent can be written as an attribute,
-			/// or it can be just assumed to be 'ice'.
+			/// only one constituent, and if this variable is not written, then it can be assumed to be ice.
 			/// Dimensions of [particle_constituent_number]
-			/// \note Currently ignored because I have to redo the HDF5 string writing functions.
 			gsl::span<const std::string> particle_constituent_name;
-
-			/// OPTIONAL ATTRIBUTE: The name of the single constituent of the particle
-			/// Used only if there is a single constituent, and if this constituent is NOT ice.
-			[[deprecated]] std::string particle_constituent_single_name;
 
 			/// OPTIONAL VARIABLE: Mass fractions of each constituent for each scattering element.
 			/// Either this or particle_scattering_element_composition_whole is
@@ -86,12 +93,17 @@ namespace icedb {
 			/// It exists to save space when non-compressed data is stored.
 			gsl::span<const uint8_t> particle_scattering_element_composition_whole;
 
-			/// OPTIONAL ATTRIBUTE: Physical spacing between adjacent grid points (in meters). Used in DDA.
-			float particle_scattering_element_spacing = -1;
+			/// OPTIONAL ATTRIBUTE: Physical spacing between adjacent grid points.
+			float scattering_element_coordinates_scaling_factor = 1.0f;
 
+			/// OPTIONAL ATTRIBUTE: Physical spacing units.
+			std::string scattering_element_coordinates_units = "m";
 
-			/// EXPERIMENTAL HINT: Specify the maximum scattering element dimension
-			float hint_max_scattering_element_dimension = -1;
+			/// OPTIONAL ATTRIBUTE: Scattering method used with the particle
+			std::string scattering_method;
+
+			// REMOVED HINT: Specify the maximum scattering element dimension
+			//[[deprecated]] float hint_max_scattering_element_dimension = -1;
 
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
@@ -111,7 +123,7 @@ namespace icedb {
 			static const uint16_t _icedb_current_shape_schema_version;
 
 			// OPEN an already-existing shape. Validity not guaranteed.
-			Shape(HH::HH_hid_t hnd_grp) : HH::Group(hnd_grp) { Expects(isShape()); }
+			Shape(HH::HH_hid_t hnd_grp) : HH::Group(hnd_grp) {  }
 
 			/// This is the unique identifier for this shape
 			const std::string particle_unique_id;

@@ -124,17 +124,6 @@ namespace icedb {
 				}
 			}
 
-			if (particle_constituent_single_name.size() && required->number_of_particle_constituents != 1) {
-				good = false;
-				if (out) (*out) << "particle_constituent_single_name is a valid attribute only when a single non-ice constituent exists."
-					<< std::endl;
-			}
-
-			if (particle_constituent_single_name.size() && this->particle_constituent_name.size()) {
-				good = false;
-				if (out) (*out) << "particle_constituent_single_name and particle_constituent_name are mutually exclusive."
-					<< std::endl;
-			}
 
 			if (this->particle_constituent_name.size()) {
 				if (this->particle_constituent_name.size() != required->number_of_particle_constituents) {
@@ -234,10 +223,10 @@ namespace icedb {
 			// newLocationAsEmptyGroup
 			HH::Group res(newLocationAsEmptyGroup);
 
+			using std::string;
 			// Write debug information
 			{
 				using namespace icedb::versioning;
-				using std::string;
 				auto libver = getLibVersionInfo();
 				string sLibVer(libver->vgithash);
 				res.atts.add<string>("_icedb_git_hash", sLibVer);
@@ -249,6 +238,11 @@ namespace icedb {
 			res.atts.add<std::string>("_icedb_obj_type", Shape::_icedb_obj_type_shape_identifier );
 			res.atts.add<uint16_t>("_icedb_shape_schema_version", Shape::_icedb_current_shape_schema_version );
 			res.atts.add<std::string>("particle_id", required->particle_id );
+			res.atts.add<string>("dataset_id", required->dataset_id);
+			res.atts.add<string>("author", required->author);
+			res.atts.add<string>("contact", required->contact);
+			res.atts.add<unsigned int>("version", { required->version[0], required->version[1], required->version[2] }, { 3 });
+
 
 			using namespace HH::Tags;
 			using namespace HH::Tags::PropertyLists;
@@ -354,12 +348,19 @@ namespace icedb {
 
 			if (optional) {
 
-				// TODO: if (optional->particle_constituent_name.size()) {}
-				if (optional->particle_constituent_single_name.size()) {
-					res.atts.add<std::string>("particle_single_constituent_name",
-						optional->particle_constituent_single_name);
-					res.atts.add<std::string>("particle_single_constituent_name__description",
-						"This 3d structure is entirely composed of this material.");
+				 if (optional->particle_constituent_name.size())
+				{
+					//res.atts.add<std::string>("particle_constituent_name",
+					//	optional->particle_constituent_single_name);
+					//res.atts.add<std::string>("particle_constituent_name__description",
+					//	"This 3d structure is entirely composed of this material.");
+					auto tblConstits = res.dsets.create<std::string>(
+						t_name("particle_constituent_name"),
+						t_dimensions({ (size_t)optional->particle_constituent_name.size() })
+						);
+					Expects(0 <= tblConstits.write<std::string>(optional->particle_constituent_name));
+					tblConstits.setDims(tblPCN);
+					tblConstits.atts.add<std::string>("description", "Names of the constituents for this particle");
 				}
 
 				if (optional->particle_scattering_element_composition_fractional.size()) {
@@ -392,11 +393,15 @@ namespace icedb {
 				}
 
 				// Write common optional attributes
-				if (optional->particle_scattering_element_spacing > 0) {
-					res.atts.add<float>("particle_scattering_element_spacing", optional->particle_scattering_element_spacing);
-					res.atts.add<std::string>("particle_scattering_element_spacing__description", "Physical spacing between adjacent grid points");
-					res.atts.add<std::string>("particle_scattering_element_spacing__units", "m");
+				if (optional->scattering_element_coordinates_scaling_factor > 0) {
+					res.atts.add<float>("scattering_element_coordinates_scaling_factor", optional->scattering_element_coordinates_scaling_factor);
+					//res.atts.add<std::string>("scattering_element_coordinates_scaling_factor__description", "Physical spacing between adjacent grid points");
 				}
+				if (optional->scattering_element_coordinates_units.size())
+					res.atts.add<std::string>("scattering_element_coordinates_units", optional->scattering_element_coordinates_units);
+
+				if (optional->scattering_method.size())
+					res.atts.add<string>("scattering_method", optional->scattering_method);
 
 				// Write common optional variables
 				if (optional->particle_scattering_element_radius.size()) {

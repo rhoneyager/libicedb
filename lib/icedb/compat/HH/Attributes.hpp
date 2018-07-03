@@ -34,7 +34,7 @@ namespace HH {
 		/// Must release to transfer the handle!!!!!
 		HH_hid_t attr;
 	public:
-		Attribute(HH_hid_t hnd_attr) : attr(hnd_attr) { Expects(isAttribute()); }
+		Attribute(HH_hid_t hnd_attr) : attr(hnd_attr) {  }
 		virtual ~Attribute() {}
 
 		HH_hid_t get() const { return attr; }
@@ -53,6 +53,7 @@ namespace HH {
 			::gsl::span<const DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
 		{
+			Expects(isAttribute());
 			Marshaller m;
 			auto d = m.serialize(data);
 			return H5Awrite(attr(), in_memory_dataType(), d);
@@ -158,6 +159,7 @@ namespace HH {
 		/// \brief Get an attribute's name
 		[[nodiscard]] ssize_t get_name(size_t buf_size, char* buf) const
 		{
+			Expects(isAttribute());
 			return H5Aget_name(attr(), buf_size, buf);
 		}
 		/// \brief Get an attribute's name.
@@ -172,6 +174,7 @@ namespace HH {
 		}
 		enum class att_name_encoding { ASCII, UTF8 };
 		att_name_encoding get_char_encoding() const {
+			Expects(isAttribute());
 			// See https://support.hdfgroup.org/HDF5/doc/Advanced/UsingUnicode/index.html
 			// HDF5 encodes in only either ASCII or UTF-8.
 			HH_hid_t pl(H5Aget_create_plist(attr()), Closers::CloseHDF5PropertyList::CloseP);
@@ -192,6 +195,7 @@ namespace HH {
 		/// \see Types.hpp for the functions to compare the HDF5 type with a system type.
 		HH_hid_t getType() const
 		{
+			Expects(isAttribute());
 			return HH_hid_t(H5Aget_type(attr()), Closers::CloseHDF5Datatype::CloseP);
 		}
 		inline HH_hid_t type() const { return getType(); }
@@ -211,6 +215,7 @@ namespace HH {
 		/// Get an attribute's dataspace
 		HH_hid_t getSpace() const
 		{
+			Expects(isAttribute());
 			return HH_hid_t(H5Aget_space(attr()), Closers::CloseHDF5Dataspace::CloseP);
 		}
 		inline HH_hid_t space() const { return getSpace(); }
@@ -218,10 +223,12 @@ namespace HH {
 		/// Get the amount of storage space used INSIDE HDF5 for an attribute
 		hsize_t getStorageSize() const
 		{
+			Expects(isAttribute());
 			return H5Aget_storage_size(attr());
 		}
 
 		/// Get attribute's dimensions
+		/// \todo Replace with a structure
 		std::tuple<
 			Tags::ObjSizes::t_dimensions_current,
 			Tags::ObjSizes::t_dimensions_max,
@@ -230,6 +237,7 @@ namespace HH {
 			//std::tuple<std::vector<hsize_t>, int, hssize_t>
 			getDimensions()
 		{
+			Expects(isAttribute());
 			std::vector<hsize_t> dims;
 			auto space = getSpace();
 			Expects(H5Sis_simple(space()) > 0);

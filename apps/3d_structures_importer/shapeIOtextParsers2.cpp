@@ -543,7 +543,6 @@ namespace icedb {
 					p.optional.particle_scattering_element_composition_whole[idx] = 1;
 				}
 				p.required.particle_scattering_element_coordinates_are_integral = 1;
-				p.optional.hint_max_scattering_element_dimension = max_element;
 			}
 
 
@@ -635,7 +634,6 @@ namespace icedb {
 				}
 
 				res.required.particle_id = "";
-				res.optional.hint_max_scattering_element_dimension = max_element;
 
 				return res;
 			}
