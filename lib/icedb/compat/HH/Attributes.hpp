@@ -375,7 +375,7 @@ namespace HH {
 				AttributeCreationPlist, AttributeAccessPlist);
 			/// \todo Already checked validity. Check again.
 			//Expects(newAttr.get());
-			herr_t res = newAttr.write<DataType>(data, in_memory_dataType);
+			herr_t res = newAttr.template write<DataType>(data, in_memory_dataType);
 			Expects(res >= 0);
 			return Attribute(std::move(newAttr));
 		}
@@ -396,7 +396,7 @@ namespace HH {
 				in_memory_dataType,
 				AttributeCreationPlist, AttributeAccessPlist);
 			/// \todo Attribute creation check handled already. Check again.
-			herr_t res = newAttr.write<DataType>(
+			herr_t res = newAttr.template write<DataType>(
 				::gsl::make_span(data.begin(), data.size()),
 				in_memory_dataType);
 			Expects(res >= 0);
@@ -441,7 +441,7 @@ namespace HH {
 				AttributeCreationPlist, AttributeAccessPlist);
 			/// \todo Check for failure
 			//Expects(newAttr.);
-			herr_t res = newAttr.write<DataType>(data, in_memory_dataType);
+			herr_t res = newAttr.template write<DataType>(data, in_memory_dataType);
 			Expects(res >= 0);
 			return Attribute(newAttr);
 		}

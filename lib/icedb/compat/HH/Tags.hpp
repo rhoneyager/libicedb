@@ -78,7 +78,7 @@ namespace HH {
 			}
 			typedef Tag<_detail::tag_storage_type, HH_hid_t> HH_t_storage_type;
 			typedef Tag<_detail::tag_objname_type, gsl::not_null<const char*> > t_name;
-			typedef Tag<_detail::tag_dimensions_type, std::initializer_list<hsize_t> > t_dimensions;
+			typedef Tag<_detail::tag_dimensions_type, std::initializer_list<size_t> > t_dimensions;
 		}
 		namespace Datatypes {
 			namespace _detail {

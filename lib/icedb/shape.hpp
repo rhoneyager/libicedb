@@ -1,6 +1,6 @@
 #pragma once
 #include "fs.hpp"
-#include <Array>
+#include <array>
 #include <HH/Groups.hpp>
 
 namespace icedb {

@@ -36,14 +36,20 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 // These get set in main(int,char**).
 float resolution_um = 0; ///< The resolution of each shape lattice, in micrometers.
 
-HH::Group basegrp(HH::HH_hid_t(-1, HH::Closers::DoNotClose::CloseP)); ///< Shapes get written to this location in the output database.
-//icedb::Groups::Group::Group_ptr basegrp;
+herr_t my_hdf5_error_handler(hid_t, void *)
+{
+	fprintf(stderr, "An HDF5 error was detected.Bye.\n");
+	throw;
+	exit(1);
+	return 1;
+}
+
 
 int main(int argc, char** argv) {
 	try {
 		using namespace std;
 		// Read program options
-
+		//H5Eset_auto(H5E_DEFAULT, my_hdf5_error_handler, NULL); // For HDF5 error debugging
 		namespace po = boost::program_options;
 		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options");
 		desc.add_options()
@@ -142,7 +148,7 @@ int main(int argc, char** argv) {
 
 
 		// Create the output file if it does not exist
-		HH::File file(HH::HH_hid_t(-1, HH::Closers::DoNotClose::CloseP)); // Dummy parameter gets replaced always.
+		HH::File file(HH::HH_hid_t::dummy()); // Dummy parameter gets replaced always.
 		if (vm.count("create"))
 			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_CREAT);
 		else if (vm.count("truncate")) 
@@ -156,8 +162,9 @@ int main(int argc, char** argv) {
 		std::cout << "Creating base group " << dbpath << std::endl;
 		// TODO: Make this call easier to invoke.
 		// TODO: property list passing should not need the final () - change signature and required type.
-		basegrp = file.create(dbpath.c_str(),
-			HH::PL::PL::createLinkCreation().setLinkCreationPList(HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
+		HH::Group basegrp = file.create(dbpath.c_str(),
+			HH::PL::PL::createLinkCreation().setLinkCreationPList(
+				HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
 		//basegrp = db->createGroupStructure(dbpath);
 	
 		for (const auto &sFromRaw : vsFromRaw)

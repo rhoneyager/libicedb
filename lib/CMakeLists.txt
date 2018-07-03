@@ -27,16 +27,16 @@ set(gsl_objs
 	icedb/compat/gsl/string_span
 	)
 set (hh_objs
-	icedb/compat/hh/Attributes.hpp
-	icedb/compat/hh/Datasets.hpp
-	icedb/compat/hh/defs.hpp
-	icedb/compat/hh/Files.hpp
+	icedb/compat/HH/Attributes.hpp
+	icedb/compat/HH/Datasets.hpp
+	icedb/compat/HH/defs.hpp
+	icedb/compat/HH/Files.hpp
 	icedb/compat/HH/Groups.hpp
 	icedb/compat/HH/Handles.hpp
 	icedb/compat/HH/Handles_HDF.hpp
 	icedb/compat/HH/Handles_Valid.hpp
-	icedb/compat/hh/HH.hpp
-	icedb/compat/hh/PropertyLists.hpp
+	icedb/compat/HH/HH.hpp
+	icedb/compat/HH/PropertyLists.hpp
 	icedb/compat/HH/Tags.hpp
 	icedb/compat/HH/Types.hpp)
 set(shp_objs

@@ -332,9 +332,9 @@ namespace HH {
 			return open(dsetname);
 		}
 
-		/// \brief Create a dataset
+	private:
 		template <class DataType>
-		Dataset create(
+		Dataset _create(
 			gsl::not_null<const char*> dsetname,
 			initializer_list<size_t> dimensions,
 			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>(),
@@ -362,6 +362,22 @@ namespace HH {
 			return Dataset(HH_hid_t(dsetid, Closers::CloseHDF5Dataset::CloseP));
 		}
 
+
+	public:
+		/// \brief Create a dataset
+		template <class DataType>
+		Dataset create(
+			gsl::not_null<const char*> dsetname,
+			initializer_list<size_t> dimensions,
+			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>(),
+			HH_hid_t LinkCreationPlist = H5P_DEFAULT,
+			HH_hid_t DatasetCreationPlist = H5P_DEFAULT,
+			HH_hid_t DatasetAccessPlist = H5P_DEFAULT)
+		{
+			return _create<DataType>(dsetname, dimensions, dtype,
+				LinkCreationPlist, DatasetCreationPlist, DatasetAccessPlist);
+		}
+
 		template <class DataType, class ... Args>
 		Dataset create(std::tuple<Args...> vals) {
 			using namespace Tags;
@@ -379,7 +395,13 @@ namespace HH {
 			auto DatasetCreationPlist = t_DatasetCreationPlist(H5P_DEFAULT); getOptionalValue(DatasetCreationPlist, vals);
 			auto DatasetAccessPlist = t_DatasetAccessPlist(H5P_DEFAULT); getOptionalValue(DatasetAccessPlist, vals);
 
-			Dataset d = create<DataType>(name.data, dims.data, dtype.data, LinkCreationPlist.data, DatasetCreationPlist.data, DatasetAccessPlist.data);
+			// NOTE: This needs to always hit the non-templated type.
+			Dataset d = _create<DataType>(name.data,
+				dims.data,
+				dtype.data,
+				LinkCreationPlist.data,
+				DatasetCreationPlist.data,
+				DatasetAccessPlist.data);
 
 			// Optionally, write the data: t_data_span, t_data_initializer_list, t_data_eigen
 			constexpr bool has_span = has_type<t_data_span<DataType>, vals_t >::value;

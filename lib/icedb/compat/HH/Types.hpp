@@ -1,4 +1,5 @@
 #pragma once
+#include "defs.hpp"
 #include <memory>
 #include <typeindex>
 #include <typeinfo>
@@ -44,9 +45,9 @@ namespace HH {
 		HH_hid_t GetHDF5Type(
 			typename std::enable_if<!is_string<DataType>::value>::type* = 0)
 		{
-			static_assert(false, "HH::Types::GetHDF5Type does not understand this data type.");
-			throw;
-			return HH_hid_t(-1, HH::Handles::Closers::DoNotClose::Close); // Should never reach this. Invalid handle, just in case.
+			//static_assert(false, "HH::Types::GetHDF5Type does not understand this data type.");
+			throw std::string("HH::Types::GetHDF5Type does not understand this data type.");
+			return HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP); // Should never reach this. Invalid handle, just in case.
 		}
 		/// For fundamental string types. These are either constant or variable length arrays. Separate handling elsewhere.
 		template <class DataType, int String_Type_Length = constants::_Variable_Length>
