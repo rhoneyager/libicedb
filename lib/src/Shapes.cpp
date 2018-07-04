@@ -255,7 +255,7 @@ namespace icedb {
 				//t_CompressionType(HH::PL::CompressionType::ANY)
 				t_Chunking({ chunks2d[0], chunks2d[1] })
 				);
-			auto pl1d = pl2d.clone().setDatasetCreationPList<uint64_t>(t_Chunking({ chunks2d[0], chunks2d[1] }));
+			auto pl1d = pl2d.clone().setDatasetCreationPList<uint64_t>(t_Chunking({ chunks2d[0] }));
 
 			// Write required dimensions
 			auto tblPSEN = res.dsets.create<uint64_t>(
