@@ -39,7 +39,7 @@ If you have a very old installation or distribution, then you may need to use ap
 
 ## Compiler-specific instructions
 
-### Debian Stretch / Ubuntu 16.04 LTS / Ubuntu 17.10 with GCC
+### Debian Stretch / Ubuntu 18.04 LTS with GCC
 
 This is the easiest option.
 
@@ -49,7 +49,7 @@ sudo apt install g++
 
 Now, scroll down to the Build Instructions section.
 
-### Debian Stretch / Ubuntu 16.04 LTS / Ubuntu 17.10 with clang
+### Debian Stretch / Ubuntu 18.04 LTS / Ubuntu 17.10 with clang
 
 This is also very easy. Clang comes in multiple versions on this platform, including 3.8, 3.9, 5.0.
 
@@ -68,6 +68,10 @@ CC=`which clang` CXX=`which clang` cmake ...
 Conveniently, the hdf5 and boost libraries' C++11 bindings are compatible with clang on these distributions. No linking errors were observed.
 
 Scroll down to the Build Instructions section.
+
+### Older Ubuntu and Debian versions
+
+Try building using recent compilers provided by the [Conda Build System](/install_using_conda.html).
 
 ### Ubuntu 14.04 LTS (Work in Progress) with clang only
 

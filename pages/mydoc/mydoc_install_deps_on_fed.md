@@ -48,7 +48,9 @@ sudo yum install gcc-c++
 
 The version of CMake provided by CentOS and RHEL may be insufficient. Conveniently, the [CMake download page](https://cmake.org/download/) provides links to pre-compiled binaries for Linux. Download and extract the CMake binaries to a location like /your/home/directory/bin, /usr/local/bin, or another appropriate location. It would help if this location were in your PATH.
 
+### Older OS versions
 
+Try building using recent compilers provided by the [Conda Build System](/install_using_conda.html).
 
 ### CentOS 6 / RHEL 6 with GCC 6 or 7
 
