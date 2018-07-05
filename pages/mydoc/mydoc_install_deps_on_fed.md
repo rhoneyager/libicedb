@@ -50,7 +50,7 @@ The version of CMake provided by CentOS and RHEL may be insufficient. Convenient
 
 ### Older OS versions
 
-Try building using recent compilers provided by the [Conda Build System](/install_using_conda.html).
+Try building using recent compilers provided by the [Conda Build System](./install_using_conda.html).
 
 ### CentOS 6 / RHEL 6 with GCC 6 or 7
 

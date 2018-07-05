@@ -71,7 +71,7 @@ Scroll down to the Build Instructions section.
 
 ### Older Ubuntu and Debian versions
 
-Try building using recent compilers provided by the [Conda Build System](/install_using_conda.html).
+Try building using recent compilers provided by the [Conda Build System](./install_using_conda.html).
 
 ### Ubuntu 14.04 LTS (Work in Progress) with clang only
 
