@@ -72,6 +72,10 @@ entries:
           url: /install_deps_on_deb.html
           output: web
 
+	- title: Using Conda
+	  url: /install_using_conda.html
+	  output: web
+
         - title: OS X
           url: /install_deps_on_osx.html
           output: web
