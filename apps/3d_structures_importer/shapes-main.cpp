@@ -181,7 +181,7 @@ int main(int argc, char** argv) {
 			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
 		else {
 			if (!sfs::exists(pToRaw))
-				file = HH::File::openFile(pToRaw.string().c_str(), H5F_ACC_CREAT);
+				file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_CREAT);
 			else file = HH::File::openFile(pToRaw.string().c_str(), H5F_ACC_RDWR);
 		}
 		//Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
