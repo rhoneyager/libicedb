@@ -185,10 +185,10 @@ int main(int argc, char** argv) {
 			else file = HH::File::openFile(pToRaw.string().c_str(), H5F_ACC_RDWR);
 		}
 		//Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
-		std::cout << "Creating base group " << dbpath << std::endl;
-		// TODO: Make this call easier to invoke.
-		// TODO: property list passing should not need the final () - change signature and required type.
-		HH::Group basegrp = file.create(dbpath.c_str(),
+		std::cout << "Using base group " << dbpath << std::endl;
+		HH::Group basegrp = HH::Handles::HH_hid_t::dummy();
+		if (file.exists(dbpath.c_str())) basegrp = file.open(dbpath.c_str());
+		else basegrp = file.create(dbpath.c_str(),
 			HH::PL::PL::createLinkCreation().setLinkCreationPList(
 				HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
 		//basegrp = db->createGroupStructure(dbpath);
@@ -235,12 +235,17 @@ int main(int argc, char** argv) {
 				
 				// Writing the shape to the HDF5/netCDF file
 
-				std::cout << "Creating group " << data.required.particle_id << std::endl;
-				//auto shpgrp = basegrp.create(data.required.particle_id.c_str());
 				std::cout << "Writing shape " << data.required.particle_id << std::endl;
-				icedb::Shapes::Shape shp = data.toShape(basegrp.get(), data.required.particle_id);
+				if (basegrp.exists(data.required.particle_id.c_str())) {
+					std::cerr << "Warning: this shape already exists in the output file!!!!!! "
+						"Skipping this shape's write step, as per-shape overwriting is not handled. If you meant to overwrite the "
+						"output file, then provide the --truncate option to the program." << std::endl;
+				}
+				else {
+					icedb::Shapes::Shape shp = data.toShape(basegrp.get(), data.required.particle_id);
 
-				shp.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
+					shp.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
+				}
 			}
 		}
 	}
