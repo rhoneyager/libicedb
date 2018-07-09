@@ -207,3 +207,5 @@ INSTALL(DIRECTORY icedb
 	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_INCLUDE_DIR}
 	COMPONENT Headers
 	)
+
+add_subdirectory(src/io/ddscat)
