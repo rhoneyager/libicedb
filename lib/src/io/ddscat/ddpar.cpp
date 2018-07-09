@@ -1,5 +1,3 @@
-#include "Stdafx-ddscat_base.h"
-#include "../rtmath/defs.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -15,13 +13,12 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 #include <cmath>
-#include <Ryan_Debug/Serialization.h>
-#include "../rtmath/ddscat/ddpar.h"
-#include "../rtmath/ddscat/ddVersions.h"
+#include "ddpar.h"
+#include "ddVersions.h"
 #include <Ryan_Debug/config.h>
 #include "../rtmath/config.h"
 #include <Ryan_Debug/splitSet.h>
-#include "../rtmath/ddscat/rotations.h"
+#include "rotations.h"
 #include <Ryan_Debug/error.h>
 
 namespace {
