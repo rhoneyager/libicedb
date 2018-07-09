@@ -1,5 +1,4 @@
 #pragma once
-#include "../defs.h"
 #include <array>
 #include <functional>
 #include <iostream>
@@ -9,106 +8,103 @@
 #include <set>
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 
-#include <Ryan_Debug/hash.h>
-#include <Ryan_Debug/splitSet.h>
-#include <Ryan_Debug/registry.h>
-#include <Ryan_Debug/io.h>
+#include <icedb/splitSet.hpp>
+//#include <Ryan_Debug/registry.h>
+//#include <Ryan_Debug/io.h>
 
-namespace rtmath {
-	namespace Voronoi {
-		class VoronoiDiagram;
-	}
-	namespace ddscat {
-		namespace shapefile {
-			class shapefile;
-			class shapefile_IO_input_registry {};
-			class shapefile_IO_output_registry {};
-			//class shapefile_serialization {};
-			class shapefile_Standard {};
-			class shapefile_query_registry {};
+namespace icedb {
+	namespace io {
+		namespace ddscat {
+			namespace shapefile {
+				class shapefile;
+				class shapefile_IO_input_registry {};
+				class shapefile_IO_output_registry {};
+				//class shapefile_serialization {};
+				class shapefile_Standard {};
+				class shapefile_query_registry {};
 
-			/// \brief This class is used for plugins to register themselves to handle shape queries.
-			struct DLEXPORT_rtmath_ddscat shapefile_db_registry
-			{
-				struct DLEXPORT_rtmath_ddscat shapefile_db_comp {
-					bool operator() (const std::shared_ptr<const shapefile>& lhs,
-						const std::shared_ptr<const shapefile>& rhs) const;
-					bool operator() (const boost::shared_ptr<const shapefile>& lhs,
-						const boost::shared_ptr<const shapefile>& rhs) const;
-				};
-
-				/// Language-Integrated Query (LINQ) is not a good idea here, since an external database is used
-				class DLEXPORT_rtmath_ddscat shapefile_index :
-					virtual public ::Ryan_Debug::registry::collectionTyped < shapefile > //,
-					//virtual public ::rtmath::registry::collectionTyped<::rtmath::Voronoi::VoronoiDiagram>
+				/// \brief This class is used for plugins to register themselves to handle shape queries.
+				struct DLEXPORT_rtmath_ddscat shapefile_db_registry
 				{
-					shapefile_index();
-				public:
-					std::set<std::string> hashLowers, hashUppers,
-						flakeTypes, refHashLowers;
-					//std::map<float, float > standardDs;
-					Ryan_Debug::splitSet::intervals<float> dipoleSpacings;
-					std::map<std::string, std::string> tags;
-					//std::vector<std::pair<size_t, size_t> > dipoleRanges;
-					Ryan_Debug::splitSet::intervals<size_t> dipoleNumbers;
-				public:
-					~shapefile_index();
-					static std::shared_ptr<shapefile_index> generate();
+					struct DLEXPORT_rtmath_ddscat shapefile_db_comp {
+						bool operator() (const std::shared_ptr<const shapefile>& lhs,
+							const std::shared_ptr<const shapefile>& rhs) const;
+						bool operator() (const boost::shared_ptr<const shapefile>& lhs,
+							const boost::shared_ptr<const shapefile>& rhs) const;
+					};
 
-					typedef std::shared_ptr<std::set<boost::shared_ptr<const shapefile>, shapefile_db_comp > > collection;
-					std::pair<collection, std::shared_ptr<Ryan_Debug::registry::DBhandler> >
-						doQuery(std::shared_ptr<Ryan_Debug::registry::DBhandler> = nullptr,
-						std::shared_ptr<Ryan_Debug::registry::DB_options> = nullptr) const;
+					/// Language-Integrated Query (LINQ) is not a good idea here, since an external database is used
+					class DLEXPORT_rtmath_ddscat shapefile_index :
+						virtual public ::Ryan_Debug::registry::collectionTyped < shapefile > //,
+						//virtual public ::rtmath::registry::collectionTyped<::rtmath::Voronoi::VoronoiDiagram>
+					{
+						shapefile_index();
+					public:
+						std::set<std::string> hashLowers, hashUppers,
+							flakeTypes, refHashLowers;
+						//std::map<float, float > standardDs;
+						Ryan_Debug::splitSet::intervals<float> dipoleSpacings;
+						std::map<std::string, std::string> tags;
+						//std::vector<std::pair<size_t, size_t> > dipoleRanges;
+						Ryan_Debug::splitSet::intervals<size_t> dipoleNumbers;
+					public:
+						~shapefile_index();
+						static std::shared_ptr<shapefile_index> generate();
 
-					virtual bool filter(const shapefile*) const override;
-					//virtual bool filter(const ::rtmath::Voronoi::VoronoiDiagram*) const override;
+						typedef std::shared_ptr<std::set<boost::shared_ptr<const shapefile>, shapefile_db_comp > > collection;
+						std::pair<collection, std::shared_ptr<Ryan_Debug::registry::DBhandler> >
+							doQuery(std::shared_ptr<Ryan_Debug::registry::DBhandler> = nullptr,
+								std::shared_ptr<Ryan_Debug::registry::DB_options> = nullptr) const;
 
-					/**
-					* \brief Add support for filtering based on existing, loaded objects (in a collection).
-					*
-					* Will pull information from the database for filling.
-					* \param srcs is a preexisting collection of loaded objects
-					* \param doUnion indicates whether the database is used to merely add tag
-					*			information to the already-loaded objects, or whether objects in the
-					*			database that match the criteria are also added in.
-					* \param doDb indicates whether the database is consulted for the lookup. If not,
-					* only filter the objects in srcs.
-					**/
-					std::pair<collection, std::shared_ptr<Ryan_Debug::registry::DBhandler> >
-						doQuery(collection srcs,
-						bool doUnion = false, bool doDb = true,
-						std::shared_ptr<Ryan_Debug::registry::DBhandler> = nullptr,
-						std::shared_ptr<Ryan_Debug::registry::DB_options> = nullptr) const;
+						virtual bool filter(const shapefile*) const override;
+						//virtual bool filter(const ::rtmath::Voronoi::VoronoiDiagram*) const override;
+
+						/**
+						* \brief Add support for filtering based on existing, loaded objects (in a collection).
+						*
+						* Will pull information from the database for filling.
+						* \param srcs is a preexisting collection of loaded objects
+						* \param doUnion indicates whether the database is used to merely add tag
+						*			information to the already-loaded objects, or whether objects in the
+						*			database that match the criteria are also added in.
+						* \param doDb indicates whether the database is consulted for the lookup. If not,
+						* only filter the objects in srcs.
+						**/
+						std::pair<collection, std::shared_ptr<Ryan_Debug::registry::DBhandler> >
+							doQuery(collection srcs,
+								bool doUnion = false, bool doDb = true,
+								std::shared_ptr<Ryan_Debug::registry::DBhandler> = nullptr,
+								std::shared_ptr<Ryan_Debug::registry::DB_options> = nullptr) const;
+					};
+
+					shapefile_db_registry();
+					virtual ~shapefile_db_registry();
+					/// Module name.
+					const char* name;
+
+					enum class updateType { INSERT_ONLY, UPDATE_ONLY, INSERT_AND_UPDATE };
+
+					/// \todo As more database types become prevalent, move this over to 
+					/// rtmath::registry and standardize.
+					typedef std::function < std::shared_ptr<Ryan_Debug::registry::DBhandler>
+						(const shapefile_index&, shapefile_index::collection,
+							std::shared_ptr<Ryan_Debug::registry::DBhandler>, std::shared_ptr<Ryan_Debug::registry::DB_options>) > queryType;
+					typedef std::function < std::shared_ptr<Ryan_Debug::registry::DBhandler>
+						(const shapefile_index::collection, updateType,
+							std::shared_ptr<Ryan_Debug::registry::DBhandler>, std::shared_ptr<Ryan_Debug::registry::DB_options>) > writeType;
+					typedef std::function < bool(std::shared_ptr<Ryan_Debug::registry::DBhandler>,
+						std::shared_ptr<Ryan_Debug::registry::DB_options>) > matchType;
+
+					/// Get cross-sections from small stats
+					queryType fQuery;
+					/// Get pfs from small stats
+					writeType fInsertUpdate;
+
+					matchType fMatches;
 				};
-
-				shapefile_db_registry();
-				virtual ~shapefile_db_registry();
-				/// Module name.
-				const char* name;
-
-				enum class updateType { INSERT_ONLY, UPDATE_ONLY, INSERT_AND_UPDATE };
-
-				/// \todo As more database types become prevalent, move this over to 
-				/// rtmath::registry and standardize.
-				typedef std::function < std::shared_ptr<Ryan_Debug::registry::DBhandler>
-					(const shapefile_index&, shapefile_index::collection,
-					std::shared_ptr<Ryan_Debug::registry::DBhandler>, std::shared_ptr<Ryan_Debug::registry::DB_options>) > queryType;
-				typedef std::function < std::shared_ptr<Ryan_Debug::registry::DBhandler>
-					(const shapefile_index::collection, updateType,
-					std::shared_ptr<Ryan_Debug::registry::DBhandler>, std::shared_ptr<Ryan_Debug::registry::DB_options>) > writeType;
-				typedef std::function < bool(std::shared_ptr<Ryan_Debug::registry::DBhandler>,
-					std::shared_ptr<Ryan_Debug::registry::DB_options>) > matchType;
-
-				/// Get cross-sections from small stats
-				queryType fQuery;
-				/// Get pfs from small stats
-				writeType fInsertUpdate;
-
-				matchType fMatches;
-			};
+			}
 		}
 	}
 }

@@ -132,9 +132,9 @@ namespace Ryan_Debug {
 	}
 	namespace io {
 		template <>
-		boost::shared_ptr<::rtmath::ddscat::ddPar> customGenerator()
+		std::shared_ptr<::rtmath::ddscat::ddPar> customGenerator()
 		{
-			boost::shared_ptr<::rtmath::ddscat::ddPar> res
+			std::shared_ptr<::rtmath::ddscat::ddPar> res
 				= ::rtmath::ddscat::ddPar::generate();
 			//	(new ::rtmath::ddscat::ddPar);
 			return res;
@@ -187,21 +187,21 @@ namespace rtmath {
 		}
 		*/
 
-		boost::shared_ptr<ddPar> ddPar::generate(const boost::shared_ptr<const ddPar> src)
+		std::shared_ptr<ddPar> ddPar::generate(const std::shared_ptr<const ddPar> src)
 		{
-			boost::shared_ptr<ddPar> res(new ddPar(*(src.get())));
+			std::shared_ptr<ddPar> res(new ddPar(*(src.get())));
 			return res;
 		}
 
-		boost::shared_ptr<ddPar> ddPar::generate()
+		std::shared_ptr<ddPar> ddPar::generate()
 		{
-			boost::shared_ptr<ddPar> res(new ddPar);
+			std::shared_ptr<ddPar> res(new ddPar);
 			return res;
 		}
 
-		boost::shared_ptr<ddPar> ddPar::generate(const std::string &filename, bool popDefaults)
+		std::shared_ptr<ddPar> ddPar::generate(const std::string &filename, bool popDefaults)
 		{
-			boost::shared_ptr<ddPar> res(new ddPar);
+			std::shared_ptr<ddPar> res(new ddPar);
 			res->readFile(filename);
 			if (popDefaults)
 				res->populateDefaults(false);
@@ -253,9 +253,9 @@ namespace rtmath {
 			read(in);
 		}
 
-		boost::shared_ptr<ddPar> ddPar::clone() const
+		std::shared_ptr<ddPar> ddPar::clone() const
 		{
-			boost::shared_ptr<ddPar> lhs(new ddPar);
+			std::shared_ptr<ddPar> lhs(new ddPar);
 
 			lhs->_version = _version;
 			
@@ -267,15 +267,6 @@ namespace rtmath {
 			lhs->read(in);
 
 			return lhs;
-		}
-
-		Ryan_Debug::hash::HASH_t ddPar::hash() const
-		{
-			std::string res;
-			std::ostringstream out;
-			write(out);
-			res = out.str();
-			return Ryan_Debug::hash::HASH(res.c_str(), (int)res.size());
 		}
 
 		/*
@@ -353,7 +344,7 @@ namespace rtmath {
 		}
 		*/
 
-		void ddPar::writeDDSCAT(const boost::shared_ptr<const ddPar> p, std::ostream &out, std::shared_ptr<Ryan_Debug::registry::IO_options> opts)
+		void ddPar::writeDDSCAT(const std::shared_ptr<const ddPar> p, std::ostream &out, std::shared_ptr<Ryan_Debug::registry::IO_options> opts)
 		{
 			// Writing is much easier than reading!
 			using namespace std;
@@ -413,12 +404,12 @@ namespace rtmath {
 #endif
 		}
 
-		void ddPar::readDDSCAT(boost::shared_ptr<ddPar> src, std::istream &in, bool overlay)
+		void ddPar::readDDSCAT(std::shared_ptr<ddPar> src, std::istream &in, bool overlay)
 		{
 			src->read(in, overlay);
 		}
 
-		void ddPar::readDDSCATdef(boost::shared_ptr<ddPar> src, std::istream &in, std::shared_ptr<Ryan_Debug::registry::IO_options>)
+		void ddPar::readDDSCATdef(std::shared_ptr<ddPar> src, std::istream &in, std::shared_ptr<Ryan_Debug::registry::IO_options>)
 		{
 			readDDSCAT(src, in, false);
 		}
@@ -501,7 +492,7 @@ namespace rtmath {
 				//_keys[vals[1]] = vals[0];
 				using namespace rtmath::ddscat::ddParParsers;
 				{
-					boost::shared_ptr<ddParLine> ptr = mapKeys(vals[1]);
+					std::shared_ptr<ddParLine> ptr = mapKeys(vals[1]);
 					// Strip trailing whitespace at the end of vals[0].
 					// It confuses some of the parsing functions, 
 					// like ddParSimple<string>
@@ -563,11 +554,11 @@ namespace rtmath {
 			}
 		}
 
-		boost::shared_ptr<const ddPar> ddPar::defaultInstance()
+		std::shared_ptr<const ddPar> ddPar::defaultInstance()
 		{
 			using namespace std;
 			using namespace boost::filesystem;
-			static boost::shared_ptr<ddPar> s_inst(new ddPar);
+			static std::shared_ptr<ddPar> s_inst(new ddPar);
 			static bool loaded = false;
 			if (!loaded)
 			{
@@ -575,7 +566,7 @@ namespace rtmath {
 				if (pDefaultPar.string().size() && boost::filesystem::exists(path(pDefaultPar)))
 				{
 					s_inst = ddPar::generate(pDefaultPar.string(), false); 
-					// = boost::shared_ptr<ddPar>(new ddPar(pDefaultPar.string(), false));
+					// = std::shared_ptr<ddPar>(new ddPar(pDefaultPar.string(), false));
 				} else {
 					// Attempt to load the internal instance
 					try {
@@ -602,49 +593,6 @@ namespace rtmath {
 				loaded = true;
 			}
 			return s_inst;
-		}
-
-		void ddPar::add_options(
-			boost::program_options::options_description &cmdline,
-			boost::program_options::options_description &config,
-			boost::program_options::options_description &hidden)
-		{
-			namespace po = boost::program_options;
-			using std::string;
-
-			// hash-shape-dir and hash-stats-dir can be found in rtmath.conf. 
-			// So, using another config file is useless.
-			cmdline.add_options()
-				("default-ddpar", po::value<string>(), "Override the default ddscat.par file") // static option
-				;
-
-			config.add_options()
-				;
-
-			hidden.add_options()
-				;
-		}
-
-		void ddPar::process_static_options(
-			boost::program_options::variables_map &vm)
-		{
-			namespace po = boost::program_options;
-			using std::string;
-			using boost::filesystem::path;
-
-			initPaths();
-			if (vm.count("default-ddpar")) pDefaultPar = path(vm["default-ddpar"].as<string>());
-
-			// Validate paths
-			auto validateFile = [&](path p) -> bool
-			{
-				while (is_symlink(p))
-					p = boost::filesystem::absolute(read_symlink(p), p.parent_path());
-				if (!boost::filesystem::exists(p)) return false;
-				if (is_directory(p)) return false;
-				return true;
-			};
-			//if (!validateFile(pDefaultPar)) RDthrow Ryan_Debug::error::xMissingFile(pDefaultPar.string().c_str());
 		}
 
 	} // end namespace ddscat

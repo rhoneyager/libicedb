@@ -25,7 +25,11 @@ set(IO_DDSCAT_FILES
 	shapefile_convolute.cpp
 	shapefile_parsers.cpp
 	shapefile_query.cpp
-	shapefile_supplemental.cpp
+	io.h
+	plugin.h
+	registry.h
+	#io.cpp
+	registry.cpp
 	)
 
 add_library(icedb_io_ddscat STATIC ${IO_DDSCAT_FILES})
