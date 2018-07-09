@@ -7,7 +7,7 @@
 
 #include "ddpar.h"
 #include "rotations.h"
-//#include <Ryan_Debug/splitSet.h>
+#include <icedb/splitSet.hpp>
 
 namespace icedb {
 	namespace io {
@@ -204,7 +204,7 @@ namespace icedb {
 
 			void rotations::out(ddPar &dest) const
 			{
-				using namespace boost;
+				using namespace std;
 				shared_ptr<ddParParsers::ddParLineMixed<double, size_t> >
 					b(new ddParParsers::ddParLineMixed<double, size_t>(2, 3, ddParParsers::NBETA)),
 					t(new ddParParsers::ddParLineMixed<double, size_t>(2, 3, ddParParsers::NTHETA)),
@@ -253,7 +253,7 @@ namespace icedb {
 				using namespace std;
 				string sbetas;
 				betas(sbetas);
-				Ryan_Debug::splitSet::splitSet<double>(sbetas, b);
+				splitSet::splitSet<double>(sbetas, b);
 			}
 
 			void rotations::thetas(std::set<double> &t) const
@@ -261,7 +261,7 @@ namespace icedb {
 				using namespace std;
 				string sthetas;
 				thetas(sthetas);
-				Ryan_Debug::splitSet::splitSet<double>(sthetas, t);
+				splitSet::splitSet<double>(sthetas, t);
 			}
 
 			void rotations::phis(std::set<double> &p) const
@@ -269,7 +269,7 @@ namespace icedb {
 				using namespace std;
 				string sphis;
 				phis(sphis);
-				Ryan_Debug::splitSet::splitSet<double>(sphis, p);
+				splitSet::splitSet<double>(sphis, p);
 			}
 
 			template<class T>

@@ -7,8 +7,8 @@
 #include <map>
 #include <set>
 #include <complex>
-//#include <boost/tokenizer.hpp>
-//#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 //#include <boost/shared_ptr.hpp>
 #include "ddVersions.h"
 #include "parids.h"
@@ -32,14 +32,14 @@ namespace icedb {
 				/// the standard comment string
 				/// \todo Change idString to also take version information.
 				/// The comments of some of the keys change in v73.
-				void idString(ParId id, std::string &key, size_t version = ddVersions::getDefaultVer());
-				bool commentString(ParId id, std::string &key, size_t version = ddVersions::getDefaultVer());
+				void idString(ParId id, std::string &key, size_t version = 730);
+				bool commentString(ParId id, std::string &key, size_t version = 730);
 
 				/// A very abstract base class
 				class ddParLine
 				{
 				public:
-					friend struct std::less<rtmath::ddscat::ddParParsers::ddParLine>;
+					friend struct std::less<ddscat::ddParParsers::ddParLine>;
 					ddParLine(ParId id = UNKNOWN) { _id = id; _endWriteWithEndl = true; }
 					virtual ~ddParLine() {}
 					/// Read does NOT split keys and vals!!!!!
@@ -388,7 +388,7 @@ namespace icedb {
 	inline void name(bool v) { __setStringBool(id, v, bfalse, btrue); }
 
 		/// Provides local readers and writers for ddscat ddpar data (it's a binder)
-			class implementsDDPAR :
+			class implementsDDPAR //:
 				//private Ryan_Debug::io::implementsIObasic<ddPar, ddPar_IO_output_registry,
 				//ddPar_IO_input_registry, ddPar_Standard>
 			{
@@ -408,14 +408,14 @@ namespace icedb {
 			**/
 			class ddPar :
 				virtual public std::enable_shared_from_this<ddPar>,
-				virtual public ::Ryan_Debug::registry::usesDLLregistry<
-				::rtmath::ddscat::ddPar_IO_input_registry,
-				::Ryan_Debug::registry::IO_class_registry_reader<::rtmath::ddscat::ddPar> >,
-				virtual public ::Ryan_Debug::registry::usesDLLregistry<
-				::rtmath::ddscat::ddPar_IO_output_registry,
-				::Ryan_Debug::registry::IO_class_registry_writer<::rtmath::ddscat::ddPar> >,
-				virtual public ::Ryan_Debug::io::implementsStandardWriter<ddPar, ddPar_IO_output_registry>,
-				virtual public ::Ryan_Debug::io::implementsStandardReader<ddPar, ddPar_IO_input_registry>,
+				//virtual public ::Ryan_Debug::registry::usesDLLregistry<
+				//::rtmath::ddscat::ddPar_IO_input_registry,
+				//::Ryan_Debug::registry::IO_class_registry_reader<::rtmath::ddscat::ddPar> >,
+				//virtual public ::Ryan_Debug::registry::usesDLLregistry<
+				//::rtmath::ddscat::ddPar_IO_output_registry,
+				//::Ryan_Debug::registry::IO_class_registry_writer<::rtmath::ddscat::ddPar> >,
+				//virtual public ::Ryan_Debug::io::implementsStandardWriter<ddPar, ddPar_IO_output_registry>,
+				//virtual public ::Ryan_Debug::io::implementsStandardReader<ddPar, ddPar_IO_input_registry>,
 				virtual public implementsDDPAR
 			{
 			public:
@@ -439,11 +439,11 @@ namespace icedb {
 				void read(std::istream &stream, bool overlay = false);
 				void write(std::ostream&) const;
 				/// Write a standard DDSCAT par file to the output stream
-				static void writeDDSCAT(const std::shared_ptr<const ddPar>, std::ostream &, std::shared_ptr<Ryan_Debug::registry::IO_options>);
+				static void writeDDSCAT(const std::shared_ptr<const ddPar>, std::ostream &); //, std::shared_ptr<Ryan_Debug::registry::IO_options>);
 				/// Read a standard DDSCAT par file from an input stream
 				static void readDDSCAT(std::shared_ptr<ddPar>, std::istream &, bool overlay = false);
 				/// \note Default parameter case is split because of function binding.
-				static void readDDSCATdef(std::shared_ptr<ddPar>, std::istream&, std::shared_ptr<Ryan_Debug::registry::IO_options>);
+				static void readDDSCATdef(std::shared_ptr<ddPar>, std::istream&); // , std::shared_ptr<Ryan_Debug::registry::IO_options>);
 
 				bool operator==(const ddPar &rhs) const;
 				bool operator!=(const ddPar &rhs) const;
@@ -464,12 +464,7 @@ namespace icedb {
 
 				void setDiels(const std::vector<std::string>&);
 				void getDiels(std::vector<std::string>&) const;
-				void getDielHashes(std::vector<Ryan_Debug::hash::HASH_t>&) const;
-				void setDielHashes(std::vector<Ryan_Debug::hash::HASH_t>&);
-
-				/// Calculates the hash of the given ddscat.par.
-				Ryan_Debug::hash::HASH_t hash() const;
-
+				
 				accessorSimpleBool(doNearField, ddParParsers::NRFLD);
 #ifdef near
 #undef near // Annoying MSVC thing
@@ -553,7 +548,7 @@ namespace icedb {
 					std::shared_ptr<ddParParsers::ddParLineSimple<std::string> > >
 					_diels;
 
-				mutable std::vector< Ryan_Debug::hash::HASH_t > _dielHashes;
+				//mutable std::vector< Ryan_Debug::hash::HASH_t > _dielHashes;
 
 				std::string _filename;
 

@@ -33,3 +33,5 @@ addlib(icedb_io_ddscat STATIC)
 storebin(icedb_io_ddscat)
 
 target_include_directories(icedb_io_ddscat SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(icedb_io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
+target_include_directories(icedb_io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
