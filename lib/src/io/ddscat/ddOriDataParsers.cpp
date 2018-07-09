@@ -1,4 +1,3 @@
-#include "Stdafx-ddscat.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -21,7 +20,7 @@
 #include <boost/spirit/include/qi_omit.hpp>
 #include <boost/spirit/include/qi_repeat.hpp>
 
-#include "../rtmath/ddscat/ddOriData.h"
+#include "ddOriData.h"
 #include <Ryan_Debug/macros.h>
 #include "ddOriDataParsers.h"
 #include "../rtmath/ddscat/ddVersions.h"

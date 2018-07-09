@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <memory>
 #include <complex>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>

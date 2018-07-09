@@ -15,11 +15,11 @@
 #include <cmath>
 #include "ddpar.h"
 #include "ddVersions.h"
-#include <Ryan_Debug/config.h>
-#include "../rtmath/config.h"
-#include <Ryan_Debug/splitSet.h>
+//#include <Ryan_Debug/config.h>
+//#include "../rtmath/config.h"
+#include <icedb/splitSet.hpp>
 #include "rotations.h"
-#include <Ryan_Debug/error.h>
+#include <icedb/error.hpp>
 
 namespace {
 	
