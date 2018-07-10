@@ -15,12 +15,12 @@
 #include <boost/tokenizer.hpp>
 //#include "../Ryan_Debug/logging.h"
 //#include "../Ryan_Debug/debug.h"
-#include <icedb/error.hpp>
+#include "../icedb/error.hpp"
 //#include "../Ryan_Debug/fs.h"
 //#include "../Ryan_Debug/config.h"
-#include <icedb/splitSet.hpp>
-#include "registry.h"
-#include <icedb/versioning/versioning.hpp>
+#include "../icedb/splitSet.hpp"
+#include "../icedb/registry.hpp"
+#include "../icedb/versioning/versioning.hpp"
 
 namespace icedb
 {

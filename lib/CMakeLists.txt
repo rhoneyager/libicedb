@@ -101,6 +101,14 @@ set(error_objs
 	src/errorTypes.cpp
 	src/error_context.cpp
 	)
+set(extensible_objs
+	icedb/io.hpp
+	icedb/registry.hpp
+	icedb/plugin.hpp
+	icedb/dlls.hpp
+	src/registry.cpp
+	src/dlls.cpp
+	)
 set(lib_objs
 	#icedb/Data_Types.hpp
 	icedb/defs.h
@@ -131,6 +139,7 @@ generaterc("libicedb" "dll"
 	"Scattering utility library"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
+	source_group("Extensibility" FILES ${extensible_objs})
 source_group("GSL" FILES ${gsl_objs})
 source_group("HH" FILES ${hh_objs})
 source_group("Lib" FILES ${lib_objs})
@@ -150,6 +159,7 @@ set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} #${grp_objs}
 	${db_objs} #${hdf_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
 	${related_cmake_objects} ${hh_objs}
+	${extensible_objs}
 	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
 IF (WIN32 AND NOT CYGWIN)

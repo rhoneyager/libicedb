@@ -2,7 +2,7 @@
 
 #pragma warning(push)
 #pragma warning( disable : 4661 ) // Exporting vector
-
+#include "defs.h"
 #include <functional>
 #include <iostream>
 #include <map>
@@ -15,7 +15,7 @@
 #include <memory>
 //#include "debug.h"
 //#include "dlls.h"
-#include <icedb/error.hpp>
+#include "error.hpp"
 //#include "info.h"
 //#include "logging_base.h"
 
@@ -68,7 +68,7 @@ namespace icedb
 				static std::shared_ptr<hookStorageType> hooks;
 				if (!hooks) hooks = 
 					std::shared_ptr<hookStorageType>(new hookStorageType);
-				add_hook_table(FSIG, hooks.get());
+				add_hook_table(ICEDB_DEBUG_FSIG, hooks.get());
 				return hooks;
 			}
 		//public:

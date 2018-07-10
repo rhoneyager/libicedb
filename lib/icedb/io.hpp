@@ -8,9 +8,9 @@
 #include <memory>
 #include <mutex>
 #include <memory>
-#include "registry.h"
-#include "plugin.h"
-//#include "defs.h"
+#include "registry.hpp"
+#include "plugin.hpp"
+#include "defs.h"
 
 namespace icedb
 {
@@ -98,8 +98,8 @@ namespace icedb
 					h = std::shared_ptr<serialization_handle>(new serialization_handle(filename.c_str(), iotype));
 				else {
 					if (sh->getId() != std::string(serialization_handle::getSHid()))
-						RDthrow(error::xDuplicateHook())
-						<< error::otherErrorText("Passed plugin is "
+						ICEDB_throw(error::error_types::xDuplicateHook)
+						.add<std::string>("Reason", "Passed plugin is "
 						"the wrong one. It is not the serialization "
 						"plugin.");
 					h = std::dynamic_pointer_cast<serialization_handle>(sh);
@@ -407,7 +407,7 @@ namespace icedb
 		template <class obj_class,
 		class output_registry_class>
 		class implementsStandardWriter :
-			virtual public boost::enable_shared_from_this<obj_class>
+			virtual public std::enable_shared_from_this<obj_class>
 		{
 		protected:
 			/// \brief Variable controls if compression is used for certain recognized 
@@ -532,7 +532,7 @@ namespace icedb
 		template <class obj_class,
 		class input_registry_class>
 		class implementsStandardSingleReader :
-			virtual public boost::enable_shared_from_this<obj_class>
+			virtual public std::enable_shared_from_this<obj_class>
 		{
 		protected:
 			// Controls whether boost::serialization can write this file.
@@ -797,57 +797,6 @@ namespace icedb
 			//	s->readFile(fname);
 			//	rinputs.push_back(s);
 			//}
-		};
-
-		/**
-		* These don't really fit the standard io plugin spec, as they refer to database entries.
-		* Database search and update semantics are different, and it is much better to do bulk searches 
-		* and updates than one-by-one.
-		* Of course, the io plugins could be usable, but selecting ranges for read with IO_options is bad, 
-		* and handling many writes would either involve code complexity or poor code performance.
-		**/
-		template <class obj_class, class registry_class, class index_class, class comp_class, class query_reg_class>
-		class implementsDBbasic
-		{
-		public:
-			static std::shared_ptr<index_class> makeQuery() { return index_class::generate(); }
-			/* // Doesn't compile in MSVC. Complains about the cast.
-			std::shared_ptr<icedb::registry::DBhandler> updateEntry(typename registry_class::updateType t,
-				std::shared_ptr<icedb::registry::DBhandler> p = nullptr, 
-				std::shared_ptr<registry::DB_options> o = nullptr) const
-			{
-				auto c = makeCollection();
-				std::shared_ptr<obj_class> obj = std::shared_ptr<obj_class>(new obj_class);
-				*obj = (dynamic_cast<obj_class*>(this)); // TODO:
-				c->insert(obj);
-				return updateCollection(c, t, p, o);
-			}
-			*/
-			static typename index_class:: collection makeCollection()
-			{
-				return typename index_class::collection
-					(new std::set<std::shared_ptr<const obj_class>, comp_class >());
-			}
-			static std::shared_ptr<icedb::registry::DBhandler> 
-				updateCollection(typename index_class::collection c, 
-				typename registry_class::updateType t, 
-				std::shared_ptr<icedb::registry::DBhandler> p = nullptr, 
-				std::shared_ptr<registry::DB_options> o = nullptr)
-			{
-				std::ostringstream os;
-				os << "Updating database";
-				emit_io_log(os.str(), icedb::log::normal);
-
-				auto hooks = ::icedb::registry::usesDLLregistry<query_reg_class, registry_class >::getHooks();
-				for (const auto &h : *(hooks.get()))
-				{
-					if (!h.fMatches) continue;
-					if (!h.fInsertUpdate) continue;
-					if (h.fMatches(p, o))
-						return h.fInsertUpdate(c, t, p, o);
-				}
-				return nullptr;
-			}
 		};
 
 	}

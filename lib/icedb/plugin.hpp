@@ -1,8 +1,8 @@
 #pragma once
-#include <icedb/versioning/versioning.hpp>
+#include "versioning/versioning.hpp"
 //#include "info.h"
 //#include "dlls.h"
-#include "registry.h"
+#include "registry.hpp"
 
 // When loading, icedb::registry asks for symbol dllVer.
 // dllVer is a function like void(icedb::versioning::versionInfo&, void*, void*)
