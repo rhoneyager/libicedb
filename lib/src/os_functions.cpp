@@ -42,9 +42,36 @@
 //#include "../icedb/dlls/dlls.h"
 //#include "../icedb/misc/mem.h"
 #include "../icedb/util.h"
+#include "../icedb/splitSet.hpp"
+#include <boost/filesystem.hpp>
 
 namespace icedb {
 	namespace os_functions {
+		struct moduleInfo { std::string path; };
+		/// Contains information about a process
+		struct processInfo
+		{
+			/// Executable name
+			std::string name;
+			/// Executable path
+			std::string path;
+			/// Current working directory
+			std::string cwd;
+			/// Environment variables
+			std::string environment;
+			/// Command-line
+			std::string cmdline;
+			/// Process start time
+			std::string startTime;
+			/// Process ID
+			int pid;
+			/// Process ID of parent
+			int ppid;
+
+			std::map<std::string, std::string> expandedEnviron;
+			std::vector<std::string> expandedCmd;
+		};
+
 		namespace vars {
 			std::mutex m_sys_names;
 			std::string hostname, username,
@@ -117,7 +144,7 @@ namespace icedb {
 				return hModule;
 			}
 
-			std::string GetModulePath(HMODULE mod)
+			std::string GetModulePath(HMODULE mod = NULL)
 			{
 				std::string out;
 				bool freeAtEnd = false;
@@ -928,10 +955,6 @@ void ICEDB_writeDebugString(const char* c) {
 #endif
 }
 
-
-
-
-
 namespace icedb {
 	namespace os_functions {
 
@@ -951,6 +974,195 @@ namespace icedb {
 		const char* getLibPath() { ICEDB_getLibDirI(); return libPath.c_str(); }
 		const char* getAppPath() { ICEDB_getAppDirI(); return appPath.c_str(); }
 		const char* getCWD() { ICEDB_getCWDI(); return CWD.c_str(); }
+
+
+		void freeModuleInfoP(hModuleInfo p) { delete p; }
+		DL_ICEDB void freeProcessInfoP(hProcessInfo p) { delete p; }
+		hModuleInfo getModuleInfoP(void* func)
+		{
+			std::string modpath;
+			moduleInfo* res = new moduleInfo;
+#ifdef __unix__
+			modpath = unix::GetModulePath(func);
+#endif
+#ifdef _WIN32
+			BOOL success = false;
+			if (func)
+			{
+				// Get path of func
+				DWORD flags = GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS;
+				LPCTSTR lpModuleName = (LPCTSTR)func;
+				HMODULE mod;
+				success = GetModuleHandleEx(flags, lpModuleName, &mod);
+				if (!success) return res;
+				modpath = win::GetModulePath(mod);
+				FreeLibrary(mod);
+			}
+			else {
+				// Get dll path
+				modpath = win::GetModulePath(NULL);
+			}
+#endif
+			res->path = modpath;
+			return res;
+		}
+		/**
+		* \brief Provides information about the given process.
+		*
+		* Reads in process information from /proc or by querying the os.
+		* Returns a structure containing the process:
+		* - PID
+		* - PPID
+		* - Executable name
+		* - Executable path
+		* - Current working directory
+		* - Environment
+		* - Command-line
+		* - Process start time
+		*
+		* \throws std::exception if the process does not exist
+		**/
+		hProcessInfo getInfoP(int pid) {
+			processInfo* res = new processInfo;
+			res->pid = pid;
+			if (!pidExists(pid)) throw "PID does not exist"; // TODO: exception
+			res->ppid = getPPID(pid);
+#ifdef __unix__
+			{
+				using namespace boost::filesystem;
+				using namespace std;
+				ostringstream procpath;
+				procpath << "/proc/" << pid;
+				string sp = procpath.str();
+				// exe and cwd are symlinks. Read them.
+				// path = exe. executable name is the file name from the path.
+				path pp(sp);
+				path pexe = pp / "exe";
+				path pcwd = pp / "cwd";
+
+				path psexe = read_symlink(pexe);
+				path pscwd = read_symlink(pcwd);
+				path pexename = psexe.filename();
+
+				res->name = pexename.string();
+				res->path = psexe.string();
+				res->cwd = pscwd.string();
+
+				// environ and cmdline can be read as files
+				// both internally use null-terminated strings
+				// TODO: figure out what to do with this.
+				path pcmd(pp / "cmdline");
+				std::ifstream scmdline(pcmd.string().c_str());
+				const int length = 1024;
+				char *buffer = new char[length];
+				while (scmdline.good())
+				{
+					scmdline.read(buffer, length);
+					res->cmdline.append(buffer, scmdline.gcount());
+				}
+				//scmdline >> res->cmdline;
+				// Replace command-line null symbols with spaces
+				//std::replace(res->cmdline.begin(),res->cmdline.end(),
+				//		'\0', ' ');
+
+				path penv(pp / "environ");
+				std::ifstream senviron(penv.string().c_str());
+
+				while (senviron.good())
+				{
+					senviron.read(buffer, length);
+					res->environment.append(buffer, senviron.gcount());
+				}
+				// Replace environment null symbols with newlines
+				//std::replace(res->environ.begin(),res->environ.end(),
+				//		'\0', '\n');
+				delete[] buffer;
+
+				// start time is the timestamp of the /proc/pid folder.
+				std::time_t st = last_write_time(pp);
+				string ct(ctime(&st));
+				res->startTime = ct;
+
+			}
+#endif
+#ifdef _WIN32
+			//throw std::string("Unimplemented on WIN32"); // unimplemented
+			std::string filename, filepath;
+			win::getPathWIN32((DWORD)pid, filepath, filename); // int always fits in DWORD
+			res->name = filename;
+			res->path = filepath;
+			res->startTime;
+
+			int mypid = getPID();
+			if (pid == mypid || win::IsAppRunningAsAdminMode())
+			{
+				LPTCH penv = GetEnvironmentStrings();
+				LPTCH pend = penv, pprev = '\0';
+				while (*pend || *pprev)
+				{
+					pprev = pend;
+					++pend;
+				}
+
+				// UNICODE not covered by these functions, I think.....
+				// If using unicode and not multibyte...
+				// Convert wchar to char in preparation for string and path conversion
+				//#ifdef UNICODE
+				/*
+				size_t origsize = pend - penv + 1;
+
+				const size_t newsize = 3000;
+				size_t convertedChars = 0;
+				char nstring[newsize];
+				wcstombs_s(&convertedChars, nstring, origsize, penv, _TRUNCATE);
+				res->environ = std::string(nstring, nstring+newsize);
+				*/
+				//#else
+				res->environment = std::string(penv, pend);
+				//#endif
+				FreeEnvironmentStrings(penv);
+
+				res->cmdline = std::string(GetCommandLine());
+
+				DWORD sz = GetCurrentDirectory(0, NULL);
+				LPTSTR cd = new TCHAR[sz];
+				DWORD result = GetCurrentDirectory(2500, cd);
+				res->cwd = std::string(cd);
+				delete[] cd;
+
+			}
+			else {
+				// Privilege escalation required. Need to handle this case.
+				//throw err.c_str();
+			}
+
+			// Get parent process name
+			HANDLE h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION
+				//| PROCESS_VM_READ
+				, FALSE, pid);
+			if (NULL == h) throw ("Error in getting handle for process times!");
+			FILETIME pCreation, pExit, pKernel, pUser;
+			if (!GetProcessTimes(h, &pCreation, &pExit, &pKernel, &pUser)) throw ("Error in getting process times!");
+
+			std::ostringstream outCreation;
+			SYSTEMTIME pCreationSystem, pCreationLocal;
+			if (!FileTimeToSystemTime(&pCreation, &pCreationSystem)) throw ("Error in getting process times to system times!");
+			SystemTimeToTzSpecificLocalTime(NULL, &pCreationSystem, &pCreationLocal);
+			outCreation << pCreationLocal.wYear << "-" << pCreationLocal.wMonth << "-" << pCreationLocal.wDay << " "
+				<< pCreationLocal.wHour << ":" << pCreationLocal.wMinute << ":" << pCreationLocal.wSecond << "."
+				<< pCreationLocal.wMilliseconds;
+			res->startTime = outCreation.str();
+
+			CloseHandle(h);
+
+#endif
+
+					
+			splitSet::splitNullMap(res->environment, res->expandedEnviron);
+			splitSet::splitNullVector(res->cmdline, res->expandedCmd);
+			//expandEnviron(res);
+			return res;
+		}
 	}
 }
 

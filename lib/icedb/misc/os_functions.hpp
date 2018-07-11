@@ -3,6 +3,7 @@
 #define ICEDB_HPP_OS_FUNCTIONS
 #include "../defs.h"
 #include <iostream>
+#include <memory>
 
 ICEDB_BEGIN_DECL_CPP
 
@@ -35,6 +36,23 @@ namespace icedb {
 		DL_ICEDB const char* getAppPath();
 		DL_ICEDB const char* getPluginDir();
 		DL_ICEDB const char* getCWD();
+
+		struct processInfo;
+		typedef const processInfo* hProcessInfo;
+		struct moduleInfo;
+		typedef const moduleInfo* hModuleInfo;
+
+		DL_ICEDB hModuleInfo getModuleInfoP(void* func = nullptr);
+		DL_ICEDB void freeModuleInfoP(hModuleInfo);
+		inline std::shared_ptr<const moduleInfo> getModuleInfo(void* func = nullptr) {
+			return std::shared_ptr<const moduleInfo>(getModuleInfoP(func), freeModuleInfoP);
+		}
+
+		DL_ICEDB hProcessInfo getInfoP(int pid);
+		DL_ICEDB void freeProcessInfoP(hProcessInfo);
+		inline std::shared_ptr<const processInfo> getInfo(int pid) {
+			return std::shared_ptr<const processInfo>(getInfoP(pid), freeProcessInfoP);
+		}
 	}
 }
 ICEDB_END_DECL_CPP
