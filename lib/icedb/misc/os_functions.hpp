@@ -53,6 +53,15 @@ namespace icedb {
 		inline std::shared_ptr<const processInfo> getInfo(int pid) {
 			return std::shared_ptr<const processInfo>(getInfoP(pid), freeProcessInfoP);
 		}
+
+		DL_ICEDB const char* getPath(const hModuleInfo);
+		DL_ICEDB const char* getName(const hProcessInfo);
+		DL_ICEDB const char* getPath(const hProcessInfo);
+		DL_ICEDB const char* getCwd(const hProcessInfo);
+		DL_ICEDB const char* getEnviron(const hProcessInfo, size_t &sz);
+		DL_ICEDB const char* getEnviron(const hProcessInfo, const char* varname);
+		DL_ICEDB const char* getCmdline(const hProcessInfo, size_t &sz);
+		DL_ICEDB const char* getStartTime(const hProcessInfo);
 	}
 }
 ICEDB_END_DECL_CPP

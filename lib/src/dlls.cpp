@@ -146,7 +146,8 @@ namespace {
 		using std::string;
 		
 		using namespace icedb;
-		std::shared_ptr<const processInfo> info(getInfo(getPID()), freeProcessInfo);
+		using namespace icedb::os_functions;
+		auto info = icedb::os_functions::getInfo(os_functions::getPID());
 
 		// Default locations
 		// Install path apps
@@ -169,8 +170,7 @@ namespace {
 		//icedb::registry::searchPathsRecursive.emplace( appBin / "../../plugins" );
 
 		// Relative to library
-		using namespace icedb;
-		auto modinfo = std::shared_ptr<const moduleInfo>(getModuleInfo((void*)constructSearchPaths), freeModuleInfo);
+		auto modinfo = getModuleInfo((void*)constructSearchPaths);
 		boost::filesystem::path libpath(getPath(modinfo.get()));
 		libpath.remove_filename();
 		icedb::registry::searchPathsOne.emplace(libpath / "plugins");
@@ -237,8 +237,9 @@ namespace icedb
 		}
 
 		void dump_hook_table(std::ostream &out) {
+			using namespace icedb::os_functions;
 			std::lock_guard<std::mutex> lock(m_hooks);
-			auto h = std::shared_ptr<const moduleInfo>(getModuleInfo((void*) dump_hook_table), freeModuleInfo);
+			auto h = getModuleInfo((void*)dump_hook_table);
 			out << "Hook table for icedb dll at "
 				<< getPath(h.get()) << std::endl
 				<< "Store\t - \tSignature\n";
@@ -465,23 +466,25 @@ namespace icedb
 			{
 				void(*fVer)(icedb::versioning::versionInfo&, void**) =
 					(void(*)(icedb::versioning::versionInfo&, void**)) func;
-				auto h = std::shared_ptr<const moduleInfo>(getModuleInfo((void*) func), freeModuleInfo);
+				using namespace icedb::os_functions;
+				auto h = getModuleInfo((void*)func);
 				std::string filename(getPath(h.get()));
 				h.reset();
 				//dllInitResult(*vfStart)() = nullptr;
 				//void* vfStarta = nullptr;
 				if (fVer) {
 					using namespace icedb::versioning;
-					versionInfo dllVer, myVer;
+					versionInfo_p myVer;
 					void* rdcheck = nullptr; // Check to make sure the same icedb functions are being used.
-					getLibVersionInfo(myVer);
-					fVer(dllVer, &rdcheck);
+					myVer = getLibVersionInfo();
+					std::shared_ptr<versionInfo> dllVer(new versionInfo);
+					fVer(*(dllVer.get()), &rdcheck);
 					auto verres = compareVersions(dllVer, myVer);
-					std::ostringstream dver, mver;
-					debug_preamble(dllVer, dver);
-					debug_preamble(myVer, mver);
-					std::string sdver = dver.str(), smver = mver.str();
-					if (verres < COMPATIBLE_2) {
+					//std::ostringstream dver, mver;
+					//debug_preamble(dllVer, dver);
+					//debug_preamble(myVer, mver);
+					//std::string sdver = dver.str(), smver = mver.str();
+					if (verres < ICEDB_VER_COMPATIBLE_2) {
 						if (critical)
 							ICEDB_throw(icedb::error::error_types::xDLLversionMismatch)
 							.add("is_critical", critical)
@@ -496,9 +499,10 @@ namespace icedb
 					if (rdcheck != mdcheck) {
 						using namespace icedb::registry;
 						using namespace icedb;
-						auto h = std::shared_ptr<const moduleInfo>(getModuleInfo((void*)mdcheck), freeModuleInfo);
+						using namespace icedb::os_functions;
+						auto h = getModuleInfo((void*)mdcheck);
 						std::string myPath(getPath(h.get()));
-						auto ho = std::shared_ptr<const moduleInfo>(getModuleInfo((void*)rdcheck), freeModuleInfo);
+						auto ho = getModuleInfo((void*)rdcheck);
 						std::string rPath;
 						if (rdcheck) rPath = (getPath(ho.get())); else rPath = "Unknown";
 						h.reset();
@@ -605,7 +609,7 @@ namespace icedb
 			{
 				size_t sDlls = dlls.size();
 				path base(sbase);
-				base = icedb::fs::expandSymlink<path, path>(base);
+				//base = icedb::fs::expandSymlink<path, path>(base);
 				if (!exists(base)) continue;
 				if (is_regular_file(base)) dlls.push_back(base.string());
 				else if (is_directory(base))
@@ -822,7 +826,8 @@ extern "C"
 	{
 		using namespace icedb;
 		icedb::registry::DLLpreamble b = p;
-		auto h = std::shared_ptr<const moduleInfo>(getModuleInfo(ptr), freeModuleInfo);
+		using namespace icedb::os_functions;
+		auto h = getModuleInfo((void*)ptr);
 		std::string dllPath(getPath(h.get()));
 		h.reset();
 

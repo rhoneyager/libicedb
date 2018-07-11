@@ -1163,6 +1163,19 @@ namespace icedb {
 			//expandEnviron(res);
 			return res;
 		}
+
+		const char* getPath(const hModuleInfo p) { return p->path.c_str(); }
+		const char* getName(const hProcessInfo p) { return p->name.c_str(); }
+		const char* getPath(const hProcessInfo p) { return p->path.c_str(); }
+		const char* getCwd(const hProcessInfo p) { return p->cwd.c_str(); }
+		const char* getEnviron(const hProcessInfo hp, size_t &sz) { sz = hp->environment.size(); return hp->environment.c_str(); }
+		const char* getEnviron(const hProcessInfo hp, const char* varname) {
+			if (hp->expandedEnviron.count(std::string(varname)))
+				return hp->expandedEnviron.at(std::string(varname)).c_str();
+			else return nullptr;
+		}
+		const char* getCmdline(const hProcessInfo hp, size_t &sz) { sz = hp->cmdline.size(); return hp->cmdline.c_str(); }
+		const char* getStartTime(const hProcessInfo p) { return p->startTime.c_str(); }
 	}
 }
 
