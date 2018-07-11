@@ -15,7 +15,7 @@
 #include <memory>
 #include "options.hpp"
 //#include "debug.h"
-//#include "dlls.h"
+#include "dlls.hpp"
 #include "error.hpp"
 //#include "info.h"
 //#include "logging_base.h"

@@ -456,11 +456,6 @@ namespace icedb
 				std::shared_ptr<icedb::registry::IO_options> opts
 				) const
 			{
-				std::ostringstream o;
-				o << "Performing write on file " << opts->filename();
-				emit_io_log(o.str(), icedb::log::normal);
-
-
 				// All of these objects can handle their own compression
 				typename ::icedb::registry::IO_class_registry_writer<obj_class>::io_multi_type dllsaver = nullptr;
 				// Process dll hooks first
@@ -473,37 +468,21 @@ namespace icedb
 					//if (hook.io_multi_matches(filename, ctype, handle))
 					if (hook.io_multi_matches(handle, opts))
 					{
-						std::ostringstream s;
-						s << "Found a match for " << opts->filename();
-						emit_io_log(s.str(), icedb::log::normal);
-
 						dllsaver = hook.io_multi_processor;
 						break;
 					}
 				}
 				if (dllsaver)
 				{
-					try {	
-						// Most of these types aren't compressible or implement their
-						// own compression schemes. So, it's not handled at this level.
-						return dllsaver(handle, opts, this->shared_from_this()); //dynamic_cast<const obj_class*>(this));
+					// Most of these types aren't compressible or implement their
+					// own compression schemes. So, it's not handled at this level.
+					return dllsaver(handle, opts, this->shared_from_this()); //dynamic_cast<const obj_class*>(this));
 						//return dllsaver(handle, filename, dynamic_cast<const obj_class*>(this), key, accessType);
-					} catch (::boost::exception &e) {
-						std::ostringstream s;
-						s << "Unable to save file: " << opts->filename() << "\nThrowing error.";
-						emit_io_log(s.str(), icedb::log::error);
-						e << ::icedb::error::file_name(opts->filename());
-						throw;
-					}
-					
 				} else {
 					// Cannot match a file type to save.
 					// Should never occur.
-					std::ostringstream s;
-					s << "File format unknown for file: " << opts->filename();
-					emit_io_log(s.str(), icedb::log::warning);
-					RDthrow(error::xUnknownFileFormat())
-					<< error::file_name(opts->filename());
+					ICEDB_throw(error::error_types::xUnknownFileFormat)
+						.add("Filename", opts->filename());
 				}
 				return nullptr; // Should never be reached
 			}
@@ -579,10 +558,7 @@ namespace icedb
 				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter = nullptr
 				)
 			{
-				std::ostringstream o;
-				o << "Performing single read on file " << opts->filename();
-				emit_io_log(o.str(), icedb::log::normal);
-
+				
 				// All of these objects can handle their own compression
 				typename ::icedb::registry::IO_class_registry_reader<obj_class>::io_multi_type dllsaver = nullptr;
 				// Process dll hooks first
@@ -595,9 +571,6 @@ namespace icedb
 					//if (hook.io_multi_matches(filename, ctype, handle))
 					if (hook.io_multi_matches(handle, opts))
 					{
-						std::ostringstream s;
-						s << "Found a match";
-						emit_io_log(s.str(), icedb::log::normal);
 						dllsaver = hook.io_multi_processor;
 						break;
 					}
@@ -611,12 +584,9 @@ namespace icedb
 				} else {
 					// Cannot match a file type to save.
 					// Should never occur.
-					std::ostringstream s;
-					s << "File format unknown for file: " << opts->filename();
-					emit_io_log(s.str(), icedb::log::warning);
-
-					RDthrow(error::xUnknownFileFormat()) 
-						<< error::file_name(opts->filename());
+					
+					ICEDB_throw(error::error_types::xUnknownFileFormat)
+						.add("Filename", opts->filename());
 				}
 				return nullptr; // Should never be reached
 			}
@@ -683,10 +653,7 @@ namespace icedb
 				//std::shared_ptr<obj_class> obj = 
 				::icedb::io::customGenerator<obj_class>();
 
-				std::ostringstream o;
-				o << "Performing iterative read on file " << opts->filename();
-				emit_io_log(o.str(), icedb::log::normal);
-
+				
 				// All of these objects can handle their own compression
 				typename ::icedb::registry::IO_class_registry_reader<obj_class>::io_iterate_type dllv = nullptr;
 				typename ::icedb::registry::IO_class_registry_reader<obj_class>::io_multi_type dllm = nullptr;
@@ -704,10 +671,7 @@ namespace icedb
 						else if (hook.io_multi_processor)
 							dllm = hook.io_multi_processor;
 						else continue; // No vector or multi reader - shouldn't happen if io_multi_matches, but fail to next plugin
-						std::ostringstream s;
-						s << "Found a match";
-						emit_io_log(s.str(), icedb::log::normal);
-
+						
 						break;
 					}
 				}
@@ -732,10 +696,7 @@ namespace icedb
 							return res;
 						}
 					} catch (::boost::exception &e) {
-						std::ostringstream o;
-						o << "Unable to read file: " << opts->filename() << "\nThrowing error.";
-						emit_io_log(o.str(), icedb::log::error);
-
+						
 						e << ::icedb::error::file_name(opts->filename());
 						throw;
 					}
@@ -743,12 +704,8 @@ namespace icedb
 				} else {
 					// Cannot match a file type to read.
 					// Should never occur.
-					std::ostringstream o;
-					o << "File format unknown for file: " << opts->filename();
-					emit_io_log(o.str(), icedb::log::warning);
-
-					RDthrow(error::xUnknownFileFormat())
-						<< error::file_name(opts->filename());
+					ICEDB_throw(error::error_types::xUnknownFileFormat)
+						.add("Filename", opts->filename());
 				}
 				return nullptr; // Should never be reached
 			}
@@ -761,10 +718,6 @@ namespace icedb
 				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter
 				)
 			{
-				std::ostringstream o;
-				o << "Performing vector read on file " << opts->filename();
-				emit_io_log(o.str(), icedb::log::normal);
-
 				auto implVectorInserter = [&](
 						std::shared_ptr<icedb::registry::IOhandler>,
 						std::shared_ptr<icedb::registry::IO_options>,

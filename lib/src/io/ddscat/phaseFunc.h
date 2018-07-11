@@ -5,8 +5,8 @@
 #include <string>
 #include <Eigen/Core>
 
-#include "registry.h"
-#include "io.h"
+#include <icedb/registry.hpp>
+#include <icedb/io.hpp>
 
 namespace icedb {
 	namespace io {
