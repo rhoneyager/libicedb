@@ -83,31 +83,8 @@ namespace {
 		static bool loaded = false;
 		if (loaded) return;
 		using std::string;
-		using namespace rtmath;
+		using namespace icedb;
 		using boost::filesystem::path;
-
-		try {
-			// First try to load using rtmath.conf location
-			auto cRoot = rtmath::config::loadRtconfRoot();
-			if (!cRoot) RDthrow(Ryan_Debug::error::xMissingRyan_DebugConf());
-			auto ccnf = cRoot->getChild("RTMATH");
-			auto rtddscat = ccnf->getChild("ddscat");
-			string sBasePar, scwd;
-			if (rtddscat) {
-				rtddscat->getVal<string>("DefaultFile", sBasePar);
-				rtddscat->getCWD(scwd);
-			} else RDthrow(Ryan_Debug::error::xBadInput())
-				<< Ryan_Debug::error::otherErrorText("rtmath configutation file missing ddscat branch");
-
-			path pscwd(scwd), psBasePar(sBasePar);
-			pscwd.remove_filename();
-
-			if (psBasePar.is_relative()) psBasePar = pscwd / psBasePar;
-			pDefaultPar = psBasePar;
-		} catch (std::exception&)
-		{
-			// If rtmath.conf cannot be found, or if the loading fails, default to the internal file.
-		}
 
 		loaded = true;
 	}
@@ -117,485 +94,471 @@ namespace {
 }
 
 
-namespace Ryan_Debug {
+namespace icedb {
 	namespace registry {
 		template struct IO_class_registry_writer
-			< ::rtmath::ddscat::ddPar > ;
+			< ::icedb::io::ddscat::ddPar > ;
 		template class usesDLLregistry <
-			::rtmath::ddscat::ddPar_IO_output_registry,
-			IO_class_registry_writer<::rtmath::ddscat::ddPar> > ;
+			::icedb::io::ddscat::ddPar_IO_output_registry,
+			IO_class_registry_writer<::icedb::io::ddscat::ddPar> > ;
 		template struct IO_class_registry_reader
-			< ::rtmath::ddscat::ddPar > ;
+			< ::icedb::io::ddscat::ddPar > ;
 		template class usesDLLregistry <
-			::rtmath::ddscat::ddPar_IO_input_registry,
-			IO_class_registry_reader<::rtmath::ddscat::ddPar> > ;
+			::icedb::io::ddscat::ddPar_IO_input_registry,
+			IO_class_registry_reader<::icedb::io::ddscat::ddPar> > ;
 	}
 	namespace io {
 		template <>
-		std::shared_ptr<::rtmath::ddscat::ddPar> customGenerator()
+		std::shared_ptr<::icedb::io::ddscat::ddPar> customGenerator()
 		{
-			std::shared_ptr<::rtmath::ddscat::ddPar> res
-				= ::rtmath::ddscat::ddPar::generate();
-			//	(new ::rtmath::ddscat::ddPar);
+			std::shared_ptr<::icedb::io::ddscat::ddPar> res
+				= ::icedb::io::ddscat::ddPar::generate();
+			//	(new ::icedb::io::ddscat::ddPar);
 			return res;
 		}
 	}
 }
-namespace rtmath {
-	namespace ddscat {
+namespace icedb {
+	namespace io {
+		namespace ddscat {
 
-		implementsDDPAR::implementsDDPAR() :
-			Ryan_Debug::io::implementsIObasic<ddPar, ddPar_IO_output_registry,
-			ddPar_IO_input_registry, ddPar_Standard>(ddPar::writeDDSCAT, ddPar::readDDSCATdef, known_formats())
-		{}
+			implementsDDPAR::implementsDDPAR() :
+				icedb::io::implementsIObasic<ddPar, ddPar_IO_output_registry,
+				ddPar_IO_input_registry, ddPar_Standard>(ddPar::writeDDSCAT, ddPar::readDDSCATdef, known_formats())
+			{}
 
-		const std::set<std::string>& implementsDDPAR::known_formats()
-		{
-			// Moved to hidden file scope to avoid race condition
-			//static std::set<std::string> mtypes;
-			//static std::mutex mlock;
-			// Prevent threading clashes
+			const std::set<std::string>& implementsDDPAR::known_formats()
 			{
-				std::lock_guard<std::mutex> lck(mlock);
-				if (!mtypes.size())
-					mtypes.insert(".par");
-				if (Ryan_Debug::io::TextFiles::serialization_handle::compressionEnabled())
+				// Moved to hidden file scope to avoid race condition
+				//static std::set<std::string> mtypes;
+				//static std::mutex mlock;
+				// Prevent threading clashes
 				{
-					std::string sctypes;
-					std::set<std::string> ctypes;
-					Ryan_Debug::serialization::known_compressions(sctypes, ".par");
-					Ryan_Debug::splitSet::splitSet(sctypes, ctypes);
-					for (const auto & t : ctypes)
-						mtypes.emplace(t);
+					std::lock_guard<std::mutex> lck(mlock);
+					if (!mtypes.size())
+						mtypes.insert(".par");
 				}
+				return mtypes;
 			}
-			return mtypes;
-		}
 
-		ddPar::ddPar()
-		{
-			_init();
-			// Fill in the blanks from the default file. Needed here to avoid
-			// crashed associated with accessing missing keys.
-			//_populateDefaults(false);
-		}
-		/*
-		ddPar::ddPar()
-		{
-			_init();
-			_populateDefaults(false);
-		}
-		*/
-
-		std::shared_ptr<ddPar> ddPar::generate(const std::shared_ptr<const ddPar> src)
-		{
-			std::shared_ptr<ddPar> res(new ddPar(*(src.get())));
-			return res;
-		}
-
-		std::shared_ptr<ddPar> ddPar::generate()
-		{
-			std::shared_ptr<ddPar> res(new ddPar);
-			return res;
-		}
-
-		std::shared_ptr<ddPar> ddPar::generate(const std::string &filename, bool popDefaults)
-		{
-			std::shared_ptr<ddPar> res(new ddPar);
-			res->readFile(filename);
-			if (popDefaults)
-				res->populateDefaults(false);
-			return res;
-		}
-
-		ddPar::~ddPar()
-		{
-		}
-
-		bool ddPar::operator==(const ddPar &rhs) const
-		{
-			std::string sThis, sRhs;
-			std::ostringstream oThis, oRhs;
-			writeDDSCAT(this->shared_from_this(), oThis, nullptr);
-			writeDDSCAT(rhs.shared_from_this(), oRhs, nullptr);
-			sThis = oThis.str();
-			sRhs = oRhs.str();
-			return (sThis == sRhs);
-		}
-
-		bool ddPar::operator!=(const ddPar &rhs) const
-		{
-			return !(operator==(rhs));
-		}
-
-		ddPar & ddPar::operator=(const ddPar &rhs)
-		{
-			if (this != &rhs)
+			ddPar::ddPar()
 			{
-				_version = rhs._version;
+				_init();
+				// Fill in the blanks from the default file. Needed here to avoid
+				// crashed associated with accessing missing keys.
+				//_populateDefaults(false);
+			}
+			/*
+			ddPar::ddPar()
+			{
+				_init();
+				_populateDefaults(false);
+			}
+			*/
+
+			std::shared_ptr<ddPar> ddPar::generate(const std::shared_ptr<const ddPar> src)
+			{
+				std::shared_ptr<ddPar> res(new ddPar(*(src.get())));
+				return res;
+			}
+
+			std::shared_ptr<ddPar> ddPar::generate()
+			{
+				std::shared_ptr<ddPar> res(new ddPar);
+				return res;
+			}
+
+			std::shared_ptr<ddPar> ddPar::generate(const std::string &filename, bool popDefaults)
+			{
+				std::shared_ptr<ddPar> res(new ddPar);
+				res->readFile(filename);
+				if (popDefaults)
+					res->populateDefaults(false);
+				return res;
+			}
+
+			ddPar::~ddPar()
+			{
+			}
+
+			bool ddPar::operator==(const ddPar &rhs) const
+			{
+				std::string sThis, sRhs;
+				std::ostringstream oThis, oRhs;
+				writeDDSCAT(this->shared_from_this(), oThis, nullptr);
+				writeDDSCAT(rhs.shared_from_this(), oRhs, nullptr);
+				sThis = oThis.str();
+				sRhs = oRhs.str();
+				return (sThis == sRhs);
+			}
+
+			bool ddPar::operator!=(const ddPar &rhs) const
+			{
+				return !(operator==(rhs));
+			}
+
+			ddPar & ddPar::operator=(const ddPar &rhs)
+			{
+				if (this != &rhs)
+				{
+					_version = rhs._version;
+					std::ostringstream out;
+					writeDDSCAT(rhs.shared_from_this(), out, nullptr);
+					std::string data = out.str();
+					std::istringstream in(data);
+					read(in);
+				}
+				return *this;
+			}
+
+			ddPar::ddPar(const ddPar &src)
+			{
+				// Expensive copy constructor. Implements cloning to avoid screwups.
+				_version = src._version;
 				std::ostringstream out;
-				writeDDSCAT(rhs.shared_from_this(), out, nullptr);
+				writeDDSCAT(src.shared_from_this(), out, nullptr);
 				std::string data = out.str();
 				std::istringstream in(data);
 				read(in);
 			}
-			return *this;
-		}
 
-		ddPar::ddPar(const ddPar &src)
-		{
-			// Expensive copy constructor. Implements cloning to avoid screwups.
-			_version = src._version;
-			std::ostringstream out;
-			writeDDSCAT(src.shared_from_this(), out, nullptr);
-			std::string data = out.str();
-			std::istringstream in(data);
-			read(in);
-		}
-
-		std::shared_ptr<ddPar> ddPar::clone() const
-		{
-			std::shared_ptr<ddPar> lhs(new ddPar);
-
-			lhs->_version = _version;
-			
-			std::ostringstream out;
-			writeDDSCAT(this->shared_from_this(), out, nullptr);
-			std::string data = out.str();
-			std::istringstream in(data);
-
-			lhs->read(in);
-
-			return lhs;
-		}
-
-		/*
-		void ddPar::readFile(const std::string &filename, bool overlay)
-		{
-			// Check file existence
-			using namespace std;
-			using namespace boost::filesystem;
-			using namespace Ryan_Serialization;
-			std::string cmeth, target, uncompressed;
-			// Combination of detection of compressed file, file type and existence.
-			if (!detect_compressed(filename, cmeth, target))
-				throw rtmath::debug::xMissingFile(filename.c_str());
-			uncompressed_name(target, uncompressed, cmeth);
-
-			boost::filesystem::path p(uncompressed);
-			boost::filesystem::path pext = p.extension(); // Uncompressed extension
-
-			// Serialization gets its own override
-			if (Ryan_Serialization::known_format(pext))
+			std::shared_ptr<ddPar> ddPar::clone() const
 			{
-				// This is a serialized file. Verify that it has the correct identifier, and 
-				// load the serialized object directly
-				Ryan_Serialization::read<ddPar>(*this, filename, "rtmath::ddscat::ddPar");
-				return;
+				std::shared_ptr<ddPar> lhs(new ddPar);
+
+				lhs->_version = _version;
+
+				std::ostringstream out;
+				writeDDSCAT(this->shared_from_this(), out, nullptr);
+				std::string data = out.str();
+				std::istringstream in(data);
+
+				lhs->read(in);
+
+				return lhs;
 			}
 
-			this->_filename = filename;
-
-			std::ifstream in(filename.c_str(), std::ios_base::binary | std::ios_base::in);
-			// Consutuct an filtering_iostream that matches the type of compression used.
-			using namespace boost::iostreams;
-			filtering_istream sin;
-			if (cmeth.size())
-				prep_decompression(cmeth, sin);
-			sin.push(boost::iostreams::newline_filter(boost::iostreams::newline::posix));
-			sin.push(in);
-
-			read(sin, overlay);
-		}
-
-		
-		void ddPar::writeFile(const std::string &filename, const std::string &type) const
-		{
-			populateDefaults();
-			//std::ofstream out(filename.c_str());
-			//write(out);
-
-
-			using namespace Ryan_Serialization;
-			std::string cmeth, uncompressed;
-			uncompressed_name(filename, uncompressed, cmeth);
-			boost::filesystem::path p(uncompressed);
-			boost::filesystem::path pext = p.extension(); // Uncompressed extension
-
-			std::string utype = type;
-			if (!utype.size()) utype = pext.string();
-
-			// Serialization gets its own override
-			if (Ryan_Serialization::known_format(utype))
+			/*
+			void ddPar::readFile(const std::string &filename, bool overlay)
 			{
-				Ryan_Serialization::write<ddPar>(*this, filename, "rtmath::ddscat::ddPar");
-				return;
-			}
+				// Check file existence
+				using namespace std;
+				using namespace boost::filesystem;
+				using namespace Ryan_Serialization;
+				std::string cmeth, target, uncompressed;
+				// Combination of detection of compressed file, file type and existence.
+				if (!detect_compressed(filename, cmeth, target))
+					throw rtmath::debug::xMissingFile(filename.c_str());
+				uncompressed_name(target, uncompressed, cmeth);
 
-			std::ofstream out(filename.c_str(), std::ios_base::out | std::ios_base::binary);
-			using namespace boost::iostreams;
-			filtering_ostream sout;
-			if (cmeth.size())
-				prep_compression(cmeth, sout);
+				boost::filesystem::path p(uncompressed);
+				boost::filesystem::path pext = p.extension(); // Uncompressed extension
 
-			sout.push(boost::iostreams::newline_filter(boost::iostreams::newline::posix));
-			sout.push(out);
-			write(sout);
-		}
-		*/
-
-		void ddPar::writeDDSCAT(const std::shared_ptr<const ddPar> p, std::ostream &out, std::shared_ptr<Ryan_Debug::registry::IO_options> opts)
-		{
-			// Writing is much easier than reading!
-			using namespace std;
-
-			// Ensute that all necessary keys exist. If not, create them!!!
-			//populateDefaults(); // User's responsibility
-
-			if (!p) RDthrow(Ryan_Debug::error::xNullPointer())
-				<< Ryan_Debug::error::otherErrorText("ddPar::writeDDSCAT::p is null");
-			// Write file version
-			string ver;
-			ver = rtmath::ddscat::ddVersions::getVerString(p->_version);
-			out << "' ========= Parameter file for v" << ver << " =================== '" << endl;
-
-			// Loop through and write parameters and comments
-			for (auto it = p->_parsedData.begin(); it != p->_parsedData.end(); it++)
-			{
-				// If key is valid for this output version, write it
-				if (it->second->versionValid(p->_version))
-					it->second->write(out, p->_version);
-
-				// Check here for dielectric write. Always goes after NCOMP.
-				if (it->first == ddParParsers::NCOMP)
+				// Serialization gets its own override
+				if (Ryan_Serialization::known_format(pext))
 				{
-					int i = 1;
-					for (auto ot = p->_diels.begin(); ot != p->_diels.end(); ++ot, ++i)
+					// This is a serialized file. Verify that it has the correct identifier, and
+					// load the serialized object directly
+					Ryan_Serialization::read<ddPar>(*this, filename, "icedb::io::ddscat::ddPar");
+					return;
+				}
+
+				this->_filename = filename;
+
+				std::ifstream in(filename.c_str(), std::ios_base::binary | std::ios_base::in);
+				// Consutuct an filtering_iostream that matches the type of compression used.
+				using namespace boost::iostreams;
+				filtering_istream sin;
+				if (cmeth.size())
+					prep_decompression(cmeth, sin);
+				sin.push(boost::iostreams::newline_filter(boost::iostreams::newline::posix));
+				sin.push(in);
+
+				read(sin, overlay);
+			}
+
+
+			void ddPar::writeFile(const std::string &filename, const std::string &type) const
+			{
+				populateDefaults();
+				//std::ofstream out(filename.c_str());
+				//write(out);
+
+
+				using namespace Ryan_Serialization;
+				std::string cmeth, uncompressed;
+				uncompressed_name(filename, uncompressed, cmeth);
+				boost::filesystem::path p(uncompressed);
+				boost::filesystem::path pext = p.extension(); // Uncompressed extension
+
+				std::string utype = type;
+				if (!utype.size()) utype = pext.string();
+
+				// Serialization gets its own override
+				if (Ryan_Serialization::known_format(utype))
+				{
+					Ryan_Serialization::write<ddPar>(*this, filename, "icedb::io::ddscat::ddPar");
+					return;
+				}
+
+				std::ofstream out(filename.c_str(), std::ios_base::out | std::ios_base::binary);
+				using namespace boost::iostreams;
+				filtering_ostream sout;
+				if (cmeth.size())
+					prep_compression(cmeth, sout);
+
+				sout.push(boost::iostreams::newline_filter(boost::iostreams::newline::posix));
+				sout.push(out);
+				write(sout);
+			}
+			*/
+
+			void ddPar::writeDDSCAT(const std::shared_ptr<const ddPar> p, std::ostream &out, std::shared_ptr<registry::IO_options> opts)
+			{
+				// Writing is much easier than reading!
+				using namespace std;
+
+				// Ensute that all necessary keys exist. If not, create them!!!
+				//populateDefaults(); // User's responsibility
+
+				if (!p) ICEDB_throw(error::error_types::xNullPointer)
+					.add("Reason","ddPar::writeDDSCAT::p is null");
+				// Write file version
+				string ver;
+				ver = icedb::io::ddscat::ddVersions::getVerString(p->_version);
+				out << "' ========= Parameter file for v" << ver << " =================== '" << endl;
+
+				// Loop through and write parameters and comments
+				for (auto it = p->_parsedData.begin(); it != p->_parsedData.end(); it++)
+				{
+					// If key is valid for this output version, write it
+					if (it->second->versionValid(p->_version))
+						it->second->write(out, p->_version);
+
+					// Check here for dielectric write. Always goes after NCOMP.
+					if (it->first == ddParParsers::NCOMP)
+					{
+						int i = 1;
+						for (auto ot = p->_diels.begin(); ot != p->_diels.end(); ++ot, ++i)
+						{
+							ostringstream o;
+							// "...file with refractive index" + " #"
+							o << " " << i;
+							string plid = o.str();
+							(*ot)->write(out, p->_version, plid);
+						}
+					}
+				}
+				for (auto ot = p->_scaPlanes.begin(); ot != p->_scaPlanes.end(); ++ot)
+				{
+					// If key is valid for this output version, write it
+					if (ot->second->versionValid(p->_version))
 					{
 						ostringstream o;
-						// "...file with refractive index" + " #"
-						o << " " << i;
+						// "...for plane" + " #"
+						o << " " << boost::lexical_cast<std::string>(ot->first);
 						string plid = o.str();
-						(*ot)->write(out, p->_version, plid);
+						ot->second->write(out, p->_version, plid);
 					}
 				}
 			}
-			for (auto ot = p->_scaPlanes.begin(); ot != p->_scaPlanes.end(); ++ot)
+
+			void ddPar::_init()
 			{
-				// If key is valid for this output version, write it
-				if (ot->second->versionValid(p->_version))
-				{
-					ostringstream o;
-					// "...for plane" + " #"
-					o << " " << boost::lexical_cast<std::string>(ot->first);
-					string plid = o.str();
-					ot->second->write(out, p->_version, plid);
-				}
-			}
-		}
-
-		void ddPar::_init()
-		{
-			_version = rtmath::ddscat::ddVersions::getDefaultVer();
-#if USE_RYAN_SERIALIZATION
-			::rtmath::io::Serialization::implementsSerialization<
-				::rtmath::ddscat::ddPar, ddPar_IO_output_registry, 
-				ddPar_IO_input_registry, ddPar_serialization>::set_sname("rtmath::ddscat::ddpar");
-#endif
-		}
-
-		void ddPar::readDDSCAT(std::shared_ptr<ddPar> src, std::istream &in, bool overlay)
-		{
-			src->read(in, overlay);
-		}
-
-		void ddPar::readDDSCATdef(std::shared_ptr<ddPar> src, std::istream &in, std::shared_ptr<Ryan_Debug::registry::IO_options>)
-		{
-			readDDSCAT(src, in, false);
-		}
-
-		void ddPar::write(std::ostream& out) const
-		{
-			writeDDSCAT(this->shared_from_this(), out, nullptr);
-		}
-
-		void ddPar::read(std::istream &stream, bool overlay)
-		{
-			// Parse until end of stream, line-by-line
-			// Split string based on equal sign, and do parsing
-			// based on keys
-			using namespace std;
-			using namespace rtmath::config;
-			// _keys are mostly useless. Just used for loading.
-			std::map<std::string, std::string> _keys;
-			if (!overlay)
-			{
-				_parsedData.clear();
-				_scaPlanes.clear();
-				_diels.clear();
+				_version = 730;
 			}
 
-			size_t line = 1;
+			void ddPar::readDDSCAT(std::shared_ptr<ddPar> src, std::istream &in, bool overlay)
 			{
-				// First line in file provides version information
-				std::string vertag;
-				std::getline(stream,vertag);
-				
-				_version = ddVersions::getVerId(vertag);
+				src->read(in, overlay);
 			}
-			size_t nScaPlane = 0;
-			string comment;
-			while (stream.good())
+
+			void ddPar::readDDSCATdef(std::shared_ptr<ddPar> src, std::istream &in, std::shared_ptr<icedb::registry::IO_options>)
 			{
-				string lin;
-				std::getline(stream,lin);
-				line++;
-				// Check if this is a comment line (ends with ')
-				// Need extra logic if line ends in whitespace
+				readDDSCAT(src, in, false);
+			}
+
+			void ddPar::write(std::ostream& out) const
+			{
+				writeDDSCAT(this->shared_from_this(), out, nullptr);
+			}
+
+			void ddPar::read(std::istream &stream, bool overlay)
+			{
+				// Parse until end of stream, line-by-line
+				// Split string based on equal sign, and do parsing
+				// based on keys
+				using namespace std;
+				// _keys are mostly useless. Just used for loading.
+				std::map<std::string, std::string> _keys;
+				if (!overlay)
 				{
-					bool skip = false;
-					for (auto it = lin.rbegin(); it != lin.rend(); ++it)
-					{
-						if (*it == ' ') continue;
-						if (*it == '\'') 
-						{
-							// End line parsing
-							skip = true; 
-							break; 
-						}
-						// If we make it here, the line is valid for 
-						// key-value pair parsing
-						skip = false;
-						break;
-					} // Awkward. TODO: redo.
-					if (skip) continue;
+					_parsedData.clear();
+					_scaPlanes.clear();
+					_diels.clear();
 				}
 
-				// Split lin based on '='
-				// Prepare tokenizer
-				typedef boost::tokenizer<boost::char_separator<char> >
-					tokenizer;
-				boost::char_separator<char> sep("=");
-				tokenizer tcom(lin,sep);
-				vector<string> vals;
-				for (auto it=tcom.begin(); it != tcom.end(); ++it)
-					vals.push_back(*it);
-				if (vals.size() < 2) 
+				size_t line = 1;
 				{
-					continue;
-					//ostringstream errmsg;
-					//errmsg << "This is not a valid ddscat.par file (error on file line " << line << ").";
-					//throw rtmath::debug::xUnknownFileFormat(errmsg.str().c_str());
+					// First line in file provides version information
+					std::string vertag;
+					std::getline(stream, vertag);
+
+					_version = ddVersions::getVerId(vertag);
 				}
-
-				// Populate map
-				//_keys[vals[1]] = vals[0];
-				using namespace rtmath::ddscat::ddParParsers;
+				size_t nScaPlane = 0;
+				string comment;
+				while (stream.good())
 				{
-					std::shared_ptr<ddParLine> ptr = mapKeys(vals[1]);
-					// Strip trailing whitespace at the end of vals[0].
-					// It confuses some of the parsing functions, 
-					// like ddParSimple<string>
-					std::string vz = boost::algorithm::trim_right_copy(vals[0]);
-					ptr->read(vz);
-					// Individual dielectric files go into a separate structure
-					// Also, if the dielectric files can be found, calculate their hashes
-					if (ptr->id() == ddParParsers::IREFR)
+					string lin;
+					std::getline(stream, lin);
+					line++;
+					// Check if this is a comment line (ends with ')
+					// Need extra logic if line ends in whitespace
 					{
-						auto p = boost::dynamic_pointer_cast<ddParParsers::ddParLineSimple<std::string> >(ptr);
-						_diels.push_back(p);
-						std::string dval;
-						p->get(dval);
-						using namespace boost::filesystem;
-						path ppar = path(_filename).remove_filename();
-						path pval(dval);
-						path prel = boost::filesystem::absolute(pval, ppar);
-
-						if (boost::filesystem::exists(prel))
+						bool skip = false;
+						for (auto it = lin.rbegin(); it != lin.rend(); ++it)
 						{
-							_dielHashes.push_back(Ryan_Debug::hash::HASHfile(prel.string()));
-						} else _dielHashes.push_back(Ryan_Debug::hash::HASH_t());
-
-						//_dielHashes.push_back(HASHfile(dval));
-					}
-					// Everything but diels and scattering plane go here
-					else if (ptr->id() < ddParParsers::PLANE1)
-					{
-						if (_parsedData.count(ptr->id()))
-						{
-							if (overlay)
+							if (*it == ' ') continue;
+							if (*it == '\'')
 							{
-								_parsedData.erase(ptr->id());
+								// End line parsing
+								skip = true;
+								break;
+							}
+							// If we make it here, the line is valid for 
+							// key-value pair parsing
+							skip = false;
+							break;
+						} // Awkward. TODO: redo.
+						if (skip) continue;
+					}
+
+					// Split lin based on '='
+					// Prepare tokenizer
+					typedef boost::tokenizer<boost::char_separator<char> >
+						tokenizer;
+					boost::char_separator<char> sep("=");
+					tokenizer tcom(lin, sep);
+					vector<string> vals;
+					for (auto it = tcom.begin(); it != tcom.end(); ++it)
+						vals.push_back(*it);
+					if (vals.size() < 2)
+					{
+						continue;
+						//ostringstream errmsg;
+						//errmsg << "This is not a valid ddscat.par file (error on file line " << line << ").";
+						//throw rtmath::debug::xUnknownFileFormat(errmsg.str().c_str());
+					}
+
+					// Populate map
+					//_keys[vals[1]] = vals[0];
+					using namespace icedb::io::ddscat::ddParParsers;
+					{
+						std::shared_ptr<ddParLine> ptr = mapKeys(vals[1]);
+						// Strip trailing whitespace at the end of vals[0].
+						// It confuses some of the parsing functions, 
+						// like ddParSimple<string>
+						std::string vz = boost::algorithm::trim_right_copy(vals[0]);
+						ptr->read(vz);
+						// Individual dielectric files go into a separate structure
+						// Also, if the dielectric files can be found, calculate their hashes
+						if (ptr->id() == ddParParsers::IREFR)
+						{
+							auto p = std::dynamic_pointer_cast<ddParParsers::ddParLineSimple<std::string>>(ptr);
+							_diels.push_back(p);
+							std::string dval;
+							p->get(dval);
+							using namespace boost::filesystem;
+							path ppar = path(_filename).remove_filename();
+							path pval(dval);
+							path prel = boost::filesystem::absolute(pval, ppar);
+
+							//_dielHashes.push_back(HASHfile(dval));
+						}
+						// Everything but diels and scattering plane go here
+						else if (ptr->id() < ddParParsers::PLANE1)
+						{
+							if (_parsedData.count(ptr->id()))
+							{
+								if (overlay)
+								{
+									_parsedData.erase(ptr->id());
+								}
+								else {
+									ostringstream ostr;
+									ostr << "Duplicate ddscat.par key: ";
+									ostr << vals[1];
+									ICEDB_throw(error::error_types::xBadInput)
+										.add("Reason", ostr.str());
+								}
+							}
+							_parsedData[ptr->id()] = ptr;
+						}
+						else if (ptr->id() == ddParParsers::PLANE1)
+						{
+							// Scattering plane info
+							nScaPlane++;
+							_scaPlanes[nScaPlane] =
+								std::dynamic_pointer_cast<ddParParsers::ddParLineSimplePlural<double>>(ptr);
+						}
+						else {
+							// Unknown key
+							ostringstream ostr;
+							ostr << "Unknown ddscat.par key: ";
+							ostr << vals[1];
+							ICEDB_throw(error::error_types::xBadInput)
+								.add("Reason", ostr.str());
+						}
+					}
+
+				}
+			}
+
+			std::shared_ptr<const ddPar> ddPar::defaultInstance()
+			{
+				using namespace std;
+				using namespace boost::filesystem;
+				static std::shared_ptr<ddPar> s_inst(new ddPar);
+				static bool loaded = false;
+				if (!loaded)
+				{
+					initPaths();
+					if (pDefaultPar.string().size() && boost::filesystem::exists(path(pDefaultPar)))
+					{
+						s_inst = ddPar::generate(pDefaultPar.string(), false);
+						// = std::shared_ptr<ddPar>(new ddPar(pDefaultPar.string(), false));
+					}
+					else {
+						// Attempt to load the internal instance
+						try {
+							std::istringstream in(ddparDefaultInternal);
+							//s_inst = new ddPar;
+							readDDSCAT(s_inst, in, false);
+							//Ryan_Serialization::readString(s_inst, ddparDefaultInternal, "icedb::io::ddscat::ddPar");
+
+						}
+						catch (std::exception&)
+						{
+							// Cannot get default instance.....
+							if (pDefaultPar.string().size()) {
+								ICEDB_throw(error::error_types::xMissingFile)
+									.add("Filename", pDefaultPar.string());
 							} else {
-								ostringstream ostr;
-								ostr << "Duplicate ddscat.par key: ";
-								ostr << vals[1];
-								RDthrow(Ryan_Debug::error::xBadInput())
-									<< Ryan_Debug::error::otherErrorText(ostr.str());
+								ICEDB_throw(error::error_types::xOtherError)
+									.add("Reason", "Cannot get default instance. Reason unknown.");
 							}
 						}
-						_parsedData[ptr->id()] = ptr;
-					} else if (ptr->id() == ddParParsers::PLANE1)
-					{
-						// Scattering plane info
-						nScaPlane++;
-						_scaPlanes[nScaPlane] = 
-							boost::dynamic_pointer_cast<ddParParsers::ddParLineSimplePlural<double> >(ptr);
-					} else {
-						// Unknown key
-						ostringstream ostr;
-						ostr << "Unknown ddscat.par key: ";
-						ostr << vals[1];
-						RDthrow(Ryan_Debug::error::xBadInput())
-							<< Ryan_Debug::error::otherErrorText(ostr.str());
 					}
+
+					//rtmath::debug::instances::registerInstance( "ddPar::defaultInstance", reinterpret_cast<void*>(s_inst));
+					loaded = true;
 				}
-
+				return s_inst;
 			}
-		}
 
-		std::shared_ptr<const ddPar> ddPar::defaultInstance()
-		{
-			using namespace std;
-			using namespace boost::filesystem;
-			static std::shared_ptr<ddPar> s_inst(new ddPar);
-			static bool loaded = false;
-			if (!loaded)
-			{
-				initPaths();
-				if (pDefaultPar.string().size() && boost::filesystem::exists(path(pDefaultPar)))
-				{
-					s_inst = ddPar::generate(pDefaultPar.string(), false); 
-					// = std::shared_ptr<ddPar>(new ddPar(pDefaultPar.string(), false));
-				} else {
-					// Attempt to load the internal instance
-					try {
-						std::istringstream in(ddparDefaultInternal);
-						//s_inst = new ddPar;
-						readDDSCAT(s_inst, in, false);
-						//Ryan_Serialization::readString(s_inst, ddparDefaultInternal, "rtmath::ddscat::ddPar");
-
-					} catch (std::exception&)
-					{
-						// Cannot get default instance.....
-						if (pDefaultPar.string().size())
-						{
-							RDthrow(Ryan_Debug::error::xMissingFile())
-								<< Ryan_Debug::error::file_name(pDefaultPar.string());
-						} else {
-							RDthrow(Ryan_Debug::error::xOtherError())
-								<< Ryan_Debug::error::otherErrorText("Cannot get default instance. Reason unknown.");
-						}
-					}
-				}
-
-				//rtmath::debug::instances::registerInstance( "ddPar::defaultInstance", reinterpret_cast<void*>(s_inst));
-				loaded = true;
-			}
-			return s_inst;
-		}
-
-	} // end namespace ddscat
-} // end rtmath
+		} // end namespace ddscat
+	}
+}
 
 

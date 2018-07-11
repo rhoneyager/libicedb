@@ -13,6 +13,8 @@
 //#include <boost/shared_ptr.hpp>
 #include "ddVersions.h"
 #include "parids.h"
+#include <icedb/registry.hpp>
+#include <icedb/io.hpp>
 //#include <Ryan_Debug/hash.h>
 //#include <Ryan_Debug/registry.h>
 //#include <Ryan_Debug/io.h>
@@ -24,6 +26,10 @@ namespace icedb {
 		namespace ddscat {
 
 			class rotations;
+			class ddPar;
+			struct ddPar_IO_output_registry {};
+			struct ddPar_IO_input_registry {};
+			struct ddPar_Standard {};
 
 			/// \brief Contains the functions for parsing ddscat.par files. 
 			/// \todo Take these functions and move them into the cpp file.
@@ -389,9 +395,9 @@ namespace icedb {
 	inline void name(bool v) { __setStringBool(id, v, bfalse, btrue); }
 
 		/// Provides local readers and writers for ddscat ddpar data (it's a binder)
-			class implementsDDPAR //:
-				//private Ryan_Debug::io::implementsIObasic<ddPar, ddPar_IO_output_registry,
-				//ddPar_IO_input_registry, ddPar_Standard>
+			class implementsDDPAR :
+				private icedb::io::implementsIObasic<ddPar, ddPar_IO_output_registry,
+				ddPar_IO_input_registry, ddPar_Standard>
 			{
 			public:
 				virtual ~implementsDDPAR() {}
@@ -409,14 +415,14 @@ namespace icedb {
 			**/
 			class ddPar :
 				virtual public std::enable_shared_from_this<ddPar>,
-				//virtual public ::Ryan_Debug::registry::usesDLLregistry<
-				//::rtmath::ddscat::ddPar_IO_input_registry,
-				//::Ryan_Debug::registry::IO_class_registry_reader<::rtmath::ddscat::ddPar> >,
-				//virtual public ::Ryan_Debug::registry::usesDLLregistry<
-				//::rtmath::ddscat::ddPar_IO_output_registry,
-				//::Ryan_Debug::registry::IO_class_registry_writer<::rtmath::ddscat::ddPar> >,
-				//virtual public ::Ryan_Debug::io::implementsStandardWriter<ddPar, ddPar_IO_output_registry>,
-				//virtual public ::Ryan_Debug::io::implementsStandardReader<ddPar, ddPar_IO_input_registry>,
+				virtual public ::icedb::registry::usesDLLregistry<
+				::icedb::io::ddscat::ddPar_IO_input_registry,
+				::icedb::registry::IO_class_registry_reader<::icedb::io::ddscat::ddPar> >,
+				virtual public ::icedb::registry::usesDLLregistry<
+				::icedb::io::ddscat::ddPar_IO_output_registry,
+				::icedb::registry::IO_class_registry_writer<::icedb::io::ddscat::ddPar> >,
+				virtual public ::icedb::io::implementsStandardWriter<ddPar, ddPar_IO_output_registry>,
+				virtual public ::icedb::io::implementsStandardReader<ddPar, ddPar_IO_input_registry>,
 				virtual public implementsDDPAR
 			{
 			public:
@@ -440,11 +446,11 @@ namespace icedb {
 				void read(std::istream &stream, bool overlay = false);
 				void write(std::ostream&) const;
 				/// Write a standard DDSCAT par file to the output stream
-				static void writeDDSCAT(const std::shared_ptr<const ddPar>, std::ostream &); //, std::shared_ptr<Ryan_Debug::registry::IO_options>);
+				static void writeDDSCAT(const std::shared_ptr<const ddPar>, std::ostream &, std::shared_ptr<icedb::registry::IO_options>);
 				/// Read a standard DDSCAT par file from an input stream
 				static void readDDSCAT(std::shared_ptr<ddPar>, std::istream &, bool overlay = false);
 				/// \note Default parameter case is split because of function binding.
-				static void readDDSCATdef(std::shared_ptr<ddPar>, std::istream&); // , std::shared_ptr<Ryan_Debug::registry::IO_options>);
+				static void readDDSCATdef(std::shared_ptr<ddPar>, std::istream&, std::shared_ptr<icedb::registry::IO_options>);
 
 				bool operator==(const ddPar &rhs) const;
 				bool operator!=(const ddPar &rhs) const;

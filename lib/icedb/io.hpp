@@ -194,8 +194,6 @@ namespace icedb
 		private:
 			virtual void setup()
 			{
-				emit_io_log("Performing io setup", icedb::log::normal);
-
 				using namespace registry;
 				using namespace std;
 
@@ -213,10 +211,6 @@ namespace icedb
 					// ! Generate writer
 					using namespace std::placeholders;
 					IO_class_registry_writer<obj_class> writer;
-
-					std::ostringstream o;
-					o << "Creating & registering reader and writer for extension " << ext;
-					emit_io_log(o.str(), icedb::log::normal);
 
 					makeWriter(writer);
 					writers.push_back(std::move(writer));
@@ -267,14 +261,6 @@ namespace icedb
 			}
 			virtual void makeWriter(icedb::registry::IO_class_registry_writer<obj_class> &writer)
 			{
-				std::ostringstream o;
-				o << "Creating writer (shid " << icedb::io::TextFiles::serialization_handle::getSHid()
-					<< "), matching extensions : ";
-				for (const auto &e : this->matchExts)
-					o << std::endl << e;
-
-				emit_io_log(o.str(), icedb::log::normal);
-
 				writer.io_multi_matches = std::bind(
 					icedb::io::TextFiles::serialization_handle::match_file_type_multi,
 					std::placeholders::_1, 
@@ -298,8 +284,8 @@ namespace icedb
 						h = std::shared_ptr<serialization_handle>(new serialization_handle(filename.c_str(), iotype));
 					else {
 						if (sh->getId() != std::string(serialization_handle::getSHid()))
-							RDthrow(::icedb::error::xDuplicateHook())
-							<< ::icedb::error::otherErrorText("Bad passed plugin. It is not the serialization plugin.");
+							ICEDB_throw(::icedb::error::error_types::xDuplicateHook)
+							.add("Reason","Bad passed plugin. It is not the serialization plugin.");
 						h = std::dynamic_pointer_cast<serialization_handle>(sh);
 					}
 
@@ -318,14 +304,6 @@ namespace icedb
 			}
 			virtual void makeReader(icedb::registry::IO_class_registry_reader<obj_class> &reader)
 			{
-				std::ostringstream o;
-				o << "Creating reader (shid " << icedb::io::TextFiles::serialization_handle::getSHid()
-					<< "), matching extensions : ";
-				for (const auto &e : this->matchExts)
-					o << std::endl << e;
-
-				emit_io_log(o.str(), icedb::log::normal);
-
 				reader.io_multi_matches = std::bind(
 					icedb::io::TextFiles::serialization_handle::match_file_type_multi,
 					std::placeholders::_1, icedb::io::TextFiles::serialization_handle::getSHid(), 
@@ -348,8 +326,8 @@ namespace icedb
 						h = std::shared_ptr<serialization_handle>(new serialization_handle(filename.c_str(), iotype));
 					else {
 						if (sh->getId() != std::string(serialization_handle::getSHid()))
-							RDthrow(::icedb::error::xDuplicateHook())
-							<< ::icedb::error::otherErrorText("Bad passed plugin. It is not the serialization plugin.");
+							ICEDB_throw(::icedb::error::error_types::xDuplicateHook)
+							.add("Reason","Bad passed plugin. It is not the serialization plugin.");
 						h = std::dynamic_pointer_cast<serialization_handle>(sh);
 					}
 
