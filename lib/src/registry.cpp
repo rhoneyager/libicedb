@@ -28,23 +28,6 @@ namespace icedb
 	{
 		
 		handler_external::handler_external(const char* id) : id(id) {}
-		options::options() {}
-		options::~options() {}
-		void options::enumVals(std::ostream &out) const
-		{
-			using namespace icedb::registry;
-			out << "Options definition:\n\tName\tValue" << std::endl;
-			for (const auto &v : _mapStr)
-			{
-				if (v.first != "password")
-				{
-					out << "\t" << v.first << ":\t" << v.second << std::endl;
-				}
-				else {
-					out << "\t" << v.first << ":\t" << "********" << std::endl;
-				}
-			}
-		}
 		IO_options::IO_options() {}
 		IO_options::~IO_options() {}
 

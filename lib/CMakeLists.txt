@@ -122,7 +122,7 @@ set(lib_objs
 	icedb/misc/os_functions.hpp
 	private/linterp.h
 	private/resource.h
-	private/options.hpp
+	icedb/options.hpp
 	src/logging.cpp
 	src/options.cpp
 	src/os_functions.cpp

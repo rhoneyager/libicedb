@@ -2,7 +2,7 @@
 #include <map>
 #include <complex>
 #include "../icedb/defs.h"
-#include "../private/options.hpp"
+#include "../icedb/options.hpp"
 #include "../icedb/logging.hpp"
 #include "../icedb/error.hpp"
 

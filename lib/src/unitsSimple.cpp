@@ -2,7 +2,7 @@
 #include "../icedb/units/units.hpp"
 #include "../icedb/units/unitsPlugins.hpp"
 #include "../private/unitsBackend.hpp"
-#include "../private/options.hpp"
+#include "../icedb/options.hpp"
 
 namespace icedb {
 	namespace units {

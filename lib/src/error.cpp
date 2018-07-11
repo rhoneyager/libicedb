@@ -1,5 +1,5 @@
 #include "../icedb/error.hpp"
-#include "../private/options.hpp"
+#include "../icedb/options.hpp"
 #include "../icedb/error_context.h"
 #include "../icedb/error.h"
 #include "../icedb/util.h"

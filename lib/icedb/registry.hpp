@@ -13,6 +13,7 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <memory>
+#include "options.hpp"
 //#include "debug.h"
 //#include "dlls.h"
 #include "error.hpp"
@@ -137,6 +138,7 @@ namespace icedb
 			return h;
 		}
 
+		/*
 		/// \brief Convenient options specification class for use with an IO class registry.
 		/// 
 		/// Used because std::map doesn't like to go beyond template boundaries
@@ -177,7 +179,7 @@ namespace icedb
 			inline void setVal(const std::string &key, const IOhandler::IOtype val) { setVal<IOhandler::IOtype>(key, val); }
 
 		};
-
+		*/
 		class IO_options : public options
 		{
 		private:
