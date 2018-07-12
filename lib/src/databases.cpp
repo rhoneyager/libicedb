@@ -5,7 +5,7 @@
 #include "../icedb/fs.hpp"
 #include "../icedb/compat/gsl/gsl_assert"
 #include "../icedb/fs_backend.hpp"
-#include "../private/hdf5_supplemental.hpp"
+//#include "../private/hdf5_supplemental.hpp"
 #include "../icedb/Database.hpp"
 #include "../private/Database_impl.hpp"
 #include "../private/hdf5_load.h"
@@ -13,7 +13,7 @@
 
 namespace icedb {
 	namespace Databases {
-		std::shared_ptr<H5::H5File> file_image::getHFile() const { return hFile; }
+		std::shared_ptr<hid_t> file_image::getHFile() const { return hFile; }
 		file_image::file_image(const std::string &filename,
 			size_t desiredSizeInBytes)
 					: buffer(desiredSizeInBytes), filename(filename),
@@ -24,17 +24,20 @@ namespace icedb {
 					Expects(h5Result >= 0 && "H5Pset_fapl_core failed");
 					// This new memory-only dataset needs to always be writable. The flags parameter
 					// has little meaning in this context.
-					hFile = std::make_shared<H5::H5File>(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, propertyList);
+					hFile = std::shared_ptr<hid_t>(
+						new hid_t(
+							H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, propertyList)
+						), [](hid_t* h) {H5Fclose(*h); delete h; });
 					//m_file = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, propertyList);
 				}
 		file_image::~file_image() {
 					if (propertyList != -1) H5Pclose(propertyList);
 				}
 
-		std::shared_ptr<H5::H5File> Database_impl::makeDatabaseFileStandard(const std::string &p) {
-				auto res = std::make_shared<H5::H5File>(p,
+		std::shared_ptr<hid_t> Database_impl::makeDatabaseFileStandard(const std::string &p) {
+				auto res = std::shared_ptr<hid_t>(new hid_t(H5Fcreate(p,
 					fs::hdf5::getHDF5IOflags(fs::IOopenFlags::TRUNCATE),
-					H5P_DEFAULT);
+					H5P_DEFAULT)), [](hid_t* h) {H5Fclose(*h); delete h; });
 				constexpr uint64_t dbverno = 1;
 				auto basegrp = res->openGroup("."); //->getHDF5Group();
 				icedb::fs::hdf5::addAttr<uint64_t, H5::Group>(&basegrp, "Version", dbverno);

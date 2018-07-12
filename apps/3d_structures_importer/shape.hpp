@@ -1,5 +1,6 @@
 #pragma once
 //#include <Eigen/Dense>
+#include <array>
 #include <memory>
 #include <map>
 #include <string>
@@ -14,13 +15,17 @@ namespace icedb {
 			typedef std::vector<std::string> StringData_t;
 
 			struct ShapeRequiredData {
-				bool NC4_compat = true;
 				uint64_t number_of_particle_scattering_elements = 0;
 				uint8_t number_of_particle_constituents = 0;
 
 				uint8_t particle_scattering_element_coordinates_are_integral = 0;
 				FloatData_t particle_scattering_element_coordinates;
 				std::string particle_id;
+				std::string dataset_id;
+				std::string author;
+				std::string contact;
+				std::array<unsigned int, 3> version;
+
 				void apply(icedb::Shapes::NewShapeRequiredProperties&) const;
 				//void fromShapeObject(const icedb::Shapes::Shape&);
 			};
@@ -30,12 +35,13 @@ namespace icedb {
 				Int8Data_t particle_constituent_number;
 				FloatData_t particle_scattering_element_radius;
 				StringData_t particle_constituent_name;
-				std::string particle_constituent_single_name;
+				//std::string particle_constituent_single_name;
+				std::string scattering_method;
 
 				FloatData_t particle_scattering_element_composition_fractional;
 				Int8Data_t particle_scattering_element_composition_whole;
-				float hint_max_scattering_element_dimension = -1;
-				float particle_scattering_element_spacing = -1;
+				float scattering_element_coordinates_scaling_factor = 1.0f;
+				std::string scattering_element_coordinates_units = "m";
 				void apply(icedb::Shapes::NewShapeCommonOptionalProperties&) const;
 				//void fromShapeObject(const icedb::Shapes::Shape&);
 			};
@@ -43,7 +49,9 @@ namespace icedb {
 				ShapeRequiredData required;
 				ShapeCommonOptionalData optional;
 				/// Make a new shape under the group
-				icedb::Shapes::Shape::Shape_Type toShape(const std::string &name, std::shared_ptr<H5::Group>) const;
+				icedb::Shapes::Shape toShape(
+					HH::HH_hid_t parentGrpID,
+					const std::string &name) const;
 				//void fromShape(icedb::Groups::Group::Group_ptr);
 			};
 		}

@@ -1,15 +1,12 @@
 #pragma once
+#error "Replaced for now"
 #include <memory>
 #include <set>
-#include "compat/gsl/gsl"
+#include <gsl/gsl>
 #include "Attribute.hpp"
 #include "Table.hpp"
 #include "util.hpp"
-#include "icedb_h5.h"
-namespace H5 {
-	class Group;
-	class H5File;
-}
+#include <HH/Group.hpp>
 namespace icedb {
 	/// All stuff related to Groups.
 	namespace Groups {

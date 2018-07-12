@@ -13,7 +13,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 # Global definitions
-set(CMAKE_CXX_STANDARD 14) # TODO: Switch to 11?
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES) # Force compiler switches
 set(CMAKE_CXX_EXTENSIONS OFF) # No compiler-specific extensions
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON) # Building dynamic libraries
@@ -34,8 +34,8 @@ INCLUDE(CTest)
 # Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
-set(MINOR 5)
-set(REVISION 3)
+set(MINOR 6)
+set(REVISION 0)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
@@ -56,7 +56,7 @@ endif()
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # The two dependencies: boost and HDF5
-addBoostUniform(program_options REQUIRED)
+addBoostUniform(program_options unit_test_framework REQUIRED)
 option (FORCE_BUILD_USING_BOOST_FILESYSTEM
     "Force the build using boost filesystem" OFF)
 option (PROHIBIT_BUILD_USING_BOOST_FILESYSTEM

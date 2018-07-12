@@ -238,6 +238,11 @@ namespace icedb {
 			ep = std::shared_ptr<error_options_inner>(new error_options_inner);
 			ep->et = xe;
 		}
+		xError::xError(error_context_pt p) {
+			ep = std::shared_ptr<error_options_inner>(new error_options_inner);
+			ep->et = error::error_types::xOtherError;
+			ep->emessage = stringify(p);
+		}
 		xError::~xError() {}
 		const char* xError::what() const noexcept {
 			//static const char* msg = "An unknown error has occurred.";

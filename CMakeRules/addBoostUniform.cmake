@@ -1,4 +1,11 @@
 macro(addBoostUniform )
+
+# Check for Anaconda
+# If we are in a conda environment, ensure that the right Boost headers are being loaded
+if (DEFINED ENV{CONDA_PREFIX})
+	set(Boost_INCLUDE_DIR "$ENV{CONDA_PREFIX}/include" CACHE STRING "Include dir for boost")
+endif()
+
     #set(Boost_DEBUG ON)
 if (WIN32 AND NOT CYGWIN)
     option ( AUTOLINK_BOOST
@@ -33,6 +40,7 @@ else()
         add_definitions(-DBOOST_LOG_DYN_LINK)
     endif()
 endif()
+
 find_package(Boost COMPONENTS ${ARGV} ) #REQUIRED)
 if (NOT WINBOOST_AUTOLINK)
 	#if (Boost_LIBRARIES)
