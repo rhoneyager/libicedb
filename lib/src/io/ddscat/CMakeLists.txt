@@ -6,7 +6,6 @@ set(IO_DDSCAT_FILES
 	ddOriDataParsers.h
 	ddOutput.cpp
 	ddOutput.h
-	ddOutput_query.cpp
 	ddpar.cpp
 	ddpar.h
 	ddpar-keys.cpp

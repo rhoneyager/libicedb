@@ -15,6 +15,10 @@
 #include <icedb/splitSet.hpp>
 #include <icedb/io.hpp>
 
+#pragma warning(push)
+#pragma warning( disable : 4251 ) // DLL interface
+#pragma warning( disable : 4661 ) // Exporting vector
+
 namespace boost { namespace filesystem { class path; } }
 
 
@@ -88,9 +92,7 @@ namespace icedb {
 				ddOutput();
 				ddOutput(const ddOutput&);
 
-				bool operator<(const ddOutput &) const;
-				bool operator==(const ddOutput &) const;
-				bool operator!=(const ddOutput &) const;
+				
 				/// Regenerates ddOutputSingle entries from tables (used in hdf5 read)
 				//void doImport();
 				/// A brief description of the run
@@ -176,11 +178,6 @@ namespace icedb {
 				/// Set when listing folder.
 				doubleType oridata_d;
 
-				/// Generate a table containing weighting data, matching the ori table rows, 
-				/// for the specified distribution.
-				std::shared_ptr<const Eigen::MatrixXf> genWeights(
-					std::shared_ptr<weights::OrientationWeights3d>) const;
-
 				/// Refractive indices
 				std::vector<std::vector<std::complex<double> > > ms;
 
@@ -258,9 +255,7 @@ namespace icedb {
 
 				/// The shape file (may load fully later)
 				mutable std::shared_ptr<const ::icedb::io::ddscat::shapefile::shapefile> shape;
-				/// Load the full shape file and stats (uses shapeHash)
-				void loadShape() const;
-
+				
 				/// The ddscat parameter file
 				std::shared_ptr<ddPar> parfile;
 
@@ -280,3 +275,4 @@ namespace icedb {
 		}
 	}
 }
+#pragma warning(pop)
