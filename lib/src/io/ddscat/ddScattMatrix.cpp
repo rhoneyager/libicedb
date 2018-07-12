@@ -10,10 +10,10 @@
 #include <boost/math/constants/constants.hpp>
 #include "ddScattMatrix.h"
 #include "ddpar.h"
-#include "../rtmath/units.h"
-#include "../rtmath/phaseFunc.h"
+#include <icedb/units/units.hpp>
+#include "phaseFunc.h"
 //#include "../rtmath/coords.h"
-#include <Ryan_Debug/error.h>
+#include <icedb/error.hpp>
 
 namespace icedb {
 	namespace io {
@@ -129,8 +129,8 @@ namespace icedb {
 			ddScattMatrixConnector::ddScattMatrixConnector(
 				const std::vector<std::complex<double> >& src)
 			{
-				if (src.size() % 3 != 0 || !src.size()) RDthrow(Ryan_Debug::error::xArrayOutOfBounds())
-					<< Ryan_Debug::error::otherErrorText("Element src has the wrong size or is a "
+				if (src.size() % 3 != 0 || !src.size()) ICEDB_throw(icedb::error::error_types::xArrayOutOfBounds)
+					.add("Reason","Element src has the wrong size or is a "
 						"null matrix.");
 				e01x = src[0];
 				e01y = src[1];
@@ -145,26 +145,26 @@ namespace icedb {
 				}
 			}
 
-			boost::shared_ptr<const ddScattMatrixConnector>
+			std::shared_ptr<const ddScattMatrixConnector>
 				ddScattMatrixConnector::fromVector(
 					const std::vector<std::complex<double> >& vec)
 			{
-				boost::shared_ptr<const ddScattMatrixConnector>
+				std::shared_ptr<const ddScattMatrixConnector>
 					res(new ddScattMatrixConnector(vec));
 				return res;
 			}
 
-			boost::shared_ptr<const ddScattMatrixConnector>
+			std::shared_ptr<const ddScattMatrixConnector>
 				ddScattMatrixConnector::fromPar(const ddPar &src)
 			{
-				boost::shared_ptr<const ddScattMatrixConnector>
+				std::shared_ptr<const ddScattMatrixConnector>
 					res(new ddScattMatrixConnector(src));
 				return res;
 			}
 
-			boost::shared_ptr<const ddScattMatrixConnector> ddScattMatrixConnector::defaults()
+			std::shared_ptr<const ddScattMatrixConnector> ddScattMatrixConnector::defaults()
 			{
-				static boost::shared_ptr<const ddScattMatrixConnector>
+				static std::shared_ptr<const ddScattMatrixConnector>
 					res(new ddScattMatrixConnector());
 				return res;
 			}
@@ -178,14 +178,14 @@ namespace icedb {
 				//complex<double> a = conj(e01y), b=conj(e01z), c=conj(e02y), d=conj(e02z);
 				complex<double> a = conj(frame->e01y), b = conj(frame->e01z),
 					c = conj(frame->e02y), d = conj(frame->e02z);
-				rtmath::phaseFuncs::convertFtoS(_f, _s, _phi, a, b, c, d);
+				icedb::io::ddscat::phaseFuncs::convertFtoS(_f, _s, _phi, a, b, c, d);
 			}
 
 			void ddScattMatrixF::_calcP() const
 			{
 				// Generates Snn and, by extension, Knn and Pnn
 				using namespace std;
-				rtmath::phaseFuncs::muellerBH(_s, _Pnn);
+				icedb::io::ddscat::phaseFuncs::muellerBH(_s, _Pnn);
 			}
 
 			void ddScattMatrixF::setF(const FType& fs)
@@ -216,7 +216,7 @@ namespace icedb {
 			{
 				// Generates Snn and, by extension, Knn and Pnn
 				using namespace std;
-				rtmath::phaseFuncs::muellerBH(_s, _Pnn);
+				icedb::io::ddscat::phaseFuncs::muellerBH(_s, _Pnn);
 			}
 
 			void ddScattMatrixS::setS(const FType& s)
