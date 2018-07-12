@@ -175,13 +175,18 @@ int main(int argc, char** argv) {
 
 		// Create the output file if it does not exist
 		HH::File file(HH::HH_hid_t::dummy()); // Dummy parameter gets replaced always.
-		if (vm.count("create"))
-			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_CREAT);
+		if (vm.count("create")) {
+			if (sfs::exists(pToRaw))
+				ICEDB_throw(icedb::error::error_types::xFileExists)
+				.add("Reason", "User specified to create a new file, but a file already exists at the specified path")
+				.add("Filename", pToRaw.string());
+			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
+		}
 		else if (vm.count("truncate")) 
 			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
 		else {
 			if (!sfs::exists(pToRaw))
-				file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_CREAT);
+				file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
 			else file = HH::File::openFile(pToRaw.string().c_str(), H5F_ACC_RDWR);
 		}
 		//Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
