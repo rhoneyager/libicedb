@@ -22,9 +22,7 @@ set(IO_DDSCAT_FILES
 	rotations.h
 	shapefile.cpp
 	shapefile.h
-	shapefile_convolute.cpp
 	shapefile_parsers.cpp
-	shapefile_query.cpp
 	phaseFunc.cpp
 	phaseFunc.h
 	)
