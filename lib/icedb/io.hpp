@@ -673,10 +673,9 @@ namespace icedb
 							v(handle, opts, obj);
 							return res;
 						}
-					} catch (::boost::exception &e) {
-						
-						e << ::icedb::error::file_name(opts->filename());
-						throw;
+					} catch (::icedb::error::xError &e) {
+						e.add<std::string>("Filename", opts->filename());
+						throw e;
 					}
 					//return dllsaver(handle, filename, dynamic_cast<const obj_class*>(this), key, accessType);
 				} else {
