@@ -1,137 +1,139 @@
 #pragma once
-#include <Ryan_Debug/macros.h>
+#include <boost/lexical_cast.hpp>
 
-namespace rtmath
+namespace icedb
 {
-	namespace ddscat {
-		/// Parsers for ddscat files
-		namespace ddOriDataParsers {
+	namespace io {
+		namespace ddscat {
+			/// Parsers for ddscat files
+			namespace ddOriDataParsers {
 
 
-			struct version
-			{
-				/// \note Version is specified internally, and defaults to the latest version.
-				static void write(std::ostream &out, size_t v);
-				static size_t read(std::istream &in, size_t);
-			};
-			struct simpleString
-			{
-				static void write(std::ostream &out, size_t, const std::string &s, const std::string &p);
-				static void read(std::istream &in, std::string &s);
-			};
-			struct simpleStringRev
-			{
-				static void write(std::ostream &out, size_t, const std::string &s, const std::string &p);
-				static void read(std::istream &in, std::string &s);
-			};
-
-			template <class T>
-			struct simpleNumRev
-			{
-				static void write(std::ostream &out, size_t, const T &s, const std::string &p, size_t pwd = 2, size_t wd = 10)
+				struct version
 				{
-					std::string sp(pwd, ' ');
-					out << sp;
-					out.width(wd);
-					out << std::left << s << " = ";
-					//out << s << " = ";
-					out << p << std::endl;
-				}
-				static void read(std::istream &in, T &s)
+					/// \note Version is specified internally, and defaults to the latest version.
+					static void write(std::ostream &out, size_t v);
+					static size_t read(std::istream &in, size_t);
+				};
+				struct simpleString
 				{
-					std::string lin;
-					std::getline(in, lin);
-					size_t p = lin.find("=");
-					std::string ss;
-					ss = lin.substr(0, p - 1);
-					// Remove any leading and lagging spaces
-					// Not all Liu avg files are correct in this respect
-					boost::algorithm::trim(ss);
-					s = Ryan_Debug::macros::fastCast<T>(ss);
-				}
-			};
-
-			template <class T>
-			struct simpleNumCompound
-			{
-				static void write(std::ostream &out, size_t, const T &val, size_t wd,
-					const std::string &pre, const std::string &post)
+					static void write(std::ostream &out, size_t, const std::string &s, const std::string &p);
+					static void read(std::istream &in, std::string &s);
+				};
+				struct simpleStringRev
 				{
-					out << pre;
-					out.width(wd);
-					out << std::right << val << " = ";
-					out << post << std::endl;
-				}
-				static void read(std::istream &in, T &s)
+					static void write(std::ostream &out, size_t, const std::string &s, const std::string &p);
+					static void read(std::istream &in, std::string &s);
+				};
+
+				template <class T>
+				struct simpleNumRev
 				{
-					std::string lin;
-					std::getline(in, lin);
-					read(lin, s);
-				}
-				static void read(const std::string &lin, T &s)
+					static void write(std::ostream &out, size_t, const T &s, const std::string &p, size_t pwd = 2, size_t wd = 10)
+					{
+						std::string sp(pwd, ' ');
+						out << sp;
+						out.width(wd);
+						out << std::left << s << " = ";
+						//out << s << " = ";
+						out << p << std::endl;
+					}
+					static void read(std::istream &in, T &s)
+					{
+						std::string lin;
+						std::getline(in, lin);
+						size_t p = lin.find("=");
+						std::string ss;
+						ss = lin.substr(0, p - 1);
+						// Remove any leading and lagging spaces
+						// Not all Liu avg files are correct in this respect
+						boost::algorithm::trim(ss);
+						s = boost::lexical_cast<T>(ss);
+					}
+				};
+
+				template <class T>
+				struct simpleNumCompound
 				{
-					size_t p = lin.find("=");
-					size_t pend = lin.find("=", p + 1);
-					std::string ss;
-					ss = lin.substr(p + 1, pend - p);
-					// Remove any leading and lagging spaces
-					// Not all Liu avg files are correct in this respect
-					boost::algorithm::trim(ss);
-					s = Ryan_Debug::macros::fastCast<T>(ss);
-				}
-			};
+					static void write(std::ostream &out, size_t, const T &val, size_t wd,
+						const std::string &pre, const std::string &post)
+					{
+						out << pre;
+						out.width(wd);
+						out << std::right << val << " = ";
+						out << post << std::endl;
+					}
+					static void read(std::istream &in, T &s)
+					{
+						std::string lin;
+						std::getline(in, lin);
+						read(lin, s);
+					}
+					static void read(const std::string &lin, T &s)
+					{
+						size_t p = lin.find("=");
+						size_t pend = lin.find("=", p + 1);
+						std::string ss;
+						ss = lin.substr(p + 1, pend - p);
+						// Remove any leading and lagging spaces
+						// Not all Liu avg files are correct in this respect
+						boost::algorithm::trim(ss);
+						s = boost::lexical_cast<T>(ss);
+					}
+				};
 
-			extern template struct simpleNumRev < double >;
-			extern template struct simpleNumRev < size_t >;
+				extern template struct simpleNumRev < double >;
+				extern template struct simpleNumRev < size_t >;
 
-			extern template struct simpleNumCompound < double >;
-			extern template struct simpleNumCompound < size_t >;
+				extern template struct simpleNumCompound < double >;
+				extern template struct simpleNumCompound < size_t >;
 
-			struct refractive
-			{
-				static void write(std::ostream &out, size_t ver, size_t inum, 
-					const std::complex<double> &m, double k, double d);
-				static void read(std::istream &in, size_t &subst, std::complex<double> &m);
-				static void read(const std::string &str, size_t &subst, std::complex<double> &m);
-			};
+				struct refractive
+				{
+					static void write(std::ostream &out, size_t ver, size_t inum,
+						const std::complex<double> &m, double k, double d);
+					static void read(std::istream &in, size_t &subst, std::complex<double> &m);
+					static void read(const std::string &str, size_t &subst, std::complex<double> &m);
+				};
 
-			struct ddRot1d
-			{
-				static void write(std::ostream &out, size_t, const std::string &fieldname,
-					double min, double max, size_t n, const std::string &fieldnamecaps);
-				static void read(std::istream &in, std::string &fieldname, 
-					double &min, double &max, size_t &n);
-			};
+				struct ddRot1d
+				{
+					static void write(std::ostream &out, size_t, const std::string &fieldname,
+						double min, double max, size_t n, const std::string &fieldnamecaps);
+					static void read(std::istream &in, std::string &fieldname,
+						double &min, double &max, size_t &n);
+				};
 
-			enum class frameType { LF, TF };
-			struct ddPolVec
-			{
-				static void write(std::ostream &out, size_t ver, 
-					const std::vector<std::complex<double> > &pols, size_t vecnum, frameType frame);
-				static void read(std::istream &in, std::vector<std::complex<double> > &pols, 
-					size_t &vecnum, frameType &frame);
-			};
+				enum class frameType { LF, TF };
+				struct ddPolVec
+				{
+					static void write(std::ostream &out, size_t ver,
+						const std::vector<std::complex<double> > &pols, size_t vecnum, frameType frame);
+					static void read(std::istream &in, std::vector<std::complex<double> > &pols,
+						size_t &vecnum, frameType &frame);
+				};
 
-			struct ddAxisVec
-			{
-				static void write(std::ostream &out, size_t, const std::vector<double > &v,
-					size_t axisnum, frameType frame);
-				static void read(std::istream &in, std::vector<double> &v, size_t &axisnum, frameType &frame);
-			};
-			
-			struct ddPhysExtent
-			{
-				static void read(std::istream &in, double &a, double &b, char &axisname);
-				static void write(std::ostream &out, size_t, const double a, const double b,
-					char axisname);
-			};
+				struct ddAxisVec
+				{
+					static void write(std::ostream &out, size_t, const std::vector<double > &v,
+						size_t axisnum, frameType frame);
+					static void read(std::istream &in, std::vector<double> &v, size_t &axisnum, frameType &frame);
+				};
 
-			struct ddNumOris
-			{
-				static void read(std::istream &in, size_t &a );
-				static void write(std::ostream &out, size_t, const size_t a);
-			};
+				struct ddPhysExtent
+				{
+					static void read(std::istream &in, double &a, double &b, char &axisname);
+					static void write(std::ostream &out, size_t, const double a, const double b,
+						char axisname);
+				};
 
+				struct ddNumOris
+				{
+					static void read(std::istream &in, size_t &a);
+					static void write(std::ostream &out, size_t, const size_t a);
+				};
+
+			}
 		}
 	}
 }
