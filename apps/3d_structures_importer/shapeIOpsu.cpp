@@ -177,9 +177,14 @@ namespace icedb {
 				//--------------------------------------------------------------------------------------//
 
 				shpdata.required.number_of_particle_scattering_elements = static_cast<uint64_t>(numPoints);
+				//shpdata.required.number_of_particle_constituents = 1;
+				//shpdata.optional.particle_constituent_number.resize(1);
+				//shpdata.optional.particle_constituent_number[0] = 1;
 				shpdata.required.number_of_particle_constituents = 1;
-				shpdata.optional.particle_constituent_number.resize(1);
-				shpdata.optional.particle_constituent_number[0] = 1;
+				shpdata.optional.particle_constituent_number = { 1 };
+				shpdata.optional.particle_constituent_name = { "ice" };
+
+
 				shpdata.required.particle_id.resize(32);
 				shpdata.required.particle_id = particleType; /// std::to_string(particle_index[0]);
 				shpdata.required.particle_scattering_element_coordinates_are_integral = false;

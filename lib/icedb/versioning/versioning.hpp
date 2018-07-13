@@ -74,7 +74,7 @@ namespace icedb {
 			out.vn[versionInfo::V_MSCVER] = _MSC_FULL_VER;
 #endif
 #ifdef BOOST_LIB_VERSION
-			inline_strncpy_s(out.vboost, versionInfo::charmax, BOOST_LIB_VERSION, versionInfo::charmax);
+			//inline_strncpy_s(out.vboost, versionInfo::charmax, BOOST_LIB_VERSION, versionInfo::charmax);
 #endif
 #ifdef _DEBUG
 			out.vb[versionInfo::V_DEBUG] = true;

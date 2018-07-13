@@ -526,21 +526,24 @@ namespace icedb {
 					//p.required.particle_scattering_element_composition[i] = parser_vals[pIndex + 4]; //! Redo pass later and map
 
 				}
-				p.optional.particle_constituent_number = Int8Data_t(constituents.begin(), constituents.end());
+				p.optional.particle_constituent_number = UInt16Data_t(constituents.begin(), constituents.end());
+				if (constituents.size() == 1) p.optional.particle_constituent_name = { "ice" };
 				p.optional.particle_scattering_element_composition_whole.resize(numPoints);
-				if (constituents.size() >= UINT8_MAX) throw (std::invalid_argument("Shape has too many constituents."));
-				p.required.number_of_particle_constituents = static_cast<uint8_t>(constituents.size());
+				if (constituents.size() >= UINT16_MAX) throw (std::invalid_argument("Shape has too many constituents."));
+				p.required.number_of_particle_constituents = static_cast<uint16_t>(constituents.size());
 
 				for (size_t i = 0; i < numPoints; ++i)
 				{
 					size_t pIndex = 7 * i;
 					uint64_t substance_id = static_cast<uint64_t>(parser_vals[pIndex + 4]);
-					size_t offset = 0;
+					uint16_t offset = 0;
 					for (auto it = constituents.cbegin(); it != constituents.cend(); ++it, ++offset) {
 						if ((*it) == substance_id) break;
 					}
-					size_t idx = (i*constituents.size()) + offset;
-					p.optional.particle_scattering_element_composition_whole[idx] = 1;
+
+					p.optional.particle_scattering_element_composition_whole[i] = offset;
+					//size_t idx = (i*constituents.size()) + offset;
+					//p.optional.particle_scattering_element_composition_whole[idx] = 1;
 				}
 				p.required.particle_scattering_element_coordinates_are_integral = 1;
 			}
@@ -605,6 +608,8 @@ namespace icedb {
 				res.required.number_of_particle_scattering_elements = actualNumPoints;
 				if (numCols == 3) {
 					res.required.number_of_particle_constituents = 1;
+					res.optional.particle_constituent_number = { 1 };
+					res.optional.particle_constituent_name = { "ice" };
 					res.required.particle_scattering_element_coordinates = parser_vals;
 				}
 				else if (numCols == 4) {
@@ -620,6 +625,8 @@ namespace icedb {
 					res.optional.particle_constituent_number.resize(max_constituent);
 					for (size_t i = 0; i < max_constituent; ++i)
 						res.optional.particle_constituent_number[i] = static_cast<uint8_t>(i + 1); // assert-checked before
+					if (max_constituent == 1) res.optional.particle_constituent_name = { "ice" };
+
 
 					res.required.particle_scattering_element_coordinates.resize(actualNumPoints * 3);
 					res.optional.particle_scattering_element_composition_whole.resize(actualNumPoints);

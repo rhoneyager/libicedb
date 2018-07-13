@@ -27,6 +27,7 @@
 #include <icedb/fs_backend.hpp>
 #include <icedb/compat/HH/Groups.hpp>
 #include <icedb/compat/HH/Files.hpp>
+#include <icedb/splitSet.hpp>
 #include "shape.hpp"
 #include "shapeIOtext.hpp"
 
@@ -55,7 +56,7 @@ int main(int argc, char** argv) {
 		// Read program options
 		//H5Eset_auto(H5E_DEFAULT, my_hdf5_error_handler, NULL); // For HDF5 error debugging
 		namespace po = boost::program_options;
-		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options");
+		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents");
 		desc.add_options()
 			("help,h", "produce help message")
 			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
@@ -87,8 +88,12 @@ int main(int argc, char** argv) {
 			("scattering_element_coordinates_scaling_factor", po::value<float>()->default_value(1.0f), "Scaling factor")
 			("scattering_element_coordinates_units", po::value<string>()->default_value("m"), "Scaling factor units")
 			;
+		constits.add_options()
+			("constituent-names", po::value<string>(), "Set the constituents. Pass in the format of \"NUM1-NAME1,NUM2-NAME2,NUM3-NAME3\"")
+			;
 		desc.add(mdata);
 		desc.add(input_matching);
+		desc.add(constits);
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
 		po::notify(vm);
@@ -161,6 +166,32 @@ int main(int argc, char** argv) {
 		sSFfactor = vm["scattering_element_coordinates_scaling_factor"].as<float>();
 		sSFunits = vm["scattering_element_coordinates_units"].as<string>();
 
+		// Read in the constituents
+		std::map<int, std::string> constit_ids;
+		{
+			string sConstits = vm["constituent-names"].as<std::string>();
+			std::vector<std::string> vsconstits;
+			icedb::splitSet::splitVector(sConstits, vsconstits, ',');
+			for (const auto &c : vsconstits) {
+				std::vector<std::string> vc;
+				icedb::splitSet::splitVector(c, vc, '-');
+				if (vc.size() != 2) ICEDB_throw(icedb::error::error_types::xBadInput)
+					.add("Reason", "Trying to construct the constituent map, but encountered ill-formatted input")
+					.add("Constituent-Names", sConstits)
+					.add("Problem-Field", c);
+				try {
+					int c_id = boost::lexical_cast<int>(vc[0]);
+					constit_ids[c_id] = vc[1];
+				}
+				catch (boost::bad_lexical_cast) {
+					ICEDB_throw(icedb::error::error_types::xBadInput)
+						.add("Reason", "Trying to construct the constituent map, but encountered ill-formatted input")
+						.add("Constituent-Names", sConstits)
+						.add("Problem-Field", c);
+				}
+			}
+		}
+
 		auto now = std::chrono::system_clock::now();
 		auto in_time_t = std::chrono::system_clock::to_time_t(now);
 		std::ostringstream ssIngestTime;
@@ -226,10 +257,17 @@ int main(int argc, char** argv) {
 				// In this example, objects in the output file are named according to their ids.
 				if (data.required.particle_id.size() == 0)
 					data.required.particle_id = f.first.filename().string();
-				if (data.optional.particle_constituent_name.size() == 0)
-					data.optional.particle_constituent_name = { "ice" };
-				if (data.optional.particle_constituent_number.size() == 0)
-					data.optional.particle_constituent_number = { 1 };
+
+
+				if (constit_ids.size()) {
+					data.optional.particle_constituent_name.clear();
+					data.optional.particle_constituent_number.clear();
+					for (const auto &c : constit_ids) {
+						data.optional.particle_constituent_number.push_back(c.first);
+						data.optional.particle_constituent_name.push_back(c.second);
+					}
+					data.required.number_of_particle_constituents = gsl::narrow_cast<uint16_t>(constit_ids.size());
+				}
 				data.optional.scattering_element_coordinates_scaling_factor = sSFfactor;
 				data.optional.scattering_element_coordinates_units = sSFunits;
 				data.required.version = version;
