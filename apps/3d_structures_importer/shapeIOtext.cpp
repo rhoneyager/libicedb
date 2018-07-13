@@ -33,15 +33,11 @@ namespace icedb {
 				}
 				if (!scat_elem_num_is_trivial)
 					p.particle_scattering_element_number = this->particle_scattering_element_number;
-				// Matters only if more than one constituent
-				if (this->particle_constituent_number.size() > 1)
-					p.particle_constituent_number = this->particle_constituent_number;
-
+				
+				p.particle_constituent_number = this->particle_constituent_number;
 
 				p.particle_scattering_element_radius = this->particle_scattering_element_radius;
 
-				//if (this->particle_constituent_name.size() == 0)
-				//	this->particle_constituent_name.push_back("ice");
 				p.particle_constituent_name = this->particle_constituent_name;
 				
 				
@@ -51,7 +47,7 @@ namespace icedb {
 				bool comp_whole_is_trivial = false;
 				if (std::all_of(particle_scattering_element_composition_whole.begin(),
 					particle_scattering_element_composition_whole.end(),
-					[](uint8_t v)->bool { return (v == 1) ? true : false; }))
+					[](uint16_t v)->bool { return (v == 1) ? true : false; }))
 					comp_whole_is_trivial = true;
 				if (!comp_whole_is_trivial)
 					p.particle_scattering_element_composition_whole = particle_scattering_element_composition_whole;

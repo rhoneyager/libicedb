@@ -1,8 +1,10 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <boost/lexical_cast.hpp>
 #include "../icedb/shape.hpp"
 #include "../icedb/versioning/versioning.hpp"
+#include "../icedb/error.hpp"
 
 namespace icedb {
 	namespace Shapes {
@@ -64,11 +66,22 @@ namespace icedb {
 				}
 			}
 			if (required->number_of_particle_constituents > 1) {
-				if (this->particle_constituent_number.empty() || this->particle_constituent_number.size() != required->number_of_particle_constituents) {
+				if (this->particle_constituent_number.empty()) {
 					good = false;
 					if (out) (*out) << "particle_constituent_number is not set. "
 						"This is an essential dimension scale that the rest of the particle "
 						"data depends on." << std::endl;
+				}
+				else {
+					if (this->particle_constituent_number.size() != required->number_of_particle_constituents) {
+						good = false;
+						if (out) (*out) << "particle_constituent_number has the wrong size. "
+							"It should match required->number_of_particle_constituents. "
+							"particle_constituent_number.size() is " << this->particle_constituent_number.size()
+							<< ", and required->number_of_particle_constituents is "
+							<< required->number_of_particle_constituents
+							<< "." << std::endl;
+					}
 				}
 
 				if (this->particle_scattering_element_composition_whole.empty() 
@@ -216,9 +229,28 @@ namespace icedb {
 			gsl::not_null<const NewShapeRequiredProperties*> required,
 			const NewShapeCommonOptionalProperties* optional)
 		{
-			Expects(required->isValid(&(std::cerr)));
-			if (required->requiresOptionalPropertiesStruct()) Expects(optional);
-			if (optional) Expects(optional->isValid(required));
+			// Check for validity. If a shape entry is invalid, throw an exception
+			// to the user.
+			if (!required->isValid(&(std::cerr)))
+				ICEDB_throw(error::error_types::xBadInput)
+				.add("Reason", "Cannot create a shape from the passed data. See above error "
+					"messages regarding why the shape is invalid.")
+				.add("Particle-id", required->particle_id);
+			if (required->requiresOptionalPropertiesStruct()) {
+				if (!optional)
+					ICEDB_throw(error::error_types::xBadInput)
+					.add("Reason", "Cannot create a shape from the passed data. "
+						"This particular shape needs some data to be passed in using the "
+						"optional properties structure, but no structure was provided.")
+					.add("Particle-id", required->particle_id);
+			}
+			if (optional) {
+				if (!optional->isValid(required, &(std::cerr)))
+					ICEDB_throw(error::error_types::xBadInput)
+					.add("Reason", "Cannot create a shape from the passed data. See above "
+						"error messages regarding why.")
+					.add("Particle-id", required->particle_id);
+			}
 
 			// newLocationAsEmptyGroup
 			HH::Group res(newLocationAsEmptyGroup);
@@ -284,7 +316,7 @@ namespace icedb {
 				tblPSEN.setIsDimensionScale("particle_scattering_element_number");
 			}
 
-			auto tblPCN = res.dsets.create<uint8_t>("particle_constituent_number",
+			auto tblPCN = res.dsets.create<uint16_t>("particle_constituent_number",
 				{ static_cast<size_t>(required->number_of_particle_constituents) });
 			{
 				tblPCN.atts.add<std::string>("description", "ID number of the constituent material");
@@ -292,22 +324,22 @@ namespace icedb {
 				bool added = false;
 				if (optional) {
 					if (!optional->particle_constituent_number.empty()) {
-						Expects(0 <= tblPCN.write<uint8_t>(optional->particle_constituent_number));
+						Expects(0 <= tblPCN.write<uint16_t>(optional->particle_constituent_number));
 						added = true;
 					}
 				}
 				if (!added) {
 					// Create "dummy" constituent numbers and write.
-					std::vector<uint8_t> dummyPCNs(required->number_of_particle_constituents);
+					std::vector<uint16_t> dummyPCNs(required->number_of_particle_constituents);
 					for (size_t i = 0; i < required->number_of_particle_constituents; ++i)
-						dummyPCNs[i] = static_cast<uint8_t>(i + 1);
-					Expects(0 <= tblPCN.write<uint8_t>(dummyPCNs));
+						dummyPCNs[i] = static_cast<uint16_t>(i + 1);
+					Expects(0 <= tblPCN.write<uint16_t>(dummyPCNs));
 				}
 				tblPCN.setIsDimensionScale("particle_constituent_number");
 			}
 
-			auto tblXYZ = res.dsets.create<uint8_t>("particle_axis", { 3 });
-			Expects(0 <= tblXYZ.write<uint8_t>({ 0, 1, 2 }));
+			auto tblXYZ = res.dsets.create<uint16_t>("particle_axis", { 3 });
+			Expects(0 <= tblXYZ.write<uint16_t>({ 0, 1, 2 }));
 			tblXYZ.setIsDimensionScale("particle_axis");
 
 			// Determine if we can store the data as integers.
@@ -382,7 +414,7 @@ namespace icedb {
 				}
 
 				if (optional->particle_scattering_element_composition_whole.size()) {
-					auto tblPSEC2b = res.dsets.create<uint8_t>(
+					auto tblPSEC2b = res.dsets.create<uint16_t>(
 						t_name("particle_scattering_element_composition_whole"),
 						t_dimensions({ static_cast<size_t>(required->number_of_particle_scattering_elements)}),
 						t_DatasetCreationPlist(pl1d())
@@ -390,6 +422,7 @@ namespace icedb {
 					tblPSEC2b.setDims(tblPSEN);
 					tblPSEC2b.atts.add<std::string>("description", "The constituent material ID for each scattering element.");
 					tblPSEC2b.atts.add<std::string>("units", "None" );
+					Expects(0 <= tblPSEC2b.write<uint16_t>(optional->particle_scattering_element_composition_whole));
 				}
 
 				// Write common optional attributes

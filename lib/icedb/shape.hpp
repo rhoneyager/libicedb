@@ -19,7 +19,7 @@ namespace icedb {
 			/// DIMENSION: The number of distinct constituents in the particle.
 			/// If these have non-trivial ids (i.e. not 1, 2, 3, 4, ...), then define the
 			/// optional attribute particle_constituent_number.
-			uint8_t number_of_particle_constituents = 0;
+			uint16_t number_of_particle_constituents = 0;
 
 			// Each particle has three axes (X, Y and Z). As these are trivial, only the
 			// scale lables are written; the scale does not have an explicit dataset filled with values.
@@ -34,7 +34,7 @@ namespace icedb {
 			/// Are the particle_scattering_element_coordinates integers?
 			/// This allows for optimization when writing.
 			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
-			uint8_t particle_scattering_element_coordinates_are_integral = 0;
+			uint16_t particle_scattering_element_coordinates_are_integral = 0;
 			
 
 			// The ATTRIBUTES
@@ -68,7 +68,7 @@ namespace icedb {
 			/// DIMENSION: The id number for each scattering element. Single dimension.
 			gsl::span<const uint64_t> particle_scattering_element_number;
 			/// DIMENSION: The id number of each particle's constituent. Single dimension.
-			gsl::span<const uint8_t> particle_constituent_number;
+			gsl::span<const uint16_t> particle_constituent_number;
 
 
 			/// OPTIONAL VARIABLE: Physical radius of the scattering sphere, in meters.
@@ -91,7 +91,7 @@ namespace icedb {
 			/// This table is used when scattering elements can only be a single substance (not fractional).
 			/// This CANNOT COEXIST with particle_scattering_element_composition_fractional.
 			/// It exists to save space when non-compressed data is stored.
-			gsl::span<const uint8_t> particle_scattering_element_composition_whole;
+			gsl::span<const uint16_t> particle_scattering_element_composition_whole;
 
 			/// OPTIONAL ATTRIBUTE: Physical spacing between adjacent grid points.
 			float scattering_element_coordinates_scaling_factor = 1.0f;

@@ -73,9 +73,9 @@ namespace icedb {
 #ifdef _MSC_FULL_VER
 			out.vn[versionInfo::V_MSCVER] = _MSC_FULL_VER;
 #endif
-//#ifdef BOOST_LIB_VERSION
-//			inline_strncpy_s(out.vboost, versionInfo::charmax, BOOST_LIB_VERSION, versionInfo::charmax);
-//#endif
+#ifdef BOOST_LIB_VERSION
+			//inline_strncpy_s(out.vboost, versionInfo::charmax, BOOST_LIB_VERSION, versionInfo::charmax);
+#endif
 #ifdef _DEBUG
 			out.vb[versionInfo::V_DEBUG] = true;
 #endif
@@ -153,7 +153,7 @@ namespace icedb {
 				<< " Date " << v.vn[versionInfo::V_INTEL_DATE] << std::endl;
 			if (v.vn[versionInfo::V_MSCVER])
 				out << "Microsoft Visual Studio Compiler Version " << v.vn[versionInfo::V_MSCVER] << std::endl;
-			//if (v.vboost[0]) out << "Boost version " << v.vboost << std::endl;
+			if (v.vboost[0]) out << "Boost version " << v.vboost << std::endl;
 
 
 			out << std::endl;
