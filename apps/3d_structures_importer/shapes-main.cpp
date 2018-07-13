@@ -168,6 +168,7 @@ int main(int argc, char** argv) {
 
 		// Read in the constituents
 		std::map<int, std::string> constit_ids;
+		if (vm.count("constituent-names"))
 		{
 			string sConstits = vm["constituent-names"].as<std::string>();
 			std::vector<std::string> vsconstits;
