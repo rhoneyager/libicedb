@@ -56,7 +56,7 @@ endif()
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # The two dependencies: boost and HDF5
-addBoostUniform(program_options unit_test_framework REQUIRED)
+addBoostUniform(program_options unit_test_framework date_time regex REQUIRED)
 option (FORCE_BUILD_USING_BOOST_FILESYSTEM
     "Force the build using boost filesystem" OFF)
 option (PROHIBIT_BUILD_USING_BOOST_FILESYSTEM

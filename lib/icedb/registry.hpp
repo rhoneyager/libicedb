@@ -82,36 +82,7 @@ namespace icedb
 			}
 		};
 
-		/// Base class for external data access, throgh file I/O or database
-		struct handler_external
-		{
-		protected:
-			handler_external(const char* id);
-			/// Ensures that plugins do not collide
-			const char* id;
-		public:
-			inline const char* getId() { return id; }
-			virtual ~handler_external() {}
-		};
-
-		/// Base class to handle multiple IO operations on a single file
-		struct IOhandler : public handler_external
-		{
-		protected:
-			IOhandler(const char* id);
-		public:
-			virtual ~IOhandler() {}
-			/// If modifying these, change IO_options::setVal and getVal.
-			enum class IOtype
-			{
-				READONLY,
-				READWRITE,
-				EXCLUSIVE,
-				TRUNCATE,
-				DEBUG,
-				CREATE
-			};
-		};
+		
 
 		/**
 		* \param base is the raw pointer type (IOhandler or DBhandler)
@@ -180,7 +151,9 @@ namespace icedb
 
 		};
 		*/
-		class IO_options : public options
+		typedef options IO_options;
+		
+		/*class IO_options : public options
 		{
 		private:
 			IO_options();
@@ -203,6 +176,7 @@ namespace icedb
 			void iotype(IOhandler::IOtype val) { setVal<IOhandler::IOtype>("ioType", val); }
 			IOhandler::IOtype iotype() const { return getVal<IOhandler::IOtype>("ioType", IOhandler::IOtype::TRUNCATE); }
 		};
+		*/
 
 		/// Convenient template pattern for defining an IO class registry
 		template<class object>
@@ -325,12 +299,5 @@ namespace icedb
 	}
 }
 
-
-// GCC sure has odd attribute positioning rules...
-//namespace icedb { namespace registry {
-//std::ostream & operator<<(std::ostream&, const icedb::registry::IOhandler::IOtype&);
-//std::istream & operator>>(std::istream&, icedb::registry::IOhandler::IOtype&);
-//std::ostream & operator<<(std::ostream&, const icedb::registry::options&);
-//} }
 
 #pragma warning(pop)

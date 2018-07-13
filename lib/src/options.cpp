@@ -19,6 +19,11 @@ namespace icedb {
 			auto res = std::shared_ptr<options>(new options); return res;
 		}
 		options::~options() {}
+		std::shared_ptr<options> options::clone() const {
+			auto res = generate();
+			res->p->_mapStr = this->p->_mapStr;
+			return res;
+		}
 		void options::enumVals(std::ostream &out) const {
 			//out << "\tName\t\tValue" << std::endl;
 			for (const auto &v : p->_mapStr)
@@ -65,7 +70,8 @@ namespace icedb {
 		}
 
 #define DOTYPES(f) f(int); f(float); f(double); f(long); f(long long); \
-	f(unsigned int); f(unsigned long); f(unsigned long long); f(std::string); f(bool); f(std::complex<double>);
+	f(unsigned int); f(unsigned long); f(unsigned long long); \
+	f(std::string); f(bool); f(std::complex<double>); f(icedb::registry::IOhandler::IOtype);
 
 #define IMPL_OPTS_SETVAL(T) template options_ptr options::setVal<T>(const std::string&, const T&);
 #define IMPL_OPTS_ADD(T) template options_ptr options::add<T>(const std::string&, const T&);

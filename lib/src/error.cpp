@@ -281,7 +281,9 @@ namespace icedb {
 		}
 
 #define DOTYPES(f) f(int); f(float); f(double); f(long); f(long long); \
-	f(unsigned int); f(unsigned long); f(unsigned long long); f(std::string); f(bool); f(std::complex<double>);
+	f(unsigned int); f(unsigned long); f(unsigned long long); \
+	f(std::string); f(bool); f(std::complex<double>); \
+	f(icedb::registry::IOhandler::IOtype);
 
 #define IMPL_xError_ADD(T) template xError& xError::add<T>(const std::string&, const T);
 		DOTYPES(IMPL_xError_ADD);

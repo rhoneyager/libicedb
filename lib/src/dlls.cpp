@@ -395,8 +395,8 @@ namespace icedb
 							ICEDB_throw(icedb::error::error_types::xDLLerror)
 							.add("is_critical", critical)
 							.add("file_name", filename)
-							.add("symbol_name", "dllStart")
-							.add("otherErrorCode", res);
+							.add("symbol_name", "dllStart");
+							//.add("otherErrorCode", res);
 						close();
 						return;
 					}

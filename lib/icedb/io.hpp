@@ -718,7 +718,7 @@ namespace icedb
 		void readObjs(std::vector<std::shared_ptr<T> > &rinputs, const std::string &fname, 
 			std::shared_ptr<const icedb::registry::collectionTyped<T> > filter = nullptr)
 		{
-			auto iopts = registry::IO_options::generate(registry::IOhandler::IOtype::READONLY);
+			auto iopts = registry::IO_options::generate();
 			iopts->filename(fname);
 			//if (T::canReadMulti(nullptr, iopts)) // This is wrong. Indicates if it can be read at all, not just for vectors.
 				T::readVector(nullptr, iopts, rinputs, filter);
