@@ -414,7 +414,7 @@ namespace icedb {
 				}
 
 				if (optional->particle_scattering_element_composition_whole.size()) {
-					auto tblPSEC2b = res.dsets.create<uint8_t>(
+					auto tblPSEC2b = res.dsets.create<uint16_t>(
 						t_name("particle_scattering_element_composition_whole"),
 						t_dimensions({ static_cast<size_t>(required->number_of_particle_scattering_elements)}),
 						t_DatasetCreationPlist(pl1d())
@@ -422,6 +422,7 @@ namespace icedb {
 					tblPSEC2b.setDims(tblPSEN);
 					tblPSEC2b.atts.add<std::string>("description", "The constituent material ID for each scattering element.");
 					tblPSEC2b.atts.add<std::string>("units", "None" );
+					Expects(0 <= tblPSEC2b.write<uint16_t>(optional->particle_scattering_element_composition_whole));
 				}
 
 				// Write common optional attributes
