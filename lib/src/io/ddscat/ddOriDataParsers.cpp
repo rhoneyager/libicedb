@@ -293,11 +293,16 @@ namespace icedb
 					// fieldname is from 19 to an underscore
 					// fieldnamecaps is from 41 to 47
 					// n is from 48 to the end of the line
-					min = boost::lexical_cast<double>(std::string(str.data(), 8));
-					max = boost::lexical_cast<double>(std::string(str.data()+9, 8));
+					auto sTrim = [](const std::string &s) -> std::string {
+						std::string res = s;
+						boost::trim(res);
+						return res;
+					};
+					min = boost::lexical_cast<double>(sTrim(std::string(str.data(), 8)));
+					max = boost::lexical_cast<double>(sTrim(std::string(str.data()+9, 8)));
 					fieldname = str.substr(19, str.find_first_of('_', 19) - 19);
 					fieldnamecaps = str.substr(41, 6);
-					n = (size_t)boost::lexical_cast<size_t>(std::string(str.data() + 48));
+					n = (size_t)boost::lexical_cast<size_t>(sTrim(std::string(str.data() + 48)));
 				}
 
 				void ddPolVec::write(std::ostream &out, size_t, const std::vector<std::complex<double> > &pols,
@@ -507,6 +512,7 @@ namespace icedb
 				string lin;
 				mMuellerIndices mIndices;// = _muellerMap;
 				mIndices.clear();
+				mIndices.resize(16);
 				vector<double> vals;
 				vals.reserve(10);
 

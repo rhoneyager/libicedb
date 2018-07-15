@@ -424,11 +424,6 @@ namespace icedb
 				baseWrite(filename, outtype);
 			}
 
-			virtual void write(const std::string &filename, const std::string &outtype = "") const
-			{
-				baseWrite(filename, outtype);
-			}
-
 			std::shared_ptr<registry::IOhandler> writeMulti(
 				std::shared_ptr<icedb::registry::IOhandler> handle,
 				std::shared_ptr<icedb::registry::IO_options> opts
@@ -483,6 +478,13 @@ namespace icedb
 				}
 				return false;
 			}
+
+			std::shared_ptr<registry::IOhandler> write(std::shared_ptr<icedb::registry::IOhandler> handle,
+				std::shared_ptr<icedb::registry::IO_options> opts) const
+			{
+				return writeMulti(handle, opts);
+			}
+
 		};
 
 		
@@ -519,12 +521,6 @@ namespace icedb
 
 			/// Duplicate to avoid clashes and having to specify a full template name...
 			virtual void readFile(const std::string &filename, const std::string &intype = "",
-				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter = nullptr)
-			{
-				baseRead(filename, intype, filter);
-			}
-
-			virtual void read(const std::string &filename, const std::string &intype = "",
 				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter = nullptr)
 			{
 				baseRead(filename, intype, filter);
@@ -587,6 +583,15 @@ namespace icedb
 				}
 				return false;
 			}
+
+			std::shared_ptr<registry::IOhandler> read(
+				std::shared_ptr<icedb::registry::IOhandler> handle,
+				std::shared_ptr<icedb::registry::IO_options> opts,
+				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter = nullptr)
+			{
+				return readMulti(handle, opts, filter);
+			}
+
 		};
 
 		template <class obj_class>

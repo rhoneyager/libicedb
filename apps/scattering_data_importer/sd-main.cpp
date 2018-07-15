@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 			("help,h", "produce help message")
 			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
 			("to", po::value<string>(), "The path where the shape is written to")
-			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
+			("db-path", po::value<string>()->default_value("run"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
 			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
 
 			// 
 
-			ddrun->writeMulti(handle, opts->clone()->set("ID", sFn));
+			ddrun->write(handle, opts->clone()->set("ID", sFn));
 		}
 	}
 	// Ensure that unhandled errors are displayed before the application terminates.

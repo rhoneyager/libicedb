@@ -78,7 +78,8 @@ namespace icedb
 						// Remove any leading and lagging spaces
 						// Not all Liu avg files are correct in this respect
 						boost::algorithm::trim(ss);
-						s = boost::lexical_cast<T>(ss);
+						std::string ss2 = ss.substr(0, ss.find_first_not_of("0123456789."));
+						s = boost::lexical_cast<T>(ss2);
 					}
 				};
 
