@@ -479,6 +479,11 @@ namespace icedb
 				return false;
 			}
 
+			void write(const std::string &filename, const std::string &outtype = "") const
+			{
+				writeFile(filename, outtype);
+			}
+
 			std::shared_ptr<registry::IOhandler> write(std::shared_ptr<icedb::registry::IOhandler> handle,
 				std::shared_ptr<icedb::registry::IO_options> opts) const
 			{
@@ -582,6 +587,12 @@ namespace icedb
 					}
 				}
 				return false;
+			}
+
+			void read(const std::string &filename, const std::string &intype = "",
+				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter = nullptr)
+			{
+				readFile(filename, intype, filter);
 			}
 
 			std::shared_ptr<registry::IOhandler> read(

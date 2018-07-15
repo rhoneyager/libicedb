@@ -23,10 +23,69 @@
 
 #include "../../lib/src/io/ddscat/ddOutput.h"
 #include "../../lib/src/io/ddscat/shapefile.h"
+#include <icedb/plugin.hpp>
+
+#include <HH/Files.hpp>
+#include <HH/Groups.hpp>
+// This is a basic implementation of the HH I/O handle code
+namespace icedb {
+	namespace plugins {
+		namespace p_HH {
+			const char* pluginName = "HH";
+			struct HH_handle : public icedb::registry::IOhandler
+			{
+				HH_handle(::HH::Group g) : grp(g), icedb::registry::IOhandler(pluginName) {}
+				virtual ~HH_handle() {}
+				::HH::Group grp;
+			};
+			void register_handle() {
+				const size_t nExts = 2;
+				const char *exts[nExts] = { "hdf5", "nc" };
+				icedb::registry::genAndRegisterIOregistryPlural_writer<
+					icedb::io::ddscat::ddOutput,
+					icedb::io::ddscat::ddOutput_IO_output_registry>
+					(nExts, exts, pluginName);
+			}
+		}
+	}
+	namespace registry {
+		template<>
+		std::shared_ptr<IOhandler>
+			write_file_type_multi<icedb::io::ddscat::ddOutput>
+			(std::shared_ptr<IOhandler> sh, std::shared_ptr<IO_options> opts,
+				const std::shared_ptr<const icedb::io::ddscat::ddOutput > s)
+		{
+			using std::shared_ptr;
+			if (!sh) ICEDB_throw(::icedb::error::error_types::xCannotFindReference)
+				.add <std::string>("Reason", "sh is null");
+			if (std::string(sh->getId()) != std::string(plugins::p_HH::pluginName))
+				ICEDB_throw(::icedb::error::error_types::xDuplicateHook)
+				.add<std::string>("Reason", "Bad passed plugin. The ids do not match.")
+				.add<std::string>("ID_1", sh->getId())
+				.add<std::string>("ID_2", std::string(plugins::p_HH::pluginName));
+			std::shared_ptr<plugins::p_HH::HH_handle> h = std::dynamic_pointer_cast<plugins::p_HH::HH_handle>(sh);
+
+			bool writeInSubgroup = opts->has("ID");
+			std::string sSubgroup = opts->get<std::string>("ID", "");
+
+			HH::Group gObj = h->grp;
+			if (writeInSubgroup) {
+				if (!h->grp.exists(sSubgroup.c_str()))
+					gObj = h->grp.create(sSubgroup.c_str());
+				else gObj = h->grp.open(sSubgroup.c_str());
+			}
+
+
+
+			return sh;
+		}
+	}
+}
 
 int main(int argc, char** argv) {
 	try {
 		using namespace std;
+		icedb::plugins::p_HH::register_handle();
 		// Read program options
 		//H5Eset_auto(H5E_DEFAULT, my_hdf5_error_handler, NULL); // For HDF5 error debugging
 		namespace po = boost::program_options;
@@ -195,9 +254,11 @@ int main(int argc, char** argv) {
 		/// TODO: Function to open an HDF5 handle from HH into icedb!
 		/// Handle should be constructible from a file or a group, and the
 		/// constructor should be internal to icedb.
-		std::shared_ptr<icedb::registry::IOhandler> handle;
-		auto opts = icedb::registry::IO_options::generate();
+		std::shared_ptr<icedb::registry::IOhandler> handle =
+			std::make_shared<icedb::plugins::p_HH::HH_handle>(basegrp);
 
+		auto opts = icedb::registry::IO_options::generate();
+		opts->filename(sToRaw);
 		for (const auto &sFromRaw : vsFromRaw)
 		{
 			sfs::path pFromRaw(sFromRaw);
@@ -207,9 +268,8 @@ int main(int argc, char** argv) {
 
 			// TODO: Set ingest properties that are specified in the command line
 
-			// 
-
-			ddrun->write(handle, opts->clone()->set("ID", sFn));
+			// The handle is set the first time we attempt to write a shape.
+			handle = ddrun->write(handle, opts->clone()->set("ID", sFn));
 		}
 	}
 	// Ensure that unhandled errors are displayed before the application terminates.

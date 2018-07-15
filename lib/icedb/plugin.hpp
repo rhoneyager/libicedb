@@ -38,20 +38,20 @@ namespace icedb
 		std::shared_ptr<icedb::registry::IOhandler> write_file_type_multi
 			(std::shared_ptr<icedb::registry::IOhandler> sh, 
 			std::shared_ptr<icedb::registry::IO_options> opts,
-			const boost::shared_ptr<const T > obj);
+			const std::shared_ptr<const T > obj);
 
 		template <class T>
 		std::shared_ptr<icedb::registry::IOhandler> read_file_type_multi
 			(std::shared_ptr<icedb::registry::IOhandler> sh, 
 			std::shared_ptr<icedb::registry::IO_options> opts,
-			boost::shared_ptr<T > obj,
+			std::shared_ptr<T > obj,
 			std::shared_ptr<const icedb::registry::collectionTyped<T> > filter);
 
 		template <class T>
 		std::shared_ptr<icedb::registry::IOhandler> read_file_type_vector
 			(std::shared_ptr<icedb::registry::IOhandler> sh, 
 			std::shared_ptr<icedb::registry::IO_options> opts,
-			std::vector<boost::shared_ptr<T> > &vec,  // old
+			std::vector<std::shared_ptr<T> > &vec,  // old
 			std::shared_ptr<const icedb::registry::collectionTyped<T> > filter);
 
 
@@ -62,7 +62,7 @@ namespace icedb
 			std::function<void( // new
 				std::shared_ptr<icedb::registry::IOhandler>,
 				std::shared_ptr<icedb::registry::IO_options>,
-				boost::shared_ptr<T>
+				std::shared_ptr<T>
 				) > v,
 			std::shared_ptr<const icedb::registry::collectionTyped<T> > filter);
 
