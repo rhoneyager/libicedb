@@ -160,6 +160,7 @@ namespace icedb {
 		const std::string Shape::_icedb_obj_type_shape_identifier = "shape";
 		const uint16_t Shape::_icedb_current_shape_schema_version = 0;
 
+		/// \todo BUG: This primarily checks if the shape was _written_ _by_ _icedb_. Fix.
 		bool Shape::isShape(HH::HH_hid_t group) {
 			// Get link type. If this is a group, then check the attributes.
 			H5O_info_t oinfo;
@@ -181,6 +182,7 @@ namespace icedb {
 		}
 
 		bool Shape::isValid(std::ostream *out) const { return isValid(this->get(), out); }
+		
 		bool Shape::isValid(HH::HH_hid_t gid, std::ostream *out) {
 			/// Check for the existence of the standard tables, dimensions and attributes, and that
 			/// they have the appropriate sizes.

@@ -44,6 +44,9 @@ set(shp_objs
 	icedb/shapeAlg.hpp
 	#private/Shape_impl.hpp
 	src/Shapes.cpp)
+set(exv_objs
+	icedb/exv.hpp
+	src/exv.cpp)
 #set(grp_objs
 	#icedb/Group.hpp
 	#private/Group_impl.hpp
@@ -145,6 +148,7 @@ source_group("HH" FILES ${hh_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
 source_group("Errors" FILES ${error_objs})
+source_group("Extended Scattering" FILES ${exv_objs})
 #source_group("Groups" FILES ${grp_objs})
 #source_group("Attributes" FILES ${att_objs})
 #source_group("Tables" FILES ${tbl_objs})
@@ -154,7 +158,7 @@ source_group("Units" FILES ${units_objs})
 source_group("Refract" FILES ${refract_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
-set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} #${grp_objs}
+set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${exv_objs} #${grp_objs}
 	#${att_objs} ${tbl_objs} 
 	${db_objs} #${hdf_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
