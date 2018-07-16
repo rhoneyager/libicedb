@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <HH/Groups.hpp>
+#include <HH/Types/Complex.hpp>
 
 namespace icedb {
 	namespace exv {

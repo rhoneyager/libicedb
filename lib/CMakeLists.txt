@@ -38,7 +38,8 @@ set (hh_objs
 	icedb/compat/HH/HH.hpp
 	icedb/compat/HH/PropertyLists.hpp
 	icedb/compat/HH/Tags.hpp
-	icedb/compat/HH/Types.hpp)
+	icedb/compat/HH/Types.hpp
+	icedb/compat/HH/Types/Complex.hpp)
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp

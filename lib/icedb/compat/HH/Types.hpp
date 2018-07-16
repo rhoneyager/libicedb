@@ -41,13 +41,22 @@ namespace HH {
 		/// \note Template specializations are implemented for the actual data types, like int32_t, double, etc.
 		/// \todo Change these signatures to allow for user extensibility into custom structs,
 		/// or even objects like std::complex<T>.
-		template <class DataType>
+		template <class DataType, int Array_Type_Dimensionality = 0>
 		HH_hid_t GetHDF5Type(
+			std::initializer_list<hsize_t> Adims = {},
 			typename std::enable_if<!is_string<DataType>::value>::type* = 0)
 		{
-			//static_assert(false, "HH::Types::GetHDF5Type does not understand this data type.");
-			throw std::string("HH::Types::GetHDF5Type does not understand this data type.");
-			return HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP); // Should never reach this. Invalid handle, just in case.
+			if (Array_Type_Dimensionality <= 0) {
+				//static_assert(false, "HH::Types::GetHDF5Type does not understand this data type.");
+				throw std::string("HH::Types::GetHDF5Type does not understand this data type.");
+				return HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP); // Should never reach this. Invalid handle, just in case.
+			} else {
+				// This is a compound array type of the same object, repeated.
+				HH_hid_t fundamental_type = GetHDF5Type<DataType, 0>();
+				hid_t t = H5Tarray_create2(fundamental_type(), Array_Type_Dimensionality, Adims.begin());
+				Expects(t >= 0);
+				return HH_hid_t(t, HH::Handles::Closers::CloseHDF5Datatype::CloseP);
+			}
 		}
 		/// For fundamental string types. These are either constant or variable length arrays. Separate handling elsewhere.
 		template <class DataType, int String_Type_Length = constants::_Variable_Length>
@@ -63,17 +72,17 @@ namespace HH {
 			return HH_hid_t(t, HH::Handles::Closers::CloseHDF5Datatype::CloseP);
 		}
 
-		template<> inline HH_hid_t GetHDF5Type<char>(void*) { return HH_hid_t(H5T_NATIVE_CHAR); }
-		template<> inline HH_hid_t GetHDF5Type<int8_t>(void*) { return HH_hid_t(H5T_NATIVE_INT8); }
-		template<> inline HH_hid_t GetHDF5Type<uint8_t>(void*) { return HH_hid_t(H5T_NATIVE_UINT8); }
-		template<> inline HH_hid_t GetHDF5Type<int16_t>(void*) { return HH_hid_t(H5T_NATIVE_INT16); }
-		template<> inline HH_hid_t GetHDF5Type<uint16_t>(void*) { return HH_hid_t(H5T_NATIVE_UINT16); }
-		template<> inline HH_hid_t GetHDF5Type<int32_t>(void*) { return HH_hid_t(H5T_NATIVE_INT32); }
-		template<> inline HH_hid_t GetHDF5Type<uint32_t>(void*) { return HH_hid_t(H5T_NATIVE_UINT32); }
-		template<> inline HH_hid_t GetHDF5Type<int64_t>(void*) { return HH_hid_t(H5T_NATIVE_INT64); }
-		template<> inline HH_hid_t GetHDF5Type<uint64_t>(void*) { return HH_hid_t(H5T_NATIVE_UINT64); }
-		template<> inline HH_hid_t GetHDF5Type<float>(void*) { return HH_hid_t(H5T_NATIVE_FLOAT); }
-		template<> inline HH_hid_t GetHDF5Type<double>(void*) { return HH_hid_t(H5T_NATIVE_DOUBLE); }
+		template<> inline HH_hid_t GetHDF5Type<char>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_CHAR); }
+		template<> inline HH_hid_t GetHDF5Type<int8_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT8); }
+		template<> inline HH_hid_t GetHDF5Type<uint8_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT8); }
+		template<> inline HH_hid_t GetHDF5Type<int16_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT16); }
+		template<> inline HH_hid_t GetHDF5Type<uint16_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT16); }
+		template<> inline HH_hid_t GetHDF5Type<int32_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT32); }
+		template<> inline HH_hid_t GetHDF5Type<uint32_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT32); }
+		template<> inline HH_hid_t GetHDF5Type<int64_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT64); }
+		template<> inline HH_hid_t GetHDF5Type<uint64_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT64); }
+		template<> inline HH_hid_t GetHDF5Type<float>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_FLOAT); }
+		template<> inline HH_hid_t GetHDF5Type<double>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_DOUBLE); }
 
 		/// Function to tell if a datatype is of constant or variable length.
 

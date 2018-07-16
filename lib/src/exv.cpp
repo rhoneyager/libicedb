@@ -97,6 +97,9 @@ namespace icedb {
 			// amplitude scatt matrix has s1-4 as columns, and type is complex<double>
 			// TODO: check compressibility
 
+			//auto ctype = HH::Types::GetHDF5Type<std::complex<double> >();
+
+			return EXV(res.get());
 		}
 	}
 }
