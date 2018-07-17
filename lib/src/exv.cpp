@@ -4,6 +4,97 @@
 
 namespace icedb {
 	namespace exv {
+		struct RIs {
+			int constituent_id;
+			std::string substance_name;
+			std::complex<double> m;
+		};
+	}
+}
+namespace HH {
+	namespace Types {
+		template <class ComplexDataType>
+		HH_hid_t GetHDF5TypeComplex()
+		{
+			typedef ComplexDataType::value_type value_type;
+			// Complex number is a compound datatype of two objects.
+			return GetHDF5Type<value_type, 1>({ 2 });
+		}
+
+#define HH_SPECIALIZE_COMPLEX(x) \
+template<> inline HH_hid_t GetHDF5Type< x,0 >(std::initializer_list<hsize_t>, void*) { return GetHDF5TypeComplex< x >(); }
+		HH_SPECIALIZE_COMPLEX(std::complex<double>);
+		HH_SPECIALIZE_COMPLEX(std::complex<float>);
+#undef HH_SPECIALIZE_COMPLEX
+
+		// Handles complex number reads and writes from/to HDF5.
+		template <class ComplexDataType>
+		struct Object_Accessor_Complex
+		{
+		private:
+			typedef typename ComplexDataType::value_type value_type;
+			std::vector<value_type > _buf;
+		public:
+			Object_Accessor_Complex(ssize_t sz = -1) {}
+			/// \brief Converts an object into a void* array that HDF5 can natively understand.
+			/// \note The shared_ptr takes care of "deallocation" when we no longer need the "buffer".
+			const void* serialize(::gsl::span<const ComplexDataType> d)
+			{
+				_buf.resize(d.size() * 2);
+				for (size_t i = 0; i < (size_t) d.size(); ++i) {
+					_buf[(2 * i) + 0] = d.at(i).real();
+					_buf[(2 * i) + 1] = d.at(i).imag();
+				}
+				return (const void*)_buf.data();
+				//return std::shared_ptr<const void>((const void*)d.data(), [](const void*) {});
+			}
+			/// \brief Gets the size of the buffer needed to store the object from HDF5. Used
+			/// in variable-length string / complex object reads.
+			/// \note For POD objects, we do not have to allocate a buffer.
+			/// \returns Size needed. If negative, then we can directly write to the object, 
+			/// sans allocation or deallocation.
+			ssize_t getFromBufferSize() {
+				return -1;
+			}
+			/// \brief Allocates a buffer that HDF5 can read/write into; used later as input data for object construction.
+			/// \note For POD objects, we can directly write to the object.
+			void marshalBuffer(ComplexDataType * objStart) {}
+			/// \brief Construct an object from an HDF5-provided data stream, 
+			/// and deallocate any temporary buffer.
+			/// \note For trivial (POD) objects, there is no need to do anything.
+			void deserialize(ComplexDataType *objStart) {}
+			void freeBuffer() {}
+		};
+
+		template<> struct Object_Accessor<std::complex<double> > : public Object_Accessor_Complex<std::complex<double> > {};
+		template<> struct Object_Accessor<std::complex<float> > : public Object_Accessor_Complex<std::complex<float> > {};
+
+		/// \todo I have to implement a custom accessor for this object! The string needs 
+		/// to be marshalled. This function may have to be updated to work with the
+		/// custom accessor.
+		template<>
+		HH_hid_t GetHDF5Type<icedb::exv::RIs,0>(std::initializer_list<hsize_t>, void*)
+		{
+			using icedb::exv::RIs;
+			static HH_hid_t obj(-1);
+			static bool inited = false;
+			if (inited) return obj;
+
+			hid_t typ = H5Tcreate(H5T_COMPOUND, sizeof(RIs));
+			H5Tinsert(typ, "constituent_id", HOFFSET(RIs, constituent_id),
+				GetHDF5Type<decltype(RIs::constituent_id)>()());
+			H5Tinsert(typ, "substance_name", HOFFSET(RIs, substance_name),
+				GetHDF5Type<decltype(RIs::substance_name)>()());
+			H5Tinsert(typ, "m", HOFFSET(RIs, m),
+				GetHDF5Type<decltype(RIs::m)>()());
+			obj = HH_hid_t(typ);
+			return obj;
+		}
+	}
+}
+
+namespace icedb {
+	namespace exv {
 		const std::string EXV::_icedb_obj_type_exv_identifier = "exv";
 		const uint16_t EXV::_icedb_current_exv_schema_version = 1;
 
@@ -71,11 +162,7 @@ namespace icedb {
 			res.atts.add("Frequency_Hz", data->frequency_Hz);
 
 			// Refractive indices and substances
-			struct RIs {
-				int constituent_id;
-				std::string substance_name;
-				std::complex<double> m;
-			};
+			
 			std::vector<RIs> ris;
 			for (const auto &r : data->constituent_refractive_indices) {
 				RIs ri;
@@ -90,15 +177,38 @@ namespace icedb {
 			Expects(0 <= dRIs.write<RIs>(ris));
 
 			// Angular data
+			// TODO: check compressibility of the complex data types
 			const size_t numScattEntries = data->angles.size();
-			// TODO: Finish the implementation. Create a dataset for
-			// each of the output fields.
-			// Incid_azi, incid_pol, scatt_azi, scatt_pol
-			// amplitude scatt matrix has s1-4 as columns, and type is complex<double>
-			// TODO: check compressibility
+			if (numScattEntries) {
+				std::vector<float> v_i_azi(numScattEntries), v_i_pol(numScattEntries),
+					v_s_azi(numScattEntries), v_s_pol(numScattEntries);
+				std::vector<std::complex<double> >
+					s1(numScattEntries), s2(numScattEntries), s3(numScattEntries), s4(numScattEntries);
 
-			//auto ctype = HH::Types::GetHDF5Type<std::complex<double> >();
+				for (size_t i = 0; i < numScattEntries; ++i) {
+					v_i_azi[i] = data->angles[i].incident_azimuth_angle;
+					v_i_pol[i] = data->angles[i].incident_polar_angle;
+					v_s_azi[i] = data->angles[i].scattering_azimuth_angle;
+					v_s_pol[i] = data->angles[i].scattering_polar_angle;
+					s1[i] = data->angles[i].amplitude_scattering_matrix[0];
+					s2[i] = data->angles[i].amplitude_scattering_matrix[1];
+					s3[i] = data->angles[i].amplitude_scattering_matrix[2];
+					s4[i] = data->angles[i].amplitude_scattering_matrix[3];
+				}
+				auto d_i_azi = res.dsets.create<float>("incident_azimuth_angle", { numScattEntries });
+				Expects(0 <= d_i_azi.write<float>(v_i_azi));
+				auto d_s_azi = res.dsets.create<float>("scattering_azimuth_angle", { numScattEntries });
+				Expects(0 <= d_s_azi.write<float>(v_s_azi));
+				auto d_i_pol = res.dsets.create<float>("incident_polar_angle", { numScattEntries });
+				Expects(0 <= d_i_pol.write<float>(v_i_pol));
+				auto d_s_pol = res.dsets.create<float>("scattering_polar_angle", { numScattEntries });
+				Expects(0 <= d_s_pol.write<float>(v_s_pol));
 
+				auto d_s1 = res.dsets.create<std::complex<double>>("amplitude_scattering_matrix_s1", { numScattEntries });
+				Expects(0 <= d_s1.write<std::complex<double>>(s1));
+
+				//auto ctype = HH::Types::GetHDF5Type<std::complex<double> >();
+			}
 			return EXV(res.get());
 		}
 	}

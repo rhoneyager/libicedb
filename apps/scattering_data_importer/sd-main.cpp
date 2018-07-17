@@ -20,6 +20,7 @@
 #include <icedb/compat/HH/Groups.hpp>
 #include <icedb/compat/HH/Files.hpp>
 #include <icedb/splitSet.hpp>
+#include <icedb/exv.hpp>
 
 #include "../../lib/src/io/ddscat/ddOutput.h"
 #include "../../lib/src/io/ddscat/shapefile.h"
@@ -75,7 +76,27 @@ namespace icedb {
 				else gObj = h->grp.open(sSubgroup.c_str());
 			}
 
+			// Write the exv object
+			icedb::exv::NewEXVrequiredProperties props;
 
+			// TODO: Figure out how to pass dielectric id numbers and names. IO_options?
+			for (size_t i = 0; i < s->ms.at(0).size();++i) {
+				std::tuple<int, std::string, std::complex<double> > newM((int) (i+1), std::string("unspecified"), s->ms.at(0).at(i));
+				props.constituent_refractive_indices.push_back(newM);
+			}
+			/*
+			props.angles;
+
+			// TODO: Figure out how to pass these. Use IO_options for all?
+			props.author;
+			props.contact;
+			props.dataset_id;
+			props.frequency_Hz;
+			props.particle_id;
+			props.temperature_K;
+			props.version;
+			*/
+			auto res = icedb::exv::EXV::createEXV(gObj.get(), &props);
 
 			return sh;
 		}
