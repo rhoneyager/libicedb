@@ -87,6 +87,7 @@ mark_as_advanced(HDF5_CXX_LIBRARY_dl HDF5_CXX_LIBRARY_hdf5 HDF5_CXX_LIBRARY_hdf5
 
 # The different components are in different subdirectories
 add_subdirectory(lib)
+add_subdirectory(plugins)
 add_subdirectory(apps)
 export(TARGETS icedb icedb_base
 		FILE "${PROJECT_BINARY_DIR}/icedbTargets.cmake")

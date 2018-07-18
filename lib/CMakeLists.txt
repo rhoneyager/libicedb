@@ -139,7 +139,7 @@ set(lib_objs
 # will add some information that can be read by Windows
 # Explorer. Version info, basically.
 generaterc("icedb_base" "dll"
-	"icedb_base"
+	"icedb"
 	"Scattering utility library"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
