@@ -2,7 +2,7 @@
 #include "../icedb/units/units.hpp"
 #include "../private/unitsBackend.hpp"
 #include "../icedb/units/unitsPlugins.hpp"
-#include "../private/options.hpp"
+#include "../icedb/options.hpp"
 #include "../icedb/error.hpp"
 #include "../icedb/logging.hpp"
 

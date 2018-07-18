@@ -159,10 +159,12 @@ extern "C"
 	};
 
 	/// Provides interface for DLLs to register basic information about themselves
-	dllInitResult DL_ICEDB icedb_registry_register_dll(
+	DL_ICEDB dllInitResult icedb_registry_register_dll(
 		const icedb::registry::DLLpreamble&,
 		void* funcInDllForPath);
 
+	/// Sort of a 'placeholder' symbol used to find the lib dir path.
+	DL_ICEDB void _ICEDB_dllPluginBase() noexcept;
 }
 
 #pragma warning(pop)

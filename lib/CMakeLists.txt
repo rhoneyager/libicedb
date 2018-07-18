@@ -138,12 +138,13 @@ set(lib_objs
 # On Windows, when producing a DLL, this generated file
 # will add some information that can be read by Windows
 # Explorer. Version info, basically.
-generaterc("libicedb" "dll"
-	"libicedb"
+generaterc("icedb_base" "dll"
+	"icedb_base"
 	"Scattering utility library"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
 	source_group("Extensibility" FILES ${extensible_objs})
+
 source_group("GSL" FILES ${gsl_objs})
 source_group("HH" FILES ${hh_objs})
 source_group("Lib" FILES ${lib_objs})
@@ -159,19 +160,23 @@ source_group("Units" FILES ${units_objs})
 source_group("Refract" FILES ${refract_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
+set(libsrcs_dllbase src/dlls_placeholder.cpp)
 set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${exv_objs} #${grp_objs}
 	#${att_objs} ${tbl_objs} 
 	${db_objs} #${hdf_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
-	${related_cmake_objects} ${hh_objs}
-	${extensible_objs}
+	${related_cmake_objects} ${hh_objs} ${extensible_objs}
 	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
 IF (WIN32 AND NOT CYGWIN)
-SET(libsrcs ${libsrcs} 
+SET(libsrcs_dllbase ${libsrcs_dllbase} 
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
+
+add_library(icedb_base SHARED ${libsrcs_dllbase})
+addlib(icedb_base SHARED)
+storebin(icedb_base)
 
 add_library(icedb STATIC ${libsrcs})
 # compat contains the GSL and HH.
@@ -188,7 +193,7 @@ target_include_directories(icedb SYSTEM
 # HDF5 is only exposed to the core library.
 target_compile_definitions(icedb
 	PRIVATE ${HDF5_DEFINITIONS})
-target_link_libraries(icedb ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
+target_link_libraries(icedb icedb_base ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
 # Let's prefer the boost filesystem library for now.
 # It is more stable and more widely supported.
 if(PROHIBIT_BUILD_USING_BOOST_FILESYSTEM OR ("${Boost_MINOR_VERSION}" LESS "45"))
@@ -213,7 +218,6 @@ endif()
 if(USE_OLD_CPP03_ABI)
 	target_compile_definitions(icedb PUBLIC _GLIBCXX_USE_CXX11_ABI=0)
 endif()
-
 
 addlib(icedb STATIC)
 storebin(icedb)

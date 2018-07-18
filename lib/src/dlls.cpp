@@ -170,7 +170,7 @@ namespace {
 		//icedb::registry::searchPathsRecursive.emplace( appBin / "../../plugins" );
 
 		// Relative to library
-		auto modinfo = getModuleInfo((void*)constructSearchPaths);
+		auto modinfo = getModuleInfo((void*)_ICEDB_dllPluginBase);
 		boost::filesystem::path libpath(getPath(modinfo.get()));
 		libpath.remove_filename();
 		icedb::registry::searchPathsOne.emplace(libpath / "plugins");

@@ -7,7 +7,7 @@
 #include "../private/unitsBackend.hpp"
 #include "../icedb/logging.hpp"
 #include "../icedb/error.hpp"
-#include "../private/options.hpp"
+#include "../icedb/options.hpp"
 
 namespace icedb {
 	namespace units {
