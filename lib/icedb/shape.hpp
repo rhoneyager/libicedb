@@ -2,8 +2,30 @@
 #include "fs.hpp"
 #include <array>
 #include <HH/Groups.hpp>
+#include "registry.hpp"
+#include "io.hpp"
 
 namespace icedb {
+	namespace Shapes {
+		class Shape;
+		namespace _impl {
+			class Shape_IO_Input_Registry {};
+			class Shape_IO_Output_Registry {};
+		}
+	}
+	namespace registry {
+		extern template struct IO_class_registry_writer <
+			::icedb::Shapes::Shape >;
+		extern template struct IO_class_registry_reader <
+			::icedb::Shapes::Shape >;
+		extern template class usesDLLregistry <
+			::icedb::Shapes::_impl::Shape_IO_Input_Registry,
+			IO_class_registry_reader<::icedb::Shapes::Shape> >;
+		extern template class usesDLLregistry <
+			::icedb::Shapes::_impl::Shape_IO_Output_Registry,
+			IO_class_registry_writer<::icedb::Shapes::Shape> >;
+	}
+
 	/// All facilities to manipulate particle shapes
 	namespace Shapes {
 
@@ -115,7 +137,12 @@ namespace icedb {
 		/// Shapes are implemented as a set of tables and attributes, contained within a discrete Group.
 		/// This class provides a higl-level interface to accessing and manipulating shapes.
 		/// It acts as an "overlay" to an alreagy-existing group. It adds additional functions and "value".
-		class Shape : virtual public HH::Group
+		class Shape : 
+			virtual public HH::Group,
+			virtual public registry::usesDLLregistry<
+				_impl::Shape_IO_Output_Registry,
+				registry::IO_class_registry_writer<Shape> >,
+			virtual public io::implementsStandardWriter<Shape, _impl::Shape_IO_Output_Registry>
 		{
 		public:
 			/// Each shape 'group' has an attribute with this identifier. Used for shape collection and searching.
@@ -123,7 +150,7 @@ namespace icedb {
 			static const uint16_t _icedb_current_shape_schema_version;
 
 			// OPEN an already-existing shape. Validity not guaranteed.
-			Shape(HH::HH_hid_t hnd_grp) : HH::Group(hnd_grp) {  }
+			Shape(HH::HH_hid_t hnd_grp = HH::HH_hid_t::dummy()) : HH::Group(hnd_grp) {  }
 
 			/// This is the unique identifier for this shape
 			const std::string particle_unique_id;

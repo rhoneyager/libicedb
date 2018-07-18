@@ -7,6 +7,18 @@
 #include "../icedb/error.hpp"
 
 namespace icedb {
+	namespace registry {
+		template struct IO_class_registry_writer <
+			::icedb::Shapes::Shape >;
+		template struct IO_class_registry_reader <
+			::icedb::Shapes::Shape >;
+		template class usesDLLregistry <
+			::icedb::Shapes::_impl::Shape_IO_Input_Registry,
+			IO_class_registry_reader<::icedb::Shapes::Shape> >;
+		template class usesDLLregistry <
+			::icedb::Shapes::_impl::Shape_IO_Output_Registry,
+			IO_class_registry_writer<::icedb::Shapes::Shape> >;
+	}
 	namespace Shapes {
 		bool NewShapeRequiredProperties::isValid(std::ostream *out) const {
 			bool good = true;
