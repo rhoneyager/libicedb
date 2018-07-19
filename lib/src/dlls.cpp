@@ -496,6 +496,8 @@ namespace icedb
 
 					// Check that the DLL's icedb function calls are really to the correct code.
 					void *mdcheck = (void*) &(icedb_registry_register_dll);
+					/// \todo Reenable this check once icedb's main code is in a dll!
+					/*
 					if (rdcheck != mdcheck) {
 						using namespace icedb::registry;
 						using namespace icedb;
@@ -514,6 +516,7 @@ namespace icedb
 							.add("file_name", filename);
 						return false;
 					}
+					*/
 				}
 				else {
 					if (critical)

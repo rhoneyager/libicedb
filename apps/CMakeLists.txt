@@ -1,3 +1,4 @@
+add_subdirectory(3d_structures)
 add_subdirectory(3d_structures_importer)
 add_subdirectory(onesphere)
 #add_subdirectory(testing)

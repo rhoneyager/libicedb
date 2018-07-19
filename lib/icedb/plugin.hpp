@@ -1,4 +1,5 @@
 #pragma once
+#include "defs.h"
 #include "versioning/versioning.hpp"
 //#include "info.h"
 //#include "dlls.h"
@@ -12,8 +13,8 @@
 //
 // So, upon gcc_init or msvc_init, call a function that 
 
-#define D_icedb_start() extern "C" dllInitResult dllStart()
-#define D_icedb_validator() extern "C" void dlVer(icedb::versioning::versionInfo& vf, void** rd) \
+#define D_icedb_start() extern "C" SHARED_EXPORT_ICEDB dllInitResult dllStart()
+#define D_icedb_validator() extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) \
 		{ \
 		icedb::versioning::genVersionInfo(vf); \
 		*rd = (void*) &(icedb_registry_register_dll); }
