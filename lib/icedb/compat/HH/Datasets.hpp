@@ -304,7 +304,7 @@ namespace HH {
 
 		/// \brief Does a dataset with the specified name exist?
 		/// This checks for a link with the given name, and checks that the link is a dataset.
-		htri_t exists(gsl::not_null<const char*> dsetname, HH_hid_t LinkAccessPlist = H5P_DEFAULT) {
+		htri_t exists(gsl::not_null<const char*> dsetname, HH_hid_t LinkAccessPlist = H5P_DEFAULT) const {
 			htri_t linkExists = H5Lexists(base(), dsetname.get(), LinkAccessPlist());
 			if (linkExists <= 0) return linkExists;
 			H5O_info_t oinfo;
@@ -321,15 +321,36 @@ namespace HH {
 
 		/// \brief Open a dataset
 		Dataset open(gsl::not_null<const char*> dsetname,
-			HH_hid_t DatasetAccessPlist = H5P_DEFAULT)
+			HH_hid_t DatasetAccessPlist = H5P_DEFAULT) const
 		{
 			hid_t dsetid = H5Dopen(base(), dsetname.get(), DatasetAccessPlist());
 			Expects(dsetid >= 0);
 			return Dataset(HH_hid_t(dsetid, Closers::CloseHDF5Dataset::CloseP));
 		}
 
-		Dataset operator[](gsl::not_null<const char*> dsetname) {
+		Dataset operator[](gsl::not_null<const char*> dsetname) const {
 			return open(dsetname);
+		}
+
+		/// \brief List all datasets under this group
+		/// \todo Finish this! Also, add a combined function to open all datasets, too. Pairs of (name, handle).
+		std::vector<std::string> list() const {
+			throw;
+			std::vector<std::string> res;
+			H5G_info_t info;
+			herr_t e = H5Gget_info(base(), &info);
+			Expects(e >= 0);
+			for (hsize_t i = 0; i < info.nlinks; ++i) {
+				ssize_t szName = H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
+					i, NULL, 0, H5P_DEFAULT);
+				Expects(szName >= 0);
+				std::vector<char> vName(szName + 1, '\0');
+				H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
+					i, vName.data(), szName + 1, H5P_DEFAULT);
+
+				res.push_back(std::string(vName.data()));
+			}
+			return res;
 		}
 
 	private:

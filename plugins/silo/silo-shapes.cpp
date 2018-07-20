@@ -10,6 +10,7 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <tuple>
+#include <HH/Groups.hpp>
 #include "plugin-silo.hpp"
 #include "WritePoints.h"
 
@@ -42,6 +43,19 @@ namespace icedb {
 				if (std::string(sh->getId()) != std::string(PLUGINID)) ICEDB_throw(icedb::error::error_types::xDuplicateHook);
 				h = std::dynamic_pointer_cast<silo_handle>(sh);
 			}
+
+			//bool isShape = s->isShape();
+			//bool isValid = s->isValid();
+			// Find the dataset that has the points.
+			//auto dPSEN = s->dsets.open("particle_scattering_element_number");
+			//auto dXYZ = s->dsets.open("particle_axis");
+			//auto dPCN = s->dsets.open("particle_constituent_number");
+			//auto tPSEC = s->dsets["particle_scattering_element_coordinates"];
+
+			// Open every dataset. Find which ones which have the same
+			// dimensions as the "particle_scattering_element_number".
+			auto dsets = s->dsets.list(); // openAll()
+			// 
 
 			/*
 			std::string meshname("Points");

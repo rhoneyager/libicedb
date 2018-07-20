@@ -26,6 +26,8 @@ target_compile_definitions(icedb-3d_structures
 	PRIVATE ${HDF5_DEFINITIONS})
 
 target_link_libraries(icedb-3d_structures icedb ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
-
+if (BUILD_PLUGIN_SILO)
+	add_dependencies(icedb-3d_structures plugin_silo)
+endif()
 addapp(icedb-3d_structures Level_0)
 storebin(icedb-3d_structures)
