@@ -39,7 +39,8 @@ namespace icedb
 		std::shared_ptr<icedb::registry::IOhandler> write_file_type_multi
 			(std::shared_ptr<icedb::registry::IOhandler> sh, 
 			std::shared_ptr<icedb::registry::IO_options> opts,
-			const std::shared_ptr<const T > obj);
+			const T * obj);
+			//const std::shared_ptr<const T > obj);
 
 		template <class T>
 		std::shared_ptr<icedb::registry::IOhandler> read_file_type_multi

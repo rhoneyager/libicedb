@@ -24,7 +24,8 @@ namespace icedb {
 		shared_ptr<IOhandler>
 			write_file_type_multi<icedb::Shapes::Shape>
 			(shared_ptr<IOhandler> sh, shared_ptr<IO_options> opts,
-				const std::shared_ptr<const icedb::Shapes::Shape> s)
+				const icedb::Shapes::Shape * s)
+				//const std::shared_ptr<const icedb::Shapes::Shape> s)
 		{
 			std::string filename = opts->filename();
 			IOhandler::IOtype iotype = opts->iotype();

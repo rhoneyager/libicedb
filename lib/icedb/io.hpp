@@ -449,7 +449,8 @@ namespace icedb
 				{
 					// Most of these types aren't compressible or implement their
 					// own compression schemes. So, it's not handled at this level.
-					return dllsaver(handle, opts, this->shared_from_this()); //dynamic_cast<const obj_class*>(this));
+					return dllsaver(handle, opts, //this->shared_from_this());
+						dynamic_cast<const obj_class*>(this));
 						//return dllsaver(handle, filename, dynamic_cast<const obj_class*>(this), key, accessType);
 				} else {
 					// Cannot match a file type to save.

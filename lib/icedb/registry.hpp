@@ -207,8 +207,8 @@ namespace icedb
 			 * \returns Pointer to a IOhandler object (for example after the first write).
 			 **/
 			typedef std::function<std::shared_ptr<IOhandler>
-				(std::shared_ptr<IOhandler>, std::shared_ptr<IO_options>, const std::shared_ptr<const object>)> io_multi_type;
-			//	(std::shared_ptr<IOhandler>, std::shared_ptr<IO_options>, const object*)> io_multi_type;
+			//	(std::shared_ptr<IOhandler>, std::shared_ptr<IO_options>, const std::shared_ptr<const object>)> io_multi_type;
+				(std::shared_ptr<IOhandler>, std::shared_ptr<IO_options>, const object*)> io_multi_type;
 			io_multi_type io_multi_processor;
 		};
 
