@@ -33,7 +33,7 @@
 
 namespace icedb {
 	namespace fs {
-		/// Internal filesystem functions. These will be mase user-inaccessible in a future release.
+		/// Internal filesystem functions. These will be made user-inaccessible in a future release.
 		/// \deprecated These will be moved to a private header in a future release.
 		namespace impl {
 			typedef std::set<sfs::path> ExtensionsMatching_Type;

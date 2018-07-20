@@ -114,8 +114,8 @@ ICEDB_BEGIN_DECL_C
 // They indicate that SHARED_EXPORT_SDBR should be used.
 // If EXPORTING_ is not defined, then SHARED_IMPORT_SDBR should be used.
 
-#if SHARED_libicedb
-#if EXPORTING_libicedb
+#if SHARED_icedb
+#if EXPORTING_icedb
 #define DL_ICEDB SHARED_EXPORT_ICEDB
 #else
 #define DL_ICEDB SHARED_IMPORT_ICEDB

@@ -30,7 +30,7 @@ namespace icedb {
 	namespace Shapes {
 
 		/// Strucure containing a list of all of the required data needed to create a new shape in the database
-		struct NewShapeRequiredProperties {
+		struct DL_ICEDB NewShapeRequiredProperties {
 			// The DIMENSIONS
 
 			/// DIMENSION: The number of scattering elements.
@@ -86,7 +86,7 @@ namespace icedb {
 			bool requiresOptionalPropertiesStruct() const;
 		};
 		/// Structure containing a list of all of the common optional data for creating a new shape in the database.
-		struct NewShapeCommonOptionalProperties {
+		struct DL_ICEDB NewShapeCommonOptionalProperties {
 			/// DIMENSION: The id number for each scattering element. Single dimension.
 			gsl::span<const uint64_t> particle_scattering_element_number;
 			/// DIMENSION: The id number of each particle's constituent. Single dimension.
@@ -137,7 +137,7 @@ namespace icedb {
 		/// Shapes are implemented as a set of tables and attributes, contained within a discrete Group.
 		/// This class provides a higl-level interface to accessing and manipulating shapes.
 		/// It acts as an "overlay" to an alreagy-existing group. It adds additional functions and "value".
-		class Shape : 
+		class DL_ICEDB Shape :
 			virtual public HH::Group,
 			virtual public registry::usesDLLregistry<
 				_impl::Shape_IO_Output_Registry,

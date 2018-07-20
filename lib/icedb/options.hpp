@@ -8,7 +8,7 @@
 namespace icedb {
 	namespace registry {
 		/// Base class for external data access, throgh file I/O or database
-		struct handler_external
+		struct DL_ICEDB handler_external
 		{
 		protected:
 			handler_external(const char* id);
@@ -20,7 +20,7 @@ namespace icedb {
 		};
 
 		/// Base class to handle multiple IO operations on a single file
-		struct IOhandler : public handler_external
+		struct DL_ICEDB IOhandler : public handler_external
 		{
 		protected:
 			IOhandler(const char* id);
@@ -38,7 +38,7 @@ namespace icedb {
 			};
 		};
 
-		class options : public std::enable_shared_from_this<options>
+		class DL_ICEDB options : public std::enable_shared_from_this<options>
 		{
 		protected:
 			options();
@@ -79,7 +79,7 @@ namespace icedb {
 }
 // GCC sure has odd attribute positioning rules...
 namespace icedb { namespace registry {
-std::ostream & operator<<(std::ostream&, const icedb::registry::IOhandler::IOtype&);
-std::istream & operator>>(std::istream&, icedb::registry::IOhandler::IOtype&);
-std::ostream & operator<<(std::ostream&, const icedb::registry::options&);
+	DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::IOhandler::IOtype&);
+	DL_ICEDB std::istream & operator>>(std::istream&, icedb::registry::IOhandler::IOtype&);
+	DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::options&);
 } }

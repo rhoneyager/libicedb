@@ -285,13 +285,13 @@ namespace icedb
 		* \param op is the export operation (provided by the lib caller)
 		* \param opref is the export operation to match (provided by the plugin)
 		**/
-		bool match_file_type(
+		DL_ICEDB bool match_file_type(
 			const char* filename, 
 			const char* type, const char* ext, 
 			const char* op = "", const char* opref = "");
 
 		/// Matches
-		bool match_file_type_multi(
+		DL_ICEDB bool match_file_type_multi(
 			std::shared_ptr<registry::IOhandler> h,
 			const char* pluginid,
 			std::shared_ptr<IO_options> opts,

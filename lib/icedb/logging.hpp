@@ -26,16 +26,16 @@ namespace icedb {
 		};
 		typedef void(*log_handler_ft)(const char*, const char*, PRIORITIES);
 		void register_log_handler(log_handler_ft);
-		void emit_log(
+		DL_ICEDB void emit_log(
 			const char* channel,
 			const char* message,
 			PRIORITIES p
 		);
-		void emit_log(
+		DL_ICEDB void emit_log(
 			const std::string &channel,
 			const std::string &message,
 			PRIORITIES p = ICEDB_LOG_NORMAL);
-		void setupLogging(
+		DL_ICEDB void setupLogging(
 			int argc = 0,
 			char** argv = nullptr,
 			const log_properties* lps = nullptr);

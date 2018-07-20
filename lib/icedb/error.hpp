@@ -48,7 +48,7 @@ namespace icedb {
 
 		/// xError is the base class for icedb C++ exceptions.
 		/// C code should use the C interface.
-		class xError : public std::exception
+		class DL_ICEDB xError : public std::exception
 		{
 		protected:
 			std::shared_ptr<error_options_inner> ep;

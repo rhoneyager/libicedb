@@ -285,7 +285,7 @@ namespace icedb {
 	f(std::string); f(bool); f(std::complex<double>); \
 	f(icedb::registry::IOhandler::IOtype);
 
-#define IMPL_xError_ADD(T) template xError& xError::add<T>(const std::string&, const T);
+#define IMPL_xError_ADD(T) template DL_ICEDB xError& xError::add<T>(const std::string&, const T);
 		DOTYPES(IMPL_xError_ADD);
 
 		template<> DL_ICEDB xError& xError::add(const std::string &key,  char const * const value)

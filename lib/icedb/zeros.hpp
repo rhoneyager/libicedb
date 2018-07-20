@@ -10,7 +10,7 @@ namespace icedb {
 
 	namespace zeros {
 		/// Zero-finding implementation - Brent's method
-		double findzero(double a, double b, const std::function<double(double) > & evaltarget);
+		DL_ICEDB double findzero(double a, double b, const std::function<double(double) > & evaltarget);
 
 		// f is an arbitrary class with operator(). So, a functional / lambda function does work.
 		template<class T, class U>

@@ -8,7 +8,7 @@
 namespace icedb {
 	namespace exv {
 		/// Structure containing all of the required data for the extended scattering properties of an object
-		struct NewEXVrequiredProperties {
+		struct DL_ICEDB NewEXVrequiredProperties {
 			std::string particle_id;				///< Particle id
 			std::string dataset_id;					///< Dataset id
 			std::string author;						///< The author
@@ -41,7 +41,7 @@ namespace icedb {
 		};
 
 		/// \brief A high-level class to manipulate extended scattering variables
-		class EXV : virtual public HH::Group
+		class DL_ICEDB EXV : virtual public HH::Group
 		{
 		public:
 			static const std::string _icedb_obj_type_exv_identifier;

@@ -178,7 +178,7 @@ add_library(icedb_base SHARED ${libsrcs_dllbase})
 addlib(icedb_base SHARED)
 storebin(icedb_base)
 
-add_library(icedb STATIC ${libsrcs})
+add_library(icedb SHARED ${libsrcs})
 # compat contains the GSL and HH.
 target_include_directories(icedb SYSTEM
 	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP} icedb/compat)
@@ -218,8 +218,9 @@ endif()
 if(USE_OLD_CPP03_ABI)
 	target_compile_definitions(icedb PUBLIC _GLIBCXX_USE_CXX11_ABI=0)
 endif()
+target_link_libraries(icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
-addlib(icedb STATIC)
+addlib(icedb SHARED)
 storebin(icedb)
 
 INSTALL(DIRECTORY icedb
