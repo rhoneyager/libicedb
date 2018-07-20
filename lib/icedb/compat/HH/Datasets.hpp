@@ -1,4 +1,6 @@
 #pragma once
+#include <map>
+#include <vector>
 #include <hdf5.h>
 #include <hdf5_hl.h>
 #include <gsl/pointers>
@@ -31,7 +33,7 @@ namespace HH {
 	private:
 		HH_hid_t dset;
 	public:
-		Dataset(HH_hid_t hnd_dset) : dset(hnd_dset), atts(hnd_dset) {}
+		Dataset(HH_hid_t hnd_dset = HH::HH_hid_t::dummy()) : dset(hnd_dset), atts(hnd_dset) {}
 		virtual ~Dataset() {}
 		HH_hid_t get() const { return dset; }
 
@@ -50,11 +52,24 @@ namespace HH {
 		/// Attributes
 		Has_Attributes atts;
 
-		// Get type
+		/// Get type
 		[[nodiscard]] HH_hid_t getType() const
 		{
 			Expects(isDataset());
 			return HH_hid_t(H5Dget_type(dset()), Closers::CloseHDF5Datatype::CloseP);
+		}
+		/// Get type
+		inline HH_hid_t type() const { return getType(); }
+
+		/// Convenience function to check an dataset's type. 
+		/// \returns True if the type matches
+		/// \returns False (0) if the type does not match
+		/// \returns <0 if an error occurred.
+		template <class DataType>
+		htri_t isOfType() const {
+			auto ttype = HH::Types::GetHDF5Type<DataType>();
+			HH_hid_t otype = getType();
+			return H5Tequal(ttype(), otype());
 		}
 
 		// Get dataspace
@@ -232,7 +247,7 @@ namespace HH {
 			return *this;
 		}
 
-		/// Is this Table used as a dimension scale?
+		/// Is this dataset used as a dimension scale?
 		bool isDimensionScale() const {
 			Expects(isDataset());
 			const htri_t res = H5DSis_scale(dset());
@@ -293,6 +308,11 @@ namespace HH {
 			res = getDimensionScaleName();
 			return *this;
 		}
+
+		/// Is a dimension scale attached to this dataset in a certain position?
+		htri_t isDimensionScaleAttached(const Dataset &scale, unsigned int DimensionNumber) const {
+			return H5DSis_attached(dset(), scale.get()(), DimensionNumber);
+		}
 	};
 
 	struct Has_Datasets {
@@ -333,14 +353,13 @@ namespace HH {
 		}
 
 		/// \brief List all datasets under this group
-		/// \todo Finish this! Also, add a combined function to open all datasets, too. Pairs of (name, handle).
 		std::vector<std::string> list() const {
-			throw;
 			std::vector<std::string> res;
 			H5G_info_t info;
 			herr_t e = H5Gget_info(base(), &info);
 			Expects(e >= 0);
 			for (hsize_t i = 0; i < info.nlinks; ++i) {
+				// Get the name
 				ssize_t szName = H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
 					i, NULL, 0, H5P_DEFAULT);
 				Expects(szName >= 0);
@@ -348,7 +367,21 @@ namespace HH {
 				H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
 					i, vName.data(), szName + 1, H5P_DEFAULT);
 
-				res.push_back(std::string(vName.data()));
+				// Get the object and check the type
+				H5O_info_t oinfo;
+				herr_t err = H5Oget_info_by_name(base(), vName.data(), &oinfo, H5P_DEFAULT); // H5P_DEFAULT only, per docs.
+				if (err < 0) continue;
+				if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) res.push_back(std::string(vName.data()));
+			}
+			return res;
+		}
+
+		/// \brief Open all datasets under the group. Convenience function
+		std::map<std::string, Dataset> openAll() const {
+			auto ls = list();
+			std::map<std::string, Dataset> res;
+			for (const auto &l : ls) {
+				res[l] = open(l.c_str());
 			}
 			return res;
 		}

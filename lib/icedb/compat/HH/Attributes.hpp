@@ -204,9 +204,8 @@ namespace HH {
 		/// \returns True if the type matches
 		/// \returns False (0) if the type does not match
 		/// \returns <0 if an error occurred.
-		/// \todo Implement this.
 		template <class DataType>
-		htri_t IsOfType() {
+		htri_t isOfType() {
 			auto ttype = HH::Types::GetHDF5Type<DataType>();
 			HH_hid_t otype = getType();
 			return H5Tequal(ttype(), otype());
@@ -282,7 +281,7 @@ namespace HH {
 		/// @name General Functions
 		/// @{
 		/// Does an attribute with the specified name exist?
-		htri_t exists(not_null<const char*> attname)
+		htri_t exists(not_null<const char*> attname) const
 		{
 			return H5Aexists(base(), attname.get());
 		}
@@ -301,7 +300,7 @@ namespace HH {
 		/// \\brief Open an attribute
 		Attribute open(
 			not_null<const char*> name,
-			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
+			HH_hid_t AttributeAccessPlist = H5P_DEFAULT) const
 		{
 			/// \todo Check for failure
 			return Attribute(HH_hid_t(
@@ -310,7 +309,7 @@ namespace HH {
 			));
 		}
 
-		Attribute operator[](not_null<const char*> name) { return open(name); }
+		Attribute operator[](not_null<const char*> name) const { return open(name); }
 
 		/// \brief Create an attribute, without setting its data.
 		template <class DataType>

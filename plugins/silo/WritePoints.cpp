@@ -1,24 +1,15 @@
 #include "WritePoints.h"
 
-#define DB_USE_MODERN_DTPTR
-#include <silo.h>
-
-/// Namespace defining function mappings
-namespace {
-	template<class T>
-	DBdatatype getSiloDatatype() { throw; }
-
-	template<> DBdatatype getSiloDatatype<float>() { return DB_FLOAT; }
-	template<> DBdatatype getSiloDatatype<double>() { return DB_DOUBLE; }
-	template<> DBdatatype getSiloDatatype<int>() { return DB_INT; }
-	template<> DBdatatype getSiloDatatype<char>() { return DB_CHAR; }
-	template<> DBdatatype getSiloDatatype<long>() { return DB_LONG; }
-	template<> DBdatatype getSiloDatatype<long long>() { return DB_LONG_LONG; }
-}
-
 namespace icedb {
 	namespace plugins {
 		namespace silo {
+			
+			template<> DBdatatype getSiloDatatype<float>() { return DB_FLOAT; }
+			template<> DBdatatype getSiloDatatype<double>() { return DB_DOUBLE; }
+			template<> DBdatatype getSiloDatatype<int>() { return DB_INT; }
+			template<> DBdatatype getSiloDatatype<char>() { return DB_CHAR; }
+			template<> DBdatatype getSiloDatatype<long>() { return DB_LONG; }
+			template<> DBdatatype getSiloDatatype<long long>() { return DB_LONG_LONG; }
 
 			void WritePoints(DBfile *db, const char* name,
 				const std::array<std::string, 3> &axislabels,
@@ -229,34 +220,43 @@ namespace icedb {
 			}
 
 
-			template <class U>
 			void writePointData(const char* varname, const char* name, DBfile *df,
-				size_t numPoints,
-				const U** data, size_t nDims, const char* varUnits)
+				size_t numPoints, const void* data, size_t nDims, const char* varUnits, DBdatatype datatype)
 			{
-				DBdatatype datatype = getSiloDatatype<U>();
-
 				DBoptlist *optlist = DBMakeOptlist(1);
 				if (varUnits)
 					DBAddOption(optlist, DBOPT_UNITS, (void *)varUnits);
 				DBPutPointvar(df, varname, name,
 					(int)nDims,
-					(void*)data,
+					data,
 					(int)numPoints,
 					datatype,
 					optlist);
 				DBFreeOptlist(optlist);
 			}
 
+			template <class U>
+			void writePointData(const char* varname, const char* name, DBfile *df,
+				size_t numPoints,
+				const U** data, size_t nDims, const char* varUnits)
+			{
+				DBdatatype datatype = getSiloDatatype<U>();
+				writePointData(varname, name, df, numPoints, (void*)data, nDims, varUnits, datatype);
+			}
+
+
+#define INST_DATA(x) \
+	template void writePointData<x>(const char*, const char*, DBfile*, \
+		size_t, const x**, size_t, const char*); \
+	template void writeQuadData<x>(const char*, const char*, DBfile*, \
+		const x**, size_t, const std::vector<int>&, const char*, const char**);
 
 #define INST_MESHES(x) \
 	template class siloFile::mesh<x>; \
 	template class siloFile::pointMesh<x>; \
 	template class siloFile::rectilinearMesh<x>; \
-	template void writePointData<x>(const char*, const char*, DBfile*, \
-		size_t, const x**, size_t, const char*); \
-	template void writeQuadData<x>(const char*, const char*, DBfile*, \
-		const x**, size_t, const std::vector<int>&, const char*, const char**);
+	INST_DATA(x)
+	
 
 			INST_MESHES(float);
 			INST_MESHES(double);
@@ -264,7 +264,7 @@ namespace icedb {
 			INST_MESHES(char);
 			INST_MESHES(long long);
 			INST_MESHES(long);
-
+			//INST_DATA(void);
 		}
 	}
 }

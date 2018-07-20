@@ -5,18 +5,31 @@
 #include <tuple>
 #include <vector>
 #include <Eigen/Dense>
+#define DB_USE_MODERN_DTPTR
+#include <silo.h>
 
-struct DBfile;
+//struct DBfile;
 
 namespace icedb {
 	namespace plugins {
 		namespace silo {
 			struct silo_handle;
 
+			template<class T> DBdatatype getSiloDatatype() { throw; }
+			template<> DBdatatype getSiloDatatype<float>();
+			template<> DBdatatype getSiloDatatype<double>();
+			template<> DBdatatype getSiloDatatype<int>();
+			template<> DBdatatype getSiloDatatype<char>();
+			template<> DBdatatype getSiloDatatype<long>();
+			template<> DBdatatype getSiloDatatype<long long>();
+
+			void writePointData(const char* varname, const char* name, DBfile *df,
+				size_t numPoints, const void* data, size_t nDims, const char* varUnits,
+				DBdatatype datatype);
+
 			template <class U>
 			void writePointData(const char* varname, const char* name, DBfile *df, 
-				size_t numPoints,
-				const U** data, size_t nDims, const char* varUnits);
+				size_t numPoints, const U** data, size_t nDims, const char* varUnits);
 
 			template <class U>
 			void writeQuadData(const char* varname,
@@ -77,6 +90,7 @@ namespace icedb {
 					std::shared_ptr<siloFile> parent;
 					size_t numPoints;
 				};
+				
 				template <class T>
 				class pointMesh : public mesh<T>
 				{
@@ -116,6 +130,13 @@ namespace icedb {
 						for (size_t i = 0; i<(size_t)vals.cols(); ++i)
 							data[i] = vals.col(i).data();
 						writeData(varname, data.data(), (size_t)vals.cols(), varUnits);
+					}
+
+					void writeData(const char* varname,
+						const void* data, size_t nDims, DBdatatype datatype, const char* varUnits = nullptr)
+					{
+						writePointData(varname, this->name.c_str(), this->parent->df,
+							this->numPoints, data, nDims, varUnits, datatype);
 					}
 
 					template <class U>

@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <map>
 #include <string>
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -16,6 +17,27 @@
 
 
 namespace icedb {
+	namespace plugins {
+		namespace silo {
+			DBdatatype convertHDF5datatypeToSiloDataType(HH::HH_hid_t ht) {
+				using namespace HH;
+				static const std::vector<std::pair<HH::HH_hid_t, DBdatatype > > m = {
+					{HH::GetHDF5Type<int>(), DB_INT },
+					{HH::GetHDF5Type<float>(), DB_FLOAT},
+					{ HH::GetHDF5Type<double>(), DB_DOUBLE },
+					{ HH::GetHDF5Type<char>(), DB_CHAR },
+					{ HH::GetHDF5Type<long>(), DB_LONG },
+					{ HH::GetHDF5Type<long long>(), DB_LONG_LONG }
+				};
+				for (const auto &i : m) {
+					if (H5Tequal(i.first(), ht()) > 0) return i.second;
+				}
+				ICEDB_throw(icedb::error::error_types::xInvalidRange)
+					.add("Reason", "SILO does not support this data type");
+				return DB_INT;
+			}
+		}
+	}
 	namespace registry {
 		using std::shared_ptr;
 		using namespace icedb::plugins::silo;
@@ -52,10 +74,64 @@ namespace icedb {
 			//auto dPCN = s->dsets.open("particle_constituent_number");
 			//auto tPSEC = s->dsets["particle_scattering_element_coordinates"];
 
-			// Open every dataset. Find which ones which have the same
-			// dimensions as the "particle_scattering_element_number".
-			auto dsets = s->dsets.list(); // openAll()
-			// 
+			// Open every dataset. 
+			auto ds = s->dsets.openAll();
+			auto dPSEN = ds["particle_scattering_element_number"];
+			std::map<std::string, HH::Dataset> mToSilo;
+			// Collect all datasets that use particle_scattering_element_number as the first dimension.
+			// Take each dataset, and, if it has the appropriate columns, then list it for silo export.
+			for (const auto &d : ds) {
+				if (d.second.isDimensionScale()) continue;
+				if (d.second.isDimensionScaleAttached(dPSEN, 0)) {
+					auto dn = d.second.getDimensions().dimensionality;
+					if ((dn == 1) || (dn == 3)) mToSilo.insert(d);
+				}
+			}
+
+			// The grid is based on the "particle_scattering_element_coordinates" dataset.
+			// If the coordinates are integers, then we can write a rectilinear mesh as the grid.
+			// If the coordinates are non-integral, then we can write a point mesh
+			// TODO:	Add support for writing the mesh at a user-specified resolution.
+			auto tPSEC = ds["particle_scattering_element_coordinates"];
+			auto dims = tPSEC.getDimensions().dimsCur;
+			Expects(dims.size() == 2);
+			const char* dimLabels[] = { "X", "Y", "Z" };
+			if (tPSEC.isOfType<int32_t>() > 0) {
+				Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crds((int)(dims[0]), (int)(dims[1]));
+				Expects(0 <= tPSEC.read<int32_t>(gsl::span<int32_t>(crds.data(), crds.size())));
+				auto ptmesh = h->file->createPointMesh<int32_t>("P_particle_scattering_element_coordinates", crds, dimLabels);
+
+				for (const auto & d : mToSilo) {
+					std::string units = "Unspecified"; // TODO: Query attribute and add.
+					if (d.second.atts.exists("units"))
+					{
+						d.second.atts.open("units");
+					}
+					auto silo_datatype = convertHDF5datatypeToSiloDataType(d.second.type());
+					ptmesh->writeData(d.first.c_str(), nullptr, 0, silo_datatype, units.c_str());
+
+					//if (d.second.isOfType<int>() > 0) {
+						//ptmesh->writeData<int>()
+					//}
+					//ptmesh->writeData<>(d.first.c_str(), )
+				}
+			}
+			/*else if (tPSEC.isOfType<float>() > 0) {
+				Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crds((int)(dims[0]), (int)(dims[1]));
+				Expects(0 <= tPSEC.read<float>(gsl::span<float>(crds.data(), crds.size())));
+				auto ptmesh = h->file->createPointMesh<float>("P_particle_scattering_element_coordinates", crds, dimLabels);
+			}*/
+			else ICEDB_throw(icedb::error::error_types::xBadInput)
+				.add("Reason", "Wrong table type. Should never happen at this point in the code.");
+			//tPSEC.read()
+			
+			//h->file->createPointMesh("P_Particle_Scattering_Element_Coordinates", )
+
+			//h->file->createPointMesh
+			
+
+			// Find the others that use "particle_scattering_element_number" as a dimension.
+			// These datasets can be written.
 
 			/*
 			std::string meshname("Points");
