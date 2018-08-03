@@ -42,7 +42,7 @@ const std::map<std::string, std::set<sfs::path> > file_formats = {
 };
 
 // These get set in main(int,char**).
-float resolution_um = 0; ///< The resolution of each shape lattice, in micrometers.
+//float resolution_um = 0; ///< The resolution of each shape lattice, in micrometers.
 
 herr_t my_hdf5_error_handler(hid_t, void *)
 {
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 			("to", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
-			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
+			//("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		input_matching.add_options()
