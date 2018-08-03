@@ -28,8 +28,11 @@
 #include <icedb/compat/HH/Groups.hpp>
 #include <icedb/compat/HH/Files.hpp>
 #include <icedb/splitSet.hpp>
+#include <icedb/dlls.hpp>
 #include "shape.hpp"
 #include "shapeIOtext.hpp"
+
+namespace sfs = icedb::fs::sfs;
 
 // A list of valid shapefile output formats
 const std::map<std::string, std::set<sfs::path> > file_formats = {
@@ -56,10 +59,9 @@ int main(int argc, char** argv) {
 		// Read program options
 		//H5Eset_auto(H5E_DEFAULT, my_hdf5_error_handler, NULL); // For HDF5 error debugging
 		namespace po = boost::program_options;
-		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents");
+		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden options");
 		desc.add_options()
 			("help,h", "produce help message")
-			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
 			("to", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
@@ -94,36 +96,12 @@ int main(int argc, char** argv) {
 		desc.add(mdata);
 		desc.add(input_matching);
 		desc.add(constits);
+		icedb::registry::add_options(desc, desc, hidden);
+		desc.add(hidden);
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
 		po::notify(vm);
-		if (vm.count("config-file")) {
-			using namespace std;
-			string configfile = vm["config-file"].as<string>();
-#if BOOST_VERSION < 104600
-			// For RHEL's really old Boost distribution
-			ifstream ifs(configfile.c_str());
-			if (!ifs) {
-				cout << "Could no open the response file\n";
-				return 1;
-			}
-			// Read the whole file into a string
-			stringstream ss;
-			ss << ifs.rdbuf();
-			// Split the file content
-			using namespace boost;
-			char_separator<char> sep(" \n\r");
-			tokenizer<char_separator<char> > tok(ss.str(), sep);
-			vector<string> args;
-			copy(tok.begin(), tok.end(), back_inserter(args));
-			// Parse the file and store the options
-			po::store(po::command_line_parser(args).options(desc).run(), vm);
-#else
-			// For modern systems
-			po::store(po::parse_config_file<char>(configfile.c_str(), desc, false), vm);
-#endif
-			po::notify(vm);
-		}
+		icedb::registry::handle_config_file_options(desc, vm);
 		
 
 		auto doHelp = [&](const string& s)->void
@@ -133,6 +111,7 @@ int main(int argc, char** argv) {
 			exit(1);
 		};
 		if (vm.count("help")) doHelp("");
+		icedb::registry::process_static_options(vm);
 		if (!vm.count("from") || !vm.count("to")) doHelp("Need to specify to/from locations.");
 
 		using namespace icedb;

@@ -351,6 +351,8 @@ namespace icedb {
 				// alphanumeric characters are present. If there are, treat it as a DDSCAT file.
 				// Otherwise, treat as a raw text file.
 				std::ifstream in(filename.c_str());
+				namespace sfs = icedb::fs::sfs;
+
 				uintmax_t sz = sfs::file_size(sfs::path(filename));
 				std::string s(sz, ' ');
 				in.read(&s[0], sz);
