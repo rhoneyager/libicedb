@@ -9,10 +9,37 @@
 #include <hdf5.h>
 #include "Handles.hpp"
 
-// Note: using an icedb utility function ICEDB_COMPAT_strncpy_s
-#include "../../icedb/util.h"
-
 namespace HH {
+	namespace _impl {
+		inline size_t COMPAT_strncpy_s(
+			char * dest, size_t destSz,
+			const char * src, size_t srcSz)
+		{
+			/** \brief Safe char array copy.
+			\returns the number of characters actually written.
+			\param dest is the pointer to the destination. Always null terminated.
+			\param destSz is the size of the destination buller, including the trailing null character.
+			\param src is the pointer to the source. Characters from src are copied either until the
+			first null character or until srcSz. Note that null termination comes later.
+			\param srcSz is the max size of the source buffer.
+			**/
+			if (!dest || !src) throw;
+#if HH_USING_SECURE_STRINGS
+			strncpy_s(dest, destSz, src, srcSz);
+#else
+			if (srcSz <= destSz) {
+				strncpy(dest, src, srcSz);
+			}
+			else {
+				strncpy(dest, src, destSz);
+			}
+#endif
+			dest[destSz - 1] = 0;
+			for (size_t i = 0; i < destSz; ++i) if (dest[i] == '\0') return i;
+			return 0; // Should never be reached
+		}
+
+	}
 	namespace Types {
 		using namespace HH::Handles;
 		/// \todo extend to UTF-8 strings, as HDF5 supports these. No support for UTF-16, but conversion functions may be applied.
@@ -142,7 +169,7 @@ namespace HH {
 				for (const auto &s : d) {
 					size_t sz = s.size() + 1;
 					std::unique_ptr<char[]> sobj(new char[sz]);
-					ICEDB_COMPAT_strncpy_s(sobj.get(), sz, s.data(), sz);
+					_impl::COMPAT_strncpy_s(sobj.get(), sz, s.data(), sz);
 					_bufStrPointers.push_back(sobj.get());
 					_bufStrs.push_back(std::move(sobj));
 				}

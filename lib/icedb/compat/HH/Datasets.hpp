@@ -112,7 +112,7 @@ namespace HH {
 		/// \note With default parameters, the entire dataset is written.
 		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
 		[[nodiscard]] herr_t write(
-			span<const DataType> data,
+			const span<DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t mem_space_id = H5S_ALL,
 			HH_hid_t file_space_id = H5S_ALL,
@@ -538,5 +538,48 @@ namespace HH {
 			return create<DataType, Args...>(t);
 		}
 
+#if __has_include(<Eigen/Dense>)
+		template <class EigenClass>
+		Dataset createWithEigen(
+			gsl::not_null<const char*> dsetname,
+			const EigenClass &d, int nDims = 2)
+		{
+			HH_hid_t dtype = HH::Types::GetHDF5Type<typename EigenClass::Scalar>();
+			/// \todo Handle the different row and column major formats for output more efficiently.
+			Eigen::Array<typename EigenClass::Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> dout;
+			dout.resize(d.rows(), d.cols());
+			dout = d;
+			if (nDims == 1) {
+				auto obj = _create<typename EigenClass::Scalar>(dsetname, { (size_t)d.rows() * (size_t) d.cols() }, dtype);
+				auto sp = gsl::make_span(dout.data(), dout.rows()*dout.cols());
+				//htri_t res = obj.write< typename EigenClass::Scalar >(sp);
+				htri_t res = obj.write(sp);
+				Expects(0 <= res);
+				return obj;
+			}
+			else {
+				auto obj = _create<typename EigenClass::Scalar>(dsetname, { (size_t)d.rows(), (size_t)d.cols() }, dtype);
+				//auto res = obj.write<typename EigenClass::Scalar>(gsl::make_span(dout.data(), dout.rows()*dout.cols()));
+				auto sp = (gsl::make_span(dout.data(), dout.rows()*dout.cols()));
+				auto res = obj.write(sp);
+
+				Expects(0 <= res);
+				return obj;
+			}
+		}
+#endif
+
+		template <class DataType>
+		Dataset createFromSpan(
+			gsl::not_null<const char*> dsetname,
+			const gsl::span<DataType> d)
+		{
+			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>();
+			auto obj = create<DataType>(dsetname, { gsl::narrow_cast<hsize_t>(d.size()) }, dtype);
+			//auto res = obj.write<DataType>(d);
+			auto res = obj.write(d);
+			Expects(0 <= res);
+			return obj;
+		}
 	};
 }
