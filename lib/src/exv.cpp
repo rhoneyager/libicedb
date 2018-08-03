@@ -1,6 +1,7 @@
 #include "../icedb/exv.hpp"
 #include "../icedb/versioning/versioning.hpp"
 #include "../icedb/error.hpp"
+#include "../icedb/compat/HH/Attributes.hpp"
 
 namespace icedb {
 	namespace exv {
@@ -105,7 +106,7 @@ namespace icedb {
 			if (!g.atts.exists("_icedb_exv_schema_version")) return false;
 
 			auto aOType = g.atts.open("_icedb_obj_type");
-			if (!aOType.IsOfType<std::string>()) return false;
+			if (!aOType.isOfType<std::string>()) return false;
 			std::string sOType = aOType.read<std::string>();
 			if (sOType != _icedb_obj_type_exv_identifier) return false;
 

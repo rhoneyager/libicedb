@@ -112,7 +112,7 @@ namespace HH {
 		/// \note With default parameters, the entire dataset is written.
 		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
 		[[nodiscard]] herr_t write(
-			const span<DataType> data,
+			const span<const DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t mem_space_id = H5S_ALL,
 			HH_hid_t file_space_id = H5S_ALL,
