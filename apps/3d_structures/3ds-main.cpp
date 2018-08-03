@@ -20,6 +20,7 @@
 #include <icedb/compat/HH/Files.hpp>
 #include <icedb/splitSet.hpp>
 #include <icedb/shape.hpp>
+#include <icedb/dlls.hpp>
 
 herr_t my_hdf5_error_handler(hid_t, void *)
 {
@@ -35,10 +36,9 @@ int main(int argc, char** argv) {
 		// Read program options
 		//H5Eset_auto(H5E_DEFAULT, my_hdf5_error_handler, NULL); // For HDF5 error debugging
 		namespace po = boost::program_options;
-		po::options_description desc("General options"), input_matching("Input options");
+		po::options_description desc("General options"), input_matching("Input options"), hidden("Hidden options");
 		desc.add_options()
 			("help,h", "produce help message")
-			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
 			("to", po::value<string>(), "The path where the shape is written to")
 			("to-format", po::value<string>(), "Output file format")
 			("create", "Create the output database if it does not exist")
@@ -49,37 +49,12 @@ int main(int argc, char** argv) {
 			("db-path", po::value<string> (), "The location of the shape in the input file.")
 			;
 		desc.add(input_matching);
+		icedb::registry::add_options(desc, desc, hidden);
+		desc.add(hidden);
 		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+		po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
 		po::notify(vm);
-		if (vm.count("config-file")) {
-			using namespace std;
-			string configfile = vm["config-file"].as<string>();
-#if BOOST_VERSION < 104600
-			// For RHEL's really old Boost distribution
-			ifstream ifs(configfile.c_str());
-			if (!ifs) {
-				cout << "Could no open the response file\n";
-				return 1;
-			}
-			// Read the whole file into a string
-			stringstream ss;
-			ss << ifs.rdbuf();
-			// Split the file content
-			using namespace boost;
-			char_separator<char> sep(" \n\r");
-			tokenizer<char_separator<char> > tok(ss.str(), sep);
-			vector<string> args;
-			copy(tok.begin(), tok.end(), back_inserter(args));
-			// Parse the file and store the options
-			po::store(po::command_line_parser(args).options(desc).run(), vm);
-#else
-			// For modern systems
-			po::store(po::parse_config_file<char>(configfile.c_str(), desc, false), vm);
-#endif
-			po::notify(vm);
-		}
-		
+		icedb::registry::handle_config_file_options(desc, vm);
 
 		auto doHelp = [&](const string& s)->void
 		{
@@ -88,6 +63,8 @@ int main(int argc, char** argv) {
 			exit(1);
 		};
 		if (vm.count("help")) doHelp("");
+		icedb::registry::process_static_options(vm);
+
 		if (!vm.count("from") || !vm.count("to") || !vm.count("db-path")
 			|| !vm.count("to-format"))
 			doHelp("Need to specify from, to, db-path, to-format.");
@@ -115,7 +92,6 @@ int main(int argc, char** argv) {
 		auto opts = icedb::registry::IO_options::generate();
 		opts->filename(sToRaw);
 		opts->filetype(outformat);
-		icedb::registry::loadDLL("C:\\Users\\ryan.ADHONEYAGER\\source\\repos\\libicedb\\build\\Debug\\icedb-plugins\\plugin_silo.dll");
 		shp.write(nullptr, opts);
 	}
 	// Ensure that unhandled errors are displayed before the application terminates.

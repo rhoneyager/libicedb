@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <boost/program_options.hpp>
 #include "versioning/versioning.hpp"
 
 namespace boost {
@@ -107,6 +108,8 @@ namespace icedb
 		void DL_ICEDB loadDLL(const std::string &filename, std::shared_ptr<const dllValidatorSet> = dllValidatorSet::getDefault(), bool critical = false);
 		/// Load DLLs.
 		void DL_ICEDB loadDLLs(const std::vector<std::string> &dlls, std::shared_ptr<const dllValidatorSet> = dllValidatorSet::getDefault(), bool critical = false);
+		/// Load all icedb DLLs.
+		void DL_ICEDB loadDLLs();
 
 		/// Print loaded DLLs
 		void DL_ICEDB printDLLs(std::ostream &out = std::cerr);
@@ -145,7 +148,17 @@ namespace icedb
 		void DL_ICEDB add_hook_table(const char* tempsig, void* store);
 		void DL_ICEDB dump_hook_table(std::ostream &out = std::cerr);
 
+		void DL_ICEDB add_options(
+			boost::program_options::options_description &cmdline,
+			boost::program_options::options_description &config,
+			boost::program_options::options_description &hidden);
 
+		void DL_ICEDB process_static_options(
+			boost::program_options::variables_map &vm);
+
+		void DL_ICEDB handle_config_file_options(
+			boost::program_options::options_description &,
+			boost::program_options::variables_map &);
 	}
 }
 

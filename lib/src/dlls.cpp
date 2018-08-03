@@ -5,6 +5,7 @@
 **/
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -174,6 +175,7 @@ namespace {
 		boost::filesystem::path libpath(getPath(modinfo.get()));
 		libpath.remove_filename();
 		icedb::registry::searchPathsOne.emplace(libpath / "plugins");
+		icedb::registry::searchPathsOne.emplace(libpath / "icedb-plugins");
 		
 		// Checking environment variables
 		if (use_environment)
@@ -571,6 +573,7 @@ namespace icedb
 			using namespace boost::filesystem;
 			using namespace std;
 
+			using boost::filesystem::path;
 			path pexpr(expr);
 
 			for (const auto &p : searchPaths)
@@ -654,7 +657,6 @@ namespace icedb
 			searchDLLs(dlls, searchPathsOne, false);
 		}
 
-		/*
 		void add_options(
 			boost::program_options::options_description &cmdline,
 			boost::program_options::options_description &config,
@@ -664,6 +666,7 @@ namespace icedb
 			using std::string;
 
 			cmdline.add_options()
+				("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
 				;
 
 			config.add_options()
@@ -680,6 +683,41 @@ namespace icedb
 				;
 		}
 
+		void handle_config_file_options(
+			boost::program_options::options_description &opts,
+			boost::program_options::variables_map &vm)
+		{
+			if (vm.count("config-file")) {
+				namespace po = boost::program_options;
+				using namespace std;
+				string configfile = vm["config-file"].as<string>();
+#if BOOST_VERSION < 104600
+				// For RHEL's really old Boost distribution
+				ifstream ifs(configfile.c_str());
+				if (!ifs) {
+					cout << "Could no open the response file\n";
+					return 1;
+				}
+				// Read the whole file into a string
+				stringstream ss;
+				ss << ifs.rdbuf();
+				// Split the file content
+				using namespace boost;
+				char_separator<char> sep(" \n\r");
+				tokenizer<char_separator<char> > tok(ss.str(), sep);
+				vector<string> args;
+				copy(tok.begin(), tok.end(), back_inserter(args));
+				// Parse the file and store the options
+				po::store(po::command_line_parser(args).options(opts).run(), vm);
+#else
+				// For modern systems
+				po::store(po::parse_config_file<char>(configfile.c_str(), opts, false), vm);
+#endif
+				po::notify(vm);
+			}
+
+		}
+
 		void process_static_options(
 			boost::program_options::variables_map &vm)
 		{
@@ -692,22 +730,18 @@ namespace icedb
 			if (vm.count("dll-load-onelevel"))
 			{
 				std::vector<std::string> sPaths = vm["dll-load-onelevel"].as<std::vector<std::string> >();
-				BOOST_LOG_SEV(lg, icedb::log::notification) << "Loading custom dll paths (1)";
 				for (const auto s : sPaths)
 				{
 					searchPathsOne.emplace(s);
-					BOOST_LOG_SEV(lg, icedb::log::notification) << "Loading custom dll path (1): " << s;
 				}
 			}
 
 			if (vm.count("dll-load-recursive"))
 			{
 				std::vector<std::string> sPaths = vm["dll-load-recursive"].as<std::vector<std::string> >();
-				BOOST_LOG_SEV(lg, icedb::log::notification) << "Loading custom dll paths (1)";
 				for (const auto s : sPaths)
 				{
 					searchPathsRecursive.emplace(s);
-					BOOST_LOG_SEV(lg, icedb::log::notification) << "Loading custom dll path (r): " << s;
 				}
 			}
 
@@ -737,7 +771,13 @@ namespace icedb
 			if (vm.count("print-dll-loaded"))
 				printDLLs();
 		}
-		*/
+
+		void loadDLLs() {
+			std::vector<std::string> dlls;
+			searchDLLs(dlls);
+			loadDLLs(dlls);
+		}
+
 		void loadDLLs(const std::vector<std::string> &dlls, std::shared_ptr<const dllValidatorSet> dvs, bool critical)
 		{
 			for (const auto &dll : dlls)
