@@ -152,7 +152,7 @@ namespace HH {
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t mem_space_id = H5S_ALL,
 			HH_hid_t file_space_id = H5S_ALL,
-			HH_hid_t xfer_plist_id = H5P_DEFAULT)
+			HH_hid_t xfer_plist_id = H5P_DEFAULT) const
 		{
 			Expects(isDataset());
 			return H5Dread(

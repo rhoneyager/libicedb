@@ -1,5 +1,5 @@
 #include "WritePoints.h"
-
+#include <string>
 namespace icedb {
 	namespace plugins {
 		namespace silo {
@@ -70,6 +70,21 @@ namespace icedb {
 			siloFile::~siloFile()
 			{
 				DBClose(df);
+			}
+
+			void siloFile::mkdir(const char* dirname) {
+				int res = DBMkDir(df, dirname);
+				if (res == -1) throw;
+			}
+			void siloFile::setdir(const char* dirname) {
+				int res = DBSetDir(df, dirname);
+				if (res == -1) throw;
+			}
+			std::string siloFile::getdir() {
+				std::string dir(256, '\0');
+				int res = DBGetDir(df, dir.data());
+				if (res == -1) throw;
+				return dir;
 			}
 
 

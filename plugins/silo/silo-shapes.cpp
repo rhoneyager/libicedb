@@ -48,13 +48,13 @@ namespace icedb {
 			write_file_type_multi<icedb::Shapes::Shape>
 			(shared_ptr<IOhandler> sh, shared_ptr<IO_options> opts,
 				const icedb::Shapes::Shape * s)
-				//const std::shared_ptr<const icedb::Shapes::Shape> s)
+			//const std::shared_ptr<const icedb::Shapes::Shape> s)
 		{
 			std::string filename = opts->filename();
 			IOhandler::IOtype iotype = opts->iotype();
 
 			using std::shared_ptr;
-			
+
 			// std::shared_ptr<silo_handle> h = construct_handle(sh, std::string(PLUGINID), [&]() {
 			//	return std::shared_ptr<silo_handle>(new silo_handle(filename.c_str(), iotype));;
 			//})
@@ -82,9 +82,10 @@ namespace icedb {
 			// Take each dataset, and, if it has the appropriate columns, then list it for silo export.
 			for (const auto &d : ds) {
 				if (d.second.isDimensionScale()) continue;
+				//if (d.first == "particle_scattering_element_coordinates") continue;
 				if (d.second.isDimensionScaleAttached(dPSEN, 0)) {
 					auto dn = d.second.getDimensions().dimensionality;
-					if ((dn == 1) || (dn == 3)) mToSilo.insert(d);
+					if ((dn == 1) || (dn == 2)) mToSilo.insert(d);
 				}
 			}
 
@@ -96,39 +97,108 @@ namespace icedb {
 			auto dims = tPSEC.getDimensions().dimsCur;
 			Expects(dims.size() == 2);
 			const char* dimLabels[] = { "X", "Y", "Z" };
+			Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crdsF((int)(dims[0]), (int)(dims[1]));
 			if (tPSEC.isOfType<int32_t>() > 0) {
-				Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crds((int)(dims[0]), (int)(dims[1]));
-				Expects(0 <= tPSEC.read<int32_t>(gsl::span<int32_t>(crds.data(), crds.size())));
-				auto ptmesh = h->file->createPointMesh<int32_t>("P_particle_scattering_element_coordinates", crds, dimLabels);
+				Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crdsI((int)(dims[0]), (int)(dims[1]));
+				Expects(0 <= tPSEC.read<int32_t>(gsl::span<int32_t>(crdsI.data(), crdsI.size())));
 
-				for (const auto & d : mToSilo) {
-					std::string units = "Unspecified"; // TODO: Query attribute and add.
-					if (d.second.atts.exists("units"))
-					{
-						d.second.atts.open("units");
-					}
-					auto silo_datatype = convertHDF5datatypeToSiloDataType(d.second.type());
-					ptmesh->writeData(d.first.c_str(), nullptr, 0, silo_datatype, units.c_str());
-
-					//if (d.second.isOfType<int>() > 0) {
-						//ptmesh->writeData<int>()
-					//}
-					//ptmesh->writeData<>(d.first.c_str(), )
-				}
+				crdsF = crdsI.cast<float>();
 			}
-			/*else if (tPSEC.isOfType<float>() > 0) {
-				Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crds((int)(dims[0]), (int)(dims[1]));
-				Expects(0 <= tPSEC.read<float>(gsl::span<float>(crds.data(), crds.size())));
-				auto ptmesh = h->file->createPointMesh<float>("P_particle_scattering_element_coordinates", crds, dimLabels);
-			}*/
+			else if (tPSEC.isOfType<float>() > 0) {
+				Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crdsIn((int)(dims[0]), (int)(dims[1]));
+				Expects(0 <= tPSEC.read<float>(gsl::span<float>(crdsIn.data(), crdsIn.size())));
+
+				crdsF = crdsIn.cast<float>();
+			}
 			else ICEDB_throw(icedb::error::error_types::xBadInput)
 				.add("Reason", "Wrong table type. Should never happen at this point in the code.");
+
+			// NOTE: SILO does not allow point meshes of integer type. Conversion is necessary.
+
+			auto ptmesh = h->file->createPointMesh<float>("P_particle_scattering_element_coordinates", crdsF, dimLabels);
+
+			for (const auto & d : mToSilo) {
+				std::string units = "Unspecified";
+				// TODO: Query attribute --- HH needs attribute read support for strings!
+				if (d.second.atts.exists("units"))
+				{
+					//units = d.second.atts.open("units").read<std::string>();
+					//d.second.atts.open("units");
+				}
+				//auto silo_datatype = convertHDF5datatypeToSiloDataType(d.second.type());
+				size_t dimensionality = d.second.getDimensions().dimensionality;
+				auto d_dims = d.second.getDimensions().dimsCur;
+				int rows = gsl::narrow_cast<int>(d_dims[0]);
+				int cols = 1;
+				if (d_dims.size() > 1) cols = gsl::narrow_cast<int>(d_dims[1]);
+				Expects(d_dims.size() <= 2); // See constraints from above.
+				size_t numElems = d.second.getDimensions().numElements;
+
+				// The first dimension is the row - corresponds to the point coordinates.
+				// The second (column) is the data.
+
+				if (d.second.isOfType<int32_t>() > 0) {
+					Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
+					Expects(0 <= d.second.read<int32_t>(gsl::span<int32_t>(d_data.data(), d_data.size())));
+					ptmesh->writeData<int32_t>(d.first.c_str(), d_data, units.c_str());
+				}
+				if (d.second.isOfType<int16_t>() > 0) {
+					Eigen::Array<int16_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
+					Expects(0 <= d.second.read<int16_t>(gsl::span<int16_t>(d_data.data(), d_data.size())));
+
+					Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> conv(rows, cols);
+					
+					conv = d_data.cast<int32_t>();
+
+					ptmesh->writeData<int32_t>(d.first.c_str(), conv, units.c_str());
+				}
+				if (d.second.isOfType<uint16_t>() > 0) {
+					Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> conv(rows, cols);
+					Eigen::Array<uint16_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> data(rows, cols);
+					Expects(0 <= d.second.read<uint16_t>(gsl::span<uint16_t>(data.data(), numElems)));
+					conv = data.cast<int>();
+					ptmesh->writeData<int>(d.first.c_str(), conv, units.c_str());
+				}
+				else if (d.second.isOfType<char>() > 0) {
+					Eigen::Array<char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
+					Expects(0 <= d.second.read<char>(gsl::span<char>(d_data.data(), d_data.size())));
+					ptmesh->writeData<char>(d.first.c_str(), d_data, units.c_str());
+				}
+				else if (d.second.isOfType<float>() > 0) {
+					Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
+					Expects(0 <= d.second.read<float>(gsl::span<float>(d_data.data(), d_data.size())));
+					ptmesh->writeData<float>(d.first.c_str(), d_data, units.c_str());
+				}
+				else if (d.second.isOfType<double>() > 0) {
+					Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
+					Expects(0 <= d.second.read<double>(gsl::span<double>(d_data.data(), d_data.size())));
+					ptmesh->writeData<double>(d.first.c_str(), d_data, units.c_str());
+				}
+				else if (d.second.isOfType<long>() > 0) {
+					Eigen::Array<long, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
+					Expects(0 <= d.second.read<long>(gsl::span<long>(d_data.data(), d_data.size())));
+					ptmesh->writeData<long>(d.first.c_str(), d_data, units.c_str());
+				}
+				else if (d.second.isOfType<long long>() > 0) {
+					Eigen::Array<long long, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
+					Expects(0 <= d.second.read<long long>(gsl::span<long long>(d_data.data(), d_data.size())));
+					ptmesh->writeData<long long>(d.first.c_str(), d_data, units.c_str());
+				}
+
+				//ptmesh->writeData(d.first.c_str(), nullptr, 0, silo_datatype, units.c_str());
+
+				//if (d.second.isOfType<int>() > 0) {
+					//ptmesh->writeData<int>()
+				//}
+				//ptmesh->writeData<>(d.first.c_str(), )
+			}
+
 			//tPSEC.read()
-			
+
 			//h->file->createPointMesh("P_Particle_Scattering_Element_Coordinates", )
 
 			//h->file->createPointMesh
-			
+
 
 			// Find the others that use "particle_scattering_element_number" as a dimension.
 			// These datasets can be written.

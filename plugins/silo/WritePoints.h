@@ -71,6 +71,10 @@ namespace icedb {
 				}
 				~siloFile();
 
+				void mkdir(const char* dirname);
+				void setdir(const char* dirname);
+				std::string getdir();
+
 				enum class meshType
 				{
 					MESH_RECTILINEAR,
