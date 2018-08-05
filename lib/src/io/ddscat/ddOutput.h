@@ -73,7 +73,7 @@ namespace icedb {
 			 * effective radius. The most general type of ddscat run may contain many
 			 * permutations of these.
 			 **/
-			class DL_ICEDB ddOutput :
+			class DL_ICEDB_IO_DDSCAT ddOutput :
 				virtual public ::icedb::registry::usesDLLregistry<
 					::icedb::io::ddscat::ddOutput_IO_output_registry,
 					::icedb::registry::IO_class_registry_writer<::icedb::io::ddscat::ddOutput> >,
@@ -155,7 +155,7 @@ namespace icedb {
 						NUM_STAT_ENTRIES_DOUBLES
 					};
 
-					static DL_ICEDB std::string stringify(int val);
+					static DL_ICEDB_IO_DDSCAT std::string stringify(int val);
 				};
 
 				struct shared_data
@@ -207,7 +207,7 @@ namespace icedb {
 							S31, S32, S33, S34, S41, S42, S43, S44,
 							NUM_AVGSCACOLDEFS
 						};
-						static DL_ICEDB std::string stringify(int val);
+						static DL_ICEDB_IO_DDSCAT std::string stringify(int val);
 					};
 					/// Table containing mueller data. Delayed allocation because the size resides within a file being read.
 					std::shared_ptr<Eigen::Matrix<float, Eigen::Dynamic,
@@ -245,7 +245,7 @@ namespace icedb {
 						F00R, F00I, F01R, F01I, F10R, F10I, F11R, F11I,
 						NUM_FMLCOLDEFS
 					};
-					static DL_ICEDB std::string stringify(int val);
+					static DL_ICEDB_IO_DDSCAT std::string stringify(int val);
 				};
 				/// Table containing fml data. Delayed allocation because the size resides within a file being read.
 				std::shared_ptr<Eigen::Matrix<float, Eigen::Dynamic, fmlColDefs::NUM_FMLCOLDEFS> > fmldata;

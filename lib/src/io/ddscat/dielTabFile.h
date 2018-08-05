@@ -41,7 +41,7 @@ namespace icedb
 			* these files is quite customizable, allowing for column reordering
 			* and suppression.
 			**/
-			class dielTab
+			class DL_ICEDB_IO_DDSCAT dielTab
 			{
 			public:
 				dielTab();

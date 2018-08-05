@@ -23,7 +23,7 @@ namespace icedb
 			class hSerialization;
 
 			/// Handles serialization IO for various classes. Also works for compressible text files (ddpar, ...)
-			struct serialization_handle : public icedb::registry::IOhandler
+			struct DL_ICEDB serialization_handle : public icedb::registry::IOhandler
 			{
 				serialization_handle(const char* filename,
 					icedb::registry::IOhandler::IOtype t);
@@ -148,7 +148,7 @@ namespace icedb
 		}
 
 		/// Exists to give the implementsIO template a uniform lock, preventing a race condition
-		std::mutex&  getLock();
+		DL_ICEDB std::mutex&  getLock();
 
 		/** \brief Template that registers reading and writing methods with the io registry
 		 * 

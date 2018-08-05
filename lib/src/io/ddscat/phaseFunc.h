@@ -1,4 +1,6 @@
 #pragma once
+#include <icedb/defs.h>
+#pragma warning( disable : 4251 ) // DLL interface
 #include <functional>
 #include <complex>
 #include <map>
@@ -51,27 +53,27 @@ namespace icedb {
 			{
 				/// Provides a reference to the desired phase function 
 				/// routine. This is implemented to allow user choice in Mueller method.
-				void selectMueller(const std::string &id,
+				DL_ICEDB_IO_DDSCAT void selectMueller(const std::string &id,
 					std::function<void(const Eigen::Matrix2cd&, Eigen::Matrix4d&)>&);
 
 				// Note following conventions: matrix is [[S2, S3][S4,S1]] = [[Sn0, Sn1][Sn2, Sn3]]
 				// Sn is the matrix in linear form {S1, S2, S3, S4}, so it should avoid any 
 				// of the subsequent issues with forgetting the index transformations.
 
-				void muellerBH(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
-				void muellerTMATRIX(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
+				DL_ICEDB_IO_DDSCAT void muellerBH(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
+				DL_ICEDB_IO_DDSCAT void muellerTMATRIX(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
 
-				void convertFtoS(const Eigen::Matrix2cd &f, Eigen::Matrix2cd& Sn, double phi,
+				DL_ICEDB_IO_DDSCAT void convertFtoS(const Eigen::Matrix2cd &f, Eigen::Matrix2cd& Sn, double phi,
 					std::complex<double> a, std::complex<double> b, std::complex<double> c, std::complex<double> d);
 
-				void invertS(const Eigen::Matrix4d &Snn, const Eigen::Matrix4d &Knn, double fGHz, Eigen::Matrix2cd& Sn);
+				DL_ICEDB_IO_DDSCAT void invertS(const Eigen::Matrix4d &Snn, const Eigen::Matrix4d &Knn, double fGHz, Eigen::Matrix2cd& Sn);
 
-				void genExtinctionMatrix(Eigen::Matrix4d &Knn, const Eigen::Matrix2cd &Sn, double fGHz);
+				DL_ICEDB_IO_DDSCAT void genExtinctionMatrix(Eigen::Matrix4d &Knn, const Eigen::Matrix2cd &Sn, double fGHz);
 
 				/// \brief This class is used for registration of phase function and cross-section
 				/// providers.
 				/// \note Full stats will use a connector when passed to this code.
-				struct pf_class_registry
+				struct DL_ICEDB_IO_DDSCAT pf_class_registry
 				{
 					virtual ~pf_class_registry();
 					/// Module name. Tagging is handled elsewhere.
@@ -168,7 +170,7 @@ namespace icedb {
 				/// from multiple sources, such as DDA, Tmatrix, ...
 				///
 				/// \todo Add stats-conversion code here
-				class pf_provider :
+				class DL_ICEDB_IO_DDSCAT pf_provider :
 					virtual public registry::usesDLLregistry <pf_registry, pf_class_registry >
 				{
 				public:
@@ -191,7 +193,7 @@ namespace icedb {
 					const pf_class_registry::inputParamsPartial& iparams;
 				};
 
-				struct pfRunSetContainer :
+				struct DL_ICEDB_IO_DDSCAT pfRunSetContainer :
 					virtual public registry::usesDLLregistry<
 					pfRunSetContainer_IO_input_registry,
 					registry::IO_class_registry_reader<pfRunSetContainer> >,

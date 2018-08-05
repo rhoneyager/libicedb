@@ -26,10 +26,11 @@ set(IO_DDSCAT_FILES
 	phaseFunc.h
 	)
 
-add_library(icedb_io_ddscat STATIC ${IO_DDSCAT_FILES})
-addlib(icedb_io_ddscat STATIC)
+add_library(icedb_io_ddscat SHARED ${IO_DDSCAT_FILES})
+addlib(icedb_io_ddscat SHARED)
 storebin(icedb_io_ddscat)
 
+target_link_libraries(icedb_io_ddscat icedb Boost::date_time Boost::regex)
 target_include_directories(icedb_io_ddscat SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_include_directories(icedb_io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
 target_include_directories(icedb_io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)

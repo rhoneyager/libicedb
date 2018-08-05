@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../icedb/defs.h"
 #include <complex>
 #include <vector>
 #include <Eigen/Core>
@@ -24,7 +25,7 @@ namespace icedb
 			};
 
 			/// Connector object that provides target frame information
-			class ddScattMatrixConnector
+			class DL_ICEDB_IO_DDSCAT ddScattMatrixConnector
 			{
 				ddScattMatrixConnector();
 				ddScattMatrixConnector(const ddPar &src);
@@ -58,7 +59,7 @@ namespace icedb
 			* P matrix is harder to derive from, but is found in the
 			* .avg files and in tmatrix code.
 			**/
-			class ddScattMatrix
+			class DL_ICEDB_IO_DDSCAT ddScattMatrix
 			{
 			public:
 				typedef Eigen::Matrix4d PnnType;
@@ -105,7 +106,7 @@ namespace icedb
 			* \todo Add extinction calculations
 			* \todo Add scattering cross-sections
 			**/
-			class ddScattMatrixF :
+			class DL_ICEDB_IO_DDSCAT ddScattMatrixF :
 				public ddScattMatrix //,
 				//boost::additive<ddScattMatrixF>,
 				//boost::multiplicative<ddScattMatrixF, double>
@@ -148,7 +149,7 @@ namespace icedb
 			* \todo Add extinction calculations
 			* \todo Add scattering cross-sections
 			**/
-			class ddScattMatrixS :
+			class DL_ICEDB_IO_DDSCAT ddScattMatrixS :
 				public ddScattMatrix //,
 				//boost::additive<ddScattMatrixF>,
 				//boost::multiplicative<ddScattMatrixF, double>
@@ -176,7 +177,7 @@ namespace icedb
 
 
 			/// Represents data for just a Mueller matrix
-			class ddScattMatrixP :
+			class DL_ICEDB_IO_DDSCAT ddScattMatrixP :
 				public ddScattMatrix //,
 				//boost::additive<ddScattMatrixP>,
 				//boost::multiplicative<ddScattMatrixP, double>

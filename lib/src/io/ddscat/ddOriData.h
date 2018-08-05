@@ -8,12 +8,9 @@
 #include <complex>
 #include <Eigen/Core>
 #include <Eigen/Dense>
-//#include <icedb/registry.h>
-//#include "../common_templates.h"
 #include "ddOutput.h"
 #include "ddVersions.h"
 #include "ddScattMatrix.h"
-//#include <icedb/io.h>
 
 namespace icedb {
 	namespace io {
@@ -54,7 +51,7 @@ namespace icedb {
 			//std::string DL_ICEDB getStatNameFromId(stat_entries_size_ts);
 
 			/// Provides local readers and writers for ddscat data (it's a binder)
-			class DL_ICEDB implementsDDRES :
+			class DL_ICEDB_IO_DDSCAT implementsDDRES :
 				private icedb::io::implementsIObasic<ddOriData, ddOriData_IO_output_registry,
 				ddOriData_IO_input_registry, ddOriData_Standard>
 			{
@@ -70,7 +67,7 @@ namespace icedb {
 			/** Class contains the output of a single ddscat fml / sca or avg file
 			* This means one radius, wavelength, and orientation.
 			**/
-			class DL_ICEDB ddOriData :
+			class DL_ICEDB_IO_DDSCAT ddOriData :
 				virtual public std::enable_shared_from_this<ddOriData>,
 				virtual public ::icedb::registry::usesDLLregistry<
 					::icedb::io::ddscat::ddOriData_IO_output_registry,

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../icedb/defs.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -10,16 +11,10 @@
 #include <complex>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
-//#include <boost/shared_ptr.hpp>
 #include "ddVersions.h"
 #include "parids.h"
 #include <icedb/registry.hpp>
 #include <icedb/io.hpp>
-//#include <Ryan_Debug/hash.h>
-//#include <Ryan_Debug/registry.h>
-//#include <Ryan_Debug/io.h>
-//#include "../registry.h"
-//#include "../io.h"
 
 namespace icedb {
 	namespace io {
@@ -30,7 +25,15 @@ namespace icedb {
 			struct ddPar_IO_output_registry {};
 			struct ddPar_IO_input_registry {};
 			struct ddPar_Standard {};
+		}
 
+		template <> std::shared_ptr<::icedb::io::ddscat::ddPar>
+			customGenerator<::icedb::io::ddscat::ddPar>();
+
+		//DL_ICEDB_IO_DDSCAT
+		//std::shared_ptr<::icedb::io::ddscat::ddPar> customGenerator();
+
+		namespace ddscat {
 			/// \brief Contains the functions for parsing ddscat.par files. 
 			/// \todo Take these functions and move them into the cpp file.
 			namespace ddParParsers
@@ -395,7 +398,7 @@ namespace icedb {
 	inline void name(bool v) { __setStringBool(id, v, bfalse, btrue); }
 
 		/// Provides local readers and writers for ddscat ddpar data (it's a binder)
-			class implementsDDPAR :
+			class DL_ICEDB_IO_DDSCAT implementsDDPAR :
 				private icedb::io::implementsIObasic<ddPar, ddPar_IO_output_registry,
 				ddPar_IO_input_registry, ddPar_Standard>
 			{
@@ -413,7 +416,7 @@ namespace icedb {
 			* Used to both extract information necessary for shapefile formation, and used when
 			* upgrading ddscat versions. It also provides writing functionality for the files.
 			**/
-			class ddPar :
+			class DL_ICEDB_IO_DDSCAT ddPar :
 				virtual public std::enable_shared_from_this<ddPar>,
 				virtual public ::icedb::registry::usesDLLregistry<
 				::icedb::io::ddscat::ddPar_IO_input_registry,
@@ -429,7 +432,9 @@ namespace icedb {
 				/// Load the default ddscat.par file, used in setting default values
 				static std::shared_ptr<const ddPar> defaultInstance();
 			private:
+				/// \todo Make private again, and provide a custom generator.
 				ddPar();
+			private:
 				ddPar(const ddPar &src); // Copy constructor
 				//ddPar(const std::string &filename, bool populateDefaults = true);
 			public:
