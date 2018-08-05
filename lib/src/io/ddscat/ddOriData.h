@@ -96,7 +96,7 @@ namespace icedb {
 
 				// Binders for the standard ddscat formats
 				static void readDDSCAT(std::shared_ptr<ddOriData>, std::istream&, std::shared_ptr<icedb::registry::IO_options>);
-				static void writeDDSCAT(const std::shared_ptr<const ddOriData>, std::ostream &, std::shared_ptr<icedb::registry::IO_options>);
+				static void writeDDSCAT(const ddOriData*, std::ostream &, std::shared_ptr<icedb::registry::IO_options>);
 
 				double guessTemp(size_t dielIndex = 0) const;
 

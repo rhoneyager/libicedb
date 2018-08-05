@@ -16,6 +16,8 @@ macro(addBaseProject)
 if(DEFINED MSVC)
     # MSVC parallel builds by default
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	# Boost bug
+	add_definitions("/D _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel")

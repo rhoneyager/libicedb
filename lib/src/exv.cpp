@@ -181,21 +181,27 @@ namespace icedb {
 			// TODO: check compressibility of the complex data types
 			const size_t numScattEntries = data->angles.size();
 			if (numScattEntries) {
+				std::vector<float> v_geom_angles(numScattEntries * 3);
 				std::vector<float> v_i_azi(numScattEntries), v_i_pol(numScattEntries),
 					v_s_azi(numScattEntries), v_s_pol(numScattEntries);
 				std::vector<std::complex<double> >
-					s1(numScattEntries), s2(numScattEntries), s3(numScattEntries), s4(numScattEntries);
+					s(numScattEntries*4);
 
 				for (size_t i = 0; i < numScattEntries; ++i) {
 					v_i_azi[i] = data->angles[i].incident_azimuth_angle;
 					v_i_pol[i] = data->angles[i].incident_polar_angle;
 					v_s_azi[i] = data->angles[i].scattering_azimuth_angle;
 					v_s_pol[i] = data->angles[i].scattering_polar_angle;
-					s1[i] = data->angles[i].amplitude_scattering_matrix[0];
-					s2[i] = data->angles[i].amplitude_scattering_matrix[1];
-					s3[i] = data->angles[i].amplitude_scattering_matrix[2];
-					s4[i] = data->angles[i].amplitude_scattering_matrix[3];
+					s[(4 * i) + 0] = data->angles[i].amplitude_scattering_matrix[0];
+					s[(4 * i) + 1] = data->angles[i].amplitude_scattering_matrix[1];
+					s[(4 * i) + 2] = data->angles[i].amplitude_scattering_matrix[2];
+					s[(4 * i) + 3] = data->angles[i].amplitude_scattering_matrix[3];
+					v_geom_angles[(3 * i) + 0] = data->angles[i].alpha;
+					v_geom_angles[(3 * i) + 1] = data->angles[i].beta;
+					v_geom_angles[(3 * i) + 2] = data->angles[i].gamma;
 				}
+				auto d_geom_angles = res.dsets.create<float>("angles", { numScattEntries, 3 });
+				Expects(0 <= d_geom_angles.write<float>(v_geom_angles));
 				auto d_i_azi = res.dsets.create<float>("incident_azimuth_angle", { numScattEntries });
 				Expects(0 <= d_i_azi.write<float>(v_i_azi));
 				auto d_s_azi = res.dsets.create<float>("scattering_azimuth_angle", { numScattEntries });
@@ -205,8 +211,10 @@ namespace icedb {
 				auto d_s_pol = res.dsets.create<float>("scattering_polar_angle", { numScattEntries });
 				Expects(0 <= d_s_pol.write<float>(v_s_pol));
 
-				auto d_s1 = res.dsets.create<std::complex<double>>("amplitude_scattering_matrix_s1", { numScattEntries });
-				Expects(0 <= d_s1.write<std::complex<double>>(s1));
+				auto d_s = res.dsets.create<std::complex<double>>("amplitude_scattering_matrix", { numScattEntries, 4 });
+				Expects(0 <= d_s.write<std::complex<double>>(s));
+
+				// TODO: Need to serialize complex number writes.
 
 				//auto ctype = HH::Types::GetHDF5Type<std::complex<double> >();
 			}

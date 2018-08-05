@@ -247,7 +247,7 @@ namespace icedb
 		public:
 			virtual ~implementsIObasic() {}
 		private:
-			typedef const std::function<void(const std::shared_ptr<const obj_class>, std::ostream&, std::shared_ptr<icedb::registry::IO_options>)> outFunc;
+			typedef const std::function<void(const obj_class*, std::ostream&, std::shared_ptr<icedb::registry::IO_options>)> outFunc;
 			outFunc &outF;
 			typedef const std::function<void(std::shared_ptr<obj_class>, std::istream&, std::shared_ptr<icedb::registry::IO_options>)> inFunc;
 			inFunc &inF;
@@ -269,7 +269,7 @@ namespace icedb
 				auto writerBinder = [&](
 					std::shared_ptr<icedb::registry::IOhandler> sh,
 					std::shared_ptr<icedb::registry::IO_options> opts,
-					const std::shared_ptr<const obj_class> obj, outFunc outF) -> std::shared_ptr<icedb::registry::IOhandler>
+					const obj_class* obj, outFunc outF) -> std::shared_ptr<icedb::registry::IOhandler>
 				{
 					using namespace icedb::registry;
 					using namespace icedb::io::TextFiles;

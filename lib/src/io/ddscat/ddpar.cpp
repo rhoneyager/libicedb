@@ -185,8 +185,8 @@ namespace icedb {
 			{
 				std::string sThis, sRhs;
 				std::ostringstream oThis, oRhs;
-				writeDDSCAT(this->shared_from_this(), oThis, nullptr);
-				writeDDSCAT(rhs.shared_from_this(), oRhs, nullptr);
+				writeDDSCAT(this, oThis, nullptr);
+				writeDDSCAT(&rhs, oRhs, nullptr);
 				sThis = oThis.str();
 				sRhs = oRhs.str();
 				return (sThis == sRhs);
@@ -203,7 +203,7 @@ namespace icedb {
 				{
 					_version = rhs._version;
 					std::ostringstream out;
-					writeDDSCAT(rhs.shared_from_this(), out, nullptr);
+					writeDDSCAT(&rhs, out, nullptr);
 					std::string data = out.str();
 					std::istringstream in(data);
 					read(in);
@@ -216,7 +216,7 @@ namespace icedb {
 				// Expensive copy constructor. Implements cloning to avoid screwups.
 				_version = src._version;
 				std::ostringstream out;
-				writeDDSCAT(src.shared_from_this(), out, nullptr);
+				writeDDSCAT(&src, out, nullptr);
 				std::string data = out.str();
 				std::istringstream in(data);
 				read(in);
@@ -229,7 +229,7 @@ namespace icedb {
 				lhs->_version = _version;
 
 				std::ostringstream out;
-				writeDDSCAT(this->shared_from_this(), out, nullptr);
+				writeDDSCAT(this, out, nullptr);
 				std::string data = out.str();
 				std::istringstream in(data);
 
@@ -313,7 +313,7 @@ namespace icedb {
 			}
 			*/
 
-			void ddPar::writeDDSCAT(const std::shared_ptr<const ddPar> p, std::ostream &out, std::shared_ptr<registry::IO_options> opts)
+			void ddPar::writeDDSCAT(const ddPar* p, std::ostream &out, std::shared_ptr<registry::IO_options> opts)
 			{
 				// Writing is much easier than reading!
 				using namespace std;
@@ -380,7 +380,7 @@ namespace icedb {
 
 			void ddPar::write(std::ostream& out) const
 			{
-				writeDDSCAT(this->shared_from_this(), out, nullptr);
+				writeDDSCAT(this, out, nullptr);
 			}
 
 			void ddPar::read(std::istream &stream, bool overlay)

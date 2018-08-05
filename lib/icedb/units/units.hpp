@@ -2,6 +2,11 @@
 #include "../defs.h"
 #include <string>
 #include <memory>
+
+#if defined _MSC_FULL_VER
+#pragma warning( disable : 4251 ) // DLL interface
+#endif
+
 namespace icedb {
 	/** \brief Provides convenient runtime conversion functions for converting
 	 * different units. 

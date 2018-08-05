@@ -102,7 +102,7 @@ namespace icedb {
 				}
 			}
 
-			void ddOriData::writeDDSCAT(const std::shared_ptr<const ddOriData> obj, std::ostream &out, std::shared_ptr<icedb::registry::IO_options> opts)
+			void ddOriData::writeDDSCAT(const ddOriData* obj, std::ostream &out, std::shared_ptr<icedb::registry::IO_options> opts)
 			{
 				//bool isFMLforced = false, writeFML = true;
 				//ddOutput::isForcingFMLwrite(isFMLforced, writeFML);

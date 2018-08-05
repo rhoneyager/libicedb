@@ -29,6 +29,9 @@ namespace icedb {
 			std::vector<std::tuple<int, std::string, std::complex<double> > > constituent_refractive_indices;
 
 			struct angle_obs {
+				float alpha; ///< First rotation angle (degrees)
+				float beta; ///< Second rotation angle (degrees)
+				float gamma; ///< Third rotation angle (degrees)
 				float incident_polar_angle; ///< Incident polar angle (degrees)
 				float incident_azimuth_angle; ///< Incident azimuth angle (degrees)
 				float scattering_polar_angle; ///< Scattering polar angle (degrees)

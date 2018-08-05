@@ -54,7 +54,7 @@ namespace icedb {
 		std::shared_ptr<IOhandler>
 			write_file_type_multi<icedb::io::ddscat::ddOutput>
 			(std::shared_ptr<IOhandler> sh, std::shared_ptr<IO_options> opts,
-				const std::shared_ptr<const icedb::io::ddscat::ddOutput > s)
+				const icedb::io::ddscat::ddOutput * s)
 		{
 			using std::shared_ptr;
 			if (!sh) ICEDB_throw(::icedb::error::error_types::xCannotFindReference)
@@ -187,7 +187,8 @@ int main(int argc, char** argv) {
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
 		vector<string> vsFromRaw = vm["from"].as<vector<string> >();
 		string sToRaw = vm["to"].as<string>();
-		
+
+		namespace sfs = icedb::fs::sfs;
 		sfs::path pToRaw(sToRaw);
 		string dbpath = vm["db-path"].as<string>();
 		//if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();

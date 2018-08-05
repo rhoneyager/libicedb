@@ -318,7 +318,7 @@ namespace icedb {
 					resize(numPoints);
 				}
 
-				void shapefile::writeDDSCAT(const std::shared_ptr<const shapefile> s, std::ostream &out, std::shared_ptr<icedb::registry::IO_options>)
+				void shapefile::writeDDSCAT(const shapefile* s, std::ostream &out, std::shared_ptr<icedb::registry::IO_options>)
 				{
 					s->print(out);
 				}

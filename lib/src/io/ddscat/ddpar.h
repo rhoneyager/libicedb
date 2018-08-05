@@ -446,7 +446,7 @@ namespace icedb {
 				void read(std::istream &stream, bool overlay = false);
 				void write(std::ostream&) const;
 				/// Write a standard DDSCAT par file to the output stream
-				static void writeDDSCAT(const std::shared_ptr<const ddPar>, std::ostream &, std::shared_ptr<icedb::registry::IO_options>);
+				static void writeDDSCAT(const ddPar*, std::ostream &, std::shared_ptr<icedb::registry::IO_options>);
 				/// Read a standard DDSCAT par file from an input stream
 				static void readDDSCAT(std::shared_ptr<ddPar>, std::istream &, bool overlay = false);
 				/// \note Default parameter case is split because of function binding.

@@ -126,7 +126,7 @@ namespace icedb {
 					void readHeaderOnly(const std::string &str);
 					static void readDDSCAT(std::shared_ptr<shapefile>, std::istream&, std::shared_ptr<icedb::registry::IO_options>);
 					/// Write a standard DDSCAT shapefile to a stream (no compression)
-					static void writeDDSCAT(const std::shared_ptr<const shapefile>, std::ostream &, std::shared_ptr<icedb::registry::IO_options>);
+					static void writeDDSCAT(const shapefile*, std::ostream &, std::shared_ptr<icedb::registry::IO_options>);
 
 					/// Recalculate stats after a manipulation operation
 					void recalcStats();
