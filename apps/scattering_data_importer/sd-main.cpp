@@ -84,18 +84,37 @@ namespace icedb {
 				std::tuple<int, std::string, std::complex<double> > newM((int) (i+1), std::string("unspecified"), s->ms.at(0).at(i));
 				props.constituent_refractive_indices.push_back(newM);
 			}
-			/*
-			props.angles;
+			props.frequency_Hz = s->freq;
+			props.temperature_K = s->temp;
 
-			// TODO: Figure out how to pass these. Use IO_options for all?
-			props.author;
-			props.contact;
-			props.dataset_id;
-			props.frequency_Hz;
-			props.particle_id;
-			props.temperature_K;
-			props.version;
-			*/
+			props.author = s->author;
+			props.contact = s->contact;
+			props.version = s->version;
+			props.dataset_id = s->datasetID;
+			props.scattMeth = s->scattMeth;
+			props.ingest_timestamp = s->ingest_timestamp;
+			
+			auto &angles = props.angles;
+			angles.resize(s->fmldata->rows());
+			for (int i = 0; i < s->fmldata->rows(); ++i) {
+				auto &a = angles[i];
+				using icedb::io::ddscat::ddOutput;
+				const auto &f = s->fmldata->block<1, ddOutput::fmlColDefs::NUM_FMLCOLDEFS>(i, 0);
+				const auto &o = s->oridata_d.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(
+					f(ddOutput::fmlColDefs::ORIINDEX), 0);
+				a.alpha = o(ddOutput::stat_entries::BETA);
+				a.beta = o(ddOutput::stat_entries::THETA);
+				a.gamma = o(ddOutput::stat_entries::PHI);
+				a.incident_azimuth_angle = 0;
+				a.incident_polar_angle = 0;
+				a.scattering_azimuth_angle = f(ddOutput::fmlColDefs::THETAB);
+				a.scattering_polar_angle = f(ddOutput::fmlColDefs::PHIB);
+				a.amplitude_scattering_matrix[0] = std::complex<double>(f(ddOutput::fmlColDefs::F00R), f(ddOutput::fmlColDefs::F00I));
+				a.amplitude_scattering_matrix[1] = std::complex<double>(f(ddOutput::fmlColDefs::F01R), f(ddOutput::fmlColDefs::F01I));
+				a.amplitude_scattering_matrix[2] = std::complex<double>(f(ddOutput::fmlColDefs::F10R), f(ddOutput::fmlColDefs::F10I));
+				a.amplitude_scattering_matrix[3] = std::complex<double>(f(ddOutput::fmlColDefs::F11R), f(ddOutput::fmlColDefs::F11I));
+			}
+
 			auto res = icedb::exv::EXV::createEXV(gObj.get(), &props);
 
 			return sh;
@@ -113,11 +132,9 @@ int main(int argc, char** argv) {
 		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden");
 		desc.add_options()
 			("help,h", "produce help message")
-			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
 			("to", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("run"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
-			("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		input_matching.add_options()
@@ -132,7 +149,7 @@ int main(int argc, char** argv) {
 			("dataset-version-major", po::value<unsigned int>(), "Dataset version (major number)")
 			("dataset-version-minor", po::value<unsigned int>(), "Dataset version (minor number)")
 			("dataset-version-revision", po::value<unsigned int>(), "Dataset version (revision number)")
-			("scattering_element_coordinates_scaling_factor", po::value<float>()->default_value(1.0f), "Scaling factor")
+			//("scattering_element_coordinates_scaling_factor", po::value<float>()->default_value(1.0f), "Scaling factor")
 			("scattering_element_coordinates_units", po::value<string>()->default_value("m"), "Scaling factor units")
 			;
 		constits.add_options()
@@ -181,7 +198,7 @@ int main(int argc, char** argv) {
 		if (vm.count("dataset-version-major")) version[0] = vm["dataset-version-major"].as<unsigned int>();
 		if (vm.count("dataset-version-minor")) version[1] = vm["dataset-version-minor"].as<unsigned int>();
 		if (vm.count("dataset-version-revision")) version[2] = vm["dataset-version-revision"].as<unsigned int>();
-		sSFfactor = vm["scattering_element_coordinates_scaling_factor"].as<float>();
+		//sSFfactor = vm["scattering_element_coordinates_scaling_factor"].as<float>();
 		sSFunits = vm["scattering_element_coordinates_units"].as<string>();
 
 		// Read in the constituents
@@ -263,9 +280,12 @@ int main(int argc, char** argv) {
 			sfs::path pFromRaw(sFromRaw);
 			std::string sFn = pFromRaw.filename().string();
 			auto ddrun = icedb::io::ddscat::ddOutput::generate(sFromRaw);
-			
-
-			// TODO: Set ingest properties that are specified in the command line
+			ddrun->version = version;
+			ddrun->author = sAuthor;
+			ddrun->contact = sContact;
+			ddrun->scattMeth = sScattMeth;
+			ddrun->datasetID = sDatasetID;
+			ddrun->ingest_timestamp = sIngestTime;
 
 			// The handle is set the first time we attempt to write a shape.
 			handle = ddrun->write(handle, opts->clone()->set("ID", sFn));

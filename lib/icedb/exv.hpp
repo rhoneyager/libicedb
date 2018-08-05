@@ -14,6 +14,8 @@ namespace icedb {
 			std::string dataset_id;					///< Dataset id
 			std::string author;						///< The author
 			std::string contact;					///< Contact info
+			std::string scattMeth;					///< Scattering method
+			std::string ingest_timestamp;			///< Ingest timestamp
 			std::array<unsigned int, 3> version;	///< Version information
 
 			/// Validate that all required properties are set, and that they have the correct dimensions.

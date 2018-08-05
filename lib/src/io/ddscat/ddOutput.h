@@ -1,5 +1,6 @@
 #pragma once
 #include <icedb/defs.h>
+#include <array>
 #include <string>
 #include <vector>
 #include <map>
@@ -107,12 +108,17 @@ namespace icedb {
 				//std::string hostname;
 				/// Revision of the rtmath code for ingest
 				//int ingest_rtmath_version;
-				/// Frequency (GHz)
+				/// Frequency
 				double freq;
-				/// Effective radius (um)
+				/// Effective radius
 				double aeff;
-				/// Temperature (K)
+				/// Temperature
 				double temp;
+				std::string units_length = "um";
+				std::array<unsigned int, 3> version = { 1, 0, 0 };
+				std::string units_temperature = "K";
+				std::string author, contact, scattMeth, datasetID;
+
 				/// Paths of source files. Used in consolidation.
 				std::multiset<std::string> sources;
 				/// User-set brief description snippets. Used in isolating sets of runs.
