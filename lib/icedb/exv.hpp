@@ -17,13 +17,7 @@ namespace icedb {
 			std::string scattMeth;					///< Scattering method
 			std::string ingest_timestamp;			///< Ingest timestamp
 			std::array<unsigned int, 3> version;	///< Version information
-
-			/// Validate that all required properties are set, and that they have the correct dimensions.
-			/// Writes diagnostic messages to the output stream.
-			/// \todo Write this function
-			inline bool isValid(std::ostream *errout = nullptr) const { return true; }
-
-			float frequency_Hz; ///< Frequency (Hz)
+float frequency_Hz; ///< Frequency (Hz)
 			float temperature_K; ///< Particle temperature (K)
 
 			/// Constituent refractive indices.
@@ -31,19 +25,31 @@ namespace icedb {
 			std::vector<std::tuple<int, std::string, std::complex<double> > > constituent_refractive_indices;
 
 			struct angle_obs {
+				// First three rotation angles are placeholders. Are they needed?
 				float alpha; ///< First rotation angle (degrees)
 				float beta; ///< Second rotation angle (degrees)
 				float gamma; ///< Third rotation angle (degrees)
+
+				// These angles follow another set of conventions.
 				float incident_polar_angle; ///< Incident polar angle (degrees)
 				float incident_azimuth_angle; ///< Incident azimuth angle (degrees)
 				float scattering_polar_angle; ///< Scattering polar angle (degrees)
 				float scattering_azimuth_angle; ///< Scattering azimuth angle (degrees)
+
 				/// Type for the amplitude scattering matrices (i.e. the Jones matrix). Ordering is S1, S2, S3, S4.
 				typedef std::array<std::complex<double>, 4> amplitude_scattering_matrix_t;
 				amplitude_scattering_matrix_t amplitude_scattering_matrix;
 			};
 			/// The observations for each set of angles.
 			std::vector<angle_obs> angles;
+
+
+			/// Validate that all required properties are set, and that they have the correct dimensions.
+			/// Writes diagnostic messages to the output stream.
+			/// \todo Write this function
+			inline bool isValid(std::ostream *errout = nullptr) const { return true; }
+
+
 		};
 
 		/// \brief A high-level class to manipulate extended scattering variables

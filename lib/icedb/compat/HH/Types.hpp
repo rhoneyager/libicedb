@@ -118,13 +118,22 @@ namespace HH {
 		/// where multiple objects are in the same dataspace, and each object is a 
 		/// singular instance of the base data type.
 
+		struct Object_Accessor_Base
+		{
+			Object_Accessor_Base() {}
+			virtual ~Object_Accessor_Base() {}
+			virtual bool isCompound() const { return false; }
+			virtual ssize_t getFromBufferSize() const { return -1; }
+		};
+
 		template <class DataType>
-		struct Object_Accessor
+		struct Object_Accessor : public Object_Accessor_Base
 		{
 		private:
 			void *_buffer;
 		public:
 			Object_Accessor(ssize_t sz = -1) {}
+			virtual ~Object_Accessor() {}
 			/// \brief Converts an object into a void* array that HDF5 can natively understand.
 			/// \note The shared_ptr takes care of "deallocation" when we no longer need the "buffer".
 			const void* serialize(::gsl::span<const DataType> d)
@@ -137,7 +146,7 @@ namespace HH {
 			/// \note For POD objects, we do not have to allocate a buffer.
 			/// \returns Size needed. If negative, then we can directly write to the object, 
 			/// sans allocation or deallocation.
-			ssize_t getFromBufferSize() {
+			virtual ssize_t getFromBufferSize() {
 				return -1;
 			}
 			/// \brief Allocates a buffer that HDF5 can read/write into; used later as input data for object construction.
@@ -152,6 +161,7 @@ namespace HH {
 
 		template<>
 		struct Object_Accessor<std::string>
+			: public Object_Accessor_Base
 		{
 		private:
 			// Do serialization by making copies of each of the strings.
@@ -159,7 +169,7 @@ namespace HH {
 			std::vector<std::unique_ptr<char[]> > _bufStrs;
 		public:
 			Object_Accessor(ssize_t sz = 0) : _bufStrPointers(sz), _bufStrs(sz) {}
-			~Object_Accessor() {}
+			virtual ~Object_Accessor() {}
 			/// \note Remember: the return value does not persist past another call to serialize, and
 			/// it does not persist past object lifetime.
 			const void* serialize(::gsl::span<const std::string> d)
@@ -185,6 +195,10 @@ namespace HH {
 			/// HDF5 will allocate character strings on read. These should all be freed.
 			void freeBuffer() {
 				//for (ssize_t i = 0; i < _sz; ++i) delete[] _buffer.get()[i];
+			}
+			virtual bool isCompound() const override { return true; }
+			virtual ssize_t getFromBufferSize() const override {
+				return -1;
 			}
 		};
 

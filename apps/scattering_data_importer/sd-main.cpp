@@ -28,10 +28,17 @@
 
 #include <HH/Files.hpp>
 #include <HH/Groups.hpp>
+
+// TODO: Consituent_Refractive_Indices table needs marshaller adjustment.
+// There is already a string marshaller. Add code to support compositioning operations for writes.
+
 // This is a basic implementation of the HH I/O handle code
+// It will be split between the io_ddscat plugin and the icedb library.
 namespace icedb {
 	namespace plugins {
 		namespace p_HH {
+
+			// Base plugin stuff goes in the icedb library.
 			const char* pluginName = "HH";
 			struct HH_handle : public icedb::registry::IOhandler
 			{
@@ -39,6 +46,8 @@ namespace icedb {
 				virtual ~HH_handle() {}
 				::HH::Group grp;
 			};
+
+			// Goes in the io_ddscat library
 			void register_handle() {
 				const size_t nExts = 2;
 				const char *exts[nExts] = { "hdf5", "nc" };
@@ -50,6 +59,13 @@ namespace icedb {
 		}
 	}
 	namespace registry {
+		// TODO: we can write from ddOutput to EXVs. But, this breaks the paradigm
+		// because the importer program needs to know that it has to read a ddOutput object.
+		// Resolution: Allow EXV and shape classes to read from a handle. The importer program
+		// knows to open this handle and set some basic properties (improve "options" support).
+		// The handle can then be passed to the EXV import routines and the shape import routines.
+
+		// Goes in the io_ddscat library
 		template<>
 		std::shared_ptr<IOhandler>
 			write_file_type_multi<icedb::io::ddscat::ddOutput>
