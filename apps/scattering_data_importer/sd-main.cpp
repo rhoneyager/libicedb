@@ -22,7 +22,9 @@
 #include <icedb/splitSet.hpp>
 #include <icedb/exv.hpp>
 
+#include "../../lib/src/io/ddscat/ddpar.h"
 #include "../../lib/src/io/ddscat/ddOutput.h"
+#include "../../lib/src/io/ddscat/ddScattMatrix.h"
 #include "../../lib/src/io/ddscat/shapefile.h"
 #include <icedb/plugin.hpp>
 
@@ -40,8 +42,8 @@ namespace icedb {
 				::HH::Group grp;
 			};
 			void register_handle() {
-				const size_t nExts = 2;
-				const char *exts[nExts] = { "hdf5", "nc" };
+				const size_t nExts = 4;
+				const char *exts[nExts] = { "hdf5", "nc", "hdf5", "netcdf" };
 				icedb::registry::genAndRegisterIOregistryPlural_writer<
 					icedb::io::ddscat::ddOutput,
 					icedb::io::ddscat::ddOutput_IO_output_registry>
@@ -109,6 +111,12 @@ namespace icedb {
 				a.incident_polar_angle = 0;
 				a.scattering_azimuth_angle = f(ddOutput::fmlColDefs::THETAB);
 				a.scattering_polar_angle = f(ddOutput::fmlColDefs::PHIB);
+
+				// These get used to convert to the correct form.
+				//icedb::io::ddscat::ddScattMatrixF dm(0, 0, 0, 0, 0, icedb::io::ddscat::ddScattMatrixConnector::fromPar(s->parfile));
+				//dm.setF();
+				//dm.getS();
+
 				a.amplitude_scattering_matrix[0] = std::complex<double>(f(ddOutput::fmlColDefs::F00R), f(ddOutput::fmlColDefs::F00I));
 				a.amplitude_scattering_matrix[1] = std::complex<double>(f(ddOutput::fmlColDefs::F01R), f(ddOutput::fmlColDefs::F01I));
 				a.amplitude_scattering_matrix[2] = std::complex<double>(f(ddOutput::fmlColDefs::F10R), f(ddOutput::fmlColDefs::F10I));

@@ -24,13 +24,18 @@ set(IO_DDSCAT_FILES
 	shapefile_parsers.cpp
 	phaseFunc.cpp
 	phaseFunc.h
+	plugin-io-ddscat.hpp
+	plugin-io-ddscat.cpp
 	)
 
-add_library(icedb_io_ddscat SHARED ${IO_DDSCAT_FILES})
-addlib(icedb_io_ddscat SHARED)
-storebin(icedb_io_ddscat)
+add_library(io_ddscat SHARED ${IO_DDSCAT_FILES})
+addlib(io_ddscat SHARED)
+storebin(io_ddscat)
+addplugin(io_ddscat IO icedb)
 
-target_link_libraries(icedb_io_ddscat icedb Boost::date_time Boost::regex)
-target_include_directories(icedb_io_ddscat SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
-target_include_directories(icedb_io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
-target_include_directories(icedb_io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+target_link_libraries(io_ddscat icedb Boost::date_time Boost::regex)
+target_include_directories(io_ddscat SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
+target_include_directories(io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+target_include_directories(io_ddscat SYSTEM
+	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP} ${CMAKE_SOURCE_DIR}/lib/icedb/compat)

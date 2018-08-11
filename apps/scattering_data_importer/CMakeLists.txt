@@ -28,7 +28,7 @@ target_include_directories(icedb-scattering_data_importer SYSTEM
 target_compile_definitions(icedb-scattering_data_importer
 	PRIVATE ${HDF5_DEFINITIONS})
 
-target_link_libraries(icedb-scattering_data_importer icedb icedb_io_ddscat ${Boost_REGEX_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(icedb-scattering_data_importer icedb io_ddscat ${Boost_REGEX_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 addapp(icedb-scattering_data_importer Level_0)
 storebin(icedb-scattering_data_importer)
