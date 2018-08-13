@@ -24,20 +24,25 @@ template<> inline HH_hid_t GetHDF5Type< x >(std::initializer_list<hsize_t>, void
 		// Strictly, the real and imaginary parts are internal to the complex number. They must be
 		// marshalled.
 
-		// TODO: FINISH!!!!!!!!!!!
+		// Handles complex number reads and writes from/to HDF5.
 		template <class ComplexDataType>
 		struct Object_Accessor_Complex
 		{
 		private:
-			typedef ComplexDataType::value_type value_type;
-			std::vector<std::array<value_type, 2> > _buf;
+			typedef typename ComplexDataType::value_type value_type;
+			std::vector<value_type > _buf;
 		public:
-			Object_Accessor(ssize_t sz = -1) {}
+			Object_Accessor_Complex(ssize_t sz = -1) {}
 			/// \brief Converts an object into a void* array that HDF5 can natively understand.
 			/// \note The shared_ptr takes care of "deallocation" when we no longer need the "buffer".
 			const void* serialize(::gsl::span<const ComplexDataType> d)
 			{
-				return (const void*)d.data();
+				_buf.resize(d.size() * 2);
+				for (size_t i = 0; i < (size_t)d.size(); ++i) {
+					_buf[(2 * i) + 0] = d.at(i).real();
+					_buf[(2 * i) + 1] = d.at(i).imag();
+				}
+				return (const void*)_buf.data();
 				//return std::shared_ptr<const void>((const void*)d.data(), [](const void*) {});
 			}
 			/// \brief Gets the size of the buffer needed to store the object from HDF5. Used
@@ -50,13 +55,16 @@ template<> inline HH_hid_t GetHDF5Type< x >(std::initializer_list<hsize_t>, void
 			}
 			/// \brief Allocates a buffer that HDF5 can read/write into; used later as input data for object construction.
 			/// \note For POD objects, we can directly write to the object.
-			void marshalBuffer(ComplexDataType * objStart) { _buffer = static_cast<void*>(objStart); }
+			void marshalBuffer(ComplexDataType * objStart) {}
 			/// \brief Construct an object from an HDF5-provided data stream, 
 			/// and deallocate any temporary buffer.
 			/// \note For trivial (POD) objects, there is no need to do anything.
-			void deserialize(ComplexDataType *objStart) { }
+			void deserialize(ComplexDataType *objStart) {}
 			void freeBuffer() {}
 		};
+
+		template<> struct Object_Accessor<std::complex<double> > : public Object_Accessor_Complex<std::complex<double> > {};
+		template<> struct Object_Accessor<std::complex<float> > : public Object_Accessor_Complex<std::complex<float> > {};
 
 		/*
 		template<>

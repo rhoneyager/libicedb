@@ -142,6 +142,12 @@ namespace icedb {
 			virtual public registry::usesDLLregistry<
 				_impl::Shape_IO_Output_Registry,
 				registry::IO_class_registry_writer<Shape> >,
+			// TODO: extend the customGenerator idea to accept arguments - forward creation arguments
+			// this will then allow for the standard read() functions to work properly.
+			//virtual public registry::usesDLLregistry<
+			//	_impl::Shape_IO_Input_Registry,
+			//	registry::IO_class_registry_reader<Shape> >,
+			//virtual public io::implementsStandardReader<Shape, _impl::Shape_IO_Input_Registry>,
 			virtual public io::implementsStandardWriter<Shape, _impl::Shape_IO_Output_Registry>
 		{
 		public:
@@ -172,9 +178,6 @@ namespace icedb {
 			/// \throws if the output stream is somehow invalid
 			bool isValid(std::ostream *out = nullptr) const;
 
-			/// The preferred C++ type for referencing a shape
-			//typedef std::shared_ptr<Shape> Shape_Type;
-
 			/// \brief Create a new shape
 			/// \param newLocationAsEmptyGroup is the empty group that is converted into a shape
 			/// \throws if the group has any already-existing tables or attributes that conflict with the new shape object
@@ -188,22 +191,23 @@ namespace icedb {
 				const NewShapeCommonOptionalProperties* optional = nullptr);
 			static Shape createShape(
 				HH::HH_hid_t baseGrpID,
-				gsl::not_null<const char*> shapeGrp,
+				gsl::not_null<const char*> shapeGrpName,
 				gsl::not_null<const NewShapeRequiredProperties*> required,
 				const NewShapeCommonOptionalProperties* optional = nullptr);
-
-			/*
-			Tables::Table::Table_Type getTable_ParticleScatteringElementNumber() const;
-			Tables::Table::Table_Type getTable_ParticleScatteringElementCoordinates() const;
-			Tables::Table::Table_Type getTable_ParticleConstituentName() const;
-			Tables::Table::Table_Type getTable_ParticleScatteringElementComposition() const;
-
-			Tables::Table::Table_Type getTable_ParticleScatteringElementRadius() const;
-
-			Attributes::Attribute<float> getParticleScatteringElementSpacing_m() const;
-
-			size_t getNumScatteringElements() const;
-			*/
+			static Shape createShape(
+				HH::HH_hid_t baseGrpID,
+				gsl::not_null<const char*> shapeGrpName,
+				std::shared_ptr<icedb::registry::IOhandler> inputHandle);
+			static Shape createShape(
+				HH::HH_hid_t newLocationAsEmptyGroup,
+				std::shared_ptr<icedb::registry::IOhandler> inputHandle);
+			/* // Some input handles can contain multiple objects. How should these be handled?
+			// TODO: Need an iterateHandle function to extract sub-objects. This should be in the core of icedb.
+			static std::vector<Shape> createShapeCollection(
+				HH::HH_hid_t baseGrpID,
+				gsl::not_null<const char*> shapeGrpName,
+				std::shared_ptr<icedb::registry::IOhandler> inputHandle);
+				*/
 		};
 	}
 }

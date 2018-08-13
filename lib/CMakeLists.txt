@@ -160,12 +160,12 @@ source_group("Units" FILES ${units_objs})
 source_group("Refract" FILES ${refract_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
-set(libsrcs_dllbase src/dlls_placeholder.cpp)
-set(libsrcs ${lib_objs} ${gsl_objs} ${shp_objs} ${exv_objs} #${grp_objs}
+set(libsrcs_dllbase src/dlls_placeholder.cpp ${gsl_objs} ${hh_objs} ${related_cmake_objects})
+set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs} #${grp_objs}
 	#${att_objs} ${tbl_objs} 
 	${db_objs} #${hdf_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
-	${related_cmake_objects} ${hh_objs} ${extensible_objs}
+	${extensible_objs}
 	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
 IF (WIN32 AND NOT CYGWIN)
@@ -228,4 +228,3 @@ INSTALL(DIRECTORY icedb
 	COMPONENT Headers
 	)
 
-add_subdirectory(src/io/ddscat)

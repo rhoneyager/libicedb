@@ -8,11 +8,11 @@ generaterc("icedb-3d_structures_importer" "exe"
 	 )
 # The source files
 set(srcs shapes-main.cpp
-	shape.hpp
-	shapeIOtext.cpp
-	shapeIOtext.hpp
-	shapeIOtextParsers2.cpp # This has my custom text reader.
-	shapeIOpsu.cpp
+	#shape.hpp
+	#shapeIOtext.cpp
+	#shapeIOtext.hpp
+	#shapeIOtextParsers2.cpp # This has my custom text reader.
+	#shapeIOpsu.cpp
 	README.md)
 IF (WIN32 AND NOT CYGWIN)
 SET(srcs ${srcs} 
