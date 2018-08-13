@@ -1,6 +1,8 @@
 #pragma once
+#include "defs.h"
 #include "fs.hpp"
 #include <array>
+#include <vector>
 #include <HH/Groups.hpp>
 #include "registry.hpp"
 #include "io.hpp"
@@ -8,8 +10,9 @@
 namespace icedb {
 	namespace Shapes {
 		class Shape;
+		struct NewShapeProperties;
 		namespace _impl {
-			class Shape_IO_Input_Registry {};
+			class ShapeProps_IO_Input_Registry {};
 			class Shape_IO_Output_Registry {};
 		}
 	}
@@ -17,10 +20,10 @@ namespace icedb {
 		extern template struct IO_class_registry_writer <
 			::icedb::Shapes::Shape >;
 		extern template struct IO_class_registry_reader <
-			::icedb::Shapes::Shape >;
+			::icedb::Shapes::NewShapeProperties >;
 		extern template class usesDLLregistry <
-			::icedb::Shapes::_impl::Shape_IO_Input_Registry,
-			IO_class_registry_reader<::icedb::Shapes::Shape> >;
+			::icedb::Shapes::_impl::ShapeProps_IO_Input_Registry,
+			IO_class_registry_reader<::icedb::Shapes::NewShapeProperties> >;
 		extern template class usesDLLregistry <
 			::icedb::Shapes::_impl::Shape_IO_Output_Registry,
 			IO_class_registry_writer<::icedb::Shapes::Shape> >;
@@ -29,37 +32,26 @@ namespace icedb {
 	/// All facilities to manipulate particle shapes
 	namespace Shapes {
 
-		/// Strucure containing a list of all of the required data needed to create a new shape in the database
-		struct DL_ICEDB NewShapeRequiredProperties {
-			// The DIMENSIONS
-
-			/// DIMENSION: The number of scattering elements.
-			/// If these have non-trivial ids (i.e. not 1, 2, 3, 4, ...), then define the
-			/// optional attribute particle_scattering_element_number.
-			uint64_t number_of_particle_scattering_elements = 0;
-
-			/// DIMENSION: The number of distinct constituents in the particle.
-			/// If these have non-trivial ids (i.e. not 1, 2, 3, 4, ...), then define the
-			/// optional attribute particle_constituent_number.
-			uint16_t number_of_particle_constituents = 0;
-
+		/// Strucure containing a list of all of the data needed to create a new shape in the database
+		struct DL_ICEDB NewShapeProperties :
+			virtual public registry::usesDLLregistry<
+				_impl::ShapeProps_IO_Input_Registry,
+				registry::IO_class_registry_reader<NewShapeProperties> >,
+			virtual public io::implementsStandardReader<NewShapeProperties, _impl::ShapeProps_IO_Input_Registry>
+		{
 			// Each particle has three axes (X, Y and Z). As these are trivial, only the
 			// scale lables are written; the scale does not have an explicit dataset filled with values.
 			
-			// The VARIABLES
+			// The required VARIABLES
 
 			/// VARIABLE: Cartesian coordinates of the center of each scattering element
 			/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
 			/// Dimensions of [number_of_particle_scattering_elements][axis]
-			gsl::span<const float> particle_scattering_element_coordinates;
+			std::vector<float> particle_scattering_element_coordinates_as_floats;
+			std::vector<int64_t> particle_scattering_element_coordinates_as_ints;
 
-			/// Are the particle_scattering_element_coordinates integers?
-			/// This allows for optimization when writing.
-			/// If they are integers, then particle_scattering_element_coordinates_ints is written instead.
-			uint16_t particle_scattering_element_coordinates_are_integral = 0;
-			
 
-			// The ATTRIBUTES
+			// The required ATTRIBUTES
 
 			/// ATTRIBUTE: Unique Particle Identifier
 			std::string particle_id;
@@ -76,44 +68,26 @@ namespace icedb {
 			/// ATTRIBUTE: Version information
 			std::array<unsigned int, 3> version;
 
-
-			/// Validate that all required properties are set, and that they have the correct dimensions.
-			/// Writes diagnostic messages to the output stream.
-			bool isValid(std::ostream *errout = nullptr) const;
-
-			/// Based on the required properties, must the optional properties structure be required?
-			/// i.e. Extra information is needed to properly construct the shape.
-			bool requiresOptionalPropertiesStruct() const;
-		};
-		/// Structure containing a list of all of the common optional data for creating a new shape in the database.
-		struct DL_ICEDB NewShapeCommonOptionalProperties {
-			/// DIMENSION: The id number for each scattering element. Single dimension.
-			gsl::span<const uint64_t> particle_scattering_element_number;
-			/// DIMENSION: The id number of each particle's constituent. Single dimension.
-			gsl::span<const uint16_t> particle_constituent_number;
-
+			/// VARIABLE: The id number for each scattering element. Single dimension.
+			std::vector<int64_t> particle_scattering_element_number;
+			/// VARIABLE: The id number of each particle's constituent. Single dimension.
+			std::vector<std::pair<uint16_t, std::string> > particle_constituents;
 
 			/// OPTIONAL VARIABLE: Physical radius of the scattering sphere, in meters.
 			/// Dimensions: [particle_scattering_element_number]
-			gsl::span<const float> particle_scattering_element_radius;
-
-			/// VARIABLE: The name of each particle's constituent. Single dimension.
-			/// Becomes REQUIRED if there is more than one constituent. If there is
-			/// only one constituent, and if this variable is not written, then it can be assumed to be ice.
-			/// Dimensions of [particle_constituent_number]
-			gsl::span<const std::string> particle_constituent_name;
+			std::vector<float> particle_scattering_element_radius;
 
 			/// OPTIONAL VARIABLE: Mass fractions of each constituent for each scattering element.
 			/// Either this or particle_scattering_element_composition_whole is
 			/// is required _only_ if there is more than one constituent
 			/// CANNOT COEXIST with particle_scattering_element_composition_whole.
 			/// Dimensions of [particle_scattering_element_number][particle_constituent_number]
-			gsl::span<const float> particle_scattering_element_composition_fractional;
+			std::vector<float> particle_scattering_element_composition_fractional;
 			/// OPTIONAL VARIABLE: The constituent of each scattering element
 			/// This table is used when scattering elements can only be a single substance (not fractional).
 			/// This CANNOT COEXIST with particle_scattering_element_composition_fractional.
 			/// It exists to save space when non-compressed data is stored.
-			gsl::span<const uint16_t> particle_scattering_element_composition_whole;
+			std::vector<uint16_t> particle_scattering_element_composition_whole;
 
 			/// OPTIONAL ATTRIBUTE: Physical spacing between adjacent grid points.
 			float scattering_element_coordinates_scaling_factor = 1.0f;
@@ -124,12 +98,10 @@ namespace icedb {
 			/// OPTIONAL ATTRIBUTE: Scattering method used with the particle
 			std::string scattering_method;
 
-			// REMOVED HINT: Specify the maximum scattering element dimension
-			//[[deprecated]] float hint_max_scattering_element_dimension = -1;
 
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
-			bool isValid(gsl::not_null<const NewShapeRequiredProperties*> required, std::ostream *errout = nullptr) const;
+			bool isValid(std::ostream *errout = nullptr) const;
 		};
 
 		/// \brief A high-level class to manipulate particle shapes
@@ -142,12 +114,6 @@ namespace icedb {
 			virtual public registry::usesDLLregistry<
 				_impl::Shape_IO_Output_Registry,
 				registry::IO_class_registry_writer<Shape> >,
-			// TODO: extend the customGenerator idea to accept arguments - forward creation arguments
-			// this will then allow for the standard read() functions to work properly.
-			//virtual public registry::usesDLLregistry<
-			//	_impl::Shape_IO_Input_Registry,
-			//	registry::IO_class_registry_reader<Shape> >,
-			//virtual public io::implementsStandardReader<Shape, _impl::Shape_IO_Input_Registry>,
 			virtual public io::implementsStandardWriter<Shape, _impl::Shape_IO_Output_Registry>
 		{
 		public:
@@ -187,27 +153,11 @@ namespace icedb {
 			/// \throws on failure
 			static Shape createShape(
 				HH::HH_hid_t newLocationAsEmptyGroup,
-				gsl::not_null<const NewShapeRequiredProperties*> required,
-				const NewShapeCommonOptionalProperties* optional = nullptr);
+				gsl::not_null<const NewShapeProperties*> props);
 			static Shape createShape(
 				HH::HH_hid_t baseGrpID,
 				gsl::not_null<const char*> shapeGrpName,
-				gsl::not_null<const NewShapeRequiredProperties*> required,
-				const NewShapeCommonOptionalProperties* optional = nullptr);
-			static Shape createShape(
-				HH::HH_hid_t baseGrpID,
-				gsl::not_null<const char*> shapeGrpName,
-				std::shared_ptr<icedb::registry::IOhandler> inputHandle);
-			static Shape createShape(
-				HH::HH_hid_t newLocationAsEmptyGroup,
-				std::shared_ptr<icedb::registry::IOhandler> inputHandle);
-			/* // Some input handles can contain multiple objects. How should these be handled?
-			// TODO: Need an iterateHandle function to extract sub-objects. This should be in the core of icedb.
-			static std::vector<Shape> createShapeCollection(
-				HH::HH_hid_t baseGrpID,
-				gsl::not_null<const char*> shapeGrpName,
-				std::shared_ptr<icedb::registry::IOhandler> inputHandle);
-				*/
+				gsl::not_null<const NewShapeProperties*> props);
 		};
 	}
 }

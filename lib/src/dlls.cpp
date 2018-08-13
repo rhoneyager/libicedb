@@ -657,121 +657,6 @@ namespace icedb
 			searchDLLs(dlls, searchPathsOne, false);
 		}
 
-		void add_options(
-			boost::program_options::options_description &cmdline,
-			boost::program_options::options_description &config,
-			boost::program_options::options_description &hidden)
-		{
-			namespace po = boost::program_options;
-			using std::string;
-
-			cmdline.add_options()
-				("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
-				;
-
-			config.add_options()
-				;
-
-			hidden.add_options()
-				("dll-load-onelevel", po::value<std::vector<std::string> >()->multitoken(),
-				"Specify dlls to load. If passed a directory, it loads all dlls present (one-level). ")
-				("dll-load-recursive", po::value<std::vector<std::string> >()->multitoken(),
-				"Specify dlls to load. If passed a directory, it loads all dlls present (recursing). ")
-				//("dll-no-default-locations", "Prevent non-command line dll locations from being read")
-				("print-dll-loaded", "Prints the table of loaded DLLs.")
-				("print-dll-search-paths", "Prints the search paths used when loading dlls.")
-				;
-		}
-
-		void handle_config_file_options(
-			boost::program_options::options_description &opts,
-			boost::program_options::variables_map &vm)
-		{
-			if (vm.count("config-file")) {
-				namespace po = boost::program_options;
-				using namespace std;
-				string configfile = vm["config-file"].as<string>();
-#if BOOST_VERSION < 104600
-				// For RHEL's really old Boost distribution
-				ifstream ifs(configfile.c_str());
-				if (!ifs) {
-					cout << "Could no open the response file\n";
-					return 1;
-				}
-				// Read the whole file into a string
-				stringstream ss;
-				ss << ifs.rdbuf();
-				// Split the file content
-				using namespace boost;
-				char_separator<char> sep(" \n\r");
-				tokenizer<char_separator<char> > tok(ss.str(), sep);
-				vector<string> args;
-				copy(tok.begin(), tok.end(), back_inserter(args));
-				// Parse the file and store the options
-				po::store(po::command_line_parser(args).options(opts).run(), vm);
-#else
-				// For modern systems
-				po::store(po::parse_config_file<char>(configfile.c_str(), opts, false), vm);
-#endif
-				po::notify(vm);
-			}
-
-		}
-
-		void process_static_options(
-			boost::program_options::variables_map &vm)
-		{
-			namespace po = boost::program_options;
-			using std::string;
-
-			//if (vm.count("dll-no-default-locations"))
-			//	autoLoadDLLs = false;
-
-			if (vm.count("dll-load-onelevel"))
-			{
-				std::vector<std::string> sPaths = vm["dll-load-onelevel"].as<std::vector<std::string> >();
-				for (const auto s : sPaths)
-				{
-					searchPathsOne.emplace(s);
-				}
-			}
-
-			if (vm.count("dll-load-recursive"))
-			{
-				std::vector<std::string> sPaths = vm["dll-load-recursive"].as<std::vector<std::string> >();
-				for (const auto s : sPaths)
-				{
-					searchPathsRecursive.emplace(s);
-				}
-			}
-
-			constructSearchPaths(false, true, true);
-
-			if (vm.count("print-dll-search-paths"))
-				printDLLsearchPaths(std::cerr);
-
-			std::set<boost::filesystem::path> rPaths, oPaths;
-			findPath(rPaths, boost::filesystem::path("default"), searchPathsRecursive, true);
-			findPath(oPaths, boost::filesystem::path("default"), searchPathsOne, false);
-			std::vector<std::string> toLoadDlls;
-			// If a 'default' folder exists in the default search path, then use it for dlls.
-			// If not, then use the base plugins directory.
-			// Any library version / name detecting logic is in loadDLL (called by loadDLLs).
-
-			if (rPaths.size() || oPaths.size())
-			{
-				searchDLLs(toLoadDlls, rPaths, true);
-				searchDLLs(toLoadDlls, oPaths, false);
-			}
-			else { searchDLLs(toLoadDlls); }
-
-			loadDLLs(toLoadDlls);
-
-
-			if (vm.count("print-dll-loaded"))
-				printDLLs();
-		}
-
 		void loadDLLs() {
 			std::vector<std::string> dlls;
 			searchDLLs(dlls);
@@ -858,6 +743,123 @@ namespace icedb
 		}
 
 	}
+
+	void add_options(
+		boost::program_options::options_description &cmdline,
+		boost::program_options::options_description &config,
+		boost::program_options::options_description &hidden)
+	{
+		namespace po = boost::program_options;
+		using std::string;
+
+		cmdline.add_options()
+			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
+			;
+
+		config.add_options()
+			;
+
+		hidden.add_options()
+			("dll-load-onelevel", po::value<std::vector<std::string> >()->multitoken(),
+				"Specify dlls to load. If passed a directory, it loads all dlls present (one-level). ")
+				("dll-load-recursive", po::value<std::vector<std::string> >()->multitoken(),
+					"Specify dlls to load. If passed a directory, it loads all dlls present (recursing). ")
+			//("dll-no-default-locations", "Prevent non-command line dll locations from being read")
+					("print-dll-loaded", "Prints the table of loaded DLLs.")
+			("print-dll-search-paths", "Prints the search paths used when loading dlls.")
+			;
+	}
+
+	void handle_config_file_options(
+		boost::program_options::options_description &opts,
+		boost::program_options::variables_map &vm)
+	{
+		if (vm.count("config-file")) {
+			namespace po = boost::program_options;
+			using namespace std;
+			string configfile = vm["config-file"].as<string>();
+#if BOOST_VERSION < 104600
+			// For RHEL's really old Boost distribution
+			ifstream ifs(configfile.c_str());
+			if (!ifs) {
+				cout << "Could no open the response file\n";
+				return 1;
+			}
+			// Read the whole file into a string
+			stringstream ss;
+			ss << ifs.rdbuf();
+			// Split the file content
+			using namespace boost;
+			char_separator<char> sep(" \n\r");
+			tokenizer<char_separator<char> > tok(ss.str(), sep);
+			vector<string> args;
+			copy(tok.begin(), tok.end(), back_inserter(args));
+			// Parse the file and store the options
+			po::store(po::command_line_parser(args).options(opts).run(), vm);
+#else
+			// For modern systems
+			po::store(po::parse_config_file<char>(configfile.c_str(), opts, false), vm);
+#endif
+			po::notify(vm);
+		}
+
+	}
+
+	void process_static_options(
+		boost::program_options::variables_map &vm)
+	{
+		namespace po = boost::program_options;
+		using std::string;
+		using namespace icedb::registry;
+
+		//if (vm.count("dll-no-default-locations"))
+		//	autoLoadDLLs = false;
+
+		if (vm.count("dll-load-onelevel"))
+		{
+			std::vector<std::string> sPaths = vm["dll-load-onelevel"].as<std::vector<std::string> >();
+			for (const auto s : sPaths)
+			{
+				searchPathsOne.emplace(s);
+			}
+		}
+
+		if (vm.count("dll-load-recursive"))
+		{
+			std::vector<std::string> sPaths = vm["dll-load-recursive"].as<std::vector<std::string> >();
+			for (const auto s : sPaths)
+			{
+				searchPathsRecursive.emplace(s);
+			}
+		}
+
+		constructSearchPaths(false, true, true);
+
+		if (vm.count("print-dll-search-paths"))
+			printDLLsearchPaths(std::cerr);
+
+		std::set<boost::filesystem::path> rPaths, oPaths;
+		findPath(rPaths, boost::filesystem::path("default"), searchPathsRecursive, true);
+		findPath(oPaths, boost::filesystem::path("default"), searchPathsOne, false);
+		std::vector<std::string> toLoadDlls;
+		// If a 'default' folder exists in the default search path, then use it for dlls.
+		// If not, then use the base plugins directory.
+		// Any library version / name detecting logic is in loadDLL (called by loadDLLs).
+
+		if (rPaths.size() || oPaths.size())
+		{
+			searchDLLs(toLoadDlls, rPaths, true);
+			searchDLLs(toLoadDlls, oPaths, false);
+		}
+		else { searchDLLs(toLoadDlls); }
+
+		loadDLLs(toLoadDlls);
+
+
+		if (vm.count("print-dll-loaded"))
+			printDLLs();
+	}
+
 }
 
 extern "C"

@@ -641,7 +641,7 @@ namespace icedb
 					std::shared_ptr<icedb::registry::IO_options>,
 					std::shared_ptr<obj_class>
 					) > v,
-				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter
+				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter = nullptr
 				)
 			{
 				// Brief invocation of the object constructor to ensure that any custom handlers get registered.
@@ -709,7 +709,7 @@ namespace icedb
 				std::shared_ptr<icedb::registry::IOhandler> handle,
 				std::shared_ptr<icedb::registry::IO_options> opts,
 				std::vector<std::shared_ptr<obj_class> > &v,
-				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter
+				std::shared_ptr<const icedb::registry::collectionTyped<obj_class> > filter = nullptr
 				)
 			{
 				auto implVectorInserter = [&](

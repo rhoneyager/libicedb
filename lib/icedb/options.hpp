@@ -20,6 +20,7 @@ namespace icedb {
 		};
 
 		/// Base class to handle multiple IO operations on a single file
+		/// \todo Add functions for iteration of sub-objects.
 		struct DL_ICEDB IOhandler : public handler_external
 		{
 		protected:
@@ -62,24 +63,22 @@ namespace icedb {
 			template <class T> options_ptr add(const std::string &key, const T &value);
 
 			// Some convenient definitions
-			inline void filename(const std::string& val) { setVal<std::string>("filename", val); }
+			inline options_ptr filename(const std::string& val) { return setVal<std::string>("filename", val); }
 			inline std::string filename() const { return getVal<std::string>("filename", ""); }
-			inline void extension(const std::string& val) { setVal<std::string>("extension", val); }
+			inline options_ptr extension(const std::string& val) { return setVal<std::string>("extension", val); }
 			inline std::string extension() const { return getVal<std::string>("extension", ""); }
-			inline void filetype(const std::string &val) { setVal<std::string>("filetype", val); }
+			inline options_ptr filetype(const std::string &val) { return setVal<std::string>("filetype", val); }
 			inline std::string filetype() const { return getVal<std::string>("filetype", ""); }
-			inline void exportType(const std::string &val) { setVal<std::string>("exportType", val); }
+			inline options_ptr exportType(const std::string &val) { return setVal<std::string>("exportType", val); }
 			inline std::string exportType() const { return getVal<std::string>("exportType", ""); }
-			void iotype(IOhandler::IOtype val) { setVal<IOhandler::IOtype>("ioType", val); }
+			options_ptr iotype(IOhandler::IOtype val) { return setVal<IOhandler::IOtype>("ioType", val); }
 			IOhandler::IOtype iotype() const { return getVal<IOhandler::IOtype>("ioType", IOhandler::IOtype::TRUNCATE); }
 
 			std::shared_ptr<options> clone() const;
-			};
+		};
+
+		DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::IOhandler::IOtype&);
+		DL_ICEDB std::istream & operator>>(std::istream&, icedb::registry::IOhandler::IOtype&);
+		DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::options&);
 	}
 }
-// GCC sure has odd attribute positioning rules...
-namespace icedb { namespace registry {
-	DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::IOhandler::IOtype&);
-	DL_ICEDB std::istream & operator>>(std::istream&, icedb::registry::IOhandler::IOtype&);
-	DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::options&);
-} }

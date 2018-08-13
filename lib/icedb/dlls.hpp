@@ -60,9 +60,9 @@ namespace icedb
 		* custom validator design:
 		* validator searches for a given function name only, and then passes the
 		* code to the custom validator, which returns a bool.
-		* If false, it fails the validation check (validator handles any throws and 
-		* logging). If true, then it passes and moves on to the next validator or 
-		* completes its load. Only after all validators pass is the dllStart 
+		* If false, it fails the validation check (validator handles any throws and
+		* logging). If true, then it passes and moves on to the next validator or
+		* completes its load. Only after all validators pass is the dllStart
 		* routine called (the one that is passed by icedb).
 		**/
 		class DL_ICEDB dllValidatorSet {
@@ -88,9 +88,9 @@ namespace icedb
 		class DL_ICEDB DLLhandle
 		{
 		public:
-			DLLhandle(const std::string &filename, 
+			DLLhandle(const std::string &filename,
 				std::shared_ptr<const registry::dllValidatorSet>
-				= registry::dllValidatorSet::getDefault(), 
+				= registry::dllValidatorSet::getDefault(),
 				bool critical = false);
 			DLLhandle();
 			void open(const std::string &filename, bool critical = false);
@@ -148,18 +148,18 @@ namespace icedb
 		void DL_ICEDB add_hook_table(const char* tempsig, void* store);
 		void DL_ICEDB dump_hook_table(std::ostream &out = std::cerr);
 
-		void DL_ICEDB add_options(
-			boost::program_options::options_description &cmdline,
-			boost::program_options::options_description &config,
-			boost::program_options::options_description &hidden);
-
-		void DL_ICEDB process_static_options(
-			boost::program_options::variables_map &vm);
-
-		void DL_ICEDB handle_config_file_options(
-			boost::program_options::options_description &,
-			boost::program_options::variables_map &);
 	}
+	void DL_ICEDB add_options(
+		boost::program_options::options_description &cmdline,
+		boost::program_options::options_description &config,
+		boost::program_options::options_description &hidden);
+
+	void DL_ICEDB process_static_options(
+		boost::program_options::variables_map &vm);
+
+	void DL_ICEDB handle_config_file_options(
+		boost::program_options::options_description &,
+		boost::program_options::variables_map &);
 }
 
 

@@ -29,20 +29,15 @@
 #include <icedb/compat/HH/Files.hpp>
 #include <icedb/splitSet.hpp>
 #include <icedb/dlls.hpp>
-#include "shape.hpp"
-#include "shapeIOtext.hpp"
 
 namespace sfs = icedb::fs::sfs;
 
-// A list of valid shapefile output formats
+// A list of valid shape file extensions. These are used when matching valid files to read.
 const std::map<std::string, std::set<sfs::path> > file_formats = {
 	{"text", {".dat", ".shp", ".txt", ".shape", ".geom", ".adda"} },
 	{"icedb", {".hdf5", ".nc", ".h5", ".cdf", ".hdf"} },
 	{"psu", {".nc"}}
 };
-
-// These get set in main(int,char**).
-//float resolution_um = 0; ///< The resolution of each shape lattice, in micrometers.
 
 herr_t my_hdf5_error_handler(hid_t, void *)
 {
@@ -65,11 +60,12 @@ int main(int argc, char** argv) {
 			("to", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
-			//("resolution", po::value<float>(), "Lattice spacing for the shape, in um")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		input_matching.add_options()
 			("from", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
+			// TODO: from-format currently only used for file selection. Pass the option to the plugin code to
+			// select the right code path for each particular file format.
 			("from-format", po::value<string>()->default_value("text"), "The format of the input files. Options: text, psu.")
 			("from-nosearch", po::value<bool>()->default_value(false),
 				"Set this option if you want to read in a set of files whose paths are exactly specified on the command line. "
@@ -96,12 +92,12 @@ int main(int argc, char** argv) {
 		desc.add(mdata);
 		desc.add(input_matching);
 		desc.add(constits);
-		icedb::registry::add_options(desc, desc, hidden);
+		icedb::add_options(desc, desc, hidden); // The library has its own options.
 		desc.add(hidden);
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
 		po::notify(vm);
-		icedb::registry::handle_config_file_options(desc, vm);
+		icedb::handle_config_file_options(desc, vm); // Parse any options in a config file.
 		
 
 		auto doHelp = [&](const string& s)->void
@@ -111,7 +107,7 @@ int main(int argc, char** argv) {
 			exit(1);
 		};
 		if (vm.count("help")) doHelp("");
-		icedb::registry::process_static_options(vm);
+		icedb::process_static_options(vm); // The library has its own options.
 		if (!vm.count("from") || !vm.count("to")) doHelp("Need to specify to/from locations.");
 
 		using namespace icedb;
@@ -122,7 +118,6 @@ int main(int argc, char** argv) {
 		
 		sfs::path pToRaw(sToRaw);
 		string dbpath = vm["db-path"].as<string>();
-		//if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
 		string informat = vm["from-format"].as<string>();
 		bool from_nosearch = vm["from-nosearch"].as<bool>();
 		vector<string> vCustomFileFormats;
@@ -135,6 +130,7 @@ int main(int argc, char** argv) {
 		string sAuthor, sContact, sScattMeth, sSFunits, sDatasetID;
 		float sSFfactor = 1.0f;
 		array<unsigned int, 3> version = { 1, 0, 0 };
+		bool specifiedVersion = false;
 		if (vm.count("author")) sAuthor = vm["author"].as<string>();
 		if (vm.count("contact-information")) sContact = vm["contact-information"].as<string>();
 		if (vm.count("scattering-method")) sScattMeth = vm["scattering-method"].as<string>();
@@ -142,11 +138,12 @@ int main(int argc, char** argv) {
 		if (vm.count("dataset-version-major")) version[0] = vm["dataset-version-major"].as<unsigned int>();
 		if (vm.count("dataset-version-minor")) version[1] = vm["dataset-version-minor"].as<unsigned int>();
 		if (vm.count("dataset-version-revision")) version[2] = vm["dataset-version-revision"].as<unsigned int>();
+		if (vm.count("dataset-version-major") || vm.count("dataset-version-minor") || vm.count("dataset-version-revision")) specifiedVersion = true;
 		sSFfactor = vm["scattering_element_coordinates_scaling_factor"].as<float>();
 		sSFunits = vm["scattering_element_coordinates_units"].as<string>();
 
 		// Read in the constituents
-		std::map<int, std::string> constit_ids;
+		std::map<decltype(icedb::Shapes::NewShapeProperties::particle_constituents)::value_type::first_type, std::string> constit_ids;
 		if (vm.count("constituent-names"))
 		{
 			string sConstits = vm["constituent-names"].as<std::string>();
@@ -207,8 +204,8 @@ int main(int argc, char** argv) {
 		else basegrp = file.create(dbpath.c_str(),
 			HH::PL::PL::createLinkCreation().setLinkCreationPList(
 				HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
-		//basegrp = db->createGroupStructure(dbpath);
-	
+
+		// Read the input files and write to the output.
 		for (const auto &sFromRaw : vsFromRaw)
 		{
 			sfs::path pFromRaw(sFromRaw);
@@ -221,53 +218,61 @@ int main(int argc, char** argv) {
 				else
 					files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at(informat));
 			}
+
 			for (const auto &f : files)
 			{
-				// Reading the shape from the text file
-				icedb::Examples::Shapes::ShapeDataBasic data;
-				if (informat == "text")
-					data = icedb::Examples::Shapes::readTextFile(f.first.string());
-				else if (informat == "psu")
-					data = icedb::Examples::Shapes::readPSUfile(f.first.string());
-				else ICEDB_throw(icedb::error::error_types::xBadInput)
-					.add("Description", "Unknown input file format. See program help for a list of valid formats.")
-					.add("Current-format", informat);
+				std::cerr << "Reading file " << f.first.string() << std::endl;
+				std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
+				// This function will open the file and read all valid shapes into the fileShapes structure.
+				// The handling code is in io.hpp and registry.hpp.
+				// The function automatically recognizes different file types.
+				icedb::Shapes::NewShapeProperties::readVector(nullptr, registry::options::generate()->filename(f.first.string()), fileShapes);
 
-				// Set a basic particle id. This id is used when writing the shape to the output file.
-				// In this example, objects in the output file are named according to their ids.
-				if (data.required.particle_id.size() == 0)
-					data.required.particle_id = f.first.filename().string();
+				int shapeNum = 0;
+				for (const auto &s : fileShapes) {
+					// Set properties, but only if they are forced on the command line and are 
+					// not provided by the readers.
 
-
-				if (constit_ids.size()) {
-					data.optional.particle_constituent_name.clear();
-					data.optional.particle_constituent_number.clear();
-					for (const auto &c : constit_ids) {
-						data.optional.particle_constituent_number.push_back(c.first);
-						data.optional.particle_constituent_name.push_back(c.second);
+					// Set a basic particle id. This id is used when writing the shape to the output file.
+					// In this example, objects in the output file are named according to their ids.
+					// TODO: What about numbered objects
+					shapeNum++;
+					std::cerr << "\tReading shape " << shapeNum << std::endl;
+					if (!s->particle_id.size()) {
+						std::ostringstream oParticle_Id;
+						oParticle_Id << f.first.filename().string() << "-particle-" << shapeNum;
+						s->particle_id = oParticle_Id.str();
 					}
-					data.required.number_of_particle_constituents = gsl::narrow_cast<uint16_t>(constit_ids.size());
-				}
-				data.optional.scattering_element_coordinates_scaling_factor = sSFfactor;
-				data.optional.scattering_element_coordinates_units = sSFunits;
-				data.required.version = version;
-				data.required.dataset_id = sDatasetID;
-				data.required.author = sAuthor;
-				data.required.contact = sContact;
-				data.optional.scattering_method = sScattMeth;
-				
-				// Writing the shape to the HDF5/netCDF file
 
-				std::cout << "Writing shape " << data.required.particle_id << std::endl;
-				if (basegrp.exists(data.required.particle_id.c_str())) {
-					std::cerr << "Warning: this shape already exists in the output file!!!!!! "
-						"Skipping this shape's write step, as per-shape overwriting is not handled. If you meant to overwrite the "
-						"output file, then provide the --truncate option to the program." << std::endl;
-				}
-				else {
-					icedb::Shapes::Shape shp = data.toShape(basegrp.get(), data.required.particle_id);
+					// Set other shape properties based on program options.
+					if (constit_ids.size()) {
+						s->particle_constituents.clear();
+						for (const auto &c : constit_ids) {
+							s->particle_constituents.push_back(std::make_pair(c.first, c.second));
+						}
+					}
 
-					shp.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
+					if (!s->scattering_element_coordinates_scaling_factor)
+						s->scattering_element_coordinates_scaling_factor = sSFfactor;
+					if (!s->scattering_element_coordinates_units.size())
+						s->scattering_element_coordinates_units = sSFunits;
+					if (specifiedVersion) s->version = version;
+					if (sDatasetID.size()) s->dataset_id = sDatasetID;
+					if (sAuthor.size()) s->author = sAuthor;
+					if (sContact.size()) s->contact = sContact;
+					if (sScattMeth.size()) s->scattering_method = sScattMeth;
+
+					// Write to the output file.
+					std::cout << "\tWriting shape " << s->particle_id << std::endl;
+					if (basegrp.exists(s->particle_id.c_str())) {
+						std::cerr << "Warning: this shape already exists in the output file!!!!!! "
+							"Skipping this shape's write step, as per-shape overwriting is not handled. If you meant to overwrite the "
+							"output file, then provide the --truncate option to the program." << std::endl;
+					}
+					else {
+						auto shp = icedb::Shapes::Shape::createShape(basegrp.get(), s->particle_id.c_str(), s.get());
+						shp.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
+					}
 				}
 			}
 		}

@@ -32,5 +32,18 @@ target_compile_definitions(icedb-3d_structures_importer
 
 target_link_libraries(icedb-3d_structures_importer icedb ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
+if (BUILD_PLUGIN_ADDA)
+	add_dependencies(icedb-3d_structures_importer io_adda)
+endif()
+if (BUILD_PLUGIN_DDSCAT)
+	add_dependencies(icedb-3d_structures_importer io_ddscat)
+endif()
+if (BUILD_PLUGIN_GENERAL_TEXT_IO)
+	add_dependencies(icedb-3d_structures_importer io_general)
+endif()
+if (BUILD_PLUGIN_PSU)
+	add_dependencies(icedb-3d_structures_importer io_psu)
+endif()
+
 addapp(icedb-3d_structures_importer Level_0)
 storebin(icedb-3d_structures_importer)

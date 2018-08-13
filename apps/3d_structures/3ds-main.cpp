@@ -49,12 +49,12 @@ int main(int argc, char** argv) {
 			("db-path", po::value<string> (), "The location of the shape in the input file.")
 			;
 		desc.add(input_matching);
-		icedb::registry::add_options(desc, desc, hidden);
+		icedb::add_options(desc, desc, hidden);
 		desc.add(hidden);
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
 		po::notify(vm);
-		icedb::registry::handle_config_file_options(desc, vm);
+		icedb::handle_config_file_options(desc, vm);
 
 		auto doHelp = [&](const string& s)->void
 		{
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 			exit(1);
 		};
 		if (vm.count("help")) doHelp("");
-		icedb::registry::process_static_options(vm);
+		icedb::process_static_options(vm);
 
 		if (!vm.count("from") || !vm.count("to") || !vm.count("db-path")
 			|| !vm.count("to-format"))
