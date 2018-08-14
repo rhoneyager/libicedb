@@ -4,4 +4,7 @@ add_subdirectory(onesphere)
 #add_subdirectory(testing)
 add_subdirectory(units)
 add_subdirectory(refract)
-add_subdirectory(scattering_data_importer)
+if (BUILD_PLUGIN_DDSCAT)
+	add_subdirectory(scattering_data_importer)
+endif()
+

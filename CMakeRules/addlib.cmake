@@ -10,34 +10,43 @@ macro(addlib libname libshared )
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES DEBUG_POSTFIX _Debug${configappend} )
 	set_target_properties( ${libname} PROPERTIES FOLDER "Libs")
 
-	if (DEFINED ICEDB_COMMON_SHARED_LIBS)
-		target_link_libraries(${libname} ${ICEDB_COMMON_SHARED_LIBS})
-	endif()
-
-
 	# This is for determining the build type (esp. used in registry code)
 	target_compile_definitions(${libname} PRIVATE BUILDCONF="${CMAKE_BUILD_TYPE}")
 	target_compile_definitions(${libname} PRIVATE BUILDTYPE=BUILDTYPE_$<CONFIGURATION>)
 	# These two are for symbol export
 	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
-	if (NOT INSTALL_DIR_SUBFOLDERS)
-		INSTALL(TARGETS ${libname}
-			EXPORT icedbTargets
-			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}
-			LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}
-			ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}
-			COMPONENT Libraries
-			)
-	else()
-		INSTALL(TARGETS ${libname}
-			EXPORT icedbTargets
-			RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}
-			LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-			ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
-			COMPONENT Libraries
-			)
-	endif()
+	INSTALL(TARGETS ${libname} 
+		EXPORT icedbTargets
+		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/$<CONFIG>
+		LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+		ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+		COMPONENT Libraries
+		)
+	#INSTALL(TARGETS ${libname} 
+	#	EXPORT icedbTargets
+	#	CONFIGURATIONS Release
+	#	RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Release
+	#	LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+	#	ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+	#	COMPONENT Libraries
+	#	)
+	#INSTALL(TARGETS ${libname} 
+	#	EXPORT icedbTargets
+	#	CONFIGURATIONS RelWithDebInfo
+	#	RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/RelWithDebInfo
+	#	LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+	#	ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+	#	COMPONENT Libraries
+	#	)
+	#INSTALL(TARGETS ${libname} 
+	#	EXPORT icedbTargets
+	#	CONFIGURATIONS MinSizeRel
+	#	RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/MinSizeRel
+	#	LIBRARY DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+	#	ARCHIVE DESTINATION ${INSTALL_CMAKE_DIR}/${REL_LIB_DIR}/lib${configappend}
+	#	COMPONENT Libraries
+	#	)
 endmacro(addlib libname headername)
 
 macro(storebin objname)
@@ -69,27 +78,34 @@ set_target_properties( ${objname}
 endmacro(storebin objname)
 
 macro(storeplugin objname folder)
-set_target_properties( ${objname}
-    PROPERTIES
-    #  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    # LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${folder}-plugins"
-    ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${folder}-plugins"
-    ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${folder}-plugins"
-    ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${folder}-plugins"
-    LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${folder}-plugins"
-    LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${folder}-plugins"
-    LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${folder}-plugins"
-    LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${folder}-plugins"
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${folder}-plugins"
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${folder}-plugins"
-    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${folder}-plugins"
-    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${folder}-plugins"
-)
-
+	set_target_properties( ${objname}
+		PROPERTIES
+		#  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+		# LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+		ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${folder}-plugins"
+		ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${folder}-plugins"
+		ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${folder}-plugins"
+		ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${folder}-plugins"
+		LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${folder}-plugins"
+		LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${folder}-plugins"
+		LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${folder}-plugins"
+		LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${folder}-plugins"
+		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${folder}-plugins"
+		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${folder}-plugins"
+		RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${folder}-plugins"
+		RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${folder}-plugins"
+	)
 endmacro(storeplugin objname folder)
 
 macro(addplugin appname foldername folder)
+	SET_TARGET_PROPERTIES( ${appname} PROPERTIES RELEASE_POSTFIX _Release${configappend} )
+	SET_TARGET_PROPERTIES( ${appname} PROPERTIES MINSIZEREL_POSTFIX _MinSizeRel${configappend} )
+	SET_TARGET_PROPERTIES( ${appname} PROPERTIES RELWITHDEBINFO_POSTFIX _RelWithDebInfo${configappend} )
+	SET_TARGET_PROPERTIES( ${appname} PROPERTIES DEBUG_POSTFIX _Debug${configappend} )
+
+	# This is for determining the build type (esp. used in registry code)
+	target_compile_definitions(${appname} PRIVATE BUILDCONF="${CMAKE_BUILD_TYPE}")
+	target_compile_definitions(${appname} PRIVATE BUILDTYPE=BUILDTYPE_$<CONFIGURATION>)
 	set_target_properties( ${appname} PROPERTIES FOLDER "Plugins/${foldername}")
 	INSTALL(TARGETS ${appname} 
 		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/${folder}-plugins

@@ -73,5 +73,6 @@ endif()
     endif()
 
     set(configappend "_${configbase}")
+
 endmacro(addBaseProject)
 

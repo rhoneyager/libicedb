@@ -30,6 +30,17 @@ if (BUILD_PLUGIN_SILO)
 		${silo_INCLUDE_DIRS}
 		)
 	target_link_libraries(plugin_silo silo icedb)
-	addlib(plugin_silo SHARED)
 	addplugin(plugin_silo IO icedb)
+
+	if (WIN32 AND NOT CMAKE)
+		add_custom_target(copy_silo_dependencies_to_build_dirs
+			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:silo> $<TARGET_FILE_DIR:icedb_base>
+			)
+		set_target_properties( copy_silo_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
+		add_dependencies(copy_icedb_dependencies_to_build_dirs copy_silo_dependencies_to_build_dirs)
+
+		install(PROGRAMS $<TARGET_FILE:silo>
+			DESTINATION ${RBIN_DIR}/$<CONFIG>
+			COMPONENT Plugins)
+	endif()
 endif()

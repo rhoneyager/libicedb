@@ -10,8 +10,6 @@ if (BUILD_PLUGIN_PSU)
 		)
 
 	add_library(io_psu SHARED ${io_psu_FILES})
-	addlib(io_psu SHARED)
-	storebin(io_psu)
 	addplugin(io_psu IO icedb)
 
 	target_link_libraries(io_psu icedb)

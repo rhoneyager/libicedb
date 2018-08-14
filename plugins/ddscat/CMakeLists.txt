@@ -32,8 +32,6 @@ if (BUILD_PLUGIN_DDSCAT)
 		)
 
 	add_library(io_ddscat SHARED ${IO_DDSCAT_FILES})
-	addlib(io_ddscat SHARED)
-	storebin(io_ddscat)
 	addplugin(io_ddscat IO icedb)
 
 	target_link_libraries(io_ddscat icedb Boost::date_time Boost::regex)

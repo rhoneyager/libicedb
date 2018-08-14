@@ -164,19 +164,19 @@ add_library(icedb SHARED ${libsrcs})
 target_include_directories(icedb SYSTEM
 	PUBLIC ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 target_include_directories(icedb_base PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/icedb
+	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
 	${CMAKE_BINARY_DIR}
 	)
 target_include_directories(icedb PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/icedb
+	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
 	${CMAKE_BINARY_DIR}
 	)
 target_include_directories(icedb SYSTEM
 	INTERFACE
 	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat>
 	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
 	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}/icedb/compat>
@@ -201,6 +201,8 @@ INSTALL(DIRECTORY icedb
 	COMPONENT Headers
 	)
 
+# Lib installation is already covered in addlib.cmake.
+
 # Code to collect the icedb dependencies into the build directory on Windows.
 # Manually collecting these all the time is rather aggrevating.
 if (WIN32 AND NOT CMAKE)
@@ -224,6 +226,14 @@ if (WIN32 AND NOT CMAKE)
 		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impZLIB::ZLIB> $<TARGET_FILE_DIR:icedb_base>
 		)
 	set_target_properties( copy_icedb_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
+	
+	install(PROGRAMS 
+		$<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE:hdf5::hdf5_tools-shared>
+		$<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE:impBoost::system> $<TARGET_FILE:impBoost::program_options>
+		$<TARGET_FILE:impBoost::date_time> $<TARGET_FILE:impBoost::regex> $<TARGET_FILE:impBoost::unit_test_framework>
+		$<TARGET_FILE:impZLIB::ZLIB>
+		DESTINATION ${RBIN_DIR}/$<CONFIG>
+		COMPONENT Libraries)
 
 	# Boost targets do not fully have their imported_locations set. The shared libraries are not included.
 	# Query IMPORTED_LOCATION_DEBUG, IMPORTED_LOCATION_RELEASE and IMPORTED_LOCATION.

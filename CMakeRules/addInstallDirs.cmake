@@ -1,11 +1,9 @@
 macro(addInstallDirs basename ) 
 	option(INSTALL_PACKAGE_SYSTEM_LOCATIONS "Set this when producing system packages (i.e. for installs into /usr, not /opt)" OFF)
 if (INSTALL_PACKAGE_SYSTEM_LOCATIONS)
-	set (INSTALL_DIR_SUBFOLDERS OFF)
 	set (INSTALL_LIB_DIR_DEFAULT lib)
 	set (INSTALL_SHARE_DIR_DEFAULT share/icedb)
 else()
-	set (INSTALL_DIR_SUBFOLDERS ON)
 	set (INSTALL_LIB_DIR_DEFAULT lib)
 	set (INSTALL_SHARE_DIR_DEFAULT share)
 endif()
@@ -51,6 +49,10 @@ foreach(p ${folders})
 	file(RELATIVE_PATH REL_${p}_DIR "${ABS_INSTALL_CMAKE_DIR}" "${${var}}")
 	#message("      - ${REL_${p}_DIR}")
 endforeach()
+
+
+	# Note: also see addlib and addapp
+	set (RBIN_DIR ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend})
 
 endmacro(addInstallDirs basename )
 

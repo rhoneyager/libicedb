@@ -12,8 +12,6 @@ if (BUILD_PLUGIN_GENERAL_TEXT_IO)
 		)
 
 	add_library(io_general SHARED ${f})
-	addlib(io_general SHARED)
-	storebin(io_general)
 	addplugin(io_general IO icedb)
 
 	target_include_directories(io_general SYSTEM PRIVATE)
