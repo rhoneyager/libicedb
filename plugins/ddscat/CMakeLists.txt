@@ -37,10 +37,6 @@ if (BUILD_PLUGIN_DDSCAT)
 	addplugin(io_ddscat IO icedb)
 
 	target_link_libraries(io_ddscat icedb Boost::date_time Boost::regex)
-	target_include_directories(io_ddscat SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 	target_include_directories(io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
-	target_include_directories(io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
-	target_include_directories(io_ddscat SYSTEM
-		PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP} ${CMAKE_SOURCE_DIR}/lib/icedb/compat)
 
 endif()

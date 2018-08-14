@@ -28,10 +28,8 @@ if (BUILD_PLUGIN_SILO)
 	target_include_directories(plugin_silo SYSTEM PRIVATE
 		${CMAKE_SOURCE_DIR}/lib/related/eigen
 		${silo_INCLUDE_DIRS}
-		${CMAKE_SOURCE_DIR}/lib
-		${CMAKE_SOURCE_DIR}/lib/icedb/compat
 		)
-	target_link_libraries(plugin_silo silo icedb ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	target_link_libraries(plugin_silo silo icedb)
 	addlib(plugin_silo SHARED)
 	addplugin(plugin_silo IO icedb)
 endif()

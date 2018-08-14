@@ -13,9 +13,7 @@ SET(srcs ${srcs}
 ENDIF()
 
 add_executable(icedb-refract ${srcs})
-target_include_directories(icedb-refract SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
-target_include_directories(icedb-refract SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(icedb-refract icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(icedb-refract icedb)
 
 addapp(icedb-refract Utility)
 storebin(icedb-refract)

@@ -13,9 +13,7 @@ SET(srcs ${srcs}
 ENDIF()
 
 add_executable(icedb-onesphere ${srcs})
-target_include_directories(icedb-onesphere SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
-target_include_directories(icedb-onesphere SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(icedb-onesphere icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(icedb-onesphere icedb)
 
 addapp(icedb-onesphere Scattering)
 storebin(icedb-onesphere)

@@ -16,19 +16,7 @@ SET(srcs ${srcs}
 ENDIF()
 
 add_executable(icedb-scattering_data_importer ${srcs})
-target_include_directories(icedb-scattering_data_importer SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
-target_include_directories(icedb-scattering_data_importer SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/icedb/compat)
-target_include_directories(icedb-scattering_data_importer SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
-target_include_directories(icedb-scattering_data_importer SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
-
-# TODO: remove the HDF5 dependency here.
-target_include_directories(icedb-scattering_data_importer SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
-	)
-target_compile_definitions(icedb-scattering_data_importer
-	PRIVATE ${HDF5_DEFINITIONS})
-
-target_link_libraries(icedb-scattering_data_importer icedb io_ddscat ${Boost_REGEX_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(icedb-scattering_data_importer icedb)
 
 addapp(icedb-scattering_data_importer Level_0)
 storebin(icedb-scattering_data_importer)

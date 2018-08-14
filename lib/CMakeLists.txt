@@ -43,34 +43,14 @@ set (hh_objs
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
-	#private/Shape_impl.hpp
 	src/Shapes.cpp)
 set(exv_objs
 	icedb/exv.hpp
 	src/exv.cpp)
-#set(grp_objs
-	#icedb/Group.hpp
-	#private/Group_impl.hpp
-	#src/Groups.cpp)
-#set(att_objs
-#	icedb/Attribute.hpp
-#	private/Attribute_impl.hpp
-#	src/Attributes.cpp)
-#set(tbl_objs
-#	icedb/Table.hpp
-#	private/Table_impl.hpp
-#	src/Tables.cpp)
 set(db_objs
-#	icedb/Database.hpp
-#	private/Database_impl.hpp
-#	src/databases.cpp
 	icedb/fs_backend.hpp
 	src/fs_backend.cpp
 	icedb/fs.hpp)
-#set(hdf_objs
-#	private/hdf5_supplemental.hpp
-#	private/hdf5_load.h
-#	src/export-hdf5.cpp)
 set(units_objs
 	icedb/units/units.hpp
 	icedb/units/unitsPlugins.hpp
@@ -141,35 +121,36 @@ set(lib_objs
 generaterc("icedb_base" "dll"
 	"icedb"
 	"Scattering utility library"
+	 "${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc"
+	 )
+generaterc("icedb" "dll"
+	"icedb"
+	"Scattering utility library"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
-	source_group("Extensibility" FILES ${extensible_objs})
-
+source_group("Extensibility" FILES ${extensible_objs})
 source_group("GSL" FILES ${gsl_objs})
 source_group("HH" FILES ${hh_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
 source_group("Errors" FILES ${error_objs})
 source_group("Extended Scattering" FILES ${exv_objs})
-#source_group("Groups" FILES ${grp_objs})
-#source_group("Attributes" FILES ${att_objs})
-#source_group("Tables" FILES ${tbl_objs})
 source_group("Databases" FILES ${db_objs})
-#source_group("HDF5" FILES ${hdf_objs})
 source_group("Units" FILES ${units_objs})
 source_group("Refract" FILES ${refract_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
-set(libsrcs_dllbase src/dlls_placeholder.cpp ${gsl_objs} ${hh_objs} ${related_cmake_objects})
-set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs} #${grp_objs}
-	#${att_objs} ${tbl_objs} 
-	${db_objs} #${hdf_objs}
-	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
-	${extensible_objs}
-	#${CMAKE_BINARY_DIR}/icedb_h5.h # Auto-generated file, not listed in the build interface.
+set(libsrcs_dllbase src/dlls_placeholder.cpp ${gsl_objs} ${hh_objs} ${related_cmake_objects}
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
+set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs}
+	${db_objs}
+	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
+	${extensible_objs})
 IF (WIN32 AND NOT CYGWIN)
 SET(libsrcs_dllbase ${libsrcs_dllbase} 
+	"${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc")
+source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc")
+SET(libsrcs ${libsrcs} 
 	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
@@ -181,44 +162,36 @@ storebin(icedb_base)
 add_library(icedb SHARED ${libsrcs})
 # compat contains the GSL and HH.
 target_include_directories(icedb SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP} icedb/compat)
-#target_include_directories(icedb SYSTEM
-#	PUBLIC
-#	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat>
-#	$<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${REL_INCLUDE_DIR}>
-#	$<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${REL_INCLUDE_DIR}/icedb/compat>
-	#${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
-	#	)
+	PUBLIC ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+target_include_directories(icedb_base PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/icedb
+	${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
+	${CMAKE_BINARY_DIR}
+	)
+target_include_directories(icedb PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/icedb
+	${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
+	${CMAKE_BINARY_DIR}
+	)
+target_include_directories(icedb SYSTEM
+	INTERFACE
+	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat>
+	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
+	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}/icedb/compat>
+	)
 
-# HDF5 is only exposed to the core library.
 target_compile_definitions(icedb
-	PRIVATE ${HDF5_DEFINITIONS})
-target_link_libraries(icedb icedb_base ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
-# Let's prefer the boost filesystem library for now.
-# It is more stable and more widely supported.
-if(PROHIBIT_BUILD_USING_BOOST_FILESYSTEM OR ("${Boost_MINOR_VERSION}" LESS "45"))
-	target_compile_definitions(icedb PUBLIC ICEDB_PROHIBIT_BOOST_FILESYSTEM)
-endif()
-if(Boost_FILESYSTEM_LIBRARY AND ("${Boost_MINOR_VERSION}" GREATER "44"))
-	target_link_libraries(icedb
-		${Boost_FILESYSTEM_LIBRARY}
-		${Boost_SYSTEM_LIBRARY})
-	target_compile_definitions(icedb PUBLIC ICEDB_HAS_COMPILED_BOOST_FILESYSTEM)
-	target_include_directories(icedb SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
-else()
-	if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
-		IF(DEFINED CMAKE_COMPILER_IS_GNUCXX)
-			target_link_libraries(icedb stdc++fs)
-		endif()
-	endif()
-	if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-		target_link_libraries(icedb stdc++fs)
-	endif()
-endif()
+	PUBLIC ${HDF5_DEFINITIONS})
+target_link_libraries(icedb icedb_base hdf5::hdf5-shared hdf5::hdf5_hl-shared) # ZLIB::ZLIB)
+target_link_libraries(icedb
+	Boost::filesystem
+	Boost::system
+	Boost::program_options)
 if(USE_OLD_CPP03_ABI)
 	target_compile_definitions(icedb PUBLIC _GLIBCXX_USE_CXX11_ABI=0)
 endif()
-target_link_libraries(icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 addlib(icedb SHARED)
 storebin(icedb)
@@ -228,3 +201,34 @@ INSTALL(DIRECTORY icedb
 	COMPONENT Headers
 	)
 
+# Code to collect the icedb dependencies into the build directory on Windows.
+# Manually collecting these all the time is rather aggrevating.
+if (WIN32 AND NOT CMAKE)
+# all deps: hdf5: hdf5-shared, hdf5_hl-shared - handle here.
+# boost: program_options unit_test_framework date_time regex filesystem system
+#		--- not all in icedb core, but convenient to include for plugins.
+#		--- on windows, just change the .lib to .dll.
+# zlib
+# silo: silo --- handle in the silo plugin
+
+	add_custom_target(copy_icedb_dependencies_to_build_dirs
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_tools-shared> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::system> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::program_options> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::date_time> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::regex> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::unit_test_framework> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impZLIB::ZLIB> $<TARGET_FILE_DIR:icedb_base>
+		)
+	set_target_properties( copy_icedb_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
+
+	# Boost targets do not fully have their imported_locations set. The shared libraries are not included.
+	# Query IMPORTED_LOCATION_DEBUG, IMPORTED_LOCATION_RELEASE and IMPORTED_LOCATION.
+	# Only copy shared libraries (i.e. ones that do not start with lib_____).
+		#COMMAND ${CMAKE_COMMAND} -E copy
+		#	$<TARGET_PROPERTY:boost::filesystem,IMPORTED_LOCATION_RELEASE>
+		#	$<TARGET_FILE_DIR:icedb>
+ENDIF()

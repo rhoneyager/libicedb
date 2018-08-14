@@ -13,9 +13,7 @@ SET(srcs ${srcs}
 ENDIF()
 
 add_executable(icedb-units ${srcs})
-target_include_directories(icedb-units SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
-target_include_directories(icedb-units SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(icedb-units icedb ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(icedb-units icedb)
 
 addapp(icedb-units Utility)
 storebin(icedb-units)

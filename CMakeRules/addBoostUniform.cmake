@@ -6,11 +6,14 @@ if (DEFINED ENV{CONDA_PREFIX})
 	set(Boost_INCLUDE_DIR "$ENV{CONDA_PREFIX}/include" CACHE STRING "Include dir for boost")
 endif()
 
-    #set(Boost_DEBUG ON)
+set(Boost_FIND_QUIETLY ON)
+#set(Boost_DEBUG ON)
+
 if (WIN32 AND NOT CYGWIN)
     option ( AUTOLINK_BOOST
        "Automatically link Boost" ON)
         set(WINBOOST_AUTOLINK ${AUTOLINK_BOOST})
+	mark_as_advanced(AUTOLINK_BOOST)
 else()
     set(WINBOOST_AUTOLINK OFF)
 endif()
@@ -41,7 +44,7 @@ else()
     endif()
 endif()
 
-find_package(Boost COMPONENTS ${ARGV} ) #REQUIRED)
+find_package(Boost ${ARGV} ) #REQUIRED)
 if (NOT WINBOOST_AUTOLINK)
 	#if (Boost_LIBRARIES)
 	#set(liblist ${liblist} ${Boost_LIBRARIES})
@@ -71,3 +74,32 @@ endif()
 endmacro(addBoostUniform args)
 
 
+macro(amend_boost_libs libname resname)
+	get_target_property(lib_debug ${libname} IMPORTED_LOCATION_DEBUG)
+	get_target_property(lib_release ${libname} IMPORTED_LOCATION_RELEASE)
+	string(REPLACE "\.lib" ".dll" dll_debug ${lib_debug} )
+	string(REPLACE "\.lib" ".dll" dll_release ${lib_release} )
+
+	add_library(${resname} UNKNOWN IMPORTED)
+	set_property(TARGET ${resname} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+	set_target_properties(${resname} PROPERTIES IMPORTED_LOCATION_RELEASE "${dll_release}")
+	set_property(TARGET ${resname} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+	set_target_properties(${resname} PROPERTIES IMPORTED_LOCATION_RELEASE "${dll_debug}")
+
+endmacro(amend_boost_libs libname resname)
+
+macro(amend_basic_libs libname resname)
+	get_target_property(lib_debug ${libname} IMPORTED_LOCATION_DEBUG)
+	get_target_property(lib_release ${libname} IMPORTED_LOCATION_RELEASE)
+	string(REPLACE "\.lib" ".dll" dll_debug_a ${lib_debug} )
+	string(REPLACE "\.lib" ".dll" dll_release_a ${lib_release} )
+	string(REPLACE "lib/zlib" "bin/zlib" dll_debug ${dll_debug_a} )
+	string(REPLACE "lib/zlib" "bin/zlib" dll_release ${dll_release_a} )
+
+	add_library(${resname} UNKNOWN IMPORTED)
+	set_property(TARGET ${resname} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+	set_target_properties(${resname} PROPERTIES IMPORTED_LOCATION_RELEASE "${dll_release}")
+	set_property(TARGET ${resname} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+	set_target_properties(${resname} PROPERTIES IMPORTED_LOCATION_RELEASE "${dll_debug}")
+
+endmacro(amend_basic_libs libname resname)

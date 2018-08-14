@@ -20,17 +20,7 @@ SET(srcs ${srcs}
 ENDIF()
 
 add_executable(icedb-3d_structures_importer ${srcs})
-target_include_directories(icedb-3d_structures_importer SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib)
-target_include_directories(icedb-3d_structures_importer SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/icedb/compat)
-target_include_directories(icedb-3d_structures_importer SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
-# TODO: remove the HDF5 dependency here.
-target_include_directories(icedb-3d_structures_importer SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR_CPP}
-	)
-target_compile_definitions(icedb-3d_structures_importer
-	PRIVATE ${HDF5_DEFINITIONS})
-
-target_link_libraries(icedb-3d_structures_importer icedb ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(icedb-3d_structures_importer icedb)
 
 if (BUILD_PLUGIN_ADDA)
 	add_dependencies(icedb-3d_structures_importer io_adda)

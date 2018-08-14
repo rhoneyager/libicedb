@@ -34,7 +34,7 @@ INCLUDE(CTest)
 # Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
 set(MAJOR 0)
-set(MINOR 6)
+set(MINOR 7)
 set(REVISION 0)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -43,43 +43,35 @@ addInstallDirs(icedb)
 
 # This config file stores basic information about the build.
 # Version number, git hash, ...
+# This gets pulled into the icedb target.
 configure_file (
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib/cmake-settings.h.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake-settings.h"
+    "${CMAKE_SOURCE_DIR}/lib/cmake-settings.h.in"
+    "${CMAKE_BINARY_DIR}/cmake-settings.h"
     )
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-# Add in script-generated includes
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-
 # The two dependencies: boost and HDF5
-addBoostUniform(program_options unit_test_framework date_time regex REQUIRED)
-option (FORCE_BUILD_USING_BOOST_FILESYSTEM
-    "Force the build using boost filesystem" OFF)
-option (PROHIBIT_BUILD_USING_BOOST_FILESYSTEM
-	"Prevent the use of boost's filesystem" OFF)
+addBoostUniform(1.45.0 REQUIRED COMPONENTS program_options unit_test_framework date_time regex filesystem system)
+amend_boost_libs(Boost::filesystem impBoost::filesystem)
+amend_boost_libs(Boost::system impBoost::system)
+amend_boost_libs(Boost::program_options impBoost::program_options)
+amend_boost_libs(Boost::date_time impBoost::date_time)
+amend_boost_libs(Boost::regex impBoost::regex)
+amend_boost_libs(Boost::unit_test_framework impBoost::unit_test_framework)
+find_package(ZLIB REQUIRED)
+amend_basic_libs(ZLIB::ZLIB impZLIB::ZLIB)
+
+#if ("${Boost_MINOR_VERSION}" LESS "45")
+#	error("Your version of Boost is too old to build icedb.")
+#endif()
 option(USE_OLD_CPP03_ABI "C++11 led to changes in the GLIB C++ ABI. Turn this on if you are linking against old system libraries" OFF)
 
-if(FORCE_BUILD_USING_BOOST_FILESYSTEM)
-	addBoostUniform(filesystem system REQUIRED)
-else()
-	if(PROHIBIT_BUILD_USING_BOOST_FILESYSTEM)
-		set(Boost_FILESYSTEM_LIBRARY_DEBUG "Boost_FILESYSTEM_LIBRARY_DEBUG-NOTFOUND" CACHE FILEPATH "" FORCE)
-		set(Boost_FILESYSTEM_LIBRARY_RELEASE "Boost_FILESYSTEM_LIBRARY_RELEASE-NOTFOUND" CACHE FILEPATH "" FORCE)
-
-	else()
-		addBoostUniform(filesystem system)
-	endif()
-endif()
-
-find_package(HDF5 COMPONENTS C CXX HL REQUIRED )
+find_package(HDF5 COMPONENTS C HL REQUIRED )
 # These are rather polluting
-mark_as_advanced(HDF5_CXX_LIBRARY_dl HDF5_CXX_LIBRARY_hdf5 HDF5_CXX_LIBRARY_hdf5_cpp
-	HDF5_CXX_LIBRARY_hdf5_hl HDF5_CXX_LIBRARY_hdf5_hl_cpp HDF5_CXX_LIBRARY_m
-	HDF5_CXX_LIBRARY_pthread HDF5_CXX_LIBRARY_sz HDF5_CXX_LIBRARY_z 
+mark_as_advanced(
 	HDF5_C_LIBRARY_dl HDF5_C_LIBRARY_hdf5 HDF5_C_LIBRARY_hdf5_hl 
 	HDF5_C_LIBRARY_m HDF5_C_LIBRARY_pthread HDF5_C_LIBRARY_sz HDF5_C_LIBRARY_z)
 
