@@ -104,10 +104,10 @@ foreach(LOOP_CONFIG Debug Release RelWithDebInfo MinSizeRel)
 	configure_file(lib/environment-module.in
 		"${PROJECT_BINARY_DIR}/environment-modules/install/icedb/${configbase}/${LOOP_CONFIG}" @ONLY)
 endforeach()
-INSTALL(DIRECTORY "${PROJECT_BINARY_DIR}/environment-modules/install/icedb"
-	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_SHARE_DIR}/environment-modules
-	COMPONENT Errata
-	)
+#INSTALL(DIRECTORY "${PROJECT_BINARY_DIR}/environment-modules/install/icedb"
+#	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_SHARE_DIR}/environment-modules
+#	COMPONENT Errata
+#	)
 configure_file(CMakeRules/Pkg_Config.cmake.in
 	"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake" @ONLY)
 # ... for both
@@ -122,6 +122,9 @@ INSTALL(EXPORT icedbTargets
 	DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Libraries
 	)
 
+INSTALL(FILES LICENSE.txt README.md
+	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_DOC_DIR}
+	)
 INSTALL(DIRECTORY share/examples
 	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_SHARE_DIR}
 	COMPONENT Examples
@@ -129,7 +132,6 @@ INSTALL(DIRECTORY share/examples
 
 # Generate doxygen documentation, if needed.
 adddocs()
-
 
 # CTest stuff. May switch from CTest in the future.
 set(BUILDNAME "Unspecified_Build_Name_for_CTest" CACHE STRING "Build name variable for CTest")
@@ -153,8 +155,21 @@ SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ryan Honeyager")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README-package.txt")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "icedb")
 set(CPACK_PACKAGE_CONTACT "Ryan Honeyager (ryan@honeyager.info)")
+set(CPACK_WIX_UPGRADE_GUID "A29C49DA-8C87-4B15-AC54-D163E5AC3C29")
+set(CPACK_WIX_PRODUCT_GUID "07770F44-F916-4A21-9788-CA03F71355D7")
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}\\\\LICENSE.txt")
+set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/share/icons\\\\favicon.ico")
+set(CPACK_WIX_CMAKE_PACKAGE_REGISTRY "icedb")
+set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://rhoneyager.github.io/icedb")
+if (NOT CPACK_SYSTEM_NAME)
+	set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_PROCESSOR}")
+	if (CPACK_SYSTEM_NAME STREQUAL "x86_64")
+		set(CPACK_SYSTEM_NAME "amd64")
+	endif ()
+endif ()
 IF(WIN32 AND NOT UNIX)
-	# There is a bug in NSI that does not handle full unix paths properly. Make
+	SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}")
+	# There is a bug in NSIS that does not handle full unix paths properly. Make
 	# sure there is at least one set of four (4) backslashes.
 	SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/share/icons\\\\favicon-96x96.png")
 	SET(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/share/icons\\\\favicon.ico")
@@ -167,8 +182,8 @@ IF(WIN32 AND NOT UNIX)
 	SET(CPACK_NSIS_CONTACT "ryan@honeyager.info")
 	SET(CPACK_NSIS_MODIFY_PATH ON)
 ELSE(WIN32 AND NOT UNIX)
-	#	SET(CPACK_STRIP_FILES "bin/MyExecutable")
-	#	SET(CPACK_SOURCE_STRIP_FILES "")
+	SET(CPACK_STRIP_FILES FALSE)
+	SET(CPACK_SOURCE_STRIP_FILES FALSE)
 ENDIF(WIN32 AND NOT UNIX)
 #SET(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
 

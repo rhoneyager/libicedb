@@ -46,9 +46,9 @@ endif()
 
 if (BUILD_DOCUMENTATION_IN_ALL)
     # Provides html and pdf
-    install(CODE "execute_process(COMMAND ${CMAKE_BUILD_TOOL} docs)")
+    install(CODE "execute_process(COMMAND \"${CMAKE_BUILD_TOOL}\" docs)")
     # html
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/html/ DESTINATION ${INSTALL_DOC_DIR}/html)
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/html/ DESTINATION ${INSTALL_DOC_DIR}/html COMPONENT Documentation)
     # pdf
     #    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex/ DESTINATION ${INSTALL_DOC_DIR}/latex)
 endif()
