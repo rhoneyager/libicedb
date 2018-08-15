@@ -1,7 +1,9 @@
 #pragma once
 #ifndef ICEDB_H_DEFS
 #define ICEDB_H_DEFS
+#ifndef __STDC_WANT_LIB_EXT1__
 #define __STDC_WANT_LIB_EXT1__ 1
+#endif
 #include <stddef.h>
 
 #if defined(__cplusplus) || defined(c_plusplus)

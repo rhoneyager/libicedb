@@ -132,8 +132,8 @@ namespace icedb
 					h = std::shared_ptr<serialization_handle>(new serialization_handle(filename.c_str(), iotype));
 				else {
 					if (sh->getId() != std::string(serialization_handle::getSHid()))
-						RDthrow(error::xDuplicateHook())
-						<< error::otherErrorText("Bad passed plugin. "
+						ICEDB_throw(::icedb::error::error_types::xDuplicateHook)
+						.add<std::string>("Reason", "Bad passed plugin. "
 						"It is not the serialization plugin.");
 					h = std::dynamic_pointer_cast<serialization_handle>(sh);
 				}

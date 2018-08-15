@@ -101,9 +101,10 @@ namespace icedb
 			else {
 				if (std::string(sh->getId()) != std::string(id))
 					ICEDB_throw(::icedb::error::error_types::xDuplicateHook)
-					.add<std::string>("Reason", "Bad passed plugin. The ids do not match.")
-					.add<std::string>("ID_1", sh->getId())
-					.add<std::string>("ID_2", std::string(id));
+					//.add<std::string>("Reason", "Bad passed plugin. The ids do not match.")
+					//.add<std::string>("ID_1", sh->getId())
+					//.add<std::string>("ID_2", std::string(id));
+					;
 				h = std::dynamic_pointer_cast<derived>(sh);
 			}
 			return h;

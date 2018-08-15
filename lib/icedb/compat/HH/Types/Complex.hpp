@@ -9,7 +9,7 @@ namespace HH {
 		template <class ComplexDataType>
 		HH_hid_t GetHDF5TypeComplex()
 		{
-			typedef ComplexDataType::value_type value_type;
+			typedef typename ComplexDataType::value_type value_type;
 			// Complex number is a compound datatype of two objects.
 			return GetHDF5Type<value_type, 1>({ 2 });
 		}
