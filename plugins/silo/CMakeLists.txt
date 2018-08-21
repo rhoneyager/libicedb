@@ -5,7 +5,8 @@ include(generaterc)
 option (BUILD_PLUGIN_SILO "Build the Silo plugin for visualizing shapes" OFF)
 
 if (BUILD_PLUGIN_SILO)
-	find_package(silo REQUIRED)
+	include(addSILO) # Finds SILO in an OS-independent manner...
+	#find_package(silo REQUIRED)
 	generaterc("icedb_plugin_silo" "dll"
 		"icedb"
 		"Visualize shapes with the SILO file format"
