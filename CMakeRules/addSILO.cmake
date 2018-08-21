@@ -3,7 +3,7 @@
 # package managers do not provide this feature, and a variant of FindSILO.cmake 
 # must be implemented.
 
-if (WIN32 and not CYGWIN)
+if (WIN32 AND NOT CYGWIN)
 	find_package(silo REQUIRED)
 else()
 	FIND_PATH(SILO_INCLUDE_DIR silo.h

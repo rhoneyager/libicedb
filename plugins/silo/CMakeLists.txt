@@ -26,11 +26,12 @@ if (BUILD_PLUGIN_SILO)
 	#source_group("SILO" FILES ${DIRS_SILO})
 
 	add_library(plugin_silo SHARED ${DIRS_SILO})
+	target_link_libraries(plugin_silo silo icedb)
 	target_include_directories(plugin_silo SYSTEM PRIVATE
 		${CMAKE_SOURCE_DIR}/lib/related/eigen
-		${silo_INCLUDE_DIRS}
+		# provides silo_exports.h on platforms that are missing it.
+		${CMAKE_CURRENT_SOURCE_DIR}/fixes 
 		)
-	target_link_libraries(plugin_silo silo icedb)
 	addplugin(plugin_silo IO icedb)
 
 	if (WIN32 AND NOT CMAKE)
