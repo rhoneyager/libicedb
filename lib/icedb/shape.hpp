@@ -48,7 +48,7 @@ namespace icedb {
 			/// Written in form of x_1, y_1, z_1, x_2, y_2, z_2, ...
 			/// Dimensions of [number_of_particle_scattering_elements][axis]
 			std::vector<float> particle_scattering_element_coordinates_as_floats;
-			std::vector<int64_t> particle_scattering_element_coordinates_as_ints;
+			std::vector<int32_t> particle_scattering_element_coordinates_as_ints;
 
 
 			// The required ATTRIBUTES
@@ -69,7 +69,7 @@ namespace icedb {
 			std::array<unsigned int, 3> version;
 
 			/// VARIABLE: The id number for each scattering element. Single dimension.
-			std::vector<int64_t> particle_scattering_element_number;
+			std::vector<int32_t> particle_scattering_element_number;
 			/// VARIABLE: The id number of each particle's constituent. Single dimension.
 			std::vector<std::pair<uint16_t, std::string> > particle_constituents;
 

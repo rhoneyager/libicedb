@@ -6,6 +6,7 @@
 #include "defs.hpp"
 #include <icedb/plugin.hpp>
 #include <HH/Groups.hpp>
+#include <HH/Files.hpp>
 
 #define PLUGINID "io-psu"
 
@@ -23,7 +24,7 @@ namespace icedb {
 				psu_handle(const char* filename, IOtype t);
 				virtual ~psu_handle() {}
 				void open(const char* filename, IOtype t);
-				HH::Group grp;
+				HH::File file;
 			};
 		}
 	}

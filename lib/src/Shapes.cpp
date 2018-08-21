@@ -251,7 +251,7 @@ namespace icedb {
 			auto pl1d = pl2d.clone().setDatasetCreationPList<uint64_t>(t_Chunking({ chunks2d[0] }));
 
 			// Write required dimensions
-			auto tblPSEN = res.dsets.create<int64_t>(
+			auto tblPSEN = res.dsets.create<int32_t>(
 				"particle_scattering_element_number",
 				{ static_cast<size_t>(numScattElems) });
 			{
@@ -259,7 +259,7 @@ namespace icedb {
 				tblPSEN.atts.add<std::string>("units", "None");
 
 				if (!props->particle_scattering_element_number.empty()) {
-					Expects(0 <= tblPSEN.write<int64_t>(props->particle_scattering_element_number));
+					Expects(0 <= tblPSEN.write<int32_t>(props->particle_scattering_element_number));
 				}
 				else {
 					// Create "dummy" element numbers and write.

@@ -183,7 +183,10 @@ namespace icedb
 
 				res.io_multi_processor = read_file_type_multi<T>;
 				//res.io_vector_processor = read_file_type_vector<T>;
-				res.io_iterator_processor = read_file_type_iterate<T>;
+				// Temporarily disabling.
+				// TODO: Add an interface to expose either the iteration function or the single read function.
+				// Several plugins have no need to expose both.
+				//res.io_iterator_processor = read_file_type_iterate<T>;
 				return res;
 		}
 

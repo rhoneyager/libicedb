@@ -7,15 +7,11 @@
  **/
 D_icedb_validator();
 
-namespace icedb
-{
-	namespace plugins
-	{
-		namespace psu
-		{
-			
+namespace icedb {
+	namespace plugins {
+		namespace psu {
 			psu_handle::psu_handle(const char* filename, IOtype t)
-				: IOhandler(PLUGINID), grp(HH::Handles::HH_hid_t::dummy())
+				: IOhandler(PLUGINID), file(HH::Handles::HH_hid_t::dummy())
 			{
 				open(filename, t);
 			}
@@ -25,27 +21,25 @@ namespace icedb
 				switch (t)
 				{
 				case IOtype::READWRITE:
-					ICEDB_throw(icedb::error::error_types::xUnimplementedFunction);
-					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_RDWR ));
+					file = HH::File::openFile(filename, H5F_ACC_RDWR);
 					break;
 				case IOtype::EXCLUSIVE:
-					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_EXCL ));
-					//break;
+					file = HH::File::openFile(filename, H5F_ACC_EXCL);
+					break;
 				case IOtype::DEBUG:
-					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_DEBUG ));
-					//break;
+					file = HH::File::openFile(filename, H5F_ACC_DEBUG);
+					break;
 				case IOtype::CREATE:
-					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_CREAT ));
-					//break;
+					file = HH::File::openFile(filename, H5F_ACC_TRUNC); // H5F_ACC_CREAT is deprecated.
+					break;
 				case IOtype::READONLY:
-					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_RDONLY ));
+					file = HH::File::openFile(filename, H5F_ACC_RDONLY);
 					break;
 				case IOtype::TRUNCATE:
-					//file = std::shared_ptr<siloFile>(new siloFile(filename));
+					file = HH::File::openFile(filename, H5F_ACC_TRUNC);
 					break;
 				}
 			}
-
 		}
 	}
 }
