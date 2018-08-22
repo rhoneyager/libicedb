@@ -160,15 +160,22 @@ adddocs()
 set(BUILDNAME "Unspecified_Build_Name_for_CTest" CACHE STRING "Build name variable for CTest")
 set(SITE "Unknown_Site_Name_for_CTest" CACHE STRING "Site name")
 mark_as_advanced(BUILDNAME SITE)
-# A junk test, for now. I only care if the code builds.
-#add_test (NAME get_id COMMAND uname -a)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test)
-add_test (NAME io-psu-gmm 
+# The tests here are workflow tests. They exist to ensure that the 
+# user-callable programs will run without crashing in common workflows. The same programs may
+# be run multiple times, with different options.
+add_test (NAME io-psu-gmm-1 # Test PSU file import
 	COMMAND icedb-3d_structures_importer
 		--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
 		--truncate
 		--from-format psu --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	)
+add_test (NAME io-psu-gmm-2 # Test import without the --truncate option
+	COMMAND icedb-3d_structures_importer
+		--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
+		--from-format psu --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 
