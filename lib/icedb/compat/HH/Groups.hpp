@@ -46,7 +46,10 @@ namespace HH {
 		/// \brief Does a group exist at the specified path
 		/// \returns <0 on failure (e.g. parent path not found)
 		/// \returns 0 if the group does not exist
-		/// returns >0 if the group does exist
+		/// \returns >0 if the group does exist
+		/// \todo Need to check that intermediate objects exist, and that
+		///       these intermediate objects can have children. Otherwise,
+		///       H5Lexists can trigger a core dump.
 		inline htri_t exists(
 			not_null<const char*> name,
 			HH_hid_t LinkAccessPlist = H5P_DEFAULT)

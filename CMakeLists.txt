@@ -178,6 +178,16 @@ add_test (NAME io-psu-gmm-2 # Test import without the --truncate option
 		--from-format psu --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
+if (BUILD_PLUGIN_SILO)
+	add_test (NAME io-psu-gmm-to-silo-1 # Write a GMM file into the SILO visualization format
+		COMMAND icedb-3d_structures
+			--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
+			--db-path "shape/Aggregate 00004"
+			--to-format silo --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.silo
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		)
+endif()
+
 
 
 # CPack stuff
