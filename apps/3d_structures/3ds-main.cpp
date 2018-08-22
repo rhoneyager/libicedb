@@ -65,17 +65,17 @@ int main(int argc, char** argv) {
 		if (vm.count("help")) doHelp("");
 		icedb::process_static_options(vm);
 
-		if (!vm.count("from") || !vm.count("to") || !vm.count("db-path")
-			|| !vm.count("to-format"))
-			doHelp("Need to specify from, to, db-path, to-format.");
+		if (!vm.count("in") || !vm.count("out") || !vm.count("db-path")
+			|| !vm.count("out-format"))
+			doHelp("Need to specify in, out, db-path, out-format.");
 
 		using namespace icedb;
 
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
-		string sFromRaw = vm["from"].as<string>();
-		string sToRaw = vm["to"].as<string>();
+		string sFromRaw = vm["in"].as<string>();
+		string sToRaw = vm["out"].as<string>();
 		string dbpath = vm["db-path"].as<string>();
-		string outformat = vm["to-format"].as<string>();
+		string outformat = vm["out-format"].as<string>();
 
 		HH::File file = HH::File::openFile(sFromRaw.c_str(), H5F_ACC_RDONLY);
 		std::cout << "Using base group " << dbpath << std::endl;

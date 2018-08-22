@@ -108,21 +108,21 @@ int main(int argc, char** argv) {
 		};
 		if (vm.count("help")) doHelp("");
 		icedb::process_static_options(vm); // The library has its own options.
-		if (!vm.count("from") || !vm.count("to")) doHelp("Need to specify to/from locations.");
+		if (!vm.count("in") || !vm.count("out")) doHelp("Need to specify in/out locations.");
 
 		using namespace icedb;
 
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
-		vector<string> vsFromRaw = vm["from"].as<vector<string> >();
-		string sToRaw = vm["to"].as<string>();
+		vector<string> vsFromRaw = vm["in"].as<vector<string> >();
+		string sToRaw = vm["out"].as<string>();
 		
 		sfs::path pToRaw(sToRaw);
 		string dbpath = vm["db-path"].as<string>();
-		string informat = vm["from-format"].as<string>();
-		bool from_nosearch = vm["from-nosearch"].as<bool>();
+		string informat = vm["in-format"].as<string>();
+		bool from_nosearch = vm["in-nosearch"].as<bool>();
 		vector<string> vCustomFileFormats;
-		if (vm.count("from-matching-extensions"))
-			vCustomFileFormats = vm["from-matching-extensions"].as<vector<string>>();
+		if (vm.count("in-matching-extensions"))
+			vCustomFileFormats = vm["in-matching-extensions"].as<vector<string>>();
 		std::set<sfs::path> customFileFormats;
 		for (const auto &c : vCustomFileFormats) customFileFormats.insert(c);
 

@@ -171,23 +171,23 @@ add_test (NAME io-psu-gmm-boost # Test PSU file import
 	)
 add_test (NAME io-psu-gmm-1 # Test PSU file import
 	COMMAND icedb-3d_structures_importer
-		--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
+		--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
 		--truncate
-		--from-format psu --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
+		--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 add_test (NAME io-psu-gmm-2 # Test import without the --truncate option
 	COMMAND icedb-3d_structures_importer
-		--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
-		--from-format psu --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
+		--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
+		--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 if (BUILD_PLUGIN_SILO)
 	add_test (NAME io-psu-gmm-to-silo-1 # Write a GMM file into the SILO visualization format
 		COMMAND icedb-3d_structures
-			--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
+			--in ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
 			--db-path "shape/Aggregate 00004"
-			--to-format silo --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.silo
+			--out-format silo --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.silo
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		)
 endif()
