@@ -36,6 +36,8 @@ namespace icedb {
 		DL_ICEDB const char* getAppPath();
 		DL_ICEDB const char* getPluginDir();
 		DL_ICEDB const char* getCWD();
+		/// Get a the static share directory
+		DL_ICEDB const char* getShareDir();
 
 		struct processInfo;
 		typedef const processInfo* hProcessInfo;

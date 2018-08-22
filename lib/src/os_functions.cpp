@@ -77,7 +77,7 @@ namespace icedb {
 			std::string hostname, username,
 				homeDir, appConfigDir, moduleCallbackBuffer,
 				libDir, libPath, appDir, appPath, CWD,
-				pluginDir;
+				pluginDir, shareDir;
 			bool _consoleTerminated = false;
 			// First element is name, second is path. Gets locked with m_sys_names.
 			std::vector<std::pair<std::string, std::string> > loadedModulesList;
@@ -861,6 +861,22 @@ const char* ICEDB_getPluginDirC() {
 	return pluginDir.c_str();
 }
 
+/// \todo Get this directory from CMake. Calculate relative to the lib directory.
+void ICEDB_getShareDirI() {
+	ICEDB_getLibDirI();
+	shareDir = libDir + "/../../share";
+}
+char* ICEDB_getShareDir(size_t sz, char* res) {
+	ICEDB_getShareDirI();
+	ICEDB_COMPAT_strncpy_s(res, sz, shareDir.c_str(), shareDir.size());
+	return res;
+}
+const char* ICEDB_getShareDirC() {
+	ICEDB_getShareDirI();
+	return shareDir.c_str();
+}
+
+
 /**
 * \brief Entry function that gets called when a debugged application first loads
 *
@@ -971,6 +987,7 @@ namespace icedb {
 		const char* getLibDir() { ICEDB_getLibDirI(); return libDir.c_str(); }
 		const char* getAppDir() { ICEDB_getAppDirI(); return appDir.c_str(); }
 		const char* getPluginDir() { ICEDB_getPluginDirI(); return pluginDir.c_str(); }
+		const char* getShareDir() { ICEDB_getShareDirI(); return shareDir.c_str(); }
 		const char* getLibPath() { ICEDB_getLibDirI(); return libPath.c_str(); }
 		const char* getAppPath() { ICEDB_getAppDirI(); return appPath.c_str(); }
 		const char* getCWD() { ICEDB_getCWDI(); return CWD.c_str(); }

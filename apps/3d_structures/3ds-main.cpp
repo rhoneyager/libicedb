@@ -39,14 +39,14 @@ int main(int argc, char** argv) {
 		po::options_description desc("General options"), input_matching("Input options"), hidden("Hidden options");
 		desc.add_options()
 			("help,h", "produce help message")
-			("to", po::value<string>(), "The path where the shape is written to")
-			("to-format", po::value<string>(), "Output file format")
+			("out,o", po::value<string>(), "The path where the shape is written to")
+			("out-format,f", po::value<string>(), "Output file format")
 			("create", "Create the output database if it does not exist")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		input_matching.add_options()
-			("from", po::value<string >(), "The file where shapes are read from")
-			("db-path", po::value<string> (), "The location of the shape in the input file.")
+			("in,i", po::value<string >(), "The file where shapes are read from")
+			("db-path,p", po::value<string> (), "The location of the shape in the input file.")
 			;
 		desc.add(input_matching);
 		icedb::add_options(desc, desc, hidden);

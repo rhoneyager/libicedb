@@ -33,6 +33,7 @@ DL_ICEDB char* ICEDB_getPluginDir(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getLibPath(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getAppPath(size_t sz, char* res);
 DL_ICEDB char* ICEDB_getCWD(size_t sz, char* res);
+DL_ICEDB char* ICEDB_getShareDir(size_t sz, char* res);
 
 DL_ICEDB const char* ICEDB_getLibDirC();
 DL_ICEDB const char* ICEDB_getAppDirC();
@@ -40,6 +41,7 @@ DL_ICEDB const char* ICEDB_getPluginDirC();
 DL_ICEDB const char* ICEDB_getLibPathC();
 DL_ICEDB const char* ICEDB_getAppPathC();
 DL_ICEDB const char* ICEDB_getCWDC();
+DL_ICEDB const char* ICEDB_getShareDirC();
 
 DL_ICEDB void ICEDB_libEntry(int argc, char** argv);
 DL_ICEDB void ICEDB_libExit();

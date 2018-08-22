@@ -802,7 +802,11 @@ namespace icedb
 #endif
 			po::notify(vm);
 		}
-
+		if (vm.count("help-all")) {
+			using namespace std;
+			cout << opts << endl;
+			exit(1);
+		}
 	}
 
 	void process_static_options(

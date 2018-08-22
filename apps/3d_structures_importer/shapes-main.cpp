@@ -57,20 +57,20 @@ int main(int argc, char** argv) {
 		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden options");
 		desc.add_options()
 			("help,h", "produce help message")
-			("to", po::value<string>(), "The path where the shape is written to")
-			("db-path", po::value<string>()->default_value("shape"), "The path within the database to write to")
+			("out,o", po::value<string>(), "The path where the shape is written to")
+			("db-path,p", po::value<string>()->default_value("shape"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		input_matching.add_options()
-			("from", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
+			("in,i", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
 			// TODO: from-format currently only used for file selection. Pass the option to the plugin code to
 			// select the right code path for each particular file format.
-			("from-format", po::value<string>()->default_value("text"), "The format of the input files. Options: text, psu.")
-			("from-nosearch", po::value<bool>()->default_value(false),
+			("in-format,f", po::value<string>()->default_value("text"), "The format of the input files. Options: text, psu.")
+			("in-nosearch", po::value<bool>()->default_value(false),
 				"Set this option if you want to read in a set of files whose paths are exactly specified on the command line. "
 				"This option allows for far greater control of input file selection.")
-			("from-matching-extensions", po::value<vector<string> >()->multitoken(), 
+			("in-matching-extensions", po::value<vector<string> >()->multitoken(), 
 				"Specify the extensions of files to match (e.g. .adda .shp) when searching for valid shapes. If not "
 				"specified, then the defaults are: "
 				"(text: .dat, .shp, .txt, .shape) (psu: .nc).")

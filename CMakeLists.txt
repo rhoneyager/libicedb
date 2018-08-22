@@ -165,6 +165,10 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test)
 # The tests here are workflow tests. They exist to ensure that the 
 # user-callable programs will run without crashing in common workflows. The same programs may
 # be run multiple times, with different options.
+add_test (NAME io-psu-gmm-boost # Test PSU file import
+	COMMAND icedb-test-psu-shapes
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	)
 add_test (NAME io-psu-gmm-1 # Test PSU file import
 	COMMAND icedb-3d_structures_importer
 		--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
