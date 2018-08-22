@@ -237,8 +237,8 @@ namespace icedb {
 			using namespace HH::Tags;
 			using namespace HH::Tags::PropertyLists;
 			const size_t numScattElems = (props->particle_scattering_element_coordinates_as_floats.size())
-				? props->particle_scattering_element_coordinates_as_floats.size()
-				: props->particle_scattering_element_coordinates_as_ints.size();
+				? props->particle_scattering_element_coordinates_as_floats.size() / 3
+				: props->particle_scattering_element_coordinates_as_ints.size() / 3;
 			constexpr size_t max_x = 40000;
 			const std::vector<hsize_t> chunks2d{
 				(max_x < numScattElems) ?
@@ -298,6 +298,7 @@ namespace icedb {
 
 			HH::Dataset tblPSEC(HH::HH_hid_t::dummy()); // = res.dsets.create<uint8_t>("particle_axis", { 3 });
 			if (props->particle_scattering_element_coordinates_as_ints.size()) {
+				// Shape coordinates are integers
 				typedef decltype(props->particle_scattering_element_coordinates_as_ints)::value_type int_type;
 				tblPSEC = res.dsets.create<int_type>(
 					t_name("particle_scattering_element_coordinates"),
@@ -308,6 +309,7 @@ namespace icedb {
 
 			}
 			else {
+				// Shape coordinates are floats
 				tblPSEC = res.dsets.create<float>(
 					t_name("particle_scattering_element_coordinates"),
 					t_dimensions({ static_cast<size_t>(numScattElems), 3 }),
@@ -353,12 +355,8 @@ namespace icedb {
 				Expects(0 <= tblPSEC2b.write<uint16_t>(props->particle_scattering_element_composition_whole));
 			}
 
-			if (props->scattering_element_coordinates_scaling_factor > 0) {
-				res.atts.add<float>("scattering_element_coordinates_scaling_factor", props->scattering_element_coordinates_scaling_factor);
-				//res.atts.add<std::string>("scattering_element_coordinates_scaling_factor__description", "Physical spacing between adjacent grid points");
-			}
-			if (props->scattering_element_coordinates_units.size())
-				res.atts.add<std::string>("scattering_element_coordinates_units", props->scattering_element_coordinates_units);
+			res.atts.add<float>("scattering_element_coordinates_scaling_factor", props->scattering_element_coordinates_scaling_factor);
+			res.atts.add<std::string>("scattering_element_coordinates_units", props->scattering_element_coordinates_units);
 
 			if (props->scattering_method.size())
 				res.atts.add<string>("scattering_method", props->scattering_method);

@@ -223,10 +223,14 @@ int main(int argc, char** argv) {
 			{
 				std::cerr << "Reading file " << f.first.string() << std::endl;
 				std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
+
+				auto opts = registry::options::generate();
+				opts->filename(f.first.string());
+				if (informat.size()) opts->filetype(informat);
 				// This function will open the file and read all valid shapes into the fileShapes structure.
 				// The handling code is in io.hpp and registry.hpp.
 				// The function automatically recognizes different file types.
-				icedb::Shapes::NewShapeProperties::readVector(nullptr, registry::options::generate()->filename(f.first.string()), fileShapes);
+				icedb::Shapes::NewShapeProperties::readVector(nullptr, opts, fileShapes);
 
 				int shapeNum = 0;
 				for (const auto &s : fileShapes) {
@@ -237,7 +241,7 @@ int main(int argc, char** argv) {
 					// In this example, objects in the output file are named according to their ids.
 					// TODO: What about numbered objects
 					shapeNum++;
-					std::cerr << "\tReading shape " << shapeNum << std::endl;
+					std::cerr << "\tProcessing shape #" << shapeNum << " of " << fileShapes.size() << std::endl;
 					if (!s->particle_id.size()) {
 						std::ostringstream oParticle_Id;
 						oParticle_Id << f.first.filename().string() << "-particle-" << shapeNum;
@@ -263,7 +267,7 @@ int main(int argc, char** argv) {
 					if (sScattMeth.size()) s->scattering_method = sScattMeth;
 
 					// Write to the output file.
-					std::cout << "\tWriting shape " << s->particle_id << std::endl;
+					std::cout << "\t\tWriting shape " << s->particle_id << std::endl;
 					if (basegrp.exists(s->particle_id.c_str())) {
 						std::cerr << "Warning: this shape already exists in the output file!!!!!! "
 							"Skipping this shape's write step, as per-shape overwriting is not handled. If you meant to overwrite the "
