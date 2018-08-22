@@ -163,11 +163,12 @@ mark_as_advanced(BUILDNAME SITE)
 # A junk test, for now. I only care if the code builds.
 #add_test (NAME get_id COMMAND uname -a)
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/testing)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test)
 add_test (NAME io-psu-gmm 
 	COMMAND icedb-3d_structures_importer
 		--from ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
-		--from-format psu --to ${CMAKE_BINARY_DIR}/testing/psu-gmm-a04.h5
+		--truncate
+		--from-format psu --to ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 
