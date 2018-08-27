@@ -33,6 +33,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <fstream>
 #include <map>
 #include <memory>
 #include "../icedb/error.h"

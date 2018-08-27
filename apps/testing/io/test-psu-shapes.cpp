@@ -11,6 +11,11 @@
 #include <HH/Files.hpp>
 #include <HH/Groups.hpp>
 
+#if (BOOST_VERSION / 100 % 1000) < 59
+	#define BOOST_TEST BOOST_CHECK
+	#define BOOST_TEST_REQUIRE BOOST_REQUIRE
+#endif
+
 BOOST_AUTO_TEST_CASE(read_psu_gmm)
 {
 	using namespace std;

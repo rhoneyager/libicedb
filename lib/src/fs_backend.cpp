@@ -39,12 +39,17 @@ namespace icedb {
 					}
 				}
 				else {
-					for (const auto& p : sfs::recursive_directory_iterator(base)) {
-						auto sp = resolveSymLinks(p.path());
+					// NOTE: Does not work on Boost 1.53.0 - CentOS 7 default.
+					std::vector<boost::filesystem::path> ps;
+					using namespace boost::filesystem;
+					copy(recursive_directory_iterator(base,symlink_option::recurse),recursive_directory_iterator(), back_inserter(ps));
+					//for (const auto& p : sfs::recursive_directory_iterator(base)) {
+					for (const auto &p : ps) {
+						auto sp = resolveSymLinks(p);
 						if (!sfs::exists(sp)) continue;
 						if (sfs::is_regular_file(sp)) {
 							if (valid_extensions.count(sp.extension()) > 0) {
-								std::string sP = p.path().string();
+								std::string sP = p.string();
 								std::replace(sP.begin(), sP.end(), '\\', '/');
 								Expects(sP.find(sBase) == 0);
 								std::string relPath = sP.substr(sBase.length());

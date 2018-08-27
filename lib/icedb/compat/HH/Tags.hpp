@@ -1,7 +1,8 @@
 #pragma once
+#include "defs.hpp"
 #include "Handles.hpp"
 #include "Types.hpp"
-#if __has_include(<Eigen/Dense>)
+#if HH_HAS_EIGEN
 # include <Eigen/Dense>
 #endif
 namespace HH {
@@ -104,7 +105,7 @@ namespace HH {
 				= Tag<_detail::tag_data_as_span<T>, gsl::span<T> >;
 			template <class T> using t_data_initializer_list
 				= Tag<_detail::tag_data_as_initializer_list<T>, std::initializer_list<T> >;
-#if __has_include(<Eigen/Dense>)
+#if HH_HAS_EIGEN
 			template <class T> using t_data_eigen
 				= Tag<_detail::tag_data_as_eigen<T>, ::Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >;
 #endif
