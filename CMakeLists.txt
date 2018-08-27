@@ -74,7 +74,7 @@ amend_basic_libs(ZLIB::ZLIB impZLIB::ZLIB)
 #endif()
 option(USE_OLD_CPP03_ABI "C++11 led to changes in the GLIB C++ ABI. Turn this on if you are linking against old system libraries" OFF)
 
-find_package(HDF5 COMPONENTS C HL REQUIRED )
+find_package(HDF5 REQUIRED COMPONENTS C HL )
 # These get set: HDF5_C_INCLUDE_DIRS HDF5_C_LIBRARIES HDF5_C_HL_LIBRARIES HDF5_C_DEFINITIONS
 # Unfortunately, the hdf5:: targets are not always available. Ugh.
 if (NOT TARGET hdf5::hdf5-shared)
@@ -90,14 +90,24 @@ if (NOT TARGET hdf5::hdf5-shared)
 	if(DEFINED HDF5_C_DEFINITIONS)
 		set_target_properties(hdf5::hdf5-shared PROPERTIES COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS}")
 	endif()
-	set_target_properties(hdf5::hdf5-shared PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${HDF5_C_INCLUDE_DIRS})
+	if(NOT "${HDF5_C_INCLUDE_DIRS}" STREQUAL "")
+		set_target_properties(hdf5::hdf5-shared PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${HDF5_C_INCLUDE_DIRS})
+	endif()
 	#target_include_directories(hdf5::hdf5-shared SYSTEM INTERFACE ${HDF5_C_INCLUDE_DIRS})
 endif()
 if (NOT TARGET hdf5::hdf5_hl-shared)
 	add_library(hdf5::hdf5_hl-shared UNKNOWN IMPORTED)
 	set_property(TARGET hdf5::hdf5_hl-shared APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-	#message("${HDF5_C_HL_LIBRARIES}")
-	set_target_properties(hdf5::hdf5_hl-shared PROPERTIES IMPORTED_LOCATION ${HDF5_C_HL_LIBRARIES})
+	list(GET HDF5_HL_LIBRARIES 0 HDF5_MAIN_HL_LIB)
+	list(REMOVE_AT HDF5_HL_LIBRARIES 0)
+
+	#message("${HDF5_C_HL_LIBRARIES} ... ${HDF5_HL_LIBRARIES}")
+	# HDF5_hdf5_hl_LIBRARY_RELEASE
+	if(NOT "${HDF5_MAIN_HL_LIB}" STREQUAL "")
+		set_target_properties(hdf5::hdf5_hl-shared PROPERTIES IMPORTED_LOCATION ${HDF5_MAIN_HL_LIB})
+		set_target_properties(hdf5::hdf5_hl-shared PROPERTIES LINK_LIBRARIES "${HDF5_HL_LIBRARIES}")
+
+	endif()
 endif()
 
 # These are rather polluting

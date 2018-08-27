@@ -66,7 +66,7 @@ namespace icedb {
 			std::string contact;
 
 			/// ATTRIBUTE: Version information
-			std::array<unsigned int, 3> version = { 0, 0, 0 };
+			std::array<unsigned int, 3> version = std::array<unsigned int, 3>{ 0, 0, 0 };
 
 			/// VARIABLE: The id number for each scattering element. Single dimension.
 			std::vector<int32_t> particle_scattering_element_number;

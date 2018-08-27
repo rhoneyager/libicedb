@@ -264,8 +264,8 @@ namespace HH {
 			cout << "Attribute has:\n\tnPoints:\t" << ::std::get<t_numpoints>(d).data
 				<< "\n\tDimensionality:\t" << ::std::get<t_dimensionality>(d).data
 				<< "\n\tDimensions:\t[\t";
-			for (const auto &d : ::std::get<t_dimensions_current>(d).data)
-				cout << d << "\t";
+			for (const auto &m : ::std::get<t_dimensions_current>(d).data)
+				cout << m << "\t";
 			cout << "]" << endl;
 		}
 	};
