@@ -81,10 +81,12 @@ namespace icedb {
 				if (res == -1) throw;
 			}
 			std::string siloFile::getdir() {
-				std::string dir(256, '\0');
-				int res = DBGetDir(df, dir.data());
+				char dir[256]; // Max space used is 256 characters.
+				// see https://wci.llnl.gov/content/assets/docs/simulation/computer-codes/silo/LLNL-SM-453191.pdf
+				int res = DBGetDir(df, dir);
 				if (res == -1) throw;
-				return dir;
+				std::string sdir(dir);
+				return sdir;
 			}
 
 

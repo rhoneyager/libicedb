@@ -13,7 +13,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 # Global definitions
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED YES) # Force compiler switches
 set(CMAKE_CXX_EXTENSIONS OFF) # No compiler-specific extensions
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON) # Building dynamic libraries
@@ -33,8 +33,11 @@ INCLUDE(CTest)
 
 # Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
-string(SUBSTRING "${GITREFSPECVAR}" 11 -1 GITBRANCH )
-#message("${GITREFSPECVAR} ${GITHASHVAR} ${GITBRANCH}")
+if ("${GITREFSPECVAR}" STREQUAL "")
+	set(GITBRANCH "GIT_BRANCH_UNKNOWN")
+else()
+	string(SUBSTRING "${GITREFSPECVAR}" 11 -1 GITBRANCH )
+endif()
 set(MAJOR 0)
 set(MINOR 7)
 set(REVISION 0)

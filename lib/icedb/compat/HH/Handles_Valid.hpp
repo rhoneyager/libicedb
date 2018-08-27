@@ -22,13 +22,23 @@ namespace HH {
 				using type = Default;
 			};
 
+#if __cplusplus >= 201703L
 			template <class Default, template<class...> class Op, class... Args>
 			struct detector<Default, std::void_t<Op<Args...>>, Op, Args...> {
 				// Note that std::void_t is a C++17 feature
 				using value_t = std::true_type;
 				using type = Op<Args...>;
 			};
+#else
+			template< class ... > using void_t = void;
+			template <class Default, template<class...> class Op, class... Args>
+			struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
+				// Note that std::void_t is a C++17 feature
+				using value_t = std::true_type;
+				using type = Op<Args...>;
+			};
 
+#endif
 		} // namespace detail
 
 		template <template<class...> class Op, class... Args>
