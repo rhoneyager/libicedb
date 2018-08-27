@@ -4,7 +4,8 @@
 #include <hdf5.h>
 #include <hdf5_hl.h>
 #include <gsl/pointers>
-#if __has_include(<Eigen/Dense>)
+
+#if HH_HAS_EIGEN
 # include<Eigen/Dense>
 #endif
 #include "Handles.hpp"
@@ -53,7 +54,7 @@ namespace HH {
 		Has_Attributes atts;
 
 		/// Get type
-		[[nodiscard]] HH_hid_t getType() const
+		HH_NODISCARD HH_hid_t getType() const
 		{
 			Expects(isDataset());
 			return HH_hid_t(H5Dget_type(dset()), Closers::CloseHDF5Datatype::CloseP);
@@ -73,7 +74,7 @@ namespace HH {
 		}
 
 		// Get dataspace
-		[[nodiscard]] HH_hid_t getSpace() const
+		HH_NODISCARD HH_hid_t getSpace() const
 		{
 			Expects(isDataset());
 			return HH_hid_t(H5Dget_space(dset()), Closers::CloseHDF5Dataspace::CloseP);
@@ -111,7 +112,7 @@ namespace HH {
 		/// \note Ensure that the correct dimension ordering is preserved.
 		/// \note With default parameters, the entire dataset is written.
 		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
-		[[nodiscard]] herr_t write(
+		HH_NODISCARD herr_t write(
 			const span<const DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t mem_space_id = H5S_ALL,
@@ -132,14 +133,14 @@ namespace HH {
 			);
 		}
 		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
-		[[nodiscard]] herr_t write(
+		HH_NODISCARD herr_t write(
 			std::initializer_list<const DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t mem_space_id = H5S_ALL,
 			HH_hid_t file_space_id = H5S_ALL,
 			HH_hid_t xfer_plist_id = H5P_DEFAULT)
 		{
-			return write<DataType, Marshaller>(gsl::span(data.begin(), data.size()),
+			return write<DataType, Marshaller>(gsl::span<const DataType>(data.begin(), data.size()),
 				in_memory_dataType, mem_space_id, file_space_id, xfer_plist_id);
 		}
 
@@ -147,7 +148,7 @@ namespace HH {
 		/// \note Ensure that the correct dimension ordering is preserved
 		/// \note With default parameters, the entire dataset is read
 		template <class DataType>
-		[[nodiscard]] herr_t read(
+		HH_NODISCARD herr_t read(
 			span<DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t mem_space_id = H5S_ALL,
@@ -460,7 +461,7 @@ namespace HH {
 			// Optionally, write the data: t_data_span, t_data_initializer_list, t_data_eigen
 			constexpr bool has_span = has_type<t_data_span<DataType>, vals_t >::value;
 			constexpr bool has_initializer_list = has_type<t_data_initializer_list<DataType>, vals_t >::value;
-#if __has_include(<Eigen/Dense>)
+#if HH_HAS_EIGEN
 			constexpr bool has_eigen = has_type<t_data_eigen<DataType>, vals_t >::value;
 #else
 			constexpr bool has_eigen = false;
@@ -538,7 +539,7 @@ namespace HH {
 			return create<DataType, Args...>(t);
 		}
 
-#if __has_include(<Eigen/Dense>)
+#if HH_HAS_EIGEN
 		template <class EigenClass>
 		Dataset createWithEigen(
 			gsl::not_null<const char*> dsetname,

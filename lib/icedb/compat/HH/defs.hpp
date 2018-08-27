@@ -176,6 +176,24 @@ HH_SYMBOL_SHARED void HH_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, int, c
 /// Denotes an 'optional' parameter (one which can be replaced with a NULL or nullptr)
 #define HH_OPTIONAL
 
+#if __cplusplus >= 201703L
+# define HH_NODISCARD [[nodiscard]]
+#else
+# define HH_NODISCARD
+#endif
+
+#ifndef HH_HAS_EIGEN
+# if __cplusplus >= 201703L
+#  if __has_include(<Eigen/Dense>)
+#   define HH_HAS_EIGEN 1
+#  else
+#   define HH_HAS_EIGEN 0
+#  endif
+# else
+#  define HH_HAS_EIGEN 0
+# endif
+#endif
+
 HH_END_DECL_C
 
 // Errata:

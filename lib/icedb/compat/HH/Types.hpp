@@ -4,7 +4,10 @@
 #include <typeindex>
 #include <typeinfo>
 #include <string>
+#include <vector>
+#if __cplusplus >= 201703L
 #include <string_view>
+#endif
 #include <gsl/gsl>
 #include <hdf5.h>
 #include "Handles.hpp"
@@ -51,7 +54,9 @@ namespace HH {
 			std::is_same<const char*, typename std::decay<T>::type>::value
 			> {};
 		template<> struct is_string<std::string> : std::true_type {};
+#if __cplusplus >= 201703L
 		template<> struct is_string<std::string_view> : std::true_type {};
+#endif
 
 		namespace constants {
 			constexpr int _Variable_Length = -1;

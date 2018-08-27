@@ -49,7 +49,7 @@ namespace HH {
 		/// \brief Write data to an attribute
 		/// \note Writing attributes is an all-or-nothing process.
 		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
-		[[nodiscard]] herr_t write(
+		HH_NODISCARD herr_t write(
 			::gsl::span<const DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
 		{
@@ -61,7 +61,7 @@ namespace HH {
 			//return H5Awrite(attr(), in_memory_dataType(), data.data());
 		}
 		template <class DataType> //, class Marshaller = HH::Types::Object_Accessor<DataType> >
-		[[nodiscard]] herr_t write(
+		HH_NODISCARD herr_t write(
 			DataType data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>())
 		{
@@ -84,7 +84,7 @@ namespace HH {
 		/// \brief Read data from an attribute
 		/// \note Reading attributes is an all-or-nothing process.
 		template <class DataType>
-		[[nodiscard]] herr_t read(
+		HH_NODISCARD herr_t read(
 			span<DataType> data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
@@ -112,7 +112,7 @@ namespace HH {
 		/// \brief Vector read convenience function
 		/// \note Assuming that there will never be an array typr of variable-length strings, or other oddities.
 		template <class DataType>
-		[[nodiscard]] herr_t read(
+		HH_NODISCARD herr_t read(
 			std::vector<DataType> &data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
@@ -139,7 +139,7 @@ namespace HH {
 
 		/// Read into a single value (convenience function)
 		template <class DataType>
-		[[nodiscard]] herr_t read(
+		HH_NODISCARD herr_t read(
 			DataType &data,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
@@ -148,7 +148,7 @@ namespace HH {
 
 		/// Read into a single value (convenience function)
 		template <class DataType>
-		[[nodiscard]] DataType read(HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
+		HH_NODISCARD DataType read(HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>()) const
 		{
 			DataType res;
 			herr_t err = read<DataType>(res, in_memory_dataType);
@@ -157,7 +157,7 @@ namespace HH {
 		}
 
 		/// \brief Get an attribute's name
-		[[nodiscard]] ssize_t get_name(size_t buf_size, char* buf) const
+		HH_NODISCARD ssize_t get_name(size_t buf_size, char* buf) const
 		{
 			Expects(isAttribute());
 			return H5Aget_name(attr(), buf_size, buf);
@@ -288,7 +288,7 @@ namespace HH {
 		/// Delete an attribute with the specified name.
 		/// \note The base HDF5 function is H5Adelete, but delete is a reserved name in C++.
 		/// \returns false on error, true on success.
-		[[nodiscard]] bool remove(not_null<const char*> attname)
+		HH_NODISCARD bool remove(not_null<const char*> attname)
 		{
 			herr_t err = H5Adelete(base(), attname.get());
 			if (err >= 0) return true;
@@ -313,7 +313,7 @@ namespace HH {
 
 		/// \brief Create an attribute, without setting its data.
 		template <class DataType>
-		[[nodiscard]] Attribute create(
+		HH_NODISCARD Attribute create(
 			not_null<const char*> attrname,
 			initializer_list<size_t> dimensions = { 1 },
 			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>(),
@@ -347,7 +347,7 @@ namespace HH {
 
 		/// \brief Rename an attribute
 		/// \note This can be in UTF-8... must match the attribute's creation property list.
-		[[nodiscard]] herr_t rename(not_null<const char*> oldName, not_null<const char*> newName) const
+		HH_NODISCARD herr_t rename(not_null<const char*> oldName, not_null<const char*> newName) const
 		{
 			return H5Arename(base(), oldName.get(), newName.get());
 		}
@@ -481,7 +481,7 @@ namespace HH {
 
 		/// Read an attribute
 		template <class DataType>
-		[[nodiscard]] DataType read(
+		HH_NODISCARD DataType read(
 			not_null<const char*> attrname,
 			HH_hid_t in_memory_dataType = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)

@@ -1,6 +1,6 @@
 #pragma once
 #include <algorithm>
-#include <optional>
+//#include <optional>
 #include <tuple>
 #include <vector>
 #include <hdf5.h>
@@ -202,6 +202,7 @@ namespace HH {
 				void clear() {
 					H5Premove_filter(pl(), H5Z_FILTER_ALL);
 				}
+				/*
 				std::optional<filter_info> has(H5Z_filter_t id) const {
 					auto fi = get();
 					auto res = std::find_if(fi.cbegin(), fi.cend(), [&id](const filter_info &f) {return f.id == id; });
@@ -277,7 +278,7 @@ namespace HH {
 					Expects(0 <= H5Pset_deflate(pl(), lv));
 					appendOfType(fils, FILTER_T::OTHER);
 				}
-				
+				*/
 			} filters;
 
 			/**
@@ -330,6 +331,7 @@ namespace HH {
 				constexpr bool hasFillValue = HH::Tags::has_type<t_FillValue<DataType>, vals_t >::value;
 				//t_FillValue<DataType> fill; // Used only if needed later
 
+				/*
 				// Shuffing
 				if (hasDoShuffle) {
 					filters.removeOfType(PL::Filters::FILTER_T::SHUFFLE);
@@ -370,7 +372,7 @@ namespace HH {
 						else if (isFilteravailable(H5Z_FILTER_DEFLATE).first == true) addGZIP();
 					}
 				}
-
+				*/
 				// Chunking
 				if (hasManualChunking) {
 					t_Chunking manualChunking; getOptionalValue(manualChunking, vals);

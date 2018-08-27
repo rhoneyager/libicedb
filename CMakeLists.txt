@@ -13,7 +13,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 # Global definitions
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED YES) # Force compiler switches
 set(CMAKE_CXX_EXTENSIONS OFF) # No compiler-specific extensions
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON) # Building dynamic libraries
@@ -33,6 +33,8 @@ INCLUDE(CTest)
 
 # Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
+string(SUBSTRING ${GITREFSPECVAR} 11 -1 GITBRANCH )
+#message("${GITREFSPECVAR} ${GITHASHVAR} ${GITBRANCH}")
 set(MAJOR 0)
 set(MINOR 7)
 set(REVISION 0)
@@ -222,9 +224,19 @@ if (NOT CPACK_SYSTEM_NAME)
 		set(CPACK_SYSTEM_NAME "amd64")
 	endif ()
 endif ()
+if (CPACK_SYSTEM_NAME STREQUAL "AMD64")
+	set(CPACK_SYSTEM_NAME "amd64")
+endif ()
+string(TIMESTAMP PACKAGE_TIMESTAMP "%Y%m%d")
+option (PACKAGE_CI_BUILD "Is this a testing (continuous integration) build?" ON)
+if(PACKAGE_CI_BUILD)
+	SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}-${GITBRANCH}-${CMAKE_BUILD_TYPE}-${PACKAGE_TIMESTAMP}")
+else()
+	SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}")
+endif()
 IF(WIN32 AND NOT UNIX)
 	set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}\\\\LICENSE.txt")
-	SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}")
+	
 	# There is a bug in NSIS that does not handle full unix paths properly. Make
 	# sure there is at least one set of four (4) backslashes.
 	SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/share/icons\\\\favicon-96x96.png")

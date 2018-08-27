@@ -34,14 +34,14 @@ namespace HH {
 		//Has_Groups grps;
 		Has_Datasets dsets;
 
-		[[nodiscard]] herr_t get_info(H5F_info_t &info) const {
+		HH_NODISCARD herr_t get_info(H5F_info_t &info) const {
 			herr_t err = H5Fget_info(base(), &info);
 			if (err < 0) return err;
 			return 1;
 		}
 
 		/// \note Should ideally be open, but the Group::open functions get masked.
-		[[nodiscard]] static File openFile(
+		HH_NODISCARD static File openFile(
 			not_null<const char*> filename,
 			unsigned int FileOpenFlags,
 			HH_hid_t FileAccessPlist = H5P_DEFAULT)
@@ -52,7 +52,7 @@ namespace HH {
 		}
 
 		/// \note Should ideally be create, but the Group::create functions get masked.
-		[[nodiscard]] static File createFile(
+		HH_NODISCARD static File createFile(
 			not_null<const char*> filename,
 			unsigned int FileCreateFlags,
 			HH_hid_t FileCreationPlist = H5P_DEFAULT,
@@ -65,7 +65,7 @@ namespace HH {
 		}
 
 		/// \brief Load an image of an already-opened HDF5 file into system memory
-		[[nodiscard]] static ssize_t get_file_image(
+		HH_NODISCARD static ssize_t get_file_image(
 			HH_hid_t file_id,
 			void* buf_ptr,
 			size_t buf_len)
@@ -74,7 +74,7 @@ namespace HH {
 		}
 
 		/// \brief Open a file image that is loaded into system memory as a regular HDF5 file
-		[[nodiscard]] static File open_file_image(
+		HH_NODISCARD static File open_file_image(
 			not_null<void*> buf_ptr,
 			size_t buf_size,
 			unsigned int flags)
@@ -88,7 +88,7 @@ namespace HH {
 		/// \param filename is the file to write, if backing_store_in_file == true
 		/// \param block_allocation_len is the size of each new allocation as the file grows
 		/// \param backing_store_in_file determines whether a physical file is written upon close.
-		[[nodiscard]] static File create_file_image(
+		HH_NODISCARD static File create_file_image(
 			not_null<const char*> filename,
 			size_t block_allocation_len = 10000000, // 10 MB
 			bool backing_store_in_file = false,

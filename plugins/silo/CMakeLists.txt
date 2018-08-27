@@ -32,6 +32,7 @@ if (BUILD_PLUGIN_SILO)
 		# provides silo_exports.h on platforms that are missing it.
 		${CMAKE_CURRENT_SOURCE_DIR}/fixes 
 		)
+	target_compile_definitions(plugin_silo PRIVATE HH_HAS_EIGEN=1)
 	addplugin(plugin_silo IO icedb)
 
 	if (WIN32 AND NOT CMAKE)

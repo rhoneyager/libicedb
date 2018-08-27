@@ -103,7 +103,7 @@ namespace HH {
 
 		/// \brief Mount a file into a group
 		/// \returns >=0 on success, negative on failure
-		[[nodiscard]] herr_t mount(
+		HH_NODISCARD herr_t mount(
 			not_null<const char*> destination_groupname,
 			HH_hid_t source_file,
 			HH_hid_t FileMountPlist = H5P_DEFAULT)
@@ -114,7 +114,7 @@ namespace HH {
 
 		/// \brief Unmount a file from a group
 		/// \returns >=0 success, negative on failure
-		[[nodiscard]] herr_t unmount(
+		HH_NODISCARD herr_t unmount(
 			const char* mountpoint)
 		{
 			return H5Funmount(base(), mountpoint);
