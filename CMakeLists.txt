@@ -33,7 +33,7 @@ INCLUDE(CTest)
 
 # Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
-string(SUBSTRING ${GITREFSPECVAR} 11 -1 GITBRANCH )
+string(SUBSTRING "${GITREFSPECVAR}" 11 -1 GITBRANCH )
 #message("${GITREFSPECVAR} ${GITHASHVAR} ${GITBRANCH}")
 set(MAJOR 0)
 set(MINOR 7)
