@@ -245,7 +245,7 @@ namespace icedb {
 					DBAddOption(optlist, DBOPT_UNITS, (void *)varUnits);
 				DBPutPointvar(df, varname, name,
 					(int)nDims,
-					data,
+					const_cast<void*>(data), // NOTE: const_cast for Ubuntu 16.04's silo, which didn't declare this variable as const. Safe to cast.
 					(int)numPoints,
 					datatype,
 					optlist);
