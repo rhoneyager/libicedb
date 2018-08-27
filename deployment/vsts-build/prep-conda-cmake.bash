@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH="$HOME/miniconda3/bin:$PATH"
 source activate icedb
 mkdir build
 cd build
