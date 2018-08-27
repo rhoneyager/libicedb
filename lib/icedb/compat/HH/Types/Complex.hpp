@@ -96,8 +96,8 @@ template<> inline HH_hid_t GetHDF5Type< x >(std::initializer_list<hsize_t>, void
 			/// \note For this class specialization, _buffer is marshaled on object construction.
 			void marshalBuffer(std::string* objStart) { }
 			void deserialize(std::string* objStart) {
-				//*objStart = std::string(_buffer.get()[0], _sz);
-				//*objStart = std::string(_buffer.get(), _sz);
+				// *objStart = std::string(_buffer.get()[0], _sz);
+				// *objStart = std::string(_buffer.get(), _sz);
 			}
 			/// HDF5 will allocate character strings on read. These should all be freed.
 			void freeBuffer() {

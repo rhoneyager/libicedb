@@ -183,8 +183,9 @@ namespace HH {
 			Expects(encerr >= 0);
 			// encoding is either H5T_CSET_ASCII or H5T_CSET_UTF8.
 			if (encoding == H5T_CSET_ASCII) return att_name_encoding::ASCII;
-			else if (encoding == H5T_CSET_UTF8) att_name_encoding::UTF8;
+			else if (encoding == H5T_CSET_UTF8) return att_name_encoding::UTF8;
 			else throw;
+			return att_name_encoding::ASCII; // Suppress Clang warning
 		}
 
 		/// @}
