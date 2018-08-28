@@ -24,7 +24,6 @@ if (BUILD_PLUGIN_PSU)
 	endif()
 	addapp(icedb-test-psu-shapes Testing/IO)
 	storebin(icedb-test-psu-shapes)
-
 endif()
 
 if (BUILD_PLUGIN_ADDA)
@@ -46,3 +45,21 @@ if (BUILD_PLUGIN_ADDA)
 	storebin(icedb-test-adda-shapes)
 endif()
 
+if (BUILD_PLUGIN_DDSCAT)
+	# Documents the app in Windows Explorer
+	generaterc("icedb-test-ddscat7-shapes" "exe"
+		"icedb"
+		"Test DDSCAT 7 shape reading and writing code"
+		 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
+		 )
+	# The source files
+	set(srcs-ddscat7 test-ddscat7-shapes.cpp)
+	IF (WIN32 AND NOT CYGWIN)
+		SET(srcs-ddscat7 ${srcs-ddscat7} "${CMAKE_CURRENT_BINARY_DIR}/app.rc")
+	ENDIF()
+
+	add_executable(icedb-test-ddscat7-shapes ${srcs-ddscat7})
+	target_link_libraries(icedb-test-ddscat7-shapes icedb io_ddscat Boost::unit_test_framework)
+	addapp(icedb-test-ddscat7-shapes Testing/IO)
+	storebin(icedb-test-ddscat7-shapes)
+endif()

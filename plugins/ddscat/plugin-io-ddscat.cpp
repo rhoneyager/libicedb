@@ -9,47 +9,30 @@
 
 D_icedb_validator();
 
-namespace icedb
-{
-	namespace plugins
-	{
-		namespace io
-		{
-			namespace ddscat
+namespace icedb {
+	namespace plugins {
+		namespace ddscat {
+			ddscat_text_handle::ddscat_text_handle(const char* filename, IOtype t)
+				: IOhandler(PLUGINID) //, file(nullptr, &nullFileCloser)
 			{
-				/*
-				silo_handle::silo_handle(const char* filename, IOtype t)
-					: IOhandler(PLUGINID)
-				{
-					open(filename, t);
-				}
+				open(filename, t);
+			}
 
-				void silo_handle::open(const char* filename, IOtype t)
+			void ddscat_text_handle::open(const char* filename, IOtype t)
+			{
+				switch (t)
 				{
-					switch (t)
-					{
-					case IOtype::READWRITE:
-						//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_RDWR ));
-						//break;
-					case IOtype::EXCLUSIVE:
-						//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_EXCL ));
-						//break;
-					case IOtype::DEBUG:
-						//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_DEBUG ));
-						//break;
-					case IOtype::CREATE:
-						//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_CREAT ));
-						//break;
-					case IOtype::READONLY:
-						//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_RDONLY ));
-						ICEDB_throw(icedb::error::error_types::xUnimplementedFunction);
-						break;
-					case IOtype::TRUNCATE:
-						file = std::shared_ptr<siloFile>(new siloFile(filename));
-						break;
-					}
+				case IOtype::READONLY:
+					this->filename = filename;
+					//file.swap(bIO::_impl::openFile(filename, "rb"));
+					//file = HH::File::openFile(filename, H5F_ACC_RDONLY);
+					break;
+				default:
+					ICEDB_throw(icedb::error::error_types::xUnsupportedIOaction)
+						.add<std::string>("Reason", "This plugin only supports reading files")
+						.add<std::string>("filename", std::string(filename));
+					break;
 				}
-				*/
 			}
 		}
 	}
@@ -58,7 +41,7 @@ namespace icedb
 D_icedb_start()
 {
 	using namespace icedb::registry;
-	using namespace icedb::plugins::io::ddscat;
+	using namespace icedb::plugins::ddscat;
 	static const icedb::registry::DLLpreamble id(
 		"Plugin-ddscat",
 		"Example plugin to provide icedb with the ability to "
@@ -67,8 +50,11 @@ D_icedb_start()
 	dllInitResult res = icedb_registry_register_dll(id, (void*)dllStart);
 	if (res != SUCCESS) return res;
 
-	//genAndRegisterIOregistry_writer<::icedb::Shapes::Shape,
-	//	icedb::Shapes::_impl::Shape_IO_Output_Registry>("silo", PLUGINID);
+	const size_t nexts = 2;
+	const char *exts[nexts] = { "ddscat", "ddscat-shape" };
+	genAndRegisterIOregistryPlural_reader
+		<::icedb::Shapes::NewShapeProperties, icedb::Shapes::_impl::ShapeProps_IO_Input_Registry>
+		(1, exts, PLUGINID);
 
 	return SUCCESS;
 }
