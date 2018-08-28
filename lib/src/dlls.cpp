@@ -15,6 +15,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/tokenizer.hpp>
 #include <mutex>
+#include "../icedb/logging.hpp"
 //#include "../icedb/debug.h"
 #include "../icedb/error.hpp"
 #include "../icedb/misc/os_functions.hpp"
@@ -320,6 +321,8 @@ namespace icedb
 						.add("is_critical", critical)
 						.add("file_name", filename)
 						.add("file_name_b", fname);
+					ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "DLL already loaded. " << filename);
+					return;
 				}
 				if (dlHandle)
 				{
@@ -327,6 +330,8 @@ namespace icedb
 						.add("is_critical", critical)
 						.add("file_name", filename)
 						.add("file_name_b", fname);
+					ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "DLLhandleImpl already had a loaded DLL, when trying to load " << filename);
+					return;
 				}
 				fname = filename;
 
@@ -343,6 +348,8 @@ namespace icedb
 							.add("is_critical", critical)
 							.add("file_name", filename)
 							.add("otherErrorText", std::string(cerror));
+						ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "dlopen for " << filename << " failed "
+							"with error " << cerror);
 						return false;
 					}
 #endif
@@ -358,6 +365,8 @@ namespace icedb
 							.add("file_name", filename)
 							.add("otherErrorText", "LoadLibrary")
 							.add("otherErrorCode", err);
+						ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "LoadLibrary for " << filename << " failed "
+							"with error " << err);
 						return false;
 					}
 #endif
@@ -368,9 +377,12 @@ namespace icedb
 
 				DLLpathsLoaded.insert(filename);
 
+				ICEDB_log("dlls", logging::ICEDB_LOG_INFO, "Validating dll " << filename << ".");
 				bool res2 = validators->validate(parent, critical);
 
 				if (!res2) {
+					ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "Cannot load dll " << filename
+						<< ", as it failed validation checks!");
 					close();
 					return;
 				}
@@ -389,6 +401,8 @@ namespace icedb
 							ICEDB_throw(icedb::error::error_types::xDuplicateHook)
 							.add("is_critical", critical)
 							.add("file_name", filename);
+						ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "Cannot load dll " << filename
+							<< ", as it already loaded!");
 						close();
 						return;
 					}
@@ -399,6 +413,8 @@ namespace icedb
 							.add("file_name", filename)
 							.add("symbol_name", "dllStart");
 							//.add("otherErrorCode", res);
+						ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "Cannot load dll " << filename
+							<< ", as its dllStart function failed!");
 						close();
 						return;
 					}
@@ -417,6 +433,8 @@ namespace icedb
 						.add("file_name", filename)
 						.add("symbol_name", "dllStart")
 						.add("otherErrorCode", res);
+					ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "Cannot load dll " << filename
+						<< ", as it is missing its main entry point!");
 					close();
 					return;
 				}
@@ -491,6 +509,8 @@ namespace icedb
 							ICEDB_throw(icedb::error::error_types::xDLLversionMismatch)
 							.add("is_critical", critical)
 							.add("file_name", filename);
+						ICEDB_log("dlls", logging::ICEDB_LOG_NOTIFICATION, "dll validation failed "
+							"with verres " << verres);
 						return false;
 					}
 					//else if (verres != EXACT_MATCH) {
@@ -514,6 +534,9 @@ namespace icedb
 							ICEDB_throw(icedb::error::error_types::xDLLversionMismatch)
 							.add("is_critical", critical)
 							.add("file_name", filename);
+						ICEDB_log("dlls", logging::ICEDB_LOG_NOTIFICATION, "DLLversionMismatch encountered. "
+						"The plugin refers to the wrong icedb release!");
+
 						return false;
 					}
 				}
@@ -522,6 +545,8 @@ namespace icedb
 						ICEDB_throw(icedb::error::error_types::xDLLversionMismatch)
 						.add("is_critical", critical)
 						.add("file_name", filename);
+					ICEDB_log("dlls", logging::ICEDB_LOG_NOTIFICATION, "DLL validation failure! Is this an icedb plugin? "
+						"The version comparison function cannot be found.");
 					return false;
 				}
 				return true;
@@ -685,6 +710,7 @@ namespace icedb
 			// Search for the dll
 			using namespace boost::filesystem;
 			path p(filename);
+			ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "Loading dll " << filename << ".");
 			//if (p.is_absolute())
 			{
 				if (exists(p)) doLoad(p.string(), critical);
@@ -752,6 +778,7 @@ namespace icedb
 		namespace po = boost::program_options;
 		using std::string;
 
+		
 		cmdline.add_options()
 			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
 			;
@@ -767,6 +794,10 @@ namespace icedb
 			//("dll-no-default-locations", "Prevent non-command line dll locations from being read")
 					("print-dll-loaded", "Prints the table of loaded DLLs.")
 			("print-dll-search-paths", "Prints the search paths used when loading dlls.")
+			("console-log-threshold", po::value<int>()->default_value(2), "Set threshold for logging output to console. 0 is DEBUG_2, 7 is CRITICAL.")
+			("debug-log-threshold", po::value<int>()->default_value(2), "Set threshold for logging output to an attached debugger. 0 is DEBUG_2, 7 is CRITICAL.")
+			("log-file", po::value<std::string>(), "Set this to log debugging output to a file.")
+			("help-all", "Print all available help.")
 			;
 	}
 
@@ -816,6 +847,12 @@ namespace icedb
 		using std::string;
 		using namespace icedb::registry;
 
+		icedb::logging::log_properties lps;
+		if (vm.count("log-file")) lps.logFile = vm["log-file"].as<std::string>();
+		lps.consoleLogThreshold = vm["console-log-threshold"].as<int>();
+		lps.debuggerLogThreshold = vm["debug-log-threshold"].as<int>();
+		icedb::logging::setupLogging(0, nullptr, &lps);
+
 		//if (vm.count("dll-no-default-locations"))
 		//	autoLoadDLLs = false;
 
@@ -839,8 +876,10 @@ namespace icedb
 
 		constructSearchPaths(false, true, true);
 
-		if (vm.count("print-dll-search-paths"))
+		if (vm.count("print-dll-search-paths")) {
 			printDLLsearchPaths(std::cerr);
+			exit(0);
+		}
 
 		std::set<boost::filesystem::path> rPaths, oPaths;
 		findPath(rPaths, boost::filesystem::path("default"), searchPathsRecursive, true);
@@ -860,8 +899,10 @@ namespace icedb
 		loadDLLs(toLoadDlls);
 
 
-		if (vm.count("print-dll-loaded"))
+		if (vm.count("print-dll-loaded")) {
 			printDLLs();
+			exit(0);
+		}
 	}
 
 }

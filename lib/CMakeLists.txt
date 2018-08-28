@@ -184,6 +184,8 @@ target_include_directories(icedb SYSTEM
 
 target_compile_definitions(icedb
 	PUBLIC ${HDF5_DEFINITIONS})
+# Boost warning acknowledgement. 
+target_compile_definitions(icedb PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
 target_link_libraries(icedb icedb_base hdf5::hdf5-shared hdf5::hdf5_hl-shared) # ZLIB::ZLIB)
 target_link_libraries(icedb
 	Boost::filesystem
