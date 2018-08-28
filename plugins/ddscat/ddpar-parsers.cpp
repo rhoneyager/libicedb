@@ -15,8 +15,6 @@
 #include <cmath>
 #include "ddpar.h"
 #include "ddVersions.h"
-//#include <Ryan_Debug/config.h>
-//#include "../rtmath/config.h"
 #include <icedb/splitSet.hpp>
 #include <icedb/error.hpp>
 #include "rotations.h"

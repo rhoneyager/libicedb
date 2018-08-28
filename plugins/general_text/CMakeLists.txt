@@ -1,5 +1,5 @@
 include(addlib)
-option (BUILD_PLUGIN_GENERAL_TEXT_IO "Build the plugin for importing text-based data" ON)
+option (BUILD_PLUGIN_GENERAL_TEXT_IO "Build the plugin for importing text-based data" OFF)
 
 if (BUILD_PLUGIN_GENERAL_TEXT_IO)
 	set(f

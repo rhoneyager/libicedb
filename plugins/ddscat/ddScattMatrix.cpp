@@ -12,7 +12,6 @@
 #include "ddpar.h"
 #include <icedb/units/units.hpp>
 #include "phaseFunc.h"
-//#include "../rtmath/coords.h"
 #include <icedb/error.hpp>
 
 namespace icedb {

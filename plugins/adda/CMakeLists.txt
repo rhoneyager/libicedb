@@ -1,4 +1,4 @@
-option (BUILD_PLUGIN_ADDA "Build the plugin for importing ADDA data" OFF)
+option (BUILD_PLUGIN_ADDA "Build the plugin for importing ADDA data" ON)
 
 if (BUILD_PLUGIN_ADDA)
 	set(io_adda_FILES

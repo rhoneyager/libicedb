@@ -5,8 +5,6 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/date_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-//#include <Ryan_Debug/debug.h>
-//#include "../rtmath/error/debug.h"
 #include "phaseFunc.h"
 #include <icedb/units/units.hpp>
 #include <icedb/versioning/versioning.hpp>

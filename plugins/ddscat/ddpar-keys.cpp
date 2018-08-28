@@ -12,15 +12,11 @@
 #include <boost/filesystem.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
-//#include <boost/shared_ptr.hpp>
 #include <cmath>
 #include "ddpar.h"
 #include "ddVersions.h"
-//#include <Ryan_Debug/config.h>
-//#include "../rtmath/config.h"
 #include <icedb/splitSet.hpp>
 #include <icedb/error.hpp>
-//#include <Ryan_Debug/hash.h>
 #include "rotations.h"
 
 

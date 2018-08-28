@@ -3,6 +3,7 @@ option (BUILD_PLUGIN_DDSCAT "Build the plugin for importing DDSCAT data" ON)
 
 if (BUILD_PLUGIN_DDSCAT)
 	set(IO_DDSCAT_FILES
+		defs.hpp
 		ddOriData.cpp
 		ddOriData.h
 		ddOriDataParsers.cpp
@@ -35,6 +36,7 @@ if (BUILD_PLUGIN_DDSCAT)
 	addplugin(io_ddscat IO icedb)
 
 	target_link_libraries(io_ddscat icedb Boost::date_time Boost::regex)
+	target_compile_definitions(io_ddscat PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
 	target_include_directories(io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
 
 endif()

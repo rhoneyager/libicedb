@@ -1,11 +1,10 @@
 #pragma once
-#include "../../../icedb/defs.h"
+#include "defs.hpp"
 #include <complex>
 #include <vector>
 #include <Eigen/Core>
 #include <memory>
 #include <boost/operators.hpp>
-//#include "../common_templates.h"
 
 namespace icedb
 {

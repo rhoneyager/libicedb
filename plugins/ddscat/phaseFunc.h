@@ -1,5 +1,5 @@
 #pragma once
-#include <icedb/defs.h>
+#include "defs.hpp"
 #pragma warning( disable : 4251 ) // DLL interface
 #include <functional>
 #include <complex>
