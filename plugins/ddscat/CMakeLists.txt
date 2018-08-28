@@ -30,6 +30,7 @@ if (BUILD_PLUGIN_DDSCAT)
 		phaseFunc.h
 		plugin-io-ddscat.hpp
 		plugin-io-ddscat.cpp
+		plugin-shapes.cpp
 		)
 
 	add_library(io_ddscat SHARED ${IO_DDSCAT_FILES})
