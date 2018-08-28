@@ -1,4 +1,4 @@
-#add_subdirectory(adda)
+add_subdirectory(adda)
 add_subdirectory(ddscat)
 add_subdirectory(general_text)
 add_subdirectory(psu)

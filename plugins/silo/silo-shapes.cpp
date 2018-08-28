@@ -137,12 +137,15 @@ namespace icedb {
 				// The first dimension is the row - corresponds to the point coordinates.
 				// The second (column) is the data.
 
+				/// \note The HH and SILO types no not entirely align. SILO defines everythin in terms of fundamental
+				/// types, and HH generally uses non-fundamental types. May cause tests to fail across Windows / Linux.
+				/// \todo Add a function to HH to describe the size of an integer, and then map this size to the fundamental smallest type.
 				if (d.second.isOfType<int32_t>() > 0) {
 					Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
 					Expects(0 <= d.second.read<int32_t>(gsl::span<int32_t>(d_data.data(), d_data.size())));
 					ptmesh->writeData<int32_t>(d.first.c_str(), d_data, units.c_str());
 				}
-				if (d.second.isOfType<int16_t>() > 0) {
+				else if (d.second.isOfType<int16_t>() > 0) {
 					Eigen::Array<int16_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
 					Expects(0 <= d.second.read<int16_t>(gsl::span<int16_t>(d_data.data(), d_data.size())));
 
@@ -152,7 +155,7 @@ namespace icedb {
 
 					ptmesh->writeData<int32_t>(d.first.c_str(), conv, units.c_str());
 				}
-				if (d.second.isOfType<uint16_t>() > 0) {
+				else if (d.second.isOfType<uint16_t>() > 0) {
 					Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> conv(rows, cols);
 					Eigen::Array<uint16_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> data(rows, cols);
 					Expects(0 <= d.second.read<uint16_t>(gsl::span<uint16_t>(data.data(), numElems)));
@@ -174,11 +177,13 @@ namespace icedb {
 					Expects(0 <= d.second.read<double>(gsl::span<double>(d_data.data(), d_data.size())));
 					ptmesh->writeData<double>(d.first.c_str(), d_data, units.c_str());
 				}
+				/* // no support for long in HH.
 				else if (d.second.isOfType<long>() > 0) {
 					Eigen::Array<long, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
 					Expects(0 <= d.second.read<long>(gsl::span<long>(d_data.data(), d_data.size())));
 					ptmesh->writeData<long>(d.first.c_str(), d_data, units.c_str());
 				}
+				*/
 				else if (d.second.isOfType<long long>() > 0) {
 					Eigen::Array<long long, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
 					Expects(0 <= d.second.read<long long>(gsl::span<long long>(d_data.data(), d_data.size())));

@@ -125,7 +125,7 @@ namespace icedb {
 			Shape(HH::HH_hid_t hnd_grp = HH::HH_hid_t::dummy()) : HH::Group(hnd_grp) {  }
 
 			/// This is the unique identifier for this shape
-			const std::string particle_unique_id;
+			//const std::string particle_unique_id;
 
 			virtual ~Shape();
 			/// \brief Is this object a shape?

@@ -710,7 +710,7 @@ namespace icedb
 			// Search for the dll
 			using namespace boost::filesystem;
 			path p(filename);
-			ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "Loading dll " << filename << ".");
+			ICEDB_log("dlls", logging::ICEDB_LOG_NORMAL, "Loading dll " << filename << ".");
 			//if (p.is_absolute())
 			{
 				if (exists(p)) doLoad(p.string(), critical);
@@ -794,8 +794,8 @@ namespace icedb
 			//("dll-no-default-locations", "Prevent non-command line dll locations from being read")
 					("print-dll-loaded", "Prints the table of loaded DLLs.")
 			("print-dll-search-paths", "Prints the search paths used when loading dlls.")
-			("console-log-threshold", po::value<int>()->default_value(2), "Set threshold for logging output to console. 0 is DEBUG_2, 7 is CRITICAL.")
-			("debug-log-threshold", po::value<int>()->default_value(2), "Set threshold for logging output to an attached debugger. 0 is DEBUG_2, 7 is CRITICAL.")
+			("console-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to console. 0 is DEBUG_2, 7 is CRITICAL.")
+			("debug-log-threshold", po::value<int>()->default_value(0), "Set threshold for logging output to an attached debugger. 0 is DEBUG_2, 7 is CRITICAL.")
 			("log-file", po::value<std::string>(), "Set this to log debugging output to a file.")
 			("help-all", "Print all available help.")
 			;

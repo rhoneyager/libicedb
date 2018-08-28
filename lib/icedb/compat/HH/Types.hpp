@@ -26,7 +26,7 @@ namespace HH {
 			first null character or until srcSz. Note that null termination comes later.
 			\param srcSz is the max size of the source buffer.
 			**/
-			if (!dest || !src) throw;
+			if (!dest || !src) throw std::invalid_argument("Null pointer encountered");
 #if HH_USING_SECURE_STRINGS
 			strncpy_s(dest, destSz, src, srcSz);
 #else
@@ -80,7 +80,7 @@ namespace HH {
 		{
 			if (Array_Type_Dimensionality <= 0) {
 				//static_assert(false, "HH::Types::GetHDF5Type does not understand this data type.");
-				throw std::string("HH::Types::GetHDF5Type does not understand this data type.");
+				throw std::invalid_argument("HH::Types::GetHDF5Type does not understand this data type.");
 				return HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP); // Should never reach this. Invalid handle, just in case.
 			} else {
 				// This is a compound array type of the same object, repeated.

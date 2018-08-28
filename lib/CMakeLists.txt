@@ -114,6 +114,12 @@ set(lib_objs
 	src/util.cpp
 	src/zeros.cpp
 	)
+list(APPEND BinaryIO_Headers
+	icedb/compat/BinaryIO/Buffers.hpp
+	icedb/compat/BinaryIO/defs.hpp
+	icedb/compat/BinaryIO/Files.hpp)
+list(APPEND BinaryIO_Headers_b
+	icedb/compat/BinaryIO/boost/Files.hpp)
 
 # On Windows, when producing a DLL, this generated file
 # will add some information that can be read by Windows
@@ -140,7 +146,10 @@ source_group("Units" FILES ${units_objs})
 source_group("Refract" FILES ${refract_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
+source_group("BinaryIO" FILES ${BinaryIO_Headers})
+source_group("BinaryIO\\boost" FILES ${BinaryIO_Headers_b})
 set(libsrcs_dllbase src/dlls_placeholder.cpp ${gsl_objs} ${hh_objs} ${related_cmake_objects}
+	${BinaryIO_Headers} ${BinaryIO_Headers_b}
     "${CMAKE_BINARY_DIR}/cmake-settings.h")
 set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs}
 	${db_objs}

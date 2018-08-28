@@ -8,7 +8,15 @@ if (BUILD_PLUGIN_PSU)
 		plugin-psu.cpp
 		shapeIOpsu.cpp
 		)
-
+	generaterc("io_psu" "dll"
+		"icedb"
+		"Read PSU files"
+		 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
+		)
+	if (WIN32 AND NOT CYGWIN)
+		SET(io_psu_FILES ${io_psu_FILES} 
+		"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
+	endif()
 	add_library(io_psu SHARED ${io_psu_FILES})
 	addplugin(io_psu IO icedb)
 

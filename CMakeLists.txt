@@ -173,43 +173,7 @@ INSTALL(DIRECTORY share/examples
 # Generate doxygen documentation, if needed.
 adddocs()
 
-# CTest stuff. May switch from CTest in the future.
-set(BUILDNAME "Unspecified_Build_Name_for_CTest" CACHE STRING "Build name variable for CTest")
-set(SITE "Unknown_Site_Name_for_CTest" CACHE STRING "Site name")
-mark_as_advanced(BUILDNAME SITE)
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test)
-# The tests here are workflow tests. They exist to ensure that the 
-# user-callable programs will run without crashing in common workflows. The same programs may
-# be run multiple times, with different options.
-add_test (NAME io-psu-gmm-boost # Test PSU file import
-	COMMAND icedb-test-psu-shapes
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	)
-add_test (NAME io-psu-gmm-1 # Test PSU file import
-	COMMAND icedb-3d_structures_importer
-		--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
-		--truncate
-		--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	)
-add_test (NAME io-psu-gmm-2 # Test import without the --truncate option
-	COMMAND icedb-3d_structures_importer
-		--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
-		--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	)
-if (BUILD_PLUGIN_SILO)
-	add_test (NAME io-psu-gmm-to-silo-1 # Write a GMM file into the SILO visualization format
-		COMMAND icedb-3d_structures
-			--in ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
-			--db-path "shape/Aggregate 00004"
-			--out-format silo --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.silo
-		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-		)
-endif()
-
-
+add_subdirectory(test)
 
 # CPack stuff
 set(CPACK_PACKAGE_NAME "icedb")

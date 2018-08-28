@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
 			if (from_nosearch)
 				files.push_back(std::pair<sfs::path, std::string>(sfs::path(sFromRaw), sFromRaw));
 			else {
-				if (customFileFormats.size())
+				if (customFileFormats.size() || !file_formats.count(informat))
 					files = icedb::fs::impl::collectDatasetFiles(pFromRaw, customFileFormats);
 				else
 					files = icedb::fs::impl::collectDatasetFiles(pFromRaw, file_formats.at(informat));
