@@ -5,11 +5,38 @@
 #include <string>
 #include <vector>
 #include <HH/Groups.hpp>
+#include "registry.hpp"
+#include "io.hpp"
 
 namespace icedb {
 	namespace exv {
+		struct NewEXVrequiredProperties;
+		class EXV;
+		namespace _impl {
+			class EXVProps_IO_Input_Registry {};
+			class EXV_IO_Output_Registry {};
+		}
+	}
+	namespace registry {
+		extern template struct IO_class_registry_writer <
+			::icedb::exv::EXV >;
+		extern template struct IO_class_registry_reader <
+			::icedb::exv::NewEXVrequiredProperties >;
+		extern template class usesDLLregistry <
+			::icedb::exv::_impl::EXVProps_IO_Input_Registry,
+			IO_class_registry_reader<::icedb::exv::NewEXVrequiredProperties> >;
+		extern template class usesDLLregistry <
+			::icedb::exv::_impl::EXV_IO_Output_Registry,
+			IO_class_registry_writer<::icedb::exv::EXV> >;
+	}
+	namespace exv {
 		/// Structure containing all of the required data for the extended scattering properties of an object
-		struct DL_ICEDB NewEXVrequiredProperties {
+		struct DL_ICEDB NewEXVrequiredProperties :
+			virtual public registry::usesDLLregistry<
+			_impl::EXVProps_IO_Input_Registry,
+			registry::IO_class_registry_reader<NewEXVrequiredProperties> >,
+			virtual public io::implementsStandardReader<NewEXVrequiredProperties, _impl::EXVProps_IO_Input_Registry>
+		{
 			std::string particle_id;				///< Particle id
 			std::string dataset_id;					///< Dataset id
 			std::string author;						///< The author
@@ -47,7 +74,12 @@ namespace icedb {
 		};
 
 		/// \brief A high-level class to manipulate extended scattering variables
-		class DL_ICEDB EXV : virtual public HH::Group
+		class DL_ICEDB EXV : 
+			virtual public HH::Group,
+			virtual public registry::usesDLLregistry<
+			_impl::EXV_IO_Output_Registry,
+			registry::IO_class_registry_writer<EXV> >,
+			virtual public io::implementsStandardWriter<EXV, _impl::EXV_IO_Output_Registry>
 		{
 		public:
 			static const std::string _icedb_obj_type_exv_identifier;

@@ -5,6 +5,18 @@
 #include "../icedb/compat/HH/Types/Complex.hpp"
 
 namespace icedb {
+	namespace registry {
+		template struct IO_class_registry_writer <
+			::icedb::exv::EXV >;
+		template struct IO_class_registry_reader <
+			::icedb::exv::NewEXVrequiredProperties >;
+		template class usesDLLregistry <
+			::icedb::exv::_impl::EXVProps_IO_Input_Registry,
+			IO_class_registry_reader<::icedb::exv::NewEXVrequiredProperties> >;
+		template class usesDLLregistry <
+			::icedb::exv::_impl::EXV_IO_Output_Registry,
+			IO_class_registry_writer<::icedb::exv::EXV> >;
+	}
 	namespace exv {
 		struct RIs {
 			int constituent_id;

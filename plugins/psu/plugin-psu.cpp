@@ -1,5 +1,6 @@
 #include <string>
 #include <icedb/shape.hpp>
+#include <icedb/exv.hpp>
 #include "plugin-psu.hpp"
 
 /** This is a macro that defines a few symbols and functions that indicate that this is a valid icedb plugin.
@@ -72,6 +73,10 @@ D_icedb_start()
 	const char *exts[nexts] = { "psu", "psu-shape" };
 	genAndRegisterIOregistryPlural_reader
 		<::icedb::Shapes::NewShapeProperties, icedb::Shapes::_impl::ShapeProps_IO_Input_Registry>
+		(1, exts, PLUGINID);
+
+	genAndRegisterIOregistryPlural_reader
+		<::icedb::exv::NewEXVrequiredProperties, icedb::exv::_impl::EXVProps_IO_Input_Registry>
 		(1, exts, PLUGINID);
 
 	//genAndRegisterIOregistry_writer<::icedb::Shapes::Shape,

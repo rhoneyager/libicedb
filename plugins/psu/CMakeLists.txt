@@ -4,6 +4,7 @@ option (BUILD_PLUGIN_PSU "Build the plugin for importing Aydin et al. data" ON)
 if (BUILD_PLUGIN_PSU)
 	set(io_psu_FILES
 		defs.hpp
+		exvIOpsu.cpp
 		plugin-psu.hpp
 		plugin-psu.cpp
 		shapeIOpsu.cpp

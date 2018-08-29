@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
 				.add("Filename", pToRaw.string());
 			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
 		}
-		else if (vm.count("truncate")) 
+		else if (vm.count("truncate"))
 			file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
 		else {
 			if (!sfs::exists(pToRaw))
@@ -167,24 +167,79 @@ int main(int argc, char** argv) {
 			HH::PL::PL::createLinkCreation().setLinkCreationPList(
 				HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
 		//basegrp = db->createGroupStructure(dbpath);
-	
+
 
 		auto opts = icedb::registry::IO_options::generate();
 		opts->filename(sToRaw);
+
+
 		for (const auto &sFromRaw : vsFromRaw)
 		{
 			sfs::path pFromRaw(sFromRaw);
-			std::string sFn = pFromRaw.filename().string();
-			/*auto ddrun = icedb::io::ddscat::ddOutput::generate(sFromRaw);
-			ddrun->version = version;
-			ddrun->author = sAuthor;
-			ddrun->contact = sContact;
-			ddrun->scattMeth = sScattMeth;
-			ddrun->datasetID = sDatasetID;
-			ddrun->ingest_timestamp = sIngestTime;
-			*/
-			// The handle is set the first time we attempt to write a shape.
-			//handle = ddrun->write(handle, opts->clone()->set("ID", sFn));
+
+			icedb::fs::impl::CollectedFilesRet_Type files;
+			files.push_back(std::pair<sfs::path, std::string>(sfs::path(sFromRaw), sFromRaw));
+			//files = icedb::fs::impl::collectDatasetFiles(pFromRaw, informat);
+
+			for (const auto &f : files)
+			{
+				std::cerr << "Reading file " << f.first.string() << std::endl;
+				std::vector<std::shared_ptr<icedb::exv::NewEXVrequiredProperties> > fileEXVs;
+
+				auto opts = registry::options::generate();
+				opts->filename(f.first.string());
+				if (informat.size()) opts->filetype(informat);
+				// This function will open the file and read all valid shapes into the fileShapes structure.
+				// The handling code is in io.hpp and registry.hpp.
+				// The function automatically recognizes different file types.
+				icedb::exv::NewEXVrequiredProperties::readVector(nullptr, opts, fileEXVs);
+
+				int num = 0;
+				for (const auto &s : fileEXVs) {
+					// Set properties, but only if they are forced on the command line and are 
+					// not provided by the readers.
+
+					// Set a basic particle id. This id is used when writing the shape to the output file.
+					// In this example, objects in the output file are named according to their ids.
+					// TODO: What about numbered objects
+					num++;
+					std::cerr << "\tProcessing exv #" << num << " of " << fileEXVs.size() << std::endl;
+					if (!s->particle_id.size()) {
+						std::ostringstream oParticle_Id;
+						oParticle_Id << f.first.filename().string() << "-exv-" << num;
+						s->particle_id = oParticle_Id.str();
+					}
+
+					//if (specifiedVersion) s->version = version;
+					if (sDatasetID.size()) s->dataset_id = sDatasetID;
+					if (sAuthor.size()) s->author = sAuthor;
+					if (sContact.size()) s->contact = sContact;
+					//if (sScattMeth.size()) s->scattering_method = sScattMeth;
+					//std::string sFn = pFromRaw.filename().string();
+					/*auto ddrun = icedb::io::ddscat::ddOutput::generate(sFromRaw);
+					ddrun->version = version;
+					ddrun->author = sAuthor;
+					ddrun->contact = sContact;
+					ddrun->scattMeth = sScattMeth;
+					ddrun->datasetID = sDatasetID;
+					ddrun->ingest_timestamp = sIngestTime;
+					*/
+					// The handle is set the first time we attempt to write a shape.
+					//handle = ddrun->write(handle, opts->clone()->set("ID", sFn));
+
+					// Write to the output file.
+					std::cout << "\t\tWriting " << s->particle_id << std::endl;
+					if (basegrp.exists(s->particle_id.c_str())) {
+						std::cerr << "Warning: this exv already exists in the output file!!!!!! "
+							"Skipping this exv's write step, as per-exv overwriting is not handled. If you meant to overwrite the "
+							"output file, then provide the --truncate option to the program." << std::endl;
+					}
+					else {
+						auto e = icedb::exv::EXV::createEXV(basegrp.get(), s->particle_id.c_str(), s.get());
+						e.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
+					}
+				}
+			}
 		}
 	}
 	// Ensure that unhandled errors are displayed before the application terminates.
