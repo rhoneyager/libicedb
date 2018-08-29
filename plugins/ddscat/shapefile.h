@@ -186,6 +186,7 @@ namespace icedb {
 					// usually a1 = x_lf, a2 = y_lf
 					// choice of a1 and a2 can reorient the shape (useful for KE, PE constraints)
 					Eigen::Array3f a1, a2, a3, d, x0, xd;
+					unsigned int ddscatShapeVersion;
 
 					// These are RAW values (no mean or d scaling)
 					Eigen::Array3f mins, maxs, means;

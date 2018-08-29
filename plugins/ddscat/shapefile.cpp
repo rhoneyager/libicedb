@@ -256,7 +256,7 @@ namespace icedb {
 					const char* pend = in;
 					const char* pstart = in;
 
-					// The header is seven lines long
+					// The header is either six (ddscast 6) or seven (ddscat 7) lines long
 					for (size_t i = 0; i < 7; i++)
 					{
 						pstart = pend;
@@ -268,6 +268,7 @@ namespace icedb {
 						//std::getline(in,lin);
 
 						size_t posa = 0, posb = 0;
+						x0.setZero(); // Pre-set x0, in case of ddscat 6.
 						Eigen::Array3f *v = nullptr;
 						switch (i)
 						{
@@ -286,7 +287,21 @@ namespace icedb {
 							//icedb::macros::m_atoi<size_t>(&(lin.data()[posa]), len);
 						}
 						break;
-						case 6: // Junk line
+						case 6: // In case of DDSCAT6 this is the first valid dipole
+							// This method is not super robust: what if line 7 contains just numbers but not a dipole coordinate
+						{
+							bool isNotHeaderLine = false;
+							size_t first_nonnumeric = lin.find_first_not_of(" \t0123456789.");
+							size_t first_numeric = lin.find_first_of("0123456789.");
+							if ((first_numeric != std::string::npos) && (first_nonnumeric < first_numeric)) isNotHeaderLine = true;
+							if (first_nonnumeric == std::string::npos) isNotHeaderLine = true;
+
+							if (isNotHeaderLine) {
+								pend = pstart; // Assuming not header line implies a dipole thus I put back the buffer to the line start
+								ddscatShapeVersion = 6;
+							}
+							else ddscatShapeVersion = 7;
+						}
 						default:
 							break;
 						case 2: // a1
@@ -299,6 +314,15 @@ namespace icedb {
 							if (3 == i) v = &a2;
 							if (4 == i) v = &d;
 							if (5 == i) v = &x0;
+							bool isNotHeaderLine = false;
+							{
+								size_t first_nonnumeric = lin.find_first_not_of(" \t0123456789.");
+								size_t first_numeric = lin.find_first_of("0123456789.");
+								if (first_nonnumeric < first_numeric) isNotHeaderLine = true;
+								if (first_nonnumeric == std::string::npos) isNotHeaderLine = true;
+								if (first_numeric == std::string::npos) isNotHeaderLine = true;
+							}
+							if (isNotHeaderLine) break;
 							for (size_t j = 0; j < 3; j++)
 							{
 								// Seek to first nonspace character

@@ -50,8 +50,8 @@ D_icedb_start()
 	dllInitResult res = icedb_registry_register_dll(id, (void*)dllStart);
 	if (res != SUCCESS) return res;
 
-	const size_t nexts = 2;
-	const char *exts[nexts] = { "ddscat", "ddscat-shape" };
+	const size_t nexts = 5;
+	const char *exts[nexts] = { "ddscat", "ddscat-shape", "ddscat7", "ddscat7-shape", "ddscat6-shape" };
 	genAndRegisterIOregistryPlural_reader
 		<::icedb::Shapes::NewShapeProperties, icedb::Shapes::_impl::ShapeProps_IO_Input_Registry>
 		(1, exts, PLUGINID);

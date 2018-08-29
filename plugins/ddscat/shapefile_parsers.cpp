@@ -218,8 +218,10 @@ namespace icedb
 					out << "\t= target vector a2 (in TF)" << endl;
 					out << d(0) << "\t" << d(1) << "\t" << d(2);
 					out << "\t= d_x/d  d_y/d  d_x/d  (normally 1 1 1)" << endl;
-					out << x0(0) << "\t" << x0(1) << "\t" << x0(2);
-					out << "\t= X0(1-3) = location in lattice of target origin" << endl;
+					if (ddscatShapeVersion >= 7) {
+						out << x0(0) << "\t" << x0(1) << "\t" << x0(2);
+						out << "\t= X0(1-3) = location in lattice of target origin" << endl;
+					}
 					out << "\tNo.\tix\tiy\tiz\tICOMP(x, y, z)" << endl;
 					//size_t i = 1;
 

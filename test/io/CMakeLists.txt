@@ -57,9 +57,24 @@ if (BUILD_PLUGIN_DDSCAT)
 	IF (WIN32 AND NOT CYGWIN)
 		SET(srcs-ddscat7 ${srcs-ddscat7} "${CMAKE_CURRENT_BINARY_DIR}/app.rc")
 	ENDIF()
-
 	add_executable(icedb-test-ddscat7-shapes ${srcs-ddscat7})
 	target_link_libraries(icedb-test-ddscat7-shapes icedb io_ddscat Boost::unit_test_framework)
 	addapp(icedb-test-ddscat7-shapes Testing/IO)
 	storebin(icedb-test-ddscat7-shapes)
+
+	# Documents the app in Windows Explorer
+	generaterc("icedb-test-ddscat6-shapes" "exe"
+		"icedb"
+		"Test DDSCAT 6 shape reading and writing code"
+		 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
+		 )
+	# The source files
+	set(srcs-ddscat6 test-ddscat6-shapes.cpp)
+	IF (WIN32 AND NOT CYGWIN)
+		SET(srcs-ddscat6 ${srcs-ddscat6} "${CMAKE_CURRENT_BINARY_DIR}/app.rc")
+	ENDIF()
+	add_executable(icedb-test-ddscat6-shapes ${srcs-ddscat6})
+	target_link_libraries(icedb-test-ddscat6-shapes icedb io_ddscat Boost::unit_test_framework)
+	addapp(icedb-test-ddscat6-shapes Testing/IO)
+	storebin(icedb-test-ddscat6-shapes)
 endif()

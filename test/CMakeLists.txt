@@ -86,8 +86,12 @@ if(BUILD_PLUGIN_DDSCAT)
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test/
 	)
 
-	add_test (NAME io-ddscat-boost # Test DDSCAT file import
+	add_test (NAME io-ddscat-boost-1 # Test DDSCAT file import
 		COMMAND icedb-test-ddscat7-shapes
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		)
+	add_test (NAME io-ddscat-boost-2 # Test DDSCAT file import
+		COMMAND icedb-test-ddscat6-shapes
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		)
 	add_test (NAME io-ddscat7-1 # Test DDSCAT file import
@@ -104,13 +108,21 @@ if(BUILD_PLUGIN_DDSCAT)
 			--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7melting.h5
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		)
-	add_test (NAME io-ddscat7-3 # Test DDSCAT file import
+	add_test (NAME io-ddscat7-3 # Test DDSCAT file import, without the --truncate option
+		COMMAND icedb-3d_structures_importer
+			--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat7melting.dat
+			--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		)
+	add_test (NAME io-ddscat7-4 # Test DDSCAT file import
 		COMMAND icedb-3d_structures_importer
 			--in ${CMAKE_BINARY_DIR}/test/1mm5shape.txt
 			--truncate
 			--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/1mm5shape.h5
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		)
+	# TODO: Add DDSCAT 6 tests
+	# TODO: Add DDSCAT 6 silo tests
 	if (BUILD_PLUGIN_SILO)
 		add_test (NAME io-ddscat7-to-silo-1 # Write a file into the SILO visualization format
 			COMMAND icedb-3d_structures
