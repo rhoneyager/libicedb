@@ -3,7 +3,5 @@ add_subdirectory(3d_structures_importer)
 add_subdirectory(onesphere)
 add_subdirectory(units)
 add_subdirectory(refract)
-if (BUILD_PLUGIN_DDSCAT)
-	add_subdirectory(scattering_data_importer)
-endif()
+add_subdirectory(scattering_data_importer)
 

@@ -3,9 +3,7 @@ cmake_minimum_required (VERSION 3.1)
 # does not provide this version, you can get it from
 # https://cmake.org/download/
 
-# This project requires a C++11 compiler.
 project(icedb C CXX)
-
 # Convenience functions
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
@@ -13,7 +11,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 # Global definitions
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 14) # This project requires a C++14 compiler.
 set(CMAKE_CXX_STANDARD_REQUIRED YES) # Force compiler switches
 set(CMAKE_CXX_EXTENSIONS OFF) # No compiler-specific extensions
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON) # Building dynamic libraries
@@ -56,6 +54,7 @@ configure_file (
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Release Debug RelWithDebInfo MinSizeRel)
 endif()
 
 # The two dependencies: boost and HDF5
@@ -172,7 +171,7 @@ INSTALL(DIRECTORY share/examples
 
 # Generate doxygen documentation, if needed.
 adddocs()
-
+# Tests get built if BUILD_TESTING is on
 add_subdirectory(test)
 
 # CPack stuff

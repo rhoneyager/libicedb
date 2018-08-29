@@ -22,132 +22,26 @@
 #include <icedb/splitSet.hpp>
 #include <icedb/exv.hpp>
 
-#include "../../lib/src/io/ddscat/ddpar.h"
-#include "../../lib/src/io/ddscat/ddOutput.h"
-#include "../../lib/src/io/ddscat/ddScattMatrix.h"
-#include "../../lib/src/io/ddscat/shapefile.h"
 #include <icedb/plugin.hpp>
 
 #include <HH/Files.hpp>
 #include <HH/Groups.hpp>
-// This is a basic implementation of the HH I/O handle code
-namespace icedb {
-	namespace plugins {
-		namespace p_HH {
-			const char* pluginName = "HH";
-			struct HH_handle : public icedb::registry::IOhandler
-			{
-				HH_handle(::HH::Group g) : grp(g), icedb::registry::IOhandler(pluginName) {}
-				virtual ~HH_handle() {}
-				::HH::Group grp;
-			};
-			void register_handle() {
-				const size_t nExts = 4;
-				const char *exts[nExts] = { "hdf5", "nc", "hdf5", "netcdf" };
-				icedb::registry::genAndRegisterIOregistryPlural_writer<
-					icedb::io::ddscat::ddOutput,
-					icedb::io::ddscat::ddOutput_IO_output_registry>
-					(nExts, exts, pluginName);
-			}
-		}
-	}
-	namespace registry {
-		template<>
-		std::shared_ptr<IOhandler>
-			write_file_type_multi<icedb::io::ddscat::ddOutput>
-			(std::shared_ptr<IOhandler> sh, std::shared_ptr<IO_options> opts,
-				const icedb::io::ddscat::ddOutput * s)
-		{
-			using std::shared_ptr;
-			if (!sh) ICEDB_throw(::icedb::error::error_types::xCannotFindReference)
-				.add <std::string>("Reason", "sh is null");
-			if (std::string(sh->getId()) != std::string(plugins::p_HH::pluginName))
-				ICEDB_throw(::icedb::error::error_types::xDuplicateHook)
-				.add<std::string>("Reason", "Bad passed plugin. The ids do not match.")
-				.add<std::string>("ID_1", sh->getId())
-				.add<std::string>("ID_2", std::string(plugins::p_HH::pluginName));
-			std::shared_ptr<plugins::p_HH::HH_handle> h = std::dynamic_pointer_cast<plugins::p_HH::HH_handle>(sh);
-
-			bool writeInSubgroup = opts->has("ID");
-			std::string sSubgroup = opts->get<std::string>("ID", "");
-
-			HH::Group gObj = h->grp;
-			if (writeInSubgroup) {
-				if (!h->grp.exists(sSubgroup.c_str()))
-					gObj = h->grp.create(sSubgroup.c_str());
-				else gObj = h->grp.open(sSubgroup.c_str());
-			}
-
-			// Write the exv object
-			icedb::exv::NewEXVrequiredProperties props;
-
-			// TODO: Figure out how to pass dielectric id numbers and names. IO_options?
-			for (size_t i = 0; i < s->ms.at(0).size();++i) {
-				std::tuple<int, std::string, std::complex<double> > newM((int) (i+1), std::string("unspecified"), s->ms.at(0).at(i));
-				props.constituent_refractive_indices.push_back(newM);
-			}
-			props.frequency_Hz = s->freq;
-			props.temperature_K = s->temp;
-
-			props.author = s->author;
-			props.contact = s->contact;
-			props.version = s->version;
-			props.dataset_id = s->datasetID;
-			props.scattMeth = s->scattMeth;
-			props.ingest_timestamp = s->ingest_timestamp;
-			
-			auto &angles = props.angles;
-			angles.resize(s->fmldata->rows());
-			for (int i = 0; i < s->fmldata->rows(); ++i) {
-				auto &a = angles[i];
-				using icedb::io::ddscat::ddOutput;
-				const auto &f = s->fmldata->block<1, ddOutput::fmlColDefs::NUM_FMLCOLDEFS>(i, 0);
-				const auto &o = s->oridata_d.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(
-					f(ddOutput::fmlColDefs::ORIINDEX), 0);
-				a.alpha = o(ddOutput::stat_entries::BETA);
-				a.beta = o(ddOutput::stat_entries::THETA);
-				a.gamma = o(ddOutput::stat_entries::PHI);
-				a.incident_azimuth_angle = 0;
-				a.incident_polar_angle = 0;
-				a.scattering_azimuth_angle = f(ddOutput::fmlColDefs::THETAB);
-				a.scattering_polar_angle = f(ddOutput::fmlColDefs::PHIB);
-
-				// These get used to convert to the correct form.
-				//icedb::io::ddscat::ddScattMatrixF dm(0, 0, 0, 0, 0, icedb::io::ddscat::ddScattMatrixConnector::fromPar(s->parfile));
-				//dm.setF();
-				//dm.getS();
-
-				a.amplitude_scattering_matrix[0] = std::complex<double>(f(ddOutput::fmlColDefs::F00R), f(ddOutput::fmlColDefs::F00I));
-				a.amplitude_scattering_matrix[1] = std::complex<double>(f(ddOutput::fmlColDefs::F01R), f(ddOutput::fmlColDefs::F01I));
-				a.amplitude_scattering_matrix[2] = std::complex<double>(f(ddOutput::fmlColDefs::F10R), f(ddOutput::fmlColDefs::F10I));
-				a.amplitude_scattering_matrix[3] = std::complex<double>(f(ddOutput::fmlColDefs::F11R), f(ddOutput::fmlColDefs::F11I));
-			}
-
-			auto res = icedb::exv::EXV::createEXV(gObj.get(), &props);
-
-			return sh;
-		}
-	}
-}
 
 int main(int argc, char** argv) {
 	try {
 		using namespace std;
-		icedb::plugins::p_HH::register_handle();
-		// Read program options
-		//H5Eset_auto(H5E_DEFAULT, my_hdf5_error_handler, NULL); // For HDF5 error debugging
 		namespace po = boost::program_options;
 		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden");
 		desc.add_options()
 			("help,h", "produce help message")
-			("to", po::value<string>(), "The path where the shape is written to")
+			("output,o", po::value<string>(), "The path where the shape is written to")
 			("db-path", po::value<string>()->default_value("run"), "The path within the database to write to")
 			("create", "Create the output database if it does not exist")
 			("truncate", "Instead of opening existing output files in read-write mode, truncate them.")
 			;
 		input_matching.add_options()
-			("from", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
-			("from-format", po::value<string>()->default_value("ddscat"), "The format of the input files. Options: ddscat, adda, psu.")
+			("input,i", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
+			("in-format", po::value<string>()->default_value("ddscat"), "The format of the input files. Options: ddscat, adda, psu.")
 			;
 		mdata.add_options()
 			("author", po::value<string>(), "Name(s) of the person/group who generated the shape.")
@@ -166,12 +60,12 @@ int main(int argc, char** argv) {
 		desc.add(mdata);
 		desc.add(input_matching);
 		desc.add(constits);
-		icedb::registry::add_options(desc, desc, hidden);
+		icedb::add_options(desc, desc, hidden);
 		desc.add(hidden);
 		po::variables_map vm;
 		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
 		po::notify(vm);
-		icedb::registry::handle_config_file_options(desc, vm);
+		icedb::handle_config_file_options(desc, vm);
 
 		auto doHelp = [&](const string& s)->void
 		{
@@ -180,21 +74,21 @@ int main(int argc, char** argv) {
 			exit(1);
 		};
 		if (vm.count("help")) doHelp("");
-		icedb::registry::process_static_options(vm);
+		icedb::process_static_options(vm);
 
-		if (!vm.count("from") || !vm.count("to")) doHelp("Need to specify to/from locations.");
+		if (!vm.count("input") || !vm.count("output")) doHelp("Need to specify input/output locations.");
 
 		using namespace icedb;
 
 		// namespace sfs defined for compatability. See <icedb/fs_backend.hpp>
-		vector<string> vsFromRaw = vm["from"].as<vector<string> >();
-		string sToRaw = vm["to"].as<string>();
+		vector<string> vsFromRaw = vm["input"].as<vector<string> >();
+		string sToRaw = vm["output"].as<string>();
 
 		namespace sfs = icedb::fs::sfs;
 		sfs::path pToRaw(sToRaw);
 		string dbpath = vm["db-path"].as<string>();
 		//if (vm.count("resolution")) resolution_um = vm["resolution"].as<float>();
-		string informat = vm["from-format"].as<string>();
+		string informat = vm["in-format"].as<string>();
 		// Metadata
 		string sAuthor, sContact, sScattMeth, sSFunits, sDatasetID;
 		float sSFfactor = 1.0f;
@@ -275,28 +169,22 @@ int main(int argc, char** argv) {
 		//basegrp = db->createGroupStructure(dbpath);
 	
 
-		/// TODO: Function to open an HDF5 handle from HH into icedb!
-		/// Handle should be constructible from a file or a group, and the
-		/// constructor should be internal to icedb.
-		std::shared_ptr<icedb::registry::IOhandler> handle =
-			std::make_shared<icedb::plugins::p_HH::HH_handle>(basegrp);
-
 		auto opts = icedb::registry::IO_options::generate();
 		opts->filename(sToRaw);
 		for (const auto &sFromRaw : vsFromRaw)
 		{
 			sfs::path pFromRaw(sFromRaw);
 			std::string sFn = pFromRaw.filename().string();
-			auto ddrun = icedb::io::ddscat::ddOutput::generate(sFromRaw);
+			/*auto ddrun = icedb::io::ddscat::ddOutput::generate(sFromRaw);
 			ddrun->version = version;
 			ddrun->author = sAuthor;
 			ddrun->contact = sContact;
 			ddrun->scattMeth = sScattMeth;
 			ddrun->datasetID = sDatasetID;
 			ddrun->ingest_timestamp = sIngestTime;
-
+			*/
 			// The handle is set the first time we attempt to write a shape.
-			handle = ddrun->write(handle, opts->clone()->set("ID", sFn));
+			//handle = ddrun->write(handle, opts->clone()->set("ID", sFn));
 		}
 	}
 	// Ensure that unhandled errors are displayed before the application terminates.
