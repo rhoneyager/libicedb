@@ -17,8 +17,6 @@
 #include <icedb/shape.hpp>
 #include <icedb/error.hpp>
 #include <icedb/fs_backend.hpp>
-#include <icedb/compat/HH/Groups.hpp>
-#include <icedb/compat/HH/Files.hpp>
 #include <icedb/splitSet.hpp>
 #include <icedb/exv.hpp>
 

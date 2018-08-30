@@ -75,9 +75,9 @@ macro(addplugin appname foldername folder)
 	target_compile_definitions(${appname} PRIVATE BUILDTYPE=BUILDTYPE_$<CONFIGURATION>)
 	set_target_properties( ${appname} PROPERTIES FOLDER "Plugins/${foldername}")
 	INSTALL(TARGETS ${appname} 
-		RUNTIME DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${folder}-plugins/bin
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${folder}-plugins/lib
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${folder}-plugins/lib
+		RUNTIME DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/icedb/plugins
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/icedb/plugins
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/icedb/plugins
 		COMPONENT Plugins)
 
 	storeplugin(${appname} ${folder})
