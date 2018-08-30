@@ -6,7 +6,7 @@ macro(generaterc OBJ_BASE EXTEN PRODNAME DESC RC_NAME)
 	set(DESCRIPTION ${DESC})
 	set(INTERNALNAME ${OBJ_BASE})
 	string(TIMESTAMP YEAR "%Y")
-	configure_file("${PROJECT_SOURCE_DIR}/CMakeRules/lib.rc.in"
+	configure_file("${PROJECT_SOURCE_DIR}/cmake/lib.rc.in"
 		"${RC_NAME}"
 		)
 

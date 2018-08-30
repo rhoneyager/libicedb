@@ -2,20 +2,15 @@ cmake_minimum_required (VERSION 3.1)
 # This project needs at least CMake 3.1. If your system
 # does not provide this version, you can get it from
 # https://cmake.org/download/
-
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 project(icedb C CXX)
-# Convenience functions
-set(CMAKE_MODULE_PATH
-  ${CMAKE_MODULE_PATH}
-  "${CMAKE_SOURCE_DIR}/CMakeRules"
-  "${CMAKE_CURRENT_SOURCE_DIR}"
-)
 # Global definitions
 set(CMAKE_CXX_STANDARD 14) # This project requires a C++14 compiler.
 set(CMAKE_CXX_STANDARD_REQUIRED YES) # Force compiler switches
 set(CMAKE_CXX_EXTENSIONS OFF) # No compiler-specific extensions
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON) # Building dynamic libraries
 # Convenience functions
+include(GNUInstallDirs)
 include(addBaseProject)
 include(addBoostUniform)
 include(adddocs)
@@ -38,7 +33,7 @@ else()
 endif()
 set(MAJOR 0)
 set(MINOR 7)
-set(REVISION 1)
+set(REVISION 2)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
@@ -48,12 +43,12 @@ addInstallDirs(icedb)
 # Version number, git hash, ...
 # This gets pulled into the icedb target.
 configure_file (
-    "${CMAKE_SOURCE_DIR}/lib/cmake-settings.h.in"
-    "${CMAKE_BINARY_DIR}/cmake-settings.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/lib/util/cmake-settings.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/lib/cmake-settings.h"
     )
 
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+	set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Release Debug RelWithDebInfo MinSizeRel)
 endif()
 
@@ -71,7 +66,8 @@ amend_basic_libs(ZLIB::ZLIB impZLIB::ZLIB)
 #if ("${Boost_MINOR_VERSION}" LESS "45")
 #	error("Your version of Boost is too old to build icedb.")
 #endif()
-option(USE_OLD_CPP03_ABI "C++11 led to changes in the GLIB C++ ABI. Turn this on if you are linking against old system libraries" OFF)
+set(USE_OLD_CPP03_ABI OFF)
+#option(USE_OLD_CPP03_ABI "C++11 led to changes in the GLIB C++ ABI. Turn this on if you are linking against old system libraries" OFF)
 
 find_package(HDF5 REQUIRED COMPONENTS C HL )
 # These get set: HDF5_C_INCLUDE_DIRS HDF5_C_LIBRARIES HDF5_C_HL_LIBRARIES HDF5_C_DEFINITIONS
@@ -131,41 +127,29 @@ set(pkglibs icedb)
 set(pkgversion ${icedb_VERSION})
 # ... for the build tree
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/lib")
-foreach(LOOP_CONFIG Debug Release RelWithDebInfo MinSizeRel)
-	configure_file(lib/environment-module-buildtree.in
-		"${PROJECT_BINARY_DIR}/environment-modules/buildtree/icedb/${LOOP_CONFIG}" @ONLY)
-endforeach()
-configure_file(CMakeRules/Pkg_Config.cmake.in
+configure_file(cmake/Pkg_Config.cmake.in
 	"${PROJECT_BINARY_DIR}/icedbConfig.cmake" @ONLY)
 # ... and for the install tree
 set(CONF_INCLUDE_DIRS "\${icedb_CMAKE_DIR}/${REL_INCLUDE_DIR}") # Before WiX
-foreach(LOOP_CONFIG Debug Release RelWithDebInfo MinSizeRel)
-	configure_file(lib/environment-module.in
-		"${PROJECT_BINARY_DIR}/environment-modules/install/icedb/${configbase}/${LOOP_CONFIG}" @ONLY)
-endforeach()
-#INSTALL(DIRECTORY "${PROJECT_BINARY_DIR}/environment-modules/install/icedb"
-#	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_SHARE_DIR}/environment-modules
-#	COMPONENT Errata
-#	)
-configure_file(CMakeRules/Pkg_Config.cmake.in
+configure_file(cmake/Pkg_Config.cmake.in
 	"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake" @ONLY)
 # ... for both
-configure_file(CMakeRules/Pkg_ConfigVersion.cmake.in
+configure_file(cmake/Pkg_ConfigVersion.cmake.in
 	"${PROJECT_BINARY_DIR}/icedbConfigVersion.cmake" @ONLY)
 
 INSTALL(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake"
 	"${PROJECT_BINARY_DIR}/icedbConfigVersion.cmake"
-	DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Libraries)
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/icedb COMPONENT Libraries)
 
 INSTALL(EXPORT icedbTargets
-	DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Libraries
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/icedb COMPONENT Libraries
 	)
 
 INSTALL(FILES LICENSE.txt README.md
-	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_DOC_DIR}
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}
 	)
 INSTALL(DIRECTORY share/examples
-	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_SHARE_DIR}
+	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icedb/examples
 	COMPONENT Examples
 	)
 
@@ -186,12 +170,12 @@ set(CPACK_DEBIAN_PACKAGE_RELEASE "1")
 set(CPACK_RPM_PACKAGE_RELEASE "1")
 
 SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ryan Honeyager")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README-package.txt")
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/docs/README-package.txt")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "icedb")
 set(CPACK_PACKAGE_CONTACT "Ryan Honeyager (ryan@honeyager.info)")
 set(CPACK_WIX_UPGRADE_GUID "A29C49DA-8C87-4B15-AC54-D163E5AC3C29")
 set(CPACK_WIX_PRODUCT_GUID "07770F44-F916-4A21-9788-CA03F71355D7")
-set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/share/icons\\\\favicon.ico")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/share/icons\\\\favicon.ico")
 set(CPACK_WIX_CMAKE_PACKAGE_REGISTRY "icedb")
 set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://rhoneyager.github.io/icedb")
 if (NOT CPACK_SYSTEM_NAME)
@@ -205,6 +189,7 @@ if (CPACK_SYSTEM_NAME STREQUAL "AMD64")
 endif ()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	find_program(LSB_RELEASE_EXEC lsb_release)
+	mark_as_advanced(LSB_RELEASE_EXEC)
 	execute_process(COMMAND ${LSB_RELEASE_EXEC} -is
 		OUTPUT_VARIABLE LSB_DISTRIBUTION_NAME_SHORT
 		OUTPUT_STRIP_TRAILING_WHITESPACE

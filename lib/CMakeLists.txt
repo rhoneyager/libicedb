@@ -5,41 +5,41 @@ include(generaterc)
 
 # These are the files required by the library, placed into groups.
 set(related_cmake_objects
-	../CMakeRules/addapp.cmake
-	../CMakeRules/addBaseProject.cmake
-	../CMakeRules/addBoostUniform.cmake
-	../CMakeRules/adddocs.cmake
-	../CMakeRules/addlib.cmake
-	../CMakeRules/FindEigen3.cmake
-	../CMakeRules/generaterc.cmake
-	../CMakeRules/GetGitRevisionDescription.cmake
-	../CMakeRules/signing.cmake)
+	../cmake/addapp.cmake
+	../cmake/addBaseProject.cmake
+	../cmake/addBoostUniform.cmake
+	../cmake/adddocs.cmake
+	../cmake/addlib.cmake
+	../cmake/FindEigen3.cmake
+	../cmake/generaterc.cmake
+	../cmake/GetGitRevisionDescription.cmake
+	../cmake/signing.cmake)
 
 set(gsl_objs
-	icedb/compat/gsl/gsl
-	icedb/compat/gsl/gsl_algorithm
-	icedb/compat/gsl/gsl_assert
-	icedb/compat/gsl/gsl_byte
-	icedb/compat/gsl/gsl_util
-	icedb/compat/gsl/multi_span
-	icedb/compat/gsl/pointers
-	icedb/compat/gsl/span
-	icedb/compat/gsl/string_span
+	deps/third_party/gsl/gsl
+	deps/third_party/gsl/gsl_algorithm
+	deps/third_party/gsl/gsl_assert
+	deps/third_party/gsl/gsl_byte
+	deps/third_party/gsl/gsl_util
+	deps/third_party/gsl/multi_span
+	deps/third_party/gsl/pointers
+	deps/third_party/gsl/span
+	deps/third_party/gsl/string_span
 	)
 set (hh_objs
-	icedb/compat/HH/Attributes.hpp
-	icedb/compat/HH/Datasets.hpp
-	icedb/compat/HH/defs.hpp
-	icedb/compat/HH/Files.hpp
-	icedb/compat/HH/Groups.hpp
-	icedb/compat/HH/Handles.hpp
-	icedb/compat/HH/Handles_HDF.hpp
-	icedb/compat/HH/Handles_Valid.hpp
-	icedb/compat/HH/HH.hpp
-	icedb/compat/HH/PropertyLists.hpp
-	icedb/compat/HH/Tags.hpp
-	icedb/compat/HH/Types.hpp
-	icedb/compat/HH/Types/Complex.hpp)
+	deps/HH/Attributes.hpp
+	deps/HH/Datasets.hpp
+	deps/HH/defs.hpp
+	deps/HH/Files.hpp
+	deps/HH/Groups.hpp
+	deps/HH/Handles.hpp
+	deps/HH/Handles_HDF.hpp
+	deps/HH/Handles_Valid.hpp
+	deps/HH/HH.hpp
+	deps/HH/PropertyLists.hpp
+	deps/HH/Tags.hpp
+	deps/HH/Types.hpp
+	deps/HH/Types/Complex.hpp)
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
@@ -115,11 +115,11 @@ set(lib_objs
 	src/zeros.cpp
 	)
 list(APPEND BinaryIO_Headers
-	icedb/compat/BinaryIO/Buffers.hpp
-	icedb/compat/BinaryIO/defs.hpp
-	icedb/compat/BinaryIO/Files.hpp)
+	deps/BinaryIO/Buffers.hpp
+	deps/BinaryIO/defs.hpp
+	deps/BinaryIO/Files.hpp)
 list(APPEND BinaryIO_Headers_b
-	icedb/compat/BinaryIO/boost/Files.hpp)
+	deps/BinaryIO/boost/Files.hpp)
 
 # On Windows, when producing a DLL, this generated file
 # will add some information that can be read by Windows
@@ -150,18 +150,18 @@ source_group("BinaryIO" FILES ${BinaryIO_Headers})
 source_group("BinaryIO\\boost" FILES ${BinaryIO_Headers_b})
 set(libsrcs_dllbase src/dlls_placeholder.cpp ${gsl_objs} ${hh_objs} ${related_cmake_objects}
 	${BinaryIO_Headers} ${BinaryIO_Headers_b}
-    "${CMAKE_BINARY_DIR}/cmake-settings.h")
+	"${CMAKE_CURRENT_BINARY_DIR}/../cmake-settings.h")
 set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs}
 	${db_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
 	${extensible_objs})
 IF (WIN32 AND NOT CYGWIN)
-SET(libsrcs_dllbase ${libsrcs_dllbase} 
-	"${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc")
-source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc")
-SET(libsrcs ${libsrcs} 
-	"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
-source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
+	SET(libsrcs_dllbase ${libsrcs_dllbase} 
+		"${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc")
+	source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc")
+	SET(libsrcs ${libsrcs} 
+		"${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
+	source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
 add_library(icedb_base SHARED ${libsrcs_dllbase})
@@ -174,21 +174,23 @@ target_include_directories(icedb SYSTEM
 	PUBLIC ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 target_include_directories(icedb_base PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
-	${CMAKE_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/deps
+	${CMAKE_CURRENT_SOURCE_DIR}/deps/third_party
+	${CMAKE_CURRENT_BINARY_DIR}
 	)
 target_include_directories(icedb PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat
-	${CMAKE_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/deps
+	${CMAKE_CURRENT_SOURCE_DIR}/deps/third_party
+	${CMAKE_CURRENT_BINARY_DIR}
 	)
 target_include_directories(icedb SYSTEM
 	INTERFACE
-	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/icedb/compat>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/third_party>
 	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
-	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}/icedb/compat>
 	)
 
 target_compile_definitions(icedb
@@ -200,17 +202,26 @@ target_link_libraries(icedb
 	Boost::filesystem
 	Boost::system
 	Boost::program_options)
-if(USE_OLD_CPP03_ABI)
-	target_compile_definitions(icedb PUBLIC _GLIBCXX_USE_CXX11_ABI=0)
-endif()
 
 addlib(icedb SHARED)
 storebin(icedb)
 
 INSTALL(DIRECTORY icedb
-	DESTINATION ${INSTALL_CMAKE_DIR}/${REL_INCLUDE_DIR}
-	COMPONENT Headers
-	)
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
+	COMPONENT Headers)
+INSTALL(DIRECTORY deps/HH
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
+	COMPONENT Headers)
+INSTALL(DIRECTORY deps/BinaryIO
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
+	COMPONENT Headers)
+INSTALL(DIRECTORY deps/third_party/gsl
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
+	COMPONENT Headers)
+INSTALL(DIRECTORY deps/third_party/eigen
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
+	COMPONENT Headers)
+
 
 # Lib installation is already covered in addlib.cmake.
 
@@ -243,7 +254,7 @@ if (WIN32 AND NOT CMAKE)
 		$<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE:impBoost::system> $<TARGET_FILE:impBoost::program_options>
 		$<TARGET_FILE:impBoost::date_time> $<TARGET_FILE:impBoost::regex> $<TARGET_FILE:impBoost::unit_test_framework>
 		$<TARGET_FILE:impZLIB::ZLIB>
-		DESTINATION ${RBIN_DIR}/$<CONFIG>
+		DESTINATION ${CMAKE_INSTALL_BINDIR} #${RBIN_DIR}/$<CONFIG>
 		COMPONENT Libraries)
 
 	# Boost targets do not fully have their imported_locations set. The shared libraries are not included.

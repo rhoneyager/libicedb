@@ -1,8 +1,8 @@
-#include "../icedb/exv.hpp"
-#include "../icedb/versioning/versioning.hpp"
-#include "../icedb/error.hpp"
-#include "../icedb/compat/HH/Attributes.hpp"
-#include "../icedb/compat/HH/Types/Complex.hpp"
+#include "icedb/exv.hpp"
+#include "icedb/versioning/versioning.hpp"
+#include "icedb/error.hpp"
+#include "HH/Attributes.hpp"
+#include "HH/Types/Complex.hpp"
 
 namespace icedb {
 	namespace registry {

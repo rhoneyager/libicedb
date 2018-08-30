@@ -12,22 +12,8 @@ endmacro(addapp_base appname foldername)
 
 macro(addapp appname foldername)
 	addapp_base(${appname} ${foldername})
-	INSTALL(TARGETS ${appname} 
-		CONFIGURATIONS Debug
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Debug
-		COMPONENT Applications
-		)
 	INSTALL(TARGETS ${appname}
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/Release
-		CONFIGURATIONS Release
-		COMPONENT Applications)
-	INSTALL(TARGETS ${appname}
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/RelWithDebInfo
-		CONFIGURATIONS RelWithDebInfo
-		COMPONENT APPLICATIONS)
-	INSTALL(TARGETS ${appname}
-		RUNTIME DESTINATION ${INSTALL_CMAKE_DIR}/${REL_BIN_DIR}/bin${configappend}/MinSizeRel
-		CONFIGURATIONS MinSizeRel
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		COMPONENT Applications)
 endmacro(addapp appname foldername)
 

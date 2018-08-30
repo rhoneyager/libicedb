@@ -8,7 +8,7 @@
 #include <cerrno>
 #include <cstddef>
 
-#include "../gsl/gsl_assert"
+#include "gsl/gsl_assert"
 
 #if defined(BIO_OS_WINDOWS)
 #include <Windows.h>

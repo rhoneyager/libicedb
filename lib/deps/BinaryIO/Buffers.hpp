@@ -3,7 +3,7 @@
 #include "defs.hpp"
 #include <cstddef>
 #include <type_traits>
-#include "../gsl/span"
+#include "gsl/span"
 #include <array>
 #include <vector>
 #include <iostream>
