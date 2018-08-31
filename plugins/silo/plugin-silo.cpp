@@ -2,12 +2,9 @@
 #define _SCL_SECURE_NO_WARNINGS
 
 #include <string>
-#include <icedb/versioning/versioning.hpp>
 #include <icedb/defs.h>
 #include "plugin-silo.hpp"
 #include "WritePoints.h"
-
-D_icedb_validator();
 
 namespace icedb
 {

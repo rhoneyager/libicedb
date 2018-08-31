@@ -149,9 +149,10 @@ source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
 source_group("BinaryIO" FILES ${BinaryIO_Headers})
 source_group("BinaryIO\\boost" FILES ${BinaryIO_Headers_b})
-set(libsrcs_dllbase src/dlls_placeholder.cpp ${gsl_objs} ${hh_objs} ${related_cmake_objects}
+set(libhdrs_dllbase ${gsl_objs} ${hh_objs} ${related_cmake_objects}
 	${BinaryIO_Headers} ${BinaryIO_Headers_b}
 	"${CMAKE_CURRENT_BINARY_DIR}/icedb-cmake-settings.h")
+set(libsrcs_dllbase src/dlls_placeholder.cpp)
 set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs}
 	${db_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
@@ -165,8 +166,8 @@ IF (WIN32 AND NOT CYGWIN)
 	source_group("Lib" FILES "${CMAKE_CURRENT_BINARY_DIR}/lib.rc")
 ENDIF()
 
-add_library(icedb_base SHARED ${libsrcs_dllbase})
-addlib(icedb_base SHARED)
+add_library(icedb_base STATIC ${libhdrs_dllbase} ${libsrcs_dllbase})
+addlib(icedb_base STATIC)
 storebin(icedb_base)
 
 add_library(icedb SHARED ${libsrcs})
@@ -199,7 +200,9 @@ target_compile_definitions(icedb
 	PUBLIC ${HDF5_DEFINITIONS})
 # Boost warning acknowledgement. 
 target_compile_definitions(icedb PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
-target_link_libraries(icedb icedb_base hdf5::hdf5-shared hdf5::hdf5_hl-shared) # ZLIB::ZLIB)
+target_link_libraries(icedb 
+	icedb_base
+	hdf5::hdf5-shared hdf5::hdf5_hl-shared) # ZLIB::ZLIB)
 target_link_libraries(icedb
 	Boost::filesystem
 	Boost::system

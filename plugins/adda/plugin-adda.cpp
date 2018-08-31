@@ -1,14 +1,8 @@
 #include <string>
-#include <icedb/versioning/versioning.hpp>
 #include <icedb/shape.hpp>
 #include <icedb/error.hpp>
 #include <BinaryIO/Files.hpp>
 #include "plugin-adda.hpp"
-
-/** This is a macro that defines a few symbols and functions that indicate that this is a valid icedb plugin.
- * It must always be present in a single file.
- **/
-D_icedb_validator();
 
 namespace icedb {
 	namespace plugins {
