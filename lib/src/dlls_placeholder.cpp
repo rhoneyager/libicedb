@@ -5,7 +5,4 @@
 // This file exists just to provide this symbol to plugins.
 D_icedb_validator();
 
-extern "C"
-{
-	SHARED_EXPORT_ICEDB void _ICEDB_dllPluginBase() noexcept {}
-}
+

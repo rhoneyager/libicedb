@@ -40,6 +40,11 @@ typedef void* dlHandleType;
 typedef void* dlHandleType;
 #endif
 
+extern "C"
+{
+	SHARED_EXPORT_ICEDB void _ICEDB_dllPluginBase() noexcept {}
+}
+
 namespace icedb {
 	namespace registry {
 		/// Recursive and single-level DLL loading paths
