@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 		// Read program options
 		//H5Eset_auto(H5E_DEFAULT, my_hdf5_error_handler, NULL); // For HDF5 error debugging
 		namespace po = boost::program_options;
-		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden options");
+		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden options"), oall("All options");
 		desc.add_options()
 			("help,h", "produce help message")
 			("out,o", po::value<string>(), "The path where the shape is written to")
@@ -93,11 +93,12 @@ int main(int argc, char** argv) {
 		desc.add(input_matching);
 		desc.add(constits);
 		icedb::add_options(desc, desc, hidden); // The library has its own options.
-		desc.add(hidden);
+		oall.add(desc);
+		oall.add(hidden);
 		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+		po::store(po::command_line_parser(argc, argv).options(oall).run(), vm);
 		po::notify(vm);
-		icedb::handle_config_file_options(desc, vm); // Parse any options in a config file.
+		icedb::handle_config_file_options(oall, vm); // Parse any options in a config file.
 		
 
 		auto doHelp = [&](const string& s)->void

@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 	try {
 		using namespace std;
 		namespace po = boost::program_options;
-		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden");
+		po::options_description desc("General options"), mdata("Shape metadata"), input_matching("Input options"), constits("Constituents"), hidden("Hidden"), oall("All options");
 		desc.add_options()
 			("help,h", "produce help message")
 			("output,o", po::value<string>(), "The path where the shape is written to")
@@ -59,11 +59,12 @@ int main(int argc, char** argv) {
 		desc.add(input_matching);
 		desc.add(constits);
 		icedb::add_options(desc, desc, hidden);
-		desc.add(hidden);
+		oall.add(desc);
+		oall.add(hidden);
 		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+		po::store(po::command_line_parser(argc, argv).options(oall).run(), vm);
 		po::notify(vm);
-		icedb::handle_config_file_options(desc, vm);
+		icedb::handle_config_file_options(oall, vm);
 
 		auto doHelp = [&](const string& s)->void
 		{

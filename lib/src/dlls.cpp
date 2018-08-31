@@ -407,7 +407,7 @@ namespace icedb
 							ICEDB_throw(icedb::error::error_types::xDuplicateHook)
 							.add("is_critical", critical)
 							.add("file_name", filename);
-						ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "Cannot load dll " << filename
+						ICEDB_log("dlls", logging::ICEDB_LOG_NORMAL, "Cannot load dll " << filename
 							<< ", as it already loaded!");
 						close();
 						return;
@@ -787,6 +787,7 @@ namespace icedb
 		
 		cmdline.add_options()
 			("config-file", po::value<string>(), "Read a file containing program options, such as metadata. Options are specified, once per line, as OPTION=VALUE pairs.")
+			("help-all", "Print verbose help (include ordinarily hidden options).")
 			;
 
 		config.add_options()
@@ -801,9 +802,8 @@ namespace icedb
 					("print-dll-loaded", "Prints the table of loaded DLLs.")
 			("print-dll-search-paths", "Prints the search paths used when loading dlls.")
 			("console-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to console. 0 is DEBUG_2, 7 is CRITICAL.")
-			("debug-log-threshold", po::value<int>()->default_value(0), "Set threshold for logging output to an attached debugger. 0 is DEBUG_2, 7 is CRITICAL.")
+			("debug-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to an attached debugger (Windows only). On non-Windows, logs to stderror. 0 is DEBUG_2, 7 is CRITICAL.")
 			("log-file", po::value<std::string>(), "Set this to log debugging output to a file.")
-			("help-all", "Print all available help.")
 			;
 	}
 
