@@ -174,6 +174,8 @@ add_library(icedb SHARED ${libsrcs})
 # compat contains the GSL and HH.
 target_include_directories(icedb SYSTEM
 	PUBLIC ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+target_include_directories(icedb_base SYSTEM
+	PRIVATE ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 target_include_directories(icedb_base PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/deps
