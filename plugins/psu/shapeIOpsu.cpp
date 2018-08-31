@@ -50,7 +50,7 @@ namespace icedb {
 						string id = pfile.string().c_str();
 						std::cout << "Reading id " << id << std::endl;
 						error_info->add("Filename", opts->filename());
-						error_info->add("Particle-id", id);
+						//error_info->add("Particle-id", id);
 
 						//--------------------------------------------------------------------------------------//
 						// Gain access to the data file.
@@ -155,34 +155,10 @@ namespace icedb {
 						}
 
 						//--------------------------------------------------------------------------------------//
-						// Identify the particle type from the filename.
-						//--------------------------------------------------------------------------------------//
-
-						const size_t max_ParticleType_Size = 32;
-						char particleType[max_ParticleType_Size];
-						{
-							if ((id.find("aggregate")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Aggregate %05d", particle_index[0]);
-							}
-							else if ((id.find("branchedplanar")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Branched Planar %05d", particle_index[0]);
-							}
-							else if ((id.find("column")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Column %05d", particle_index[0]);
-							}
-							else if ((id.find("graupel")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Conical Graupel %05d", particle_index[0]);
-							}
-							else if ((id.find("plate")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Plate %05d", particle_index[0]);
-							}
-						}
-
-						//--------------------------------------------------------------------------------------//
 						// Pack the data in the shpdata structure.
 						//--------------------------------------------------------------------------------------//
 
-						shpdata.particle_id = string(particleType);
+						shpdata.particle_id = icedb::plugins::psu::getParticleID(id, particle_index[0]);
 						shpdata.particle_constituents.push_back(std::make_pair(1, "ice"));
 						shpdata.author = "Eugene Clothiaux (eec3@psu.edu)"; // TODO: Eugene: fill this in.
 						shpdata.contact = "Eugene Clothiaux (eec3@psu.edu)";

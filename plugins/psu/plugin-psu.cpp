@@ -1,4 +1,5 @@
 #include <string>
+#include <icedb/versioning/versioning.hpp>
 #include <icedb/shape.hpp>
 #include <icedb/exv.hpp>
 #include "plugin-psu.hpp"

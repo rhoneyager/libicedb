@@ -1,6 +1,6 @@
 #pragma once
 #include "defs.h"
-#include "versioning/versioning.hpp"
+//#include "versioning/versioning.hpp"
 //#include "info.h"
 //#include "dlls.h"
 #include "registry.hpp"

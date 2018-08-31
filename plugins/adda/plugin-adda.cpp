@@ -1,4 +1,5 @@
 #include <string>
+#include <icedb/versioning/versioning.hpp>
 #include <icedb/shape.hpp>
 #include <icedb/error.hpp>
 #include <BinaryIO/Files.hpp>

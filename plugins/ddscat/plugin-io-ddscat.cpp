@@ -4,6 +4,7 @@
 #include <string>
 
 #include "defs.hpp"
+#include <icedb/versioning/versioning.hpp>
 #include <icedb/plugin.hpp>
 #include "plugin-io-ddscat.hpp"
 

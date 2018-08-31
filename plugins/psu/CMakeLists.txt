@@ -5,6 +5,7 @@ if (BUILD_PLUGIN_PSU)
 	set(io_psu_FILES
 		defs.hpp
 		exvIOpsu.cpp
+		particle-ids.cpp
 		plugin-psu.hpp
 		plugin-psu.cpp
 		shapeIOpsu.cpp

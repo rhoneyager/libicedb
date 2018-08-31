@@ -47,16 +47,21 @@ namespace icedb {
 						//--------------------------------------------------------------------------------------//
 						boost::filesystem::path p(opts->filename());
 						auto pfile = p.filename();
-						string id = pfile.string().c_str();
-						std::cout << "Reading id " << id << std::endl;
+						string fname = pfile.string().c_str();
+						// Parse the filename.
+						// Example name is psuaydinetal_aggregate_00001_HD-P1d_0.42_01_f9GHz_01_GMM.nc.
+						// We can get the particle class, id, frequency, interdipole spacing, etc.
+						std::cout << "Reading file " << opts->filename() << std::endl;
 						error_info->add("Filename", opts->filename());
-						error_info->add("Particle-id", id);
+						particle_info pi = getParticleInfo(opts->filename());
 
 						//--------------------------------------------------------------------------------------//
 						// Gain access to the data file.
 						//--------------------------------------------------------------------------------------//
 
 						auto hFile = h->file;
+
+						// Parse the 
 
 						/*
 						size_t numPoints;
