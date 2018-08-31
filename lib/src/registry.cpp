@@ -23,7 +23,7 @@
 #include "../icedb/splitSet.hpp"
 #include "../icedb/registry.hpp"
 #include "../icedb/io.hpp"
-#include "../icedb/versioning/versioning.hpp"
+//#include "../icedb/versioning/versioning.hpp"
 #include <boost/iostreams/filter/newline.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filtering_stream.hpp>

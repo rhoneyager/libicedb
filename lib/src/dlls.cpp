@@ -20,7 +20,8 @@
 #include "../icedb/misc/os_functions.hpp"
 #include "../icedb/splitSet.hpp"
 #include "../icedb/dlls.hpp"
-#include "../icedb/versioning/versioning.hpp"
+#include "../icedb/versioning/versioningForwards.hpp"
+#include "../private/os_impl.hpp"
 
 #ifdef _WIN32
 #include "windows.h"
@@ -181,7 +182,7 @@ namespace {
 		icedb::registry::searchPathsOne.emplace(
 			libpath / "icedb" / "plugins");
 		icedb::registry::searchPathsOne.emplace(
-			libpath / ".." / boost::filesystem::path(libicedb_libexecdir) / "icedb" / "plugins");
+			libpath / ".." / boost::filesystem::path(icedb::os_functions::getLibExecDir()) / "icedb" / "plugins");
 		//}
 		
 		// Checking environment variables

@@ -106,6 +106,7 @@ set(lib_objs
 	icedb/misc/os_functions.hpp
 	private/linterp.h
 	private/resource.h
+	private/os_impl.hpp
 	icedb/options.hpp
 	src/logging.cpp
 	src/options.cpp

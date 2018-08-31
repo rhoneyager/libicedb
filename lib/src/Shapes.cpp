@@ -3,7 +3,7 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 #include "../icedb/shape.hpp"
-#include "../icedb/versioning/versioning.hpp"
+#include "../icedb/versioning/versioningForwards.hpp"
 #include "../icedb/error.hpp"
 
 namespace icedb {

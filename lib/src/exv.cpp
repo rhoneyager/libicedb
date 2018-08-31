@@ -1,5 +1,5 @@
 #include "icedb/exv.hpp"
-#include "icedb/versioning/versioning.hpp"
+#include "icedb/versioning/versioningForwards.hpp"
 #include "icedb/error.hpp"
 #include "HH/Attributes.hpp"
 #include "HH/Types/Complex.hpp"

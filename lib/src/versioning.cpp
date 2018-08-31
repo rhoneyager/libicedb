@@ -2,8 +2,14 @@
 #include "../icedb/util.h"
 #include <sstream>
 namespace icedb {
+	namespace os_functions {
+		std::string getLibExecDir() {
+			return std::string(libicedb_libexecdir);
+		}
+
+	}
 	namespace versioning {
-		namespace internal {
+			namespace internal {
 			versionInfo_p ver_int;
 		}
 		ICEDB_ver_match compareVersions(const versionInfo_p a, const versionInfo_p b)
