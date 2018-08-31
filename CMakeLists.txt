@@ -57,7 +57,16 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 		set(CMAKE_INSTALL_FULL_LIBEXECDIR ${CMAKE_INSTALL_FULL_LIBDIR})
 	endif()
 endif()
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+# TODO: properly set the install RPATH for user installs vs build-system packaging.
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+#SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+#SET(CMAKE_INSTALL_RPATH "") #${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+#SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+#LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+#IF("${isSystemDir}" STREQUAL "-1")
+#   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#ENDIF("${isSystemDir}" STREQUAL "-1")
+
 
 # Versioning information
 get_git_head_revision(GITREFSPECVAR GITHASHVAR)
@@ -269,7 +278,7 @@ set(CPACK_RPM_PACKAGE_REQUIRES
 	)
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-	"cmake (>= 3.1), libhdf5-dev, zlib1g-dev, libboost-filesystem-dev (>= 1.48), libboost-system-dev (>= 1.48), libboost-program-options-dev (>=1.48), libboost-date-time.dev (>= 1.48), libboost-regex-dev (>= 1.48), libboost-test-dev (>=1.48)"
+	"cmake (>= 3.1), libhdf5-dev, zlib1g-dev, libboost-filesystem-dev (>= 1.48), libboost-system-dev (>= 1.48), libboost-program-options-dev (>=1.48), libboost-date-time-dev (>= 1.48), libboost-regex-dev (>= 1.48), libboost-test-dev (>=1.48)"
 	)
 if(BUILD_PLUGIN_SILO)
 	set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libsilo-dev")

@@ -4,6 +4,7 @@
 #define libicedb_REVISION @REVISION@
 #define libicedb_GitHash "@GITHASHVAR@"
 #define libicedb_GitBranch "@GITREFSPECVAR@"
+#define libicedb_PackageGitBranch "@PACKAGE_GIT_BRANCH@"
 
 #define libicedb_libexecdir "@CMAKE_INSTALL_LIBEXECDIR@"
 #define libicedb_full_libexecdir "@CMAKE_INSTALL_FULL_LIBEXECDIR@"
@@ -11,3 +12,6 @@
 #define libicedb_full_libdir "@CMAKE_INSTALL_FULL_LIBDIR@"
 #define libicedb_bindir "@CMAKE_INSTALL_BINDIR@"
 #define libicedb_full_bindir "@CMAKE_INSTALL_FULL_BINDIR@"
+#define libicedb_sharedir "@CMAKE_INSTALL_DATAROOTDIR@"
+#define libicedb_full_sharedir "@CMAKE_INSTALL_FULL_DATAROOTDIR@"
+

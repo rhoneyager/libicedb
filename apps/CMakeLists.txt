@@ -4,4 +4,5 @@ add_subdirectory(onesphere)
 add_subdirectory(units)
 add_subdirectory(refract)
 add_subdirectory(scattering_data_importer)
+add_subdirectory(version)
 

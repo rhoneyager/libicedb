@@ -40,11 +40,13 @@
 #include "../icedb/error_context.h"
 #include "../icedb/misc/os_functions.h"
 #include "../icedb/misc/os_functions.hpp"
-//#include "../icedb/dlls/dlls.h"
+#include "../icedb/dlls.hpp"
 //#include "../icedb/misc/mem.h"
 #include "../icedb/util.h"
 #include "../icedb/splitSet.hpp"
 #include <boost/filesystem.hpp>
+#include "../private/os_impl.hpp"
+
 
 namespace icedb {
 	namespace os_functions {
@@ -848,9 +850,15 @@ const char* ICEDB_getAppPathC() {
 	return appPath.c_str();
 }
 
+/// \todo Bring this in sync with CMake!!!
 void ICEDB_getPluginDirI() {
 	ICEDB_getLibDirI();
-	pluginDir = libDir + "/icedb-plugins";
+	//	libpath / ".." / boost::filesystem::path(icedb::os_functions::getLibExecDir()) / "icedb" / "plugins");
+	auto modinfo = icedb::os_functions::getModuleInfo((void*)_ICEDB_dllPluginBase);
+	boost::filesystem::path libpath(getPath(modinfo.get()));
+	libpath.remove_filename();
+	pluginDir = (libpath / ".." / boost::filesystem::path(icedb::os_functions::getLibExecDir()) / "icedb" / "plugins").string();
+	//pluginDir = libDir + "/icedb/plugins";
 }
 char* ICEDB_getPluginDir(size_t sz, char* res) {
 	ICEDB_getPluginDirI();
@@ -863,6 +871,7 @@ const char* ICEDB_getPluginDirC() {
 }
 
 /// \todo Get this directory from CMake. Calculate relative to the lib directory.
+/// \note Currently used ONLY to find the testing data!!!!!
 void ICEDB_getShareDirI() {
 	ICEDB_getLibDirI();
 	shareDir = libDir + "/../../share";
