@@ -188,7 +188,7 @@ namespace icedb {
 						size_t len = posb - posa;
 						double val;
 						std::string s(in.substr(posa, len));
-						val = boost::lexical_cast<size_t>(s);
+						val = (double) boost::lexical_cast<size_t>(s);
 						//val = Ryan_Debug::macros::m_atof<double>(&(in.data()[posa]), len);
 						valser[j] = val;
 					}

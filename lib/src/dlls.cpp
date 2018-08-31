@@ -16,13 +16,11 @@
 #include <boost/tokenizer.hpp>
 #include <mutex>
 #include "../icedb/logging.hpp"
-//#include "../icedb/debug.h"
 #include "../icedb/error.hpp"
 #include "../icedb/misc/os_functions.hpp"
-//#include "../icedb/fs.h"
-//#include "../icedb/config.h"
 #include "../icedb/splitSet.hpp"
 #include "../icedb/dlls.hpp"
+#include "../icedb/versioning/versioning.hpp"
 
 #ifdef _WIN32
 #include "windows.h"
@@ -175,8 +173,16 @@ namespace {
 		auto modinfo = getModuleInfo((void*)_ICEDB_dllPluginBase);
 		boost::filesystem::path libpath(getPath(modinfo.get()));
 		libpath.remove_filename();
-		icedb::registry::searchPathsOne.emplace(libpath / "plugins");
-		icedb::registry::searchPathsOne.emplace(libpath / "icedb-plugins");
+
+		// Check where libexec is relative to lib. Are they in the same location?
+		//if (std::string(libicedb_libexecdir) == std::string(libicedb_libdir))
+		//	icedb::registry::searchPathsOne.emplace(libpath / "icedb" / "plugins");
+		//else {
+		icedb::registry::searchPathsOne.emplace(
+			libpath / "icedb" / "plugins");
+		icedb::registry::searchPathsOne.emplace(
+			libpath / ".." / boost::filesystem::path(libicedb_libexecdir) / "icedb" / "plugins");
+		//}
 		
 		// Checking environment variables
 		if (use_environment)

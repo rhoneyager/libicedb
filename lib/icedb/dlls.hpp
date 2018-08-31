@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 #include <boost/program_options.hpp>
-#include "versioning/versioning.hpp"
 
 namespace boost {
 	namespace filesystem {

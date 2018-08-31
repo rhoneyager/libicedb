@@ -5,3 +5,9 @@
 #define libicedb_GitHash "@GITHASHVAR@"
 #define libicedb_GitBranch "@GITREFSPECVAR@"
 
+#define libicedb_libexecdir "@CMAKE_INSTALL_LIBEXECDIR@"
+#define libicedb_full_libexecdir "@CMAKE_INSTALL_FULL_LIBEXECDIR@"
+#define libicedb_libdir "@CMAKE_INSTALL_LIBDIR@"
+#define libicedb_full_libdir "@CMAKE_INSTALL_FULL_LIBDIR@"
+#define libicedb_bindir "@CMAKE_INSTALL_BINDIR@"
+#define libicedb_full_bindir "@CMAKE_INSTALL_FULL_BINDIR@"

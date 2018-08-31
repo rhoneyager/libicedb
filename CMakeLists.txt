@@ -21,16 +21,6 @@ include(generaterc)
 include(GetGitRevisionDescription)
 include(adddocs)
 
-ENABLE_TESTING()
-INCLUDE(CTest)
-
-# Versioning information
-get_git_head_revision(GITREFSPECVAR GITHASHVAR)
-if ("${GITREFSPECVAR}" STREQUAL "")
-	set(GITBRANCH "GIT_BRANCH_UNKNOWN")
-else()
-	string(SUBSTRING "${GITREFSPECVAR}" 11 -1 GITBRANCH )
-endif()
 set(MAJOR 0)
 set(MINOR 7)
 set(REVISION 3)
@@ -39,18 +29,52 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
 addInstallDirs(icedb)
 
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Release Debug RelWithDebInfo MinSizeRel)
+endif()
+
+ENABLE_TESTING()
+INCLUDE(CTest)
+
+# Fix for the libexec install directory location on Debian and Ubuntu - they do not use /usr/libexec.
+# Placing under /usr/lib per the Filesystem Hierarchy Standard (http://www.pathname.com/fhs/).
+# Note: Debian and Ubuntu use FHS 2.3, and Fedora uses 3.0 (which re-adds libexec).
+#message("${CMAKE_INSTALL_LIBDIR} ${CMAKE_INSTALL_LIBEXECDIR} ${CMAKE_INSTALL_BINDIR}")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	find_program(LSB_RELEASE_EXEC lsb_release)
+	mark_as_advanced(LSB_RELEASE_EXEC)
+	execute_process(COMMAND ${LSB_RELEASE_EXEC} -is
+		OUTPUT_VARIABLE LSB_DISTRIBUTION_NAME_SHORT
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+	execute_process(COMMAND ${LSB_RELEASE_EXEC} -rs
+		OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+	if(${LSB_DISTRIBUTION_NAME_SHORT} STREQUAL "Ubuntu" OR ${LSB_DISTRIBUTION_NAME_SHORT} STREQUAL "Debian")
+		set(CMAKE_INSTALL_LIBEXECDIR ${CMAKE_INSTALL_LIBDIR})
+		set(CMAKE_INSTALL_FULL_LIBEXECDIR ${CMAKE_INSTALL_FULL_LIBDIR})
+	endif()
+endif()
+
+# Versioning information
+get_git_head_revision(GITREFSPECVAR GITHASHVAR)
+if ("${GITREFSPECVAR}" STREQUAL "")
+	set(GITBRANCH "GIT_BRANCH_UNKNOWN")
+else()
+	string(SUBSTRING "${GITREFSPECVAR}" 11 -1 GITBRANCH )
+endif()
+
 # This config file stores basic information about the build.
 # Version number, git hash, ...
 # This gets pulled into the icedb target.
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/lib/util/cmake-settings.h.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/lib/cmake-settings.h"
+	"${CMAKE_CURRENT_BINARY_DIR}/lib/icedb-cmake-settings.h"
     )
 
-if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
-	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Release Debug RelWithDebInfo MinSizeRel)
-endif()
+
 
 # The two dependencies: boost and HDF5
 addBoostUniform(1.45.0 REQUIRED COMPONENTS program_options unit_test_framework date_time regex filesystem system)
@@ -62,12 +86,6 @@ amend_boost_libs(Boost::regex impBoost::regex)
 amend_boost_libs(Boost::unit_test_framework impBoost::unit_test_framework)
 find_package(ZLIB REQUIRED)
 amend_basic_libs(ZLIB::ZLIB impZLIB::ZLIB)
-
-#if ("${Boost_MINOR_VERSION}" LESS "45")
-#	error("Your version of Boost is too old to build icedb.")
-#endif()
-set(USE_OLD_CPP03_ABI OFF)
-#option(USE_OLD_CPP03_ABI "C++11 led to changes in the GLIB C++ ABI. Turn this on if you are linking against old system libraries" OFF)
 
 find_package(HDF5 REQUIRED COMPONENTS C HL )
 # These get set: HDF5_C_INCLUDE_DIRS HDF5_C_LIBRARIES HDF5_C_HL_LIBRARIES HDF5_C_DEFINITIONS
@@ -142,8 +160,7 @@ INSTALL(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/icedbConfig.cmake"
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/icedb COMPONENT Libraries)
 
 INSTALL(EXPORT icedbTargets
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/icedb COMPONENT Libraries
-	)
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/icedb COMPONENT Libraries)
 
 INSTALL(FILES LICENSE.txt README.md
 	DESTINATION ${CMAKE_INSTALL_DOCDIR}
@@ -188,16 +205,6 @@ if (CPACK_SYSTEM_NAME STREQUAL "AMD64")
 	set(CPACK_SYSTEM_NAME "amd64")
 endif ()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	find_program(LSB_RELEASE_EXEC lsb_release)
-	mark_as_advanced(LSB_RELEASE_EXEC)
-	execute_process(COMMAND ${LSB_RELEASE_EXEC} -is
-		OUTPUT_VARIABLE LSB_DISTRIBUTION_NAME_SHORT
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-		)
-	execute_process(COMMAND ${LSB_RELEASE_EXEC} -rs
-		OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-		)
 	set(CPACK_SYSTEM_NAME "${CPACK_SYSTEM_NAME}-${LSB_DISTRIBUTION_NAME_SHORT}-${LSB_RELEASE_ID_SHORT}")
 endif()
 option(PACKAGE_CI_BUILD "Is this a testing (continuous integration) build?" OFF)

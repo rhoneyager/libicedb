@@ -2,7 +2,7 @@
 //
 //#include "resource.h"
 #include "@CMAKE_SOURCE_DIR@/lib/private/resource.h"
-#include "cmake-settings.h"
+#include "@PROJECT_BINARY_DIR@/lib/icedb-cmake-settings.h"
 
 #define QUOTE(str) #str
 #define EXPAND_AND_QUOTE(str) QUOTE(str)

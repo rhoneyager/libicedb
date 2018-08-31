@@ -10,7 +10,7 @@
 #include <cstring>
 #include <string>
 #include "versioningForwards.hpp"
-#include "cmake-settings.h"
+#include "icedb-cmake-settings.h"
 #include "../util.h"
 
 #define QUOTE(str) #str

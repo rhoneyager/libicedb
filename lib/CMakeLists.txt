@@ -150,7 +150,7 @@ source_group("BinaryIO" FILES ${BinaryIO_Headers})
 source_group("BinaryIO\\boost" FILES ${BinaryIO_Headers_b})
 set(libsrcs_dllbase src/dlls_placeholder.cpp ${gsl_objs} ${hh_objs} ${related_cmake_objects}
 	${BinaryIO_Headers} ${BinaryIO_Headers_b}
-	"${CMAKE_CURRENT_BINARY_DIR}/../cmake-settings.h")
+	"${CMAKE_CURRENT_BINARY_DIR}/icedb-cmake-settings.h")
 set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs}
 	${db_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}

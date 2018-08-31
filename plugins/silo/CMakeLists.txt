@@ -43,7 +43,7 @@ if (BUILD_PLUGIN_SILO)
 		add_dependencies(copy_icedb_dependencies_to_build_dirs copy_silo_dependencies_to_build_dirs)
 
 		install(PROGRAMS $<TARGET_FILE:silo>
-			DESTINATION ${RBIN_DIR}/$<CONFIG>
+			DESTINATION ${CMAKE_INSTALL_BINDIR} #${RBIN_DIR}/$<CONFIG>
 			COMPONENT Plugins)
 	endif()
 endif()
