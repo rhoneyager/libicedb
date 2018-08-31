@@ -7,7 +7,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "phaseFunc.h"
 #include <icedb/units/units.hpp>
-#include <icedb/versioning/versioning.hpp>
+#include <icedb/versioning/versioningForwards.hpp>
+//#include <icedb/versioning/versioning.hpp>
 #include <icedb/misc/os_functions.hpp>
 
 namespace icedb {
@@ -45,7 +46,8 @@ namespace icedb {
 					using namespace boost::gregorian;
 					ptime now = second_clock::local_time();
 					ingest_timestamp = to_iso_string(now);
-					ingest_code_version = std::string(icedb::versioning::genVersionInfo()->vgithash);
+					ingest_code_version = std::string(icedb::versioning::getLibVersionInfo()->vgithash);
+					//ingest_code_version = std::string(icedb::versioning::genVersionInfo()->vgithash);
 				}
 				/*
 				bool pfRunSetContainer::needsUpgrade() const
