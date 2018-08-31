@@ -23,7 +23,7 @@ include(adddocs)
 
 set(MAJOR 0)
 set(MINOR 7)
-set(REVISION 3)
+set(REVISION 4)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 addBaseProject()
