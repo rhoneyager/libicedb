@@ -269,8 +269,11 @@ set(CPACK_RPM_PACKAGE_REQUIRES
 	)
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-	"cmake (>= 3.1), libhdf5-dev, zlib1g-dev, libboost-filesystem-dev (>= 1.48), libboost-system-dev (>= 1.48), libboost-program-options-dev (>=1.48)"
+	"cmake (>= 3.1), libhdf5-dev, zlib1g-dev, libboost-filesystem-dev (>= 1.48), libboost-system-dev (>= 1.48), libboost-program-options-dev (>=1.48), libboost-date-time.dev (>= 1.48), libboost-regex-dev (>= 1.48), libboost-test-dev (>=1.48)"
 	)
+if(BUILD_PLUGIN_SILO)
+	set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libsilo-dev")
+endif()
 set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "g++ (>= 6), hdf5-tools, git, doxygen")
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
