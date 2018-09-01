@@ -599,7 +599,10 @@ namespace icedb
 					bool res = false;
 					res = i->validate(func, critical);
 					if (!res) return false;
-				} else return false;
+				} else {
+					ICEDB_log("dlls", logging::ICEDB_LOG_ERROR, "Dll does not have the correct versioning symbol - it is not available!");
+					return false;
+				}
 			}
 			return true;
 		}

@@ -1,6 +1,6 @@
 #pragma once
 #include "defs.h"
-//#include "versioning/versioning.hpp"
+#include "versioning/versioningForwards.hpp"
 //#include "info.h"
 //#include "dlls.h"
 #include "registry.hpp"
@@ -13,11 +13,16 @@
 //
 // So, upon gcc_init or msvc_init, call a function that 
 
-#define D_icedb_start() extern "C" SHARED_EXPORT_ICEDB dllInitResult dllStart()
-#define D_icedb_validator() extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) \
-		{ \
-		icedb::versioning::genVersionInfo(vf); \
-		*rd = (void*) &(icedb_registry_register_dll); }
+//#define D_icedb_start() extern "C" SHARED_EXPORT_ICEDB dllInitResult dllStart()
+#define D_icedb_start() \
+	extern "C" SHARED_EXPORT_ICEDB void dlVer_impl(icedb::versioning::versionInfo& vf, void** rd); \
+	extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) { dlVer_impl(vf, rd); } \
+	extern "C" SHARED_EXPORT_ICEDB dllInitResult dllStart()
+
+//#define D_icedb_validator() extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) \
+//		{ \
+//		icedb::versioning::genVersionInfo(vf); \
+//		*rd = (void*) &(icedb_registry_register_dll); }
 //#define gcc_init(x) void __attribute__((constructor)) plugin_gcc_init() { x(); }
 //#define msvc_init(x) BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved) \
 //{ if (dwReason == DLL_PROCESS_ATTACH) x(); return true; }
