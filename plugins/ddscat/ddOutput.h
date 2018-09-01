@@ -115,7 +115,7 @@ namespace icedb {
 				/// Temperature
 				double temp;
 				std::string units_length = "um";
-				std::array<unsigned int, 3> version = { 1, 0, 0 };
+				std::array<unsigned int, 3> version = std::array<unsigned int, 3>{ 1, 0, 0 };
 				std::string units_temperature = "K";
 				std::string author, contact, scattMeth, datasetID;
 
