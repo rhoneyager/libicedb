@@ -176,7 +176,7 @@ extern "C"
 		void* funcInDllForPath);
 
 	/// Sort of a 'placeholder' symbol used to find the lib dir path.
-	SHARED_IMPORT_ICEDB void _ICEDB_dllPluginBase() noexcept;
+	DL_ICEDB void _ICEDB_dllPluginBase() noexcept;
 }
 
 #pragma warning(pop)

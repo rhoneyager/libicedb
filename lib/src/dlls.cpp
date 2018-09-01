@@ -42,7 +42,7 @@ typedef void* dlHandleType;
 
 extern "C"
 {
-	SHARED_EXPORT_ICEDB void _ICEDB_dllPluginBase() noexcept {}
+	void _ICEDB_dllPluginBase() noexcept {}
 }
 
 namespace icedb {
