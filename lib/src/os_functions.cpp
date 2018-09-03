@@ -735,11 +735,11 @@ char* ICEDB_findModuleByFunc(void* ptr, size_t sz, char* res) {
 
 void ICEDB_getLibDirI() {
 #if defined(_WIN32)
-	libPath = icedb::os_functions::win::GetModulePath(NULL);
+	icedb::os_functions::vars::libPath = icedb::os_functions::win::GetModulePath(NULL);
 #elif defined(__unix__) || defined(__APPLE__)
 	libPath = icedb::os_functions::unix::GetModulePath((void*)ICEDB_getLibDirI);
 #endif
-	libDir = libPath.substr(0, libPath.find_last_of("/\\"));
+	icedb::os_functions::vars::libDir = icedb::os_functions::vars::libPath.substr(0, libPath.find_last_of("/\\"));
 }
 char* ICEDB_getLibDir(size_t sz, char* res) {
 	ICEDB_getLibDirI();
@@ -998,7 +998,9 @@ namespace icedb {
 		const char* getAppDir() { ICEDB_getAppDirI(); return appDir.c_str(); }
 		const char* getPluginDir() { ICEDB_getPluginDirI(); return pluginDir.c_str(); }
 		const char* getShareDir() { ICEDB_getShareDirI(); return shareDir.c_str(); }
-		const char* getLibPath() { ICEDB_getLibDirI(); return libPath.c_str(); }
+		std::string getLibPath() { 
+			ICEDB_getLibDirI(); 
+			return icedb::os_functions::vars::libPath; }
 		const char* getAppPath() { ICEDB_getAppDirI(); return appPath.c_str(); }
 		const char* getCWD() { ICEDB_getCWDI(); return CWD.c_str(); }
 

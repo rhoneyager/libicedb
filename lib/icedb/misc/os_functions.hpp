@@ -31,7 +31,7 @@ namespace icedb {
 		/// \see ICEDB_getHomeDir
 		DL_ICEDB const char* getHomeDir();
 		DL_ICEDB const char* getLibDir();
-		DL_ICEDB const char* getLibPath();
+		DL_ICEDB std::string getLibPath();
 		DL_ICEDB const char* getAppDir();
 		DL_ICEDB const char* getAppPath();
 		DL_ICEDB const char* getPluginDir();

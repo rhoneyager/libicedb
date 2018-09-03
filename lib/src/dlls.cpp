@@ -18,6 +18,7 @@
 #include "../icedb/logging.hpp"
 #include "../icedb/error.hpp"
 #include "../icedb/misc/os_functions.hpp"
+#include "../icedb/misc/os_functions.h"
 #include "../icedb/splitSet.hpp"
 #include "../icedb/dlls.hpp"
 #include "../icedb/versioning/versioningForwards.hpp"
@@ -245,6 +246,25 @@ namespace icedb
 {
 	namespace registry
 	{
+		void list_loaded_modules(std::ostream &out)
+		{
+			/*
+			struct ICEDB_enumModulesRes {
+				size_t sz;
+				const char** modules;
+			};
+			DL_ICEDB void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes*);
+			DL_ICEDB ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
+			*/
+
+			ICEDB_enumModulesRes *mods = ICEDB_enumModules(ICEDB_getPID());
+
+			for (size_t i = 0; i < mods->sz; ++i) {
+				out << mods->modules[i] << std::endl;
+			}
+
+			ICEDB_free_enumModulesRes(mods);
+		}
 		
 		void add_hook_table(const char* tempsig, void* store) {
 			std::lock_guard<std::mutex> lock(m_hooks);

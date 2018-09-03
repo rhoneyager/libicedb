@@ -147,6 +147,7 @@ namespace icedb
 		void DL_ICEDB add_hook_table(const char* tempsig, void* store);
 		void DL_ICEDB dump_hook_table(std::ostream &out = std::cerr);
 
+		void DL_ICEDB list_loaded_modules(std::ostream &out = std::cerr);
 	}
 	void DL_ICEDB add_options(
 		boost::program_options::options_description &cmdline,
