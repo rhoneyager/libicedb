@@ -990,19 +990,17 @@ namespace icedb {
 		void libEntry(int argc, char** argv) { ICEDB_libEntry(argc, argv); }
 		void waitOnExit(bool val) { ICEDB_waitOnExitSet(val); }
 		bool waitOnExit() { return ICEDB_waitOnExitGet(); }
-		const char* getUserName() { return ICEDB_getUserName(); }
-		const char* getHostName() { return ICEDB_getHostName(); }
-		const char* getAppConfigDir() { return ICEDB_getAppConfigDir(); }
-		const char* getHomeDir() { return ICEDB_getHomeDir(); }
-		const char* getLibDir() { ICEDB_getLibDirI(); return libDir.c_str(); }
-		const char* getAppDir() { ICEDB_getAppDirI(); return appDir.c_str(); }
-		const char* getPluginDir() { ICEDB_getPluginDirI(); return pluginDir.c_str(); }
-		const char* getShareDir() { ICEDB_getShareDirI(); return shareDir.c_str(); }
-		std::string getLibPath() { 
-			ICEDB_getLibDirI(); 
-			return icedb::os_functions::vars::libPath; }
-		const char* getAppPath() { ICEDB_getAppDirI(); return appPath.c_str(); }
-		const char* getCWD() { ICEDB_getCWDI(); return CWD.c_str(); }
+		std::string getUserName() { return ICEDB_getUserName(); }
+		std::string getHostName() { return ICEDB_getHostName(); }
+		std::string getAppConfigDir() { return ICEDB_getAppConfigDir(); }
+		std::string getHomeDir() { return ICEDB_getHomeDir(); }
+		std::string getLibDir() { ICEDB_getLibDirI(); return libDir; }
+		std::string getAppDir() { ICEDB_getAppDirI(); return appDir; }
+		std::string getPluginDir() { ICEDB_getPluginDirI(); return pluginDir; }
+		std::string getShareDir() { ICEDB_getShareDirI(); return shareDir; }
+		std::string getLibPath() { ICEDB_getLibDirI(); return icedb::os_functions::vars::libPath; }
+		std::string getAppPath() { ICEDB_getAppDirI(); return appPath; }
+		std::string getCWD() { ICEDB_getCWDI(); return CWD; }
 
 
 		void freeModuleInfoP(hModuleInfo p) { delete p; }
@@ -1193,18 +1191,18 @@ namespace icedb {
 			return res;
 		}
 
-		const char* getPath(const hModuleInfo p) { return p->path.c_str(); }
-		const char* getName(const hProcessInfo p) { return p->name.c_str(); }
-		const char* getPath(const hProcessInfo p) { return p->path.c_str(); }
-		const char* getCwd(const hProcessInfo p) { return p->cwd.c_str(); }
-		const char* getEnviron(const hProcessInfo hp, size_t &sz) { sz = hp->environment.size(); return hp->environment.c_str(); }
-		const char* getEnviron(const hProcessInfo hp, const char* varname) {
-			if (hp->expandedEnviron.count(std::string(varname)))
-				return hp->expandedEnviron.at(std::string(varname)).c_str();
+		std::string getPath(const hModuleInfo p) { return p->path; }
+		std::string getName(const hProcessInfo p) { return p->name; }
+		std::string getPath(const hProcessInfo p) { return p->path; }
+		std::string getCwd(const hProcessInfo p) { return p->cwd; }
+		std::string getEnviron(const hProcessInfo hp, size_t &sz) { sz = hp->environment.size(); return hp->environment; }
+		std::string getEnviron(const hProcessInfo hp, const std::string & varname) {
+			if (hp->expandedEnviron.count((varname)))
+				return hp->expandedEnviron.at((varname));
 			else return nullptr;
 		}
-		const char* getCmdline(const hProcessInfo hp, size_t &sz) { sz = hp->cmdline.size(); return hp->cmdline.c_str(); }
-		const char* getStartTime(const hProcessInfo p) { return p->startTime.c_str(); }
+		std::string getCmdline(const hProcessInfo hp, size_t &sz) { sz = hp->cmdline.size(); return hp->cmdline; }
+		std::string getStartTime(const hProcessInfo p) { return p->startTime; }
 	}
 }
 

@@ -9,11 +9,15 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <boost/program_options.hpp>
+//#include <boost/program_options.hpp>
 
 namespace boost {
 	namespace filesystem {
 		class path;
+	}
+	namespace program_options {
+		class options_description;
+		class variables_map;
 	}
 }
 
