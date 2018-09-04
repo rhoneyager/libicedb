@@ -6,6 +6,7 @@
 #include <boost/program_options.hpp>
 #include <exception>
 #include <iostream>
+#include <icedb/dlls.hpp>
 #include <icedb/refract/refract.hpp>
 #include <icedb/units/units.hpp>
 #include <icedb/error.hpp>
@@ -40,6 +41,8 @@ int main(int argc, char** argv) {
 		p.add("temp", 1);
 		p.add("temp-units", 1);
 
+		icedb::add_options(cmdline, config, hidden);
+		
 		desc.add(cmdline).add(config);
 		oall.add(cmdline).add(config).add(hidden);
 
@@ -47,6 +50,8 @@ int main(int argc, char** argv) {
 		po::store(po::command_line_parser(argc, argv).
 			options(oall).positional(p).run(), vm);
 		po::notify(vm);
+		icedb::handle_config_file_options(oall, vm);
+		icedb::process_static_options(vm);
 
 		auto doHelp = [&](const std::string &m) { cerr << desc << "\n" << m << endl; exit(1); };
 		if (vm.count("help") || argc < 2) doHelp("");

@@ -16,7 +16,17 @@ if (BUILD_TESTING)
 	# user-callable programs will run without crashing in common workflows. The same programs may
 	# be run multiple times, with different options.
 
+	# Run a program without loading any plugins
+	add_test(NAME plugin-test-load-none
+		COMMAND icedb-version --dll-no-default-locations WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
 	if(BUILD_PLUGIN_PSU)
+		# Attempt to load and unload only the PSU plugin, and check if there is an error.
+		add_test (NAME io-psu-plugin-test
+			COMMAND icedb-version --dll-no-default-locations
+			--dll-load-onelevel $<TARGET_FILE:io_psu>
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
 		add_test (NAME io-psu-gmm-boost # Test PSU file import
 			COMMAND icedb-test-psu-shapes
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -46,6 +56,12 @@ if (BUILD_TESTING)
 	endif()
 
 	if(BUILD_PLUGIN_ADDA)
+		# Attempt to load and unload only the ADDA plugin, and check if there is an error.
+		add_test (NAME io-adda-plugin-test
+			COMMAND icedb-version --dll-no-default-locations
+			--dll-load-onelevel $<TARGET_FILE:io_adda>
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
 		add_test (NAME io-adda-boost # Test ADDA file import
 			COMMAND icedb-test-adda-shapes
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -83,6 +99,12 @@ if (BUILD_TESTING)
 	endif()
 
 	if(BUILD_PLUGIN_DDSCAT)
+		# Attempt to load and unload only the DDSCAT plugin, and check if there is an error.
+		add_test (NAME io-ddscat-plugin-test
+			COMMAND icedb-version --dll-no-default-locations
+			--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
 		execute_process(
 			COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/1mm5shape.tar.gz 
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test/
@@ -161,6 +183,14 @@ if (BUILD_TESTING)
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 		endif()
+	endif()
+
+	if(BUILD_PLUGIN_SILO)
+		# Attempt to load and unload only the silo plugin, and check if there is an error.
+		add_test (NAME io-silo-plugin-test
+			COMMAND icedb-version --dll-no-default-locations
+			--dll-load-onelevel $<TARGET_FILE:plugin_silo>
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 	endif()
 
 endif()
