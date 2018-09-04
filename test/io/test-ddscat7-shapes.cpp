@@ -17,10 +17,11 @@
 #define BOOST_TEST_REQUIRE BOOST_REQUIRE
 #endif
 
+std::string sShareDir;
+
 BOOST_AUTO_TEST_CASE(read_ddscat7_shape1)
 {
 	using namespace std;
-	const string sShareDir(icedb::os_functions::getShareDir());
 	const string sfile = sShareDir + "/examples/shapes/DDSCAT/ddscat7ice.dat";
 
 	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("ddscat");
@@ -56,7 +57,6 @@ BOOST_AUTO_TEST_CASE(read_ddscat7_shape1)
 BOOST_AUTO_TEST_CASE(read_ddscat7_shape2)
 {
 	using namespace std;
-	const string sShareDir(icedb::os_functions::getShareDir());
 	const string sfile = sShareDir + "/examples/shapes/DDSCAT/ddscat7melting.dat";
 
 	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("ddscat");
@@ -99,15 +99,22 @@ main(int argc, char* argv[])
 	try {
 		// The icedb library needs to process its own options, and 
 		// it needs to load its file-handling plugins.
+		sShareDir = icedb::os_functions::getShareDir();
 		namespace po = boost::program_options;
 		po::options_description desc("General options");
+		desc.add_options()
+			("share-dir,s", po::value<std::string>()->default_value(sShareDir), "share/icedb directory");
 		icedb::add_options(desc, desc, desc); // Icedb has its own options.
 		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+		po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
 		po::notify(vm);
 		icedb::process_static_options(vm);
 
-		return ::boost::unit_test::unit_test_main(&init_unit_test, argc, argv);
+		sShareDir = vm["share-dir"].as<std::string>();
+
+		int nArgc = 1;
+		char* nArgv[] = { argv[0] };
+		return ::boost::unit_test::unit_test_main(&init_unit_test, nArgc, nArgv);
 	}
 	catch (std::exception &e)
 	{
