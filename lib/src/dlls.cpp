@@ -558,7 +558,7 @@ namespace icedb
 
 					// Check that the DLL's icedb function calls are really to the correct code.
 					void *mdcheck = (void*) &(icedb_registry_register_dll);
-					if (rdcheck != mdcheck) {
+					if (0 && (rdcheck != mdcheck)) { // Temporarily disabling / debugging this check
 						using namespace icedb::registry;
 						using namespace icedb;
 						using namespace icedb::os_functions;
