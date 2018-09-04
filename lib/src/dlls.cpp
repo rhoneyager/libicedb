@@ -307,10 +307,25 @@ namespace icedb
 					return;
 				DLLpathsLoaded.erase(fname);
 #ifdef __unix__
-				dlclose(this->dlHandle);
+				//dlclose(this->dlHandle);
+				/** \note glibc 2.23 has a bug that affects Ubuntu 16.04.
+				* See https://bugzilla.redhat.com/show_bug.cgi?id=1398370
+				* If the plugin has registered any handlers, then it
+				* doesn't get unloaded immediately using dlclose. This is 
+				* the desired behavior, and this behavior is correct.
+				* The bug is a spurious assert check because glibc changed
+				* the unloading logic.
+				*
+				* To fix, I simply do not have to explicitly unload the dll.
+				* In the case of a version incompatible-plugin or a duplicate
+				* load, well, the "bad" plugin never registers anything, so 
+				* loading / unloading it has no net effect.
+				**/
+				this->dlHandle = nullptr;
 #endif
 #ifdef _WIN32
 				FreeLibrary(this->dlHandle);
+				this->dlHandle = nullptr;
 #endif
 				this->dlHandle = nullptr; // Always remember to avoid a double closure.
 			}
@@ -377,7 +392,7 @@ namespace icedb
 
 #ifdef __unix__ // Indicates that DLSYM is provided (unix, linux, mac, etc. (sometimes even windows))
 					//Check that file exists here
-					this->dlHandle = dlopen(filename.c_str(), RTLD_LAZY);
+					this->dlHandle = dlopen(filename.c_str(), RTLD_LAZY );
 					const char* cerror = dlerror();
 					if (cerror)
 					{
