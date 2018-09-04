@@ -30,6 +30,7 @@ if (BUILD_TESTING)
 		add_test (NAME io-psu-gmm-boost # Test PSU file import
 			COMMAND icedb-test-psu-shapes 
 				--dll-load-onelevel $<TARGET_FILE:io_psu>
+				--dll-no-default-locations
 				--share-dir ${CMAKE_SOURCE_DIR}/share
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
@@ -39,6 +40,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
 				--dll-load-onelevel $<TARGET_FILE:io_psu>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-psu-gmm-2 # Test import without the --truncate option
@@ -46,6 +48,7 @@ if (BUILD_TESTING)
 				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
 				--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
 				--dll-load-onelevel $<TARGET_FILE:io_psu>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		if (BUILD_PLUGIN_SILO)
@@ -56,6 +59,7 @@ if (BUILD_TESTING)
 					--out-format silo --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.silo
 					--dll-load-onelevel $<TARGET_FILE:io_psu>
 					--dll-load-onelevel $<TARGET_FILE:plugin_silo>
+					--dll-no-default-locations
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 		endif()
@@ -66,10 +70,12 @@ if (BUILD_TESTING)
 		add_test (NAME io-adda-plugin-test
 			COMMAND icedb-version --dll-no-default-locations
 				--dll-load-onelevel $<TARGET_FILE:io_adda>
-				--share-dir ${CMAKE_SOURCE_DIR}/share
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 		add_test (NAME io-adda-boost # Test ADDA file import
-			COMMAND icedb-test-adda-shapes --dll-load-onelevel $<TARGET_FILE:io_adda>
+			COMMAND icedb-test-adda-shapes 
+				--dll-load-onelevel $<TARGET_FILE:io_adda>
+				--dll-no-default-locations
+				--share-dir ${CMAKE_SOURCE_DIR}/share
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-adda-1 # Test ADDA file import
@@ -78,6 +84,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format adda --out ${CMAKE_BINARY_DIR}/test/adda-rawtext_nocomments.h5
 				--dll-load-onelevel $<TARGET_FILE:io_adda>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-adda-2 # Test ADDA file import
@@ -86,6 +93,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format adda --out ${CMAKE_BINARY_DIR}/test/adda-sphere-geom.h5
 				--dll-load-onelevel $<TARGET_FILE:io_adda>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		if (BUILD_PLUGIN_SILO)
@@ -96,6 +104,7 @@ if (BUILD_TESTING)
 					--out-format silo --out ${CMAKE_BINARY_DIR}/test/adda-sphere-geom.silo
 					--dll-load-onelevel $<TARGET_FILE:io_adda>
 					--dll-load-onelevel $<TARGET_FILE:plugin_silo>
+					--dll-no-default-locations
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 			add_test (NAME io-adda-to-silo-2 # Write a file into the SILO visualization format
@@ -105,6 +114,7 @@ if (BUILD_TESTING)
 					--out-format silo --out ${CMAKE_BINARY_DIR}/test/adda-adda-rawtext_nocomments.silo
 					--dll-load-onelevel $<TARGET_FILE:io_adda>
 					--dll-load-onelevel $<TARGET_FILE:plugin_silo>
+					--dll-no-default-locations
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 		endif()
@@ -125,12 +135,14 @@ if (BUILD_TESTING)
 		add_test (NAME io-ddscat-boost-1 # Test DDSCAT file import
 			COMMAND icedb-test-ddscat7-shapes
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 				--share-dir ${CMAKE_SOURCE_DIR}/share
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat-boost-2 # Test DDSCAT file import
 			COMMAND icedb-test-ddscat6-shapes
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 				--share-dir ${CMAKE_SOURCE_DIR}/share
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
@@ -140,6 +152,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat7-2 # Test DDSCAT file import
@@ -148,6 +161,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7melting.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat7-3 # Test DDSCAT file import, without the --truncate option
@@ -155,6 +169,7 @@ if (BUILD_TESTING)
 				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat7melting.dat
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat7-4 # Test DDSCAT file import
@@ -163,6 +178,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/1mm5shape.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat6-1 # Test DDSCAT file import
@@ -171,6 +187,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat6ice.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat6-2 # Test DDSCAT file import
@@ -179,6 +196,7 @@ if (BUILD_TESTING)
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat6melting.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		# TODO: Add DDSCAT 6 silo tests?
@@ -190,6 +208,7 @@ if (BUILD_TESTING)
 					--out-format silo --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.silo
 					--dll-load-onelevel $<TARGET_FILE:io_ddscat>
 					--dll-load-onelevel $<TARGET_FILE:plugin_silo>
+					--dll-no-default-locations
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 			add_test (NAME io-ddscat7-to-silo-2 # Write a file into the SILO visualization format
@@ -199,6 +218,7 @@ if (BUILD_TESTING)
 					--out-format silo --out ${CMAKE_BINARY_DIR}/test/ddscat7melting.silo
 					--dll-load-onelevel $<TARGET_FILE:io_ddscat>
 					--dll-load-onelevel $<TARGET_FILE:plugin_silo>
+					--dll-no-default-locations
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 			add_test (NAME io-ddscat7-to-silo-3 # Write a file into the SILO visualization format
@@ -208,6 +228,7 @@ if (BUILD_TESTING)
 					--out-format silo --out ${CMAKE_BINARY_DIR}/test/1mm5shape.silo
 					--dll-load-onelevel $<TARGET_FILE:io_ddscat>
 					--dll-load-onelevel $<TARGET_FILE:plugin_silo>
+					--dll-no-default-locations
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 		endif()
