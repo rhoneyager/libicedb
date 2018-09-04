@@ -962,10 +962,15 @@ extern "C"
 		std::string dllPath(getPath(h.get()));
 		h.reset();
 
+		ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "icedb_registry_register_dll called on " << dllPath
+			<< ", with ptr " << ptr << ", preamble " << b.uuid << ", " << b.name << ", " << b.description);
+
 		for (const auto & i : preambles)
 		{
 			if (std::strcmp(i.uuid, p.uuid) == 0) {
 				// Duplicate load detected!
+
+				ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "icedb_registry_register_dll hit a duplicate dll.");
 				
 				// Cannot Throw failure condition.
 				//ICEDB_throw(icedb::error::xDuplicateHook())
