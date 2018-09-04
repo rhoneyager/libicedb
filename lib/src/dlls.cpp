@@ -18,6 +18,7 @@
 #include "../icedb/logging.hpp"
 #include "../icedb/error.hpp"
 #include "../icedb/misc/os_functions.hpp"
+#include "../icedb/misc/os_functions.h"
 #include "../icedb/splitSet.hpp"
 #include "../icedb/dlls.hpp"
 #include "../icedb/versioning/versioningForwards.hpp"
@@ -195,8 +196,8 @@ namespace {
 		{
 
 			size_t sEnv = 0;
-			const char* cenv = getEnviron(info.get(), sEnv);
-			std::string env(cenv, sEnv);
+			std::string env = getEnviron(info.get(), sEnv);
+			//std::string env(cenv, sEnv);
 
 			//icedb::processInfo info = icedb::getInfo(icedb::getPID());
 			std::map<std::string, std::string> mEnv;
@@ -245,6 +246,25 @@ namespace icedb
 {
 	namespace registry
 	{
+		void list_loaded_modules(std::ostream &out)
+		{
+			/*
+			struct ICEDB_enumModulesRes {
+				size_t sz;
+				const char** modules;
+			};
+			DL_ICEDB void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes*);
+			DL_ICEDB ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
+			*/
+
+			ICEDB_enumModulesRes *mods = ICEDB_enumModules(ICEDB_getPID());
+
+			for (size_t i = 0; i < mods->sz; ++i) {
+				out << mods->modules[i] << std::endl;
+			}
+
+			ICEDB_free_enumModulesRes(mods);
+		}
 		
 		void add_hook_table(const char* tempsig, void* store) {
 			std::lock_guard<std::mutex> lock(m_hooks);
@@ -281,8 +301,10 @@ namespace icedb
 				: dlHandle(nullptr), validators(dvs), parent(p) {
 			}
 			void close() {
-				if (!dlHandle) return;
-				//BOOST_LOG_SEV(m_reg, normal) << "Closing dll " << fname << "." << "\n";
+				if (fname.size())
+					ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Closing DLL handle " << dlHandle << " for file " << fname << ".");
+				if (!dlHandle)
+					return;
 				DLLpathsLoaded.erase(fname);
 #ifdef __unix__
 				dlclose(this->dlHandle);
@@ -290,11 +312,13 @@ namespace icedb
 #ifdef _WIN32
 				FreeLibrary(this->dlHandle);
 #endif
-				//BOOST_LOG_SEV(m_reg, normal) << "Closed dll " << fname << "." << "\n";
+				this->dlHandle = nullptr; // Always remember to avoid a double closure.
 			}
 			bool isOpen() const { if (dlHandle) return true; return false; }
 			void* getSym(const char* symbol, bool critical = false) const 
 			{
+				ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Getting symbol " << symbol << ", with critical = "
+					<< critical << ", for handle " << dlHandle << " and file " << fname << ".");
 				if (dlHandle == NULL)
 				{
 					ICEDB_throw(icedb::error::error_types::xHandleNotOpen)
@@ -326,6 +350,7 @@ namespace icedb
 			}
 			void open(const std::string &filename, bool critical = false)
 			{
+				ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Opening DLL file " << filename << ", with critical = " << critical << ".");
 				if (DLLpathsLoaded.count(filename))
 				{
 					if (critical)
@@ -333,16 +358,17 @@ namespace icedb
 						.add("is_critical", critical)
 						.add("file_name", filename)
 						.add("file_name_b", fname);
-					ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "DLL already loaded. " << filename);
+					ICEDB_log("dlls", logging::ICEDB_LOG_ERROR, "DLL already loaded. " << filename);
 					return;
 				}
 				if (dlHandle)
 				{
-					ICEDB_throw(icedb::error::error_types::xHandleInUse)
+					if (critical)
+						ICEDB_throw(icedb::error::error_types::xHandleInUse)
 						.add("is_critical", critical)
 						.add("file_name", filename)
 						.add("file_name_b", fname);
-					ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_WARNING, "DLLhandleImpl already had a loaded DLL, when trying to load " << filename);
+					ICEDB_log("dlls", logging::ICEDB_LOG_ERROR, "DLLhandleImpl already had a loaded DLL, when trying to load " << filename);
 					return;
 				}
 				fname = filename;
@@ -454,6 +480,8 @@ namespace icedb
 			}
 		public:
 			~DLLhandleImpl() {
+				ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Destructor called for DLLhandleImpl on file " << fname
+					<< ", with handle value of " << dlHandle << ".");
 				close();
 			}
 		};
@@ -530,7 +558,7 @@ namespace icedb
 
 					// Check that the DLL's icedb function calls are really to the correct code.
 					void *mdcheck = (void*) &(icedb_registry_register_dll);
-					if (rdcheck != mdcheck) {
+					if (0 && (rdcheck != mdcheck)) { // Temporarily disabling / debugging this check
 						using namespace icedb::registry;
 						using namespace icedb;
 						using namespace icedb::os_functions;
@@ -805,10 +833,10 @@ namespace icedb
 		hidden.add_options()
 			("dll-load-onelevel", po::value<std::vector<std::string> >()->multitoken(),
 				"Specify dlls to load. If passed a directory, it loads all dlls present (one-level). ")
-				("dll-load-recursive", po::value<std::vector<std::string> >()->multitoken(),
-					"Specify dlls to load. If passed a directory, it loads all dlls present (recursing). ")
-			//("dll-no-default-locations", "Prevent non-command line dll locations from being read")
-					("print-dll-loaded", "Prints the table of loaded DLLs.")
+			("dll-load-recursive", po::value<std::vector<std::string> >()->multitoken(),
+				"Specify dlls to load. If passed a directory, it loads all dlls present (recursing). ")
+			("dll-no-default-locations", "Prevent non-command line dll locations from being read")
+			("print-dll-loaded", "Prints the table of loaded DLLs.")
 			("print-dll-search-paths", "Prints the search paths used when loading dlls.")
 			("console-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to console. 0 is DEBUG_2, 7 is CRITICAL.")
 			("debug-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to an attached debugger (Windows only). On non-Windows, logs to stderror. 0 is DEBUG_2, 7 is CRITICAL.")
@@ -889,7 +917,8 @@ namespace icedb
 			}
 		}
 
-		constructSearchPaths(false, true, true);
+		if (!vm.count("dll-no-default-locations"))
+			constructSearchPaths(false, true, true);
 
 		if (vm.count("print-dll-search-paths")) {
 			printDLLsearchPaths(std::cerr);

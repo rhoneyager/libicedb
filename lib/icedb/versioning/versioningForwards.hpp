@@ -4,6 +4,7 @@
 #include "../defs.h"
 #include "versioningForwards.h"
 #include <memory>
+#include <iostream>
 ICEDB_BEGIN_DECL_CPP
 namespace icedb {
 	namespace versioning {
@@ -46,7 +47,16 @@ namespace icedb {
 
 		DL_ICEDB ICEDB_ver_match compareVersions(const versionInfo_p a, const versionInfo_p b);
 		DL_ICEDB versionInfo_p getLibVersionInfo();
-		
+		/**
+		* \brief Provides information about the build environment during compilation.
+		*
+		* This function is designed to provide information on a compiler's
+		* build environment. It is a header function because it is designed
+		* to reflect the compiler variables of an external project's code.
+		*
+		* @param out The output stream that receives the information.
+		*/
+		DL_ICEDB void debug_preamble(const versionInfo &v, std::ostream &out = std::cerr);
 	}
 }
 ICEDB_END_DECL_CPP

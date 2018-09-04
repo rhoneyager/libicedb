@@ -42,7 +42,9 @@ int main(int argc, char** argv) {
 			<< "\nShare dir: " << getShareDir()
 			<< "\nUser config dir: " << getAppConfigDir()
 			<< "\nicedb lib path: " << getLibPath()
-			<< std::endl;
+			<< "\n\nLoaded modules:" << std::endl;
+
+		icedb::registry::list_loaded_modules(cout);
 	}
 	catch (const std::exception &e) {
 		std::cerr << e.what() << std::endl;

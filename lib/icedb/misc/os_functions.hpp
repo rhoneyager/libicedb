@@ -23,21 +23,21 @@ namespace icedb {
 		/// \see ICEDB_waitOnExitGet
 		DL_ICEDB bool waitOnExit();
 		/// \see ICEDB_getUserName
-		DL_ICEDB const char* getUserName();
+		DL_ICEDB std::string getUserName();
 		/// \see ICEDB_getHostName
-		DL_ICEDB const char* getHostName();
+		DL_ICEDB std::string getHostName();
 		/// \see ICEDB_getAppConfigDir
-		DL_ICEDB const char* getAppConfigDir();
+		DL_ICEDB std::string getAppConfigDir();
 		/// \see ICEDB_getHomeDir
-		DL_ICEDB const char* getHomeDir();
-		DL_ICEDB const char* getLibDir();
-		DL_ICEDB const char* getLibPath();
-		DL_ICEDB const char* getAppDir();
-		DL_ICEDB const char* getAppPath();
-		DL_ICEDB const char* getPluginDir();
-		DL_ICEDB const char* getCWD();
+		DL_ICEDB std::string getHomeDir();
+		DL_ICEDB std::string getLibDir();
+		DL_ICEDB std::string getLibPath();
+		DL_ICEDB std::string getAppDir();
+		DL_ICEDB std::string getAppPath();
+		DL_ICEDB std::string getPluginDir();
+		DL_ICEDB std::string getCWD();
 		/// Get a the static share directory
-		DL_ICEDB const char* getShareDir();
+		DL_ICEDB std::string getShareDir();
 
 		struct processInfo;
 		typedef const processInfo* hProcessInfo;
@@ -56,14 +56,14 @@ namespace icedb {
 			return std::shared_ptr<const processInfo>(getInfoP(pid), freeProcessInfoP);
 		}
 
-		DL_ICEDB const char* getPath(const hModuleInfo);
-		DL_ICEDB const char* getName(const hProcessInfo);
-		DL_ICEDB const char* getPath(const hProcessInfo);
-		DL_ICEDB const char* getCwd(const hProcessInfo);
-		DL_ICEDB const char* getEnviron(const hProcessInfo, size_t &sz);
-		DL_ICEDB const char* getEnviron(const hProcessInfo, const char* varname);
-		DL_ICEDB const char* getCmdline(const hProcessInfo, size_t &sz);
-		DL_ICEDB const char* getStartTime(const hProcessInfo);
+		DL_ICEDB std::string getPath(const hModuleInfo);
+		DL_ICEDB std::string getName(const hProcessInfo);
+		DL_ICEDB std::string getPath(const hProcessInfo);
+		DL_ICEDB std::string getCwd(const hProcessInfo);
+		DL_ICEDB std::string getEnviron(const hProcessInfo, size_t &sz);
+		DL_ICEDB std::string getEnviron(const hProcessInfo, const std::string &varname);
+		DL_ICEDB std::string getCmdline(const hProcessInfo, size_t &sz);
+		DL_ICEDB std::string getStartTime(const hProcessInfo);
 	}
 }
 ICEDB_END_DECL_CPP

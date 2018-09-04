@@ -6,6 +6,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
+#include <boost/program_options.hpp>
 #include <icedb/misc/os_functions.hpp>
 #include <icedb/shape.hpp>
 #include <HH/Files.hpp>

@@ -5,15 +5,19 @@
 #pragma warning( disable : 4251 ) // DLL interface
 #pragma warning( disable : 4661 ) // Exporting vector
 
-#include <iostream>
+//#include <iostream>
 #include <set>
 #include <string>
 #include <vector>
-#include <boost/program_options.hpp>
+//#include <boost/program_options.hpp>
 
 namespace boost {
 	namespace filesystem {
 		class path;
+	}
+	namespace program_options {
+		class options_description;
+		class variables_map;
 	}
 }
 
@@ -147,6 +151,7 @@ namespace icedb
 		void DL_ICEDB add_hook_table(const char* tempsig, void* store);
 		void DL_ICEDB dump_hook_table(std::ostream &out = std::cerr);
 
+		void DL_ICEDB list_loaded_modules(std::ostream &out = std::cerr);
 	}
 	void DL_ICEDB add_options(
 		boost::program_options::options_description &cmdline,
