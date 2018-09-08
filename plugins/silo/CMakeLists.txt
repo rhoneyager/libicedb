@@ -25,10 +25,12 @@ if (BUILD_PLUGIN_SILO)
 	endif()
 	#source_group("SILO" FILES ${DIRS_SILO})
 
+	if(NOT EIGEN3_FOUND)
+		message(SEND_ERROR "The DDSCAT plugin needs Eigen3, but it was not found. An easy way to get it is to run \"git submodule update --init\" in the root of the repository.")
+	endif()
 	add_library(plugin_silo SHARED ${DIRS_SILO})
-	target_link_libraries(plugin_silo silo icedb)
+	target_link_libraries(plugin_silo silo icedb Eigen3)
 	target_include_directories(plugin_silo SYSTEM PRIVATE
-		${CMAKE_SOURCE_DIR}/lib/related/eigen
 		# provides silo_exports.h on platforms that are missing it.
 		${CMAKE_CURRENT_SOURCE_DIR}/fixes 
 		)

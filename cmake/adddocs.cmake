@@ -1,13 +1,11 @@
-macro(adddocs )
-
 find_package(Doxygen)
-option (BUILD_DOCUMENTATION
-    "Build the documentation for this library" OFF)
-option (BUILD_DOCUMENTATION_IN_ALL
-	"Build documentation automatically with 'make all'. Also used for 'make install' and 'make package'" OFF)
+if(NOT BUILD_DOCUMENTATION)
+	set(BUILD_DOCUMENTATION "No" CACHE STRING "Build and/or install Doxygen-produced documentation?" FORCE)
+	set_property(CACHE BUILD_DOCUMENTATION PROPERTY STRINGS No BuildOnly BuildAndInstall)
+endif()
 
-if(BUILD_DOCUMENTATION)
-
+if(BUILD_DOCUMENTATION STREQUAL "No")
+else()
     if (NOT DOXYGEN_FOUND)
         message(SEND_ERROR "Documentation build requested but Doxygen is not found.")
     endif()
@@ -22,7 +20,7 @@ if(BUILD_DOCUMENTATION)
     configure_file(docs/Doxyfile.in
         "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
 
-    if (BUILD_DOCUMENTATION_IN_ALL)
+	if(BUILD_DOCUMENTATION STREQUAL "BuildAndInstall")
         set (ALL_FLAG ALL)
     else()
         set (ALL_FLAG "")
@@ -44,7 +42,7 @@ if(BUILD_DOCUMENTATION)
     add_custom_target(docs ${ALL_FLAG} DEPENDS doc-html)
 endif()
 
-if (BUILD_DOCUMENTATION_IN_ALL)
+if(BUILD_DOCUMENTATION STREQUAL "BuildAndInstall")
     # Provides html and pdf
     install(CODE "execute_process(COMMAND \"${CMAKE_BUILD_TOOL}\" docs)")
     # html
@@ -52,6 +50,3 @@ if (BUILD_DOCUMENTATION_IN_ALL)
     # pdf
     #    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/latex/ DESTINATION ${INSTALL_DOC_DIR}/latex)
 endif()
-
-endmacro(adddocs )
-

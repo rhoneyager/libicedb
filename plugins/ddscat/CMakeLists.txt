@@ -36,8 +36,11 @@ if (BUILD_PLUGIN_DDSCAT)
 	add_library(io_ddscat SHARED ${IO_DDSCAT_FILES})
 	addplugin(io_ddscat IO icedb)
 
-	target_link_libraries(io_ddscat icedb Boost::date_time Boost::regex)
+	if(NOT EIGEN3_FOUND)
+		message(SEND_ERROR "The DDSCAT plugin needs Eigen3, but it was not found. An easy way to get it is to run \"git submodule update --init\" in the root of the repository.")
+	endif()
+
+	target_link_libraries(io_ddscat icedb Boost::date_time Boost::regex Eigen3)
 	target_compile_definitions(io_ddscat PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
-	target_include_directories(io_ddscat SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/lib/related/eigen)
 
 endif()

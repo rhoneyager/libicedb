@@ -73,7 +73,7 @@ else (EIGEN3_INCLUDE_DIR)
       ${CMAKE_INSTALL_PREFIX}/include
       ${KDE4_INCLUDE_DIR}
       ${EIGEN3_INCLUDE_DIR_BASE}
-      ${CMAKE_SOURCE_DIR}/related/eigen
+      ${PROJECT_SOURCE_DIR}/lib/deps/third_party/eigen
       PATH_SUFFIXES eigen3 eigen
     )
 
@@ -88,3 +88,9 @@ else (EIGEN3_INCLUDE_DIR)
 
 endif(EIGEN3_INCLUDE_DIR)
 
+if(EIGEN3_FOUND)
+	add_library(Eigen3 INTERFACE IMPORTED)
+    set_target_properties(Eigen3 PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${EIGEN3_INCLUDE_DIR}"
+    )
+endif()

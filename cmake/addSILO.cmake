@@ -5,6 +5,7 @@
 
 if (WIN32 AND NOT CYGWIN)
 	find_package(silo REQUIRED)
+	mark_as_advanced(silo_DIR)
 else()
 	FIND_PATH(SILO_INCLUDE_DIR silo.h
 		/usr/local/include
@@ -34,6 +35,7 @@ else()
 		set_target_properties(silo PROPERTIES IMPORTED_LOCATION_MINSIZEREL "${SILO_LIBRARY}")
 		set_property(TARGET silo APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 		set_target_properties(silo PROPERTIES IMPORTED_LOCATION_DEBUG "${SILO_LIBRARY}")
+		
 	else()
 		SET(SILO_FOUND "NO")
 		error("Cannot find SILO")
