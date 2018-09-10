@@ -8,7 +8,7 @@ set(related_cmake_objects
 	../cmake/addapp.cmake
 	../cmake/addBaseProject.cmake
 	../cmake/addBoostUniform.cmake
-	../cmake/adddocs.cmake
+	../cmake/AddDocs.cmake
 	../cmake/addlib.cmake
 	../cmake/FindEigen3.cmake
 	../cmake/generaterc.cmake
