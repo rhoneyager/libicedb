@@ -573,11 +573,28 @@ namespace HH {
 		template <class DataType>
 		Dataset createFromSpan(
 			gsl::not_null<const char*> dsetname,
-			const gsl::span<DataType> d)
+			const gsl::span<const DataType> d, int nDims = 1, int nRows = -1, int nCols = -1, int nZ = -1)
 		{
 			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>();
-			auto obj = create<DataType>(dsetname, { gsl::narrow_cast<hsize_t>(d.size()) }, dtype);
-			//auto res = obj.write<DataType>(d);
+			HH::Dataset obj = HH::Handles::HH_hid_t::dummy();
+			if (nDims == 1) {
+				obj = create<DataType>(dsetname, { gsl::narrow_cast<hsize_t>(d.size()) }, dtype);
+			}
+			else if (nDims == 2) {
+				Expects(nRows > 0);
+				Expects(nCols > 0);
+				Expects(nRows*nCols == (int)d.size());
+				obj = create<DataType>(dsetname, { gsl::narrow_cast<hsize_t>(nRows), gsl::narrow_cast<hsize_t>(nCols) }, dtype);
+			}
+			else if (nDims == 3) {
+				Expects(nRows > 0);
+				Expects(nCols > 0);
+				Expects(nZ > 0);
+				Expects(nRows*nCols*nZ == (int)d.size());
+				obj = create<DataType>(dsetname,
+					{ gsl::narrow_cast<hsize_t>(nRows), gsl::narrow_cast<hsize_t>(nCols), gsl::narrow_cast<hsize_t>(nZ) },
+					dtype);
+			}
 			auto res = obj.write(d);
 			Expects(0 <= res);
 			return obj;

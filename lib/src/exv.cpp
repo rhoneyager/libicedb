@@ -21,6 +21,7 @@ namespace icedb {
 		struct RIs {
 			int constituent_id;
 			std::string substance_name;
+			const char* substance_name_c;
 			std::complex<double> m;
 		};
 	}
@@ -42,8 +43,9 @@ namespace HH {
 			hid_t typ = H5Tcreate(H5T_COMPOUND, sizeof(RIs));
 			H5Tinsert(typ, "constituent_id", HOFFSET(RIs, constituent_id),
 				GetHDF5Type<decltype(RIs::constituent_id)>()());
-			H5Tinsert(typ, "substance_name", HOFFSET(RIs, substance_name),
-				GetHDF5Type<decltype(RIs::substance_name)>()());
+			// TODO: Fix this one.
+			//H5Tinsert(typ, "substance_name", HOFFSET(RIs, substance_name_c),
+			//	GetHDF5Type<decltype(RIs::substance_name_c)>()());
 			H5Tinsert(typ, "m", HOFFSET(RIs, m),
 				GetHDF5Type<decltype(RIs::m)>()());
 			obj = HH_hid_t(typ);
@@ -120,6 +122,10 @@ namespace icedb {
 			res.atts.add("Temperature_K", data->temperature_K);
 			res.atts.add("Frequency_Hz", data->frequency_Hz);
 
+			res.atts.add("alpha", data->alpha);
+			res.atts.add("beta", data->beta);
+			res.atts.add("gamma", data->gamma);
+
 			// Refractive indices and substances
 			
 			std::vector<RIs> ris;
@@ -127,6 +133,7 @@ namespace icedb {
 				RIs ri;
 				ri.constituent_id = std::get<0>(r);
 				ri.substance_name = std::get<1>(r);
+				ri.substance_name_c = ri.substance_name.c_str();
 				ri.m = std::get<2>(r);
 				ris.push_back(ri);
 			}
@@ -135,46 +142,45 @@ namespace icedb {
 			auto dRIs = res.dsets.create<RIs>("Constituent_Refractive_Indices", { ris.size() });
 			Expects(0 <= dRIs.write<RIs>(ris));
 
+			auto d_ia = res.dsets.createFromSpan<float>("incident_azimuth_angle", gsl::make_span(data->incident_azimuth_angle));
+			d_ia.setIsDimensionScale("incident_azimuth_angle");
+			d_ia.AddSimpleAttributes("long_name", "incident azimuth angle of the radiation in the particle reference frame", "units", "degrees");
+			auto d_sa = res.dsets.createFromSpan<float>("scattering_azimuth_angle", gsl::make_span(data->scattering_azimuth_angle));
+			d_sa.setIsDimensionScale("scattering_azimuth_angle");
+			d_sa.AddSimpleAttributes("long_name", "scattering azimuth angle of the radiation in the particle reference frame", "units", "degrees");
+			auto d_ip = res.dsets.createFromSpan<float>("incident_polar_angle", gsl::make_span(data->incident_polar_angle));
+			d_ip.setIsDimensionScale("incident_polar_angle");
+			d_ip.AddSimpleAttributes("long_name", "incident polar angle of the radiation in the particle reference frame", "units", "degrees");
+			auto d_sp = res.dsets.createFromSpan<float>("scattering_polar_angle", gsl::make_span(data->scattering_polar_angle));
+			d_sp.AddSimpleAttributes("long_name", "scattering polar angle of the radiation in the particle reference frame", "units", "degrees");
+			d_sp.setIsDimensionScale("scattering_polar_angle");
+			const std::vector<uint16_t> vscs{ 11, 12, 21, 22 };
+			auto d_scs = res.dsets.createFromSpan<uint16_t>("Scattering_Coefficient_Indices", vscs);
+			d_scs.setIsDimensionScale("Scattering_Coefficient_Indices");
+			d_scs.AddSimpleAttributes("long_name", "Indices of the amplitude scattering matrix element [following Bohren and Huffman (1983)]");
+
 			// Angular data
 			// TODO: check compressibility of the complex data types
-			const size_t numScattEntries = data->angles.size();
+			const size_t numScattEntries = data->amplitude_scattering_matrix.size();
 			if (numScattEntries) {
-				std::vector<float> v_geom_angles(numScattEntries * 3);
-				std::vector<float> v_i_azi(numScattEntries), v_i_pol(numScattEntries),
-					v_s_azi(numScattEntries), v_s_pol(numScattEntries);
 				std::vector<std::complex<double> >
 					s(numScattEntries*4);
 
 				for (size_t i = 0; i < numScattEntries; ++i) {
-					v_i_azi[i] = data->angles[i].incident_azimuth_angle;
-					v_i_pol[i] = data->angles[i].incident_polar_angle;
-					v_s_azi[i] = data->angles[i].scattering_azimuth_angle;
-					v_s_pol[i] = data->angles[i].scattering_polar_angle;
-					s[(4 * i) + 0] = data->angles[i].amplitude_scattering_matrix[0];
-					s[(4 * i) + 1] = data->angles[i].amplitude_scattering_matrix[1];
-					s[(4 * i) + 2] = data->angles[i].amplitude_scattering_matrix[2];
-					s[(4 * i) + 3] = data->angles[i].amplitude_scattering_matrix[3];
-					v_geom_angles[(3 * i) + 0] = data->angles[i].alpha;
-					v_geom_angles[(3 * i) + 1] = data->angles[i].beta;
-					v_geom_angles[(3 * i) + 2] = data->angles[i].gamma;
+					s[(4 * i) + 0] = data->amplitude_scattering_matrix[i][0];
+					s[(4 * i) + 1] = data->amplitude_scattering_matrix[i][1];
+					s[(4 * i) + 2] = data->amplitude_scattering_matrix[i][2];
+					s[(4 * i) + 3] = data->amplitude_scattering_matrix[i][3];
 				}
-				auto d_geom_angles = res.dsets.create<float>("angles", { numScattEntries, 3 });
-				Expects(0 <= d_geom_angles.write<float>(v_geom_angles));
-				auto d_i_azi = res.dsets.create<float>("incident_azimuth_angle", { numScattEntries });
-				Expects(0 <= d_i_azi.write<float>(v_i_azi));
-				auto d_s_azi = res.dsets.create<float>("scattering_azimuth_angle", { numScattEntries });
-				Expects(0 <= d_s_azi.write<float>(v_s_azi));
-				auto d_i_pol = res.dsets.create<float>("incident_polar_angle", { numScattEntries });
-				Expects(0 <= d_i_pol.write<float>(v_i_pol));
-				auto d_s_pol = res.dsets.create<float>("scattering_polar_angle", { numScattEntries });
-				Expects(0 <= d_s_pol.write<float>(v_s_pol));
+				auto d_s = res.dsets.create<std::complex<double>>("amplitude_scattering_matrix", 
+					{ data->incident_polar_angle.size(),
+					data->incident_azimuth_angle.size(),
+					data->scattering_polar_angle.size(),
+					data->scattering_azimuth_angle.size(), 4 });
+				d_s.setDims({ d_ia, d_sa, d_ip, d_sp, d_scs });
+				d_s.AddSimpleAttributes("long_name", "Amplitude scattering matrix [following Bohren and Huffman (1983)]", "units", "dimensionless");
 
-				auto d_s = res.dsets.create<std::complex<double>>("amplitude_scattering_matrix", { numScattEntries, 4 });
 				Expects(0 <= d_s.write<std::complex<double>>(s));
-
-				// TODO: Need to serialize complex number writes.
-
-				//auto ctype = HH::Types::GetHDF5Type<std::complex<double> >();
 			}
 			return EXV(res.get());
 		}

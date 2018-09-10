@@ -50,27 +50,27 @@ namespace icedb {
 			/// \todo Write this function
 			inline bool isValid(std::ostream *errout = nullptr) const { return true; }
 
-			float frequency_Hz; ///< Frequency (Hz)
-			float temperature_K; ///< Particle temperature (K)
+			float frequency_Hz = -1; ///< Frequency (Hz)
+			float temperature_K = -1; ///< Particle temperature (K)
+
+			float alpha = -1; ///< First rotation angle (degrees)
+			float beta = -1; ///< Second rotation angle (degrees)
+			float gamma = -1; ///< Third rotation angle (degrees)
 
 			/// Constituent refractive indices.
 			/// Ordering is constituent_id, constituent_name, refractive index.
 			std::vector<std::tuple<int, std::string, std::complex<double> > > constituent_refractive_indices;
 
-			struct angle_obs {
-				float alpha; ///< First rotation angle (degrees)
-				float beta; ///< Second rotation angle (degrees)
-				float gamma; ///< Third rotation angle (degrees)
-				float incident_polar_angle; ///< Incident polar angle (degrees)
-				float incident_azimuth_angle; ///< Incident azimuth angle (degrees)
-				float scattering_polar_angle; ///< Scattering polar angle (degrees)
-				float scattering_azimuth_angle; ///< Scattering azimuth angle (degrees)
-				/// Type for the amplitude scattering matrices (i.e. the Jones matrix). Ordering is S1, S2, S3, S4.
-				typedef std::array<std::complex<double>, 4> amplitude_scattering_matrix_t;
-				amplitude_scattering_matrix_t amplitude_scattering_matrix;
-			};
-			/// The observations for each set of angles.
-			std::vector<angle_obs> angles;
+			std::vector<float> incident_polar_angle; ///< Incident polar angle (degrees)
+			std::vector<float> incident_azimuth_angle; ///< Incident azimuth angle (degrees)
+			std::vector<float> scattering_polar_angle; ///< Scattering polar angle (degrees)
+			std::vector<float> scattering_azimuth_angle; ///< Scattering azimuth angle (degrees)
+
+			/// Type for the amplitude scattering matrices (i.e. the Jones matrix). Ordering is S11, S12, S21, S22.
+			typedef std::array<std::complex<double>, 4> amplitude_scattering_matrix_t;
+			/// \brief The amplitude scattering matrix.
+			/// \todo Clarify the dimension ordering.
+			std::vector< amplitude_scattering_matrix_t> amplitude_scattering_matrix;
 		};
 
 		/// \brief A high-level class to manipulate extended scattering variables

@@ -4,6 +4,7 @@
 #include <icedb/exv.hpp>
 #include <icedb/registry.hpp>
 #include <icedb/io.hpp>
+#include <icedb/units/units.hpp>
 #include <iostream>
 #include <HH/Files.hpp>
 #include <HH/Datasets.hpp>
@@ -40,7 +41,9 @@ namespace icedb {
 					::icedb::registry::options_ptr error_info = ::icedb::registry::options::generate();
 					try {
 						using namespace std;
-						icedb::exv::NewEXVrequiredProperties exvdata; // We are reading the scattering matrices into this object
+						// We are reading the scattering matrices into this object.
+						// See lib/icedb/exv.hpp.
+						icedb::exv::NewEXVrequiredProperties exvdata;
 
 						//--------------------------------------------------------------------------------------//
 						// The particle index is not specific enough. Let's use the filename for an id.
@@ -51,185 +54,164 @@ namespace icedb {
 						// Parse the filename.
 						// Example name is psuaydinetal_aggregate_00001_HD-P1d_0.42_01_f9GHz_01_GMM.nc.
 						// We can get the particle class, id, frequency, interdipole spacing, etc.
-						std::cout << "Reading file " << opts->filename() << std::endl;
 						error_info->add("Filename", opts->filename());
-						particle_info pi = getParticleInfo(opts->filename());
 
 						//--------------------------------------------------------------------------------------//
 						// Gain access to the data file.
 						//--------------------------------------------------------------------------------------//
 
-						auto hFile = h->file;
+						// hFile is an HH::File object.
+						auto &hFile = h->file;
+						// See lib/deps/HH for the source code of the HDFforHumans library.
+						// See the docs/ directory for documentation and basic examples for this library.
+						// Groups.md, Datasets.md and Attributes.md will be particularly useful.
 
-						// Parse the 
+						// To access the datasets stored under hFile, use
+						// hFile.dsets;
+						// To see if a dataset exists, use (hFile.dsets.exists("name") > 0);
+						// To list all datasets: std::vector<std::string> names = hFile.dsets.list();
+						// To open a dataset: HH::DataSet dName = hFile.dsets.open("name");
 
-						/*
-						size_t numPoints;
-						vector<int32_t> particle_index;
-						vector<int32_t> element_indices;
-						vector<float>   x, y, z, rs;
-						vector<int32_t> xd, yd, zd;
+						//-----------------------
+						// Parse the filename.
+						//-----------------------
+						// TODO!
 
-						string PSUfileType;
-						if ((id.find("GMM")) != std::string::npos) PSUfileType = "GMM";
-						else if ((id.find("DDA")) != std::string::npos) PSUfileType = "DDA";
-						else ICEDB_throw(icedb::error::error_types::xBadInput)
-							.add<std::string>("Reason", "Cannot determine the type of PSU file (GMM/DDA) from the filename.");
-						error_info->add("PSUfileType", PSUfileType);
+						// Set particle_id. It's a std::string.
+						particle_info pi = getParticleInfo(opts->filename()); // Gives information about the particle id
+						exvdata.particle_id = pi.particle_id;
+						// constituent_refractive_indices is a vector of (int, string, complex<double>) tuples.
+						// - The int is the substance id number. (1)
+						// - The string is the substance name (ice)
+						// - The complex<double> is the refractive index that you used for the scattering data calculations.
 
+						// NOTE: Refractive index currently has to use the sign convention for DDSCAT (N=n-ik), n,k>0.
+						// This goes against the B&H convention, where N=n+ik, where n,k>0. 
+						// Potential area for confusion, particularly since we write the amplitude matrices in B&H conventions.
+						// May change in the future.
+						exvdata.constituent_refractive_indices.push_back(std::make_tuple(
+							1, "ice", std::complex<double>(0, 0))); // Set the refractive index (the 0,0 part).
 
-						// Deal with the GMM and DDA file reads.
-						if (PSUfileType == "GMM") {
+						// See pi.freq_number_as_string; pi.freq_units;
+						// The icedb::units library handles the conversion.
+						exvdata.frequency_Hz = icedb::units::conv_spec(pi.freq_units, "Hz")
+							.convert(boost::lexical_cast<float>(pi.freq_number_as_string)); //It's a float.
+						
+						exvdata.temperature_K = -1; // Set this. It's a float.
+						exvdata.author = "PLACEHOLDER"; // Optional: can be set by importer program.
+						exvdata.contact = "PLACEHOLDER"; // Optional: can be set by importer program.
+						exvdata.dataset_id = "PLACEHOLDER"; // Optional: can be set by importer program.
+						exvdata.scattMeth = "PLACEHOLDER"; // Optional: can be set by importer program.
+						exvdata.version = std::array<unsigned int, 3>{0, 0, 0}; // Optional: can be set by importer program.
+						//exvdata.ingest_timestamp; // Always set by importer program
 
-							// A valid PSU GMM file has these tables: particle_index, sphere_index, r, x, y, z.
-							// particle_index has one row, one column.
-							// The rest have one column and a number of rows that correspond to the number
-							// of spheres used to represent the particle.
+						// NOTE: At present, the EXV files do not record the PARTICLE ORIENTATION! This must be fixed later.
+						// These are in the ESSENTIAL scattering variables files, and have to be moved here.
+						// TODO: We have to work out the conventions for these rotations. Presently using Euler angles to 
+						// agree with the Mishchenko books. This may conflict with DDSCAT. Can these conventions be uniquely interconverted?
+						// We have to document the convention of the rotations. What exactly does (0,0,0) mean relative to the incident light angles?
+						exvdata.alpha = -1; // First rotation (degrees).
+						exvdata.beta = -1; // Second rotation (degrees).
+						exvdata.gamma = -1; // Third rotation (degrees).
 
-							if (!hFile.dsets.exists("particle_index")
-								|| !hFile.dsets.exists("sphere_index")
-								|| !hFile.dsets.exists("r")
-								|| !hFile.dsets.exists("x")
-								|| !hFile.dsets.exists("y")
-								|| !hFile.dsets.exists("z"))
+						//-----------------------
+						// Check that the appropriate datasets exist
+						//-----------------------
+						// These should all exist, and should all have 32-bit float data.
+						const std::set<std::string> requiredDatasets = {
+							"S1_imag", "S1_real", "S2_imag", "S2_real", "S3_imag", "S3_real",
+							"S4_imag", "S4_real", "incident_azimuth_angle", "incident_polar_angle",
+							"scattering_azimuth_angle", "scattering_polar_angle"
+						};
+						for (const auto &d : requiredDatasets) {
+							if (!(hFile.dsets.exists(d.c_str()) > 0))
 								ICEDB_throw(icedb::error::error_types::xBadInput)
-								.add<std::string>("Reason", "A necessary dataset (particle_index, sphere_index, r, x, y, z) does not exist.");
-
-
-							// No need to read particle_index. Not being used.
-							readDataset<int32_t>("particle_index", hFile.dsets["particle_index"], particle_index);
-							readDataset<int32_t>("sphere_index", hFile.dsets["sphere_index"], element_indices);
-							readDataset<float>("r", hFile.dsets["r"], rs);
-							readDataset<float>("x", hFile.dsets["x"], x);
-							readDataset<float>("y", hFile.dsets["y"], y);
-							readDataset<float>("z", hFile.dsets["z"], z);
-
-							// Check that the read arrays have matching sizes.
-
-							numPoints = rs.size();
-
-							if (numPoints != x.size()) ICEDB_throw(icedb::error::error_types::xBadInput).add<std::string>("Reason", "numpoints != x.size()");
-							if (numPoints != y.size()) ICEDB_throw(icedb::error::error_types::xBadInput).add<std::string>("Reason", "numpoints != y.size()");
-							if (numPoints != z.size()) ICEDB_throw(icedb::error::error_types::xBadInput).add<std::string>("Reason", "numpoints != z.size()");
-							if (numPoints != element_indices.size())
+								.add<std::string>("Reason", "A required dataset is missing.")
+								.add<std::string>("Missing-dataset-name", d);
+							if (!hFile.dsets[d.c_str()].isOfType<float>())
 								ICEDB_throw(icedb::error::error_types::xBadInput)
-								.add<std::string>("Reason", "numpoints != element_indices.size()");
-
-							// Done handling a GMM file.
-						}
-						else if (PSUfileType == "DDA") {
-
-							// A valid PSU GMM file has these tables: particle_index, sphere_index, r, x, y, z.
-							// particle_index has one row, one column.
-							// The rest have one column and a number of rows that correspond to the number
-							// of spheres used to represent the particle.
-
-							if (!hFile.dsets.exists("particle_index")
-								|| !hFile.dsets.exists("dipole_index")
-								|| !hFile.dsets.exists("x")
-								|| !hFile.dsets.exists("y")
-								|| !hFile.dsets.exists("z"))
-								ICEDB_throw(icedb::error::error_types::xBadInput)
-								.add<std::string>("Reason", "A necessary dataset (particle_index, dipole_index, x, y, z) does not exist.");
-
-							// Open all of the datasets. Make sure that they have the correct dimensionality.
-							// Read the data into vectors. Verify that the data have the appropriate sizes.
-
-
-							readDataset<int32_t>("particle_index", hFile.dsets["particle_index"], particle_index);
-							readDataset<int32_t>("dipole_index", hFile.dsets["dipole_index"], element_indices);
-							readDataset<int32_t>("x", hFile.dsets["x"], xd);
-							readDataset<int32_t>("y", hFile.dsets["y"], yd);
-							readDataset<int32_t>("z", hFile.dsets["z"], zd);
-
-							// Check that the read arrays have matching sizes.
-
-							numPoints = xd.size();
-
-							if (numPoints != yd.size()) ICEDB_throw(icedb::error::error_types::xBadInput).add<std::string>("Reason", "numpoints != yd.size()");
-							if (numPoints != zd.size()) ICEDB_throw(icedb::error::error_types::xBadInput).add<std::string>("Reason", "numpoints != zd.size()");
-							if (numPoints != element_indices.size()) ICEDB_throw(icedb::error::error_types::xBadInput).add<std::string>("Reason", "numpoints != element_indices.size()");
-
-							// Done handling a DDA file.
-
+								.add<std::string>("Reason", "A dataset has the wrong data type. It should be a 32-bit floating point type.")
+								.add<std::string>("Dataset-name", d);
 						}
 
-						//--------------------------------------------------------------------------------------//
-						// Identify the particle type from the filename.
-						//--------------------------------------------------------------------------------------//
+						//-----------------------
+						// Read the data
+						//-----------------------
 
-						const size_t max_ParticleType_Size = 32;
-						char particleType[max_ParticleType_Size];
+						// S have dims of incid_polar_angle, incid_azimuth_angle, scatt_polar_angle, scatt_azimuth_angle
+						// sizes around 19 x 18 x 181 x 72.
+						vector<float> S1i, S1r, S2i, S2r, S3i, S3r, S4i, S4r,
+							incid_azi, incid_polar, scatt_azi, scatt_polar;
+						readDataset<float>("S1_imag", hFile.dsets["S1_imag"], S1i);
+						readDataset<float>("S1_real", hFile.dsets["S1_real"], S1r);
+						readDataset<float>("S2_imag", hFile.dsets["S2_imag"], S2i);
+						readDataset<float>("S2_real", hFile.dsets["S2_real"], S2r);
+						readDataset<float>("S3_imag", hFile.dsets["S3_imag"], S3i);
+						readDataset<float>("S3_real", hFile.dsets["S3_real"], S3r);
+						readDataset<float>("S4_imag", hFile.dsets["S4_imag"], S4i);
+						readDataset<float>("S4_real", hFile.dsets["S4_real"], S4r);
+						readDataset<float>("incident_azimuth_angle", hFile.dsets["incident_azimuth_angle"], exvdata.incident_azimuth_angle);
+						readDataset<float>("incident_polar_angle", hFile.dsets["incident_polar_angle"], exvdata.incident_polar_angle);
+						readDataset<float>("scattering_azimuth_angle", hFile.dsets["scattering_azimuth_angle"], exvdata.scattering_azimuth_angle);
+						readDataset<float>("scattering_polar_angle", hFile.dsets["scattering_polar_angle"], exvdata.scattering_polar_angle);
+
+						//-----------------------
+						// Check that all of the read data have the correct sizes.
+						//-----------------------
+						const size_t numScattMatrices = exvdata.incident_azimuth_angle.size() * exvdata.incident_polar_angle.size() 
+							* exvdata.scattering_azimuth_angle.size() * exvdata.scattering_polar_angle.size();
 						{
-							if ((id.find("aggregate")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Aggregate %05d", particle_index[0]);
-							}
-							else if ((id.find("branchedplanar")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Branched Planar %05d", particle_index[0]);
-							}
-							else if ((id.find("column")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Column %05d", particle_index[0]);
-							}
-							else if ((id.find("graupel")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Conical Graupel %05d", particle_index[0]);
-							}
-							else if ((id.find("plate")) != std::string::npos) {
-								snprintf(particleType, max_ParticleType_Size, "Plate %05d", particle_index[0]);
-							}
+							bool badSize = false;
+							if (S1i.size() != S1r.size()) badSize = true;
+							if (S1i.size() != S1r.size()) badSize = true;
+							if (S1i.size() != S2i.size()) badSize = true;
+							if (S1i.size() != S2r.size()) badSize = true;
+							if (S1i.size() != S3i.size()) badSize = true;
+							if (S1i.size() != S3r.size()) badSize = true;
+							if (S1i.size() != S4i.size()) badSize = true;
+							if (S1i.size() != S4r.size()) badSize = true;
+							if (numScattMatrices != S1i.size()) badSize = true;
+							if (badSize)ICEDB_throw(icedb::error::error_types::xBadInput)
+								.add<std::string>("Reason", "Datasets have inconsistent sizes.");
 						}
 
-						//--------------------------------------------------------------------------------------//
-						// Pack the data in the shpdata structure.
-						//--------------------------------------------------------------------------------------//
+						//-----------------------
+						// Convert the data to the correct convention.
+						//-----------------------
+						// TODO! Strongly depends on any changes that could be made to the exv and esv table structures.
+						// Definitions must match Bohren and Huffman.
 
-						shpdata.particle_id = string(particleType);
-						shpdata.particle_constituents.push_back(std::make_pair(1, "ice"));
-						shpdata.author = "Eugene Clothiaux (eec3@psu.edu)"; // TODO: Eugene: fill this in.
-						shpdata.contact = "Eugene Clothiaux (eec3@psu.edu)";
-						shpdata.scattering_method = PSUfileType;
-						//shpdata.version = { 0,0,0 }; // Should be set by the importer program.
-						shpdata.dataset_id = "TESTING---MUST-SET-IN-PRODUCTION"; // Should be set by the importer program.
+						//-----------------------
+						// Populate the exvdata structure
+						//-----------------------
+						exvdata.amplitude_scattering_matrix.resize(numScattMatrices);
+						for (size_t i = 0; i < S1i.size(); ++i) {
+							// NOTE: The convention of S1,S2,S3,S4 matters here.
+							// A few books have the matrix written as S2, S3, S4, S1. Some have S2, S1, S3, S4, and others have S1, S2, S3, S4!!!
+							// To preserve sanity, let's write these as S11, S12, S21, S22, where [ij] is row/column.
 
-						shpdata.particle_scattering_element_number = element_indices;
-						shpdata.particle_scattering_element_composition_whole = decltype(shpdata.particle_scattering_element_composition_whole)(numPoints, 1);
-
-						if (PSUfileType == "GMM") {
-							shpdata.particle_scattering_element_radius = rs;
-							shpdata.scattering_element_coordinates_scaling_factor = 1; // 1 m
-
-							shpdata.particle_scattering_element_coordinates_as_floats.resize(3 * numPoints);
-							for (size_t i = 0; i < numPoints; ++i) {
-								shpdata.particle_scattering_element_coordinates_as_floats[(3 * i) + 0] = x[i];
-								shpdata.particle_scattering_element_coordinates_as_floats[(3 * i) + 1] = y[i];
-								shpdata.particle_scattering_element_coordinates_as_floats[(3 * i) + 2] = z[i];
-							}
+							// TODO: You may have to adjust the ordering of these. Really depends on your convention.
+							// NOTE: The imaginary components get stored as positive numbers.
+							exvdata.amplitude_scattering_matrix[i] = std::array<std::complex<double>, 4> {
+								std::complex<double>(S1r[i], std::abs(S1i[i])),
+								std::complex<double>(S2r[i], std::abs(S2i[i])),
+								std::complex<double>(S3r[i], std::abs(S3i[i])),
+								std::complex<double>(S4r[i], std::abs(S4i[i]))
+							};
 						}
-						else if (PSUfileType == "DDA") {
-							shpdata.scattering_element_coordinates_scaling_factor = 0.001f; // 1 mm
 
-							shpdata.particle_scattering_element_coordinates_as_ints.resize(3 * numPoints);
-							for (size_t i = 0; i < numPoints; ++i) {
-								shpdata.particle_scattering_element_coordinates_as_ints[(3 * i) + 0] = xd[i];
-								shpdata.particle_scattering_element_coordinates_as_ints[(3 * i) + 1] = yd[i];
-								shpdata.particle_scattering_element_coordinates_as_ints[(3 * i) + 2] = zd[i];
-							}
-						}
-						*/
-						//--------------------------------------------------------------------------------------//
-						// Return the shpdata structure for writing to the new HDF5 output file.
-						//--------------------------------------------------------------------------------------//
-
+						//-----------------------
+						// Finished
+						//-----------------------
 						return exvdata;
-
-						//--------------------------------------------------------------------------------------//
-						// Done.
-						//--------------------------------------------------------------------------------------//
 					}
-					// Error tagging
+					//-----------------------
+					// Error tagging (if an error was detected, the code calls this)
+					//-----------------------
 					catch (icedb::error::xError &err) {
 						error_info->add<std::string>("Reason", "This file does not have the proper structure for a Penn State geometry file.");
 						err.push(error_info);
-						throw err;
+						throw err; // Pass the error up the stack.
 					}
 				}
 			}

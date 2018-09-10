@@ -1,4 +1,4 @@
-Tables
+Datasets
 ==============
 
 Most of the data in the scattering database is stored using tables. 
@@ -8,21 +8,19 @@ some dataset subsets are called [tables](https://support.hdfgroup.org/HDF5/doc/H
 In netCDF, these objects are called 
 [variables](https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_data_set_components.html#variables).
 
-All tables may contain attributes.
+All datasets may contain attributes.
 
-## What is a table?
+## What is a datasets?
 
-A table is a multidimensional array of data elements, together with supporting metadata. 
+A datasets is a multidimensional array of data elements, together with supporting metadata. 
 Tables may contain different types of data, such as integers, floating point numbers and character arrays.
-In icedb, all of the elements of a table must have the same data type. This restriction is the same as in
+In icedb, all of the elements of a datasets must have the same data type. This restriction is the same as in
 netCDF, although HDF5 has a more relaxed implementation.
 
-Tables are usually much larger than attributes. Unlike attributes, tables are not automatically
-loaded into memory. Tables support partial read and write operations.
+Datasets are usually much larger than attributes. Unlike attributes, datasets are not automatically
+loaded into memory. Datasets support partial read and write operations.
 
 ## Usage
-
-See fs-test.cpp for good usage examples.
 
 Creating a table is easy.
 

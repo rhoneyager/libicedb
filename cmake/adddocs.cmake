@@ -32,6 +32,7 @@ else()
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         COMMENT "Generating API html documentation with Doxygen" VERBATIM
     )
+	set_target_properties( doc-html PROPERTIES FOLDER "Docs")
     # This builds the latex docs
     #    add_custom_target(doc-latex ${ALL_FLAG}
     #        latex refman.tex
@@ -40,6 +41,7 @@ else()
     #    )
 
     add_custom_target(docs ${ALL_FLAG} DEPENDS doc-html)
+	set_target_properties( docs PROPERTIES FOLDER "Docs")
 endif()
 
 if(BUILD_DOCUMENTATION STREQUAL "BuildAndInstall")

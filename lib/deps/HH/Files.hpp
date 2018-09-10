@@ -1,4 +1,6 @@
 #pragma once
+/// \see Files.md for documentation.
+
 #include <cstdio>
 #include <gsl/multi_span>
 #include <gsl/pointers>

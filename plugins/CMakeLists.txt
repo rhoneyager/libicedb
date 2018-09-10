@@ -1,5 +1,5 @@
 add_subdirectory(adda)
 add_subdirectory(ddscat)
-#add_subdirectory(general_text)
+add_subdirectory(example)
 add_subdirectory(psu)
 add_subdirectory(silo)
