@@ -255,7 +255,8 @@ if (WIN32 AND NOT CMAKE)
 		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impZLIB::ZLIB> $<TARGET_FILE_DIR:icedb_base>
 		)
 	set_target_properties( copy_icedb_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
-	
+	add_dependencies(icedb copy_icedb_dependencies_to_build_dirs)
+
 	install(PROGRAMS 
 		$<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE:hdf5::hdf5_tools-shared>
 		$<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE:impBoost::system> $<TARGET_FILE:impBoost::program_options>
