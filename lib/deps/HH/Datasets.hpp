@@ -199,13 +199,13 @@ namespace HH {
 		}
 		Dataset setDims(const Dataset &dim1, const Dataset &dim2) {
 			attachDimensionScale(0, dim1);
-			attachDimensionScale(0, dim2);
+			attachDimensionScale(1, dim2);
 			return *this;
 		}
 		Dataset setDims(const Dataset &dim1, const Dataset &dim2, const Dataset &dim3) {
 			attachDimensionScale(0, dim1);
-			attachDimensionScale(0, dim2);
-			attachDimensionScale(0, dim3);
+			attachDimensionScale(1, dim2);
+			attachDimensionScale(2, dim3);
 			return *this;
 		}
 		/*
