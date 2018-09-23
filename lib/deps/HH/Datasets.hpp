@@ -166,7 +166,65 @@ namespace HH {
 			);
 		}
 
-		/// \todo Read and write using Eigen (convenience functions)
+#if HH_HAS_EIGEN
+		template <class EigenClass>
+		void readWithEigen(EigenClass &&res, bool resize = true) const
+		{
+			typedef typename EigenClass::Scalar ScalarType;
+			HH_hid_t dtype = HH::Types::GetHDF5Type<ScalarType>();
+			// Check that the dims are 1 or 2.
+			auto dims = getDimensions();
+			if (resize)
+				Expects(dims.dimensionality <= 2);
+			int nDims[2] = { 1, 1 };
+			if (dims.dimsCur.size() >= 1) nDims[0] = gsl::narrow_cast<int>(dims.dimsCur[0]);
+			if (dims.dimsCur.size() >= 2) nDims[1] = gsl::narrow_cast<int>(dims.dimsCur[1]);
+
+			if (resize)
+				res.resize(nDims[0], nDims[1]);
+			else
+				Expects(dims.numElements == (size_t)(res.rows()*res.cols()));
+
+			// Array copy to preserve row vs column major format.
+			/// \todo Implement this more efficiently (i.e. only when needed).
+			Eigen::Array<ScalarType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> data_in;
+			data_in.resize(res.rows(), res.cols());
+
+			herr_t e = read<ScalarType>(gsl::span<ScalarType>(data_in.data(), dims.numElements));
+			Expects(e >= 0);
+
+			res = data_in;
+		}
+		template <class EigenClass>
+		void readWithEigen(EigenClass &res, bool resize = true) const
+		{
+			typedef typename EigenClass::Scalar ScalarType;
+			HH_hid_t dtype = HH::Types::GetHDF5Type<ScalarType>();
+			// Check that the dims are 1 or 2.
+			auto dims = getDimensions();
+			if (resize)
+				Expects(dims.dimensionality <= 2);
+			int nDims[2] = { 1, 1 };
+			if (dims.dimsCur.size() >= 1) nDims[0] = gsl::narrow_cast<int>(dims.dimsCur[0]);
+			if (dims.dimsCur.size() >= 2) nDims[1] = gsl::narrow_cast<int>(dims.dimsCur[1]);
+
+			if (resize)
+				res.resize(nDims[0], nDims[1]);
+			else
+				Expects(dims.numElements == (size_t)(res.rows()*res.cols()));
+
+			// Array copy to preserve row vs column major format.
+			/// \todo Implement this more efficiently (i.e. only when needed).
+			Eigen::Array<ScalarType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> data_in;
+			data_in.resize(res.rows(), res.cols());
+
+			herr_t e = read<ScalarType>(gsl::span<ScalarType>(data_in.data(), dims.numElements));
+			Expects(e >= 0);
+
+			res = data_in;
+		}
+#endif
+
 
 		/// Attach a dimension scale to this table.
 		Dataset attachDimensionScale(unsigned int DimensionNumber, const Dataset& scale)
@@ -543,30 +601,48 @@ namespace HH {
 		template <class EigenClass>
 		Dataset createWithEigen(
 			gsl::not_null<const char*> dsetname,
-			const EigenClass &d, int nDims = 2)
+			const EigenClass &d, int nDims = 2, int nRows = -1, int nCols = -1, int nZ = -1)
 		{
-			HH_hid_t dtype = HH::Types::GetHDF5Type<typename EigenClass::Scalar>();
+			typedef typename EigenClass::Scalar ScalarType;
+			HH_hid_t dtype = HH::Types::GetHDF5Type<ScalarType>();
 			/// \todo Handle the different row and column major formats for output more efficiently.
-			Eigen::Array<typename EigenClass::Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> dout;
+			Eigen::Array<ScalarType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor > dout;
 			dout.resize(d.rows(), d.cols());
 			dout = d;
+			if (nRows == -1) nRows = (int)d.rows();
+			if (nCols == -1) nCols = (int)d.cols();
+			if (nZ < 0)
+				Expects(nRows*nCols == (int)(d.rows()*d.cols()));
+			else
+				Expects(nRows*nCols*nZ == (int)(d.rows()*d.cols()));
+
 			if (nDims == 1) {
-				auto obj = _create<typename EigenClass::Scalar>(dsetname, { (size_t)d.rows() * (size_t) d.cols() }, dtype);
-				auto sp = gsl::make_span(dout.data(), dout.rows()*dout.cols());
+				auto obj = _create<ScalarType>(dsetname, { (size_t)nRows * (size_t)nCols }, dtype);
+				auto sp = gsl::make_span(dout.data(), (int)(nRows*nCols));
 				//htri_t res = obj.write< typename EigenClass::Scalar >(sp);
 				htri_t res = obj.write(sp);
 				Expects(0 <= res);
 				return obj;
 			}
-			else {
-				auto obj = _create<typename EigenClass::Scalar>(dsetname, { (size_t)d.rows(), (size_t)d.cols() }, dtype);
-				//auto res = obj.write<typename EigenClass::Scalar>(gsl::make_span(dout.data(), dout.rows()*dout.cols()));
-				auto sp = (gsl::make_span(dout.data(), dout.rows()*dout.cols()));
+			else if (nDims == 2) {
+				// Object like obj[x][y], where rows are x and cols are y.
+				auto obj = _create<ScalarType>(dsetname, { (size_t)nRows, (size_t)nCols }, dtype);
+				//auto res = obj.write<ScalarType>(gsl::make_span(dout.data(), dout.rows()*dout.cols()));
+				auto sp = (gsl::make_span(dout.data(), (int)(nRows*nCols)));
 				auto res = obj.write(sp);
 
 				Expects(0 <= res);
 				return obj;
 			}
+			else if (nDims == 3) {
+				// Object like obj[x][y][z], where rows are x and cols are y.
+				auto obj = _create<ScalarType>(dsetname, { (size_t)nRows, (size_t)nCols, (size_t)nZ }, dtype);
+				auto sp = gsl::make_span(dout.data(), (int)(nRows*nCols*nZ));
+				htri_t res = obj.write(sp);
+				Expects(0 <= res);
+				return obj;
+			}
+			else throw;
 		}
 #endif
 
