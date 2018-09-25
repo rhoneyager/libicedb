@@ -609,6 +609,7 @@ namespace HH {
 			Eigen::Array<ScalarType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor > dout;
 			dout.resize(d.rows(), d.cols());
 			dout = d;
+			const auto &dconst = dout;
 			if (nRows == -1) nRows = (int)d.rows();
 			if (nCols == -1) nCols = (int)d.cols();
 			if (nZ < 0)
@@ -618,7 +619,7 @@ namespace HH {
 
 			if (nDims == 1) {
 				auto obj = _create<ScalarType>(dsetname, { (size_t)nRows * (size_t)nCols }, dtype);
-				auto sp = gsl::make_span(dout.data(), (int)(nRows*nCols));
+				auto sp = gsl::make_span(dconst.data(), (int)(nRows*nCols));
 				//htri_t res = obj.write< typename EigenClass::Scalar >(sp);
 				htri_t res = obj.write(sp);
 				Expects(0 <= res);
@@ -628,7 +629,7 @@ namespace HH {
 				// Object like obj[x][y], where rows are x and cols are y.
 				auto obj = _create<ScalarType>(dsetname, { (size_t)nRows, (size_t)nCols }, dtype);
 				//auto res = obj.write<ScalarType>(gsl::make_span(dout.data(), dout.rows()*dout.cols()));
-				auto sp = (gsl::make_span(dout.data(), (int)(nRows*nCols)));
+				auto sp = (gsl::make_span(dconst.data(), (int)(nRows*nCols)));
 				auto res = obj.write(sp);
 
 				Expects(0 <= res);
@@ -637,7 +638,7 @@ namespace HH {
 			else if (nDims == 3) {
 				// Object like obj[x][y][z], where rows are x and cols are y.
 				auto obj = _create<ScalarType>(dsetname, { (size_t)nRows, (size_t)nCols, (size_t)nZ }, dtype);
-				auto sp = gsl::make_span(dout.data(), (int)(nRows*nCols*nZ));
+				auto sp = gsl::make_span(dconst.data(), (int)(nRows*nCols*nZ));
 				htri_t res = obj.write(sp);
 				Expects(0 <= res);
 				return obj;
