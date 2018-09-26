@@ -382,7 +382,7 @@ namespace icedb {
 					//	}
 					//}
 					if (pres)  {
-						username = std::string(ps->pw_name);
+						username = std::string(ps.pw_name);
 					}
 
 # else
