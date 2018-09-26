@@ -346,15 +346,20 @@ namespace icedb {
 			int res = 0;
 			char* envres = NULL;
 
-			if ((envres = getenv("USER"))) username = std::string(envres);
-			else if ((envres = getenv("LOGNAME"))) username = std::string(envres);
+			envres = getenv("USER");
+			if (envres) username = std::string(envres);
+			else {
+				envres = getenv("LOGNAME");
+				if (envres) username = std::string(envres);
+			}
 			if (!username.size()) {
 #if defined(_POSIX_C_SOURCE)
 #if _POSIX_C_SOURCE >= 199506L
 				res = getlogin_r(hname, len); // getlogin and getlogin_r have problems. Avoid.
 				if (!res) username = std::string(hname);
 #else
-				if ((envres = getlogin())) username = std::string(envres);
+				envres = getlogin();
+				if (envres) username = std::string(envres);
 #endif
 				// Has getpwuid_r
 				if (!username.size()) {
@@ -381,7 +386,8 @@ namespace icedb {
 			if (hname[0]) hostname = std::string(hname);
 
 			// Home dir
-			if ((envres = getenv("HOME"))) homeDir = std::string(envres);
+			envres = getenv("HOME");
+			if (envres) homeDir = std::string(envres);
 			if (!homeDir.size())
 			{
 #if defined(_POSIX_C_SOURCE) || defined(_BSD_SOURCE) || defined(_SVID_SOURCE)
@@ -399,7 +405,8 @@ namespace icedb {
 			if (!homeDir.size()) goto funcErrorOS;
 				
 			// App config dir
-			if ((envres = getenv("XDG_CONFIG_HOME"))) appConfigDir = std::string(envres);
+			envres = getenv("XDG_CONFIG_HOME");
+			if (envres) appConfigDir = std::string(envres);
 			else {
 				appConfigDir = homeDir;
 				appConfigDir.append("/.config");
