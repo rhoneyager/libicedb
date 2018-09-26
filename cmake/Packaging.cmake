@@ -32,6 +32,9 @@ endif ()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	set(CPACK_SYSTEM_NAME "${CPACK_SYSTEM_NAME}-${LSB_DISTRIBUTION_NAME_SHORT}-${LSB_RELEASE_ID_SHORT}")
 endif()
+IF(WIN32 AND NOT UNIX)
+	set(CPACK_SYSTEM_NAME "${CPACK_SYSTEM_NAME}-Windows")
+endif()
 option(PACKAGE_CI_BUILD "Is this a testing (continuous integration) build?" OFF)
 set(PACKAGE_GIT_BRANCH "${GITBRANCH}" CACHE STRING "What is the branch of the code used to produce this build?")
 string(TIMESTAMP PACKAGE_TIMESTAMP "%Y%m%d")
@@ -93,12 +96,12 @@ set(CPACK_RPM_PACKAGE_REQUIRES
 	)
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-	"cmake (>= 3.1), libhdf5-dev, zlib1g-dev, libboost-filesystem-dev (>= 1.48), libboost-system-dev (>= 1.48), libboost-program-options-dev (>=1.48), libboost-date-time-dev (>= 1.48), libboost-regex-dev (>= 1.48), libboost-test-dev (>=1.48)"
+	"cmake (>= 3.1), libhdf5-dev, zlib1g-dev, libboost-all-dev (>= 1.48)"
 	)
 if(BUILD_PLUGIN_SILO)
 	set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libsilo-dev")
 endif()
-set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "g++ (>= 6), hdf5-tools, git, doxygen")
+set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "g++ (>= 6), hdf5-tools, git, doxygen, graphviz")
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
 

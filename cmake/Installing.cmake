@@ -5,6 +5,9 @@
 #message("${CMAKE_INSTALL_LIBDIR} ${CMAKE_INSTALL_LIBEXECDIR} ${CMAKE_INSTALL_BINDIR}")
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	find_program(LSB_RELEASE_EXEC lsb_release)
+	if(NOT LSB_RELEASE_EXEC)
+		message(FATAL_ERROR "lsb_release not found! On Debian and Ubuntu-based systems, you need to install the lsb-release package. On RHEL, Fedora and CentOS-based systems, you need to install the redhat-lsb-core package.")
+	endif()
 	mark_as_advanced(LSB_RELEASE_EXEC)
 	execute_process(COMMAND ${LSB_RELEASE_EXEC} -is
 		OUTPUT_VARIABLE LSB_DISTRIBUTION_NAME_SHORT
@@ -14,7 +17,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 		OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
-	if(${LSB_DISTRIBUTION_NAME_SHORT} STREQUAL "Ubuntu" OR ${LSB_DISTRIBUTION_NAME_SHORT} STREQUAL "Debian")
+	if("${LSB_DISTRIBUTION_NAME_SHORT}" STREQUAL "Ubuntu" OR "${LSB_DISTRIBUTION_NAME_SHORT}" STREQUAL "Debian")
 		set(CMAKE_INSTALL_LIBEXECDIR ${CMAKE_INSTALL_LIBDIR})
 		set(CMAKE_INSTALL_FULL_LIBEXECDIR ${CMAKE_INSTALL_FULL_LIBDIR})
 	endif()
