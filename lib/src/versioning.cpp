@@ -118,7 +118,7 @@ namespace icedb {
 				out << "Microsoft Visual Studio Compiler Version " << v.vn[versionInfo::V_MSCVER] << std::endl;
 			if (v.vboost[0]) out << "Boost version " << v.vboost << std::endl;
 
-
+			out << "End of preamble." << std::endl;
 			out << std::endl;
 			out << std::endl;
 		}
