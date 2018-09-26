@@ -68,7 +68,8 @@ if (BUILD_TESTING)
 				--dll-no-default-locations
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
-		add_test (NAME io-psu-gmm-2 # Test import without the --truncate option
+		add_test (NAME io-psu-gmm-2 # Test import without the --truncate option.
+			# Really just testing that the program does not crash. 
 			COMMAND icedb-3d_structures_importer
 				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
 				--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
