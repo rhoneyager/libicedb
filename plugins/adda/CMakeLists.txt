@@ -20,4 +20,5 @@ if (BUILD_PLUGIN_ADDA)
 	addplugin(io_adda IO icedb)
 
 	target_link_libraries(io_adda icedb)
+	target_compile_definitions(io_adda PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
 endif()

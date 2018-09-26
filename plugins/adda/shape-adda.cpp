@@ -12,342 +12,61 @@
 #include <string>
 #include <vector>
 #include <BinaryIO/Files.hpp>
-//#include "shapeIOtext.hpp"
+
+#include <sstream>
+#include <boost/spirit/include/karma.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/include/phoenix_stl.hpp>
+
+// These occasionally get set by system headers in Windows, which then may get picked up by Boost.
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+
+/// Internal namespace for the reader parsers
+namespace {
+	namespace qi = boost::spirit::qi;
+	namespace ascii = boost::spirit::ascii;
+	namespace phoenix = boost::phoenix;
+
+	/** \brief Parses space-separated shapefile entries.
+	**/
+	template <typename Iterator>
+	bool parse_shapefile_entries(Iterator first, Iterator last, std::vector<float>& v)
+	{
+		using qi::float_;
+		using qi::phrase_parse;
+		using qi::_1;
+		using ascii::space;
+		using phoenix::push_back;
+
+		bool r = phrase_parse(first, last,
+
+			//  Begin grammar
+			(
+				// *long_[push_back(phoenix::ref(v), _1)]
+				*float_
+				)
+			,
+			//  End grammar
+
+			space, v);
+
+		if (first != last) // fail if we did not get a full match
+			return false;
+		return r;
+	}
+}
 
 namespace icedb {
 	namespace plugins {
 		namespace adda {
 			namespace Shapes {
-
-				size_t strints_array_to_floats(
-					const char* in, const size_t inlen, float* out, const size_t outlen, float& max_element)
-				{
-					max_element = 0;
-					size_t curout = 0;
-					// Accepts numbers of the form: [0-9]*
-					// Handles negatives, No exponents or decimals.
-
-					float numerator = 0;
-					assert(in);
-					const char* end = in + inlen;
-					bool readnums = false;
-					bool negative = false;
-					for (const char* cur = in; (cur <= end) && (curout < outlen); ++cur) {
-						if (*cur == '-') {
-							negative = true;
-						}
-						else if ((*cur <= '9') && (*cur >= '0')) {
-							numerator *= 10;
-							numerator += (*cur - '0');
-							readnums = true;
-						}
-						else if (readnums) {
-							if (negative) numerator = -numerator;
-							negative = false;
-							out[curout] = numerator;
-							if (numerator > max_element) max_element = numerator;
-							curout++;
-							numerator = 0;
-							readnums = false;
-						}
-					}
-					return curout;
-				}
-
-
-				size_t array_to_floats(
-					const char* in, const size_t inlen, float* out, const size_t outlen)
-				{
-					size_t curout = 0;
-					// Accepts numbers of the form: (+- )[0-9]*.[0-9]*(eE)(+- )[0-9]*.[0-9]*
-					bool isNegative = false;
-					bool inExponent = false;
-					bool expIsNeg = false;
-					bool pastDecimal = false;
-
-					uint64_t numerator, numeratorExp;
-					uint64_t digits_denom, digits_denom_Exp;
-					auto resetNum = [&]()
-					{numerator = 0; digits_denom = 0;
-					numeratorExp = 0; digits_denom_Exp = 0;
-					isNegative = false; inExponent = false;
-					expIsNeg = false; pastDecimal = false; };
-					resetNum();
-
-					const char* cur = in;
-					const char* end = in + inlen;
-					// Advance to the start of a number
-					assert(cur);
-					const char* numbers = "0123456789-+.eE";
-					const char* whitespace = " \t\n";
-					const char* numEnd = nullptr;
-					auto isNumber = [](char c) -> bool {
-						if (c >= '0' && c <= '9') return true;
-						if (c == '-' || c == '+' || c == '.' || c == 'e' || c == 'E') return true;
-						return false;
-					};
-					auto isControl = [](char c) -> bool {
-						if (c == '-' || c == '+' || c == '.' || c == 'e' || c == 'E') return true;
-						return false;
-					};
-					auto advanceToNumber = [](const char* in, const char* end) -> const char* {
-						while (in < end) {
-							if (*in >= '0' && *in <= '9') return in;
-							else if (*in == '-' || *in == '+' || *in == '.' || *in == 'e' || *in == 'E') return in;
-							else ++in;
-						}
-						return in;
-					};
-					while ((cur < end) && (curout < outlen)) {
-						//cur = strpbrk(cur, numbers);
-						cur = advanceToNumber(cur, end);
-						while (isNumber(*cur)) {
-							if (!isControl(*cur)) {
-								if (!inExponent) {
-									numerator *= 10;
-									numerator += (*cur - '0');
-									if (pastDecimal) digits_denom++;
-								}
-								else {
-									numeratorExp *= 10;
-									numeratorExp += (*cur - '0');
-									if (pastDecimal) digits_denom_Exp++;
-								}
-							}
-							else {
-								if (*cur == '.') pastDecimal = true;
-								if (*cur == '-' && !inExponent) isNegative = true;
-								if (*cur == '-' && inExponent) expIsNeg = true;
-								if (*cur == 'e' || *cur == 'E') {
-									inExponent = true; pastDecimal = false; isNegative = false;
-								}
-							}
-							++cur;
-						}
-						if (!numerator) continue;
-
-						// Number is loaded. Assign and advance.
-						float exponent = 0;
-						if (numeratorExp) {
-							exponent = static_cast<float>(numeratorExp);
-							if (digits_denom_Exp) exponent /= powf(10.f, static_cast<float>(digits_denom_Exp));
-							if (expIsNeg) exponent *= -1;
-						}
-
-						float num = 0;
-						num = static_cast<float>(numerator);
-						if (digits_denom) num /= powf(10.f, static_cast<float>(digits_denom));
-						if (isNegative) num *= -1;
-
-						float fnum = num;
-						if (numeratorExp) fnum *= powf(10.f, exponent);
-
-						out[curout] = fnum;
-						resetNum();
-						curout++;
-
-						++cur;
-					}
-					return curout;
-				}
-
-				template <class T>
-				T m_atof(const char* x, size_t len)
-				{
-					T res = 0;
-					unsigned int remainder = 0;
-					unsigned int rembase = 1;
-					unsigned int digit = 0;
-					// Sign false indicates positive. True is negative
-					bool sign = false;
-					bool expsign = false;
-					unsigned int expi = 0;
-					const char* p = x; // Set pointer to beginning of character stream
-					bool exponent = false;
-					bool decimal = false;
-					size_t i = 0;
-					while (*p != '\0' && ((len) ? i < len : true))
-					{
-						// Do digit checks here (no calls to isdigit)
-						// Ignore whitespace
-						if (*p == 'e' || *p == 'E')
-						{
-							exponent = true;
-						}
-						else if (*p == '.') {
-							decimal = true;
-						}
-						else if (*p == '-') {
-							if (!exponent)
-							{
-								sign = true;
-							}
-							else {
-								expsign = true;
-							}
-						}
-						else if (*p == '+') {
-							if (!exponent)
-							{
-								sign = false;
-							}
-							else {
-								expsign = false;
-							}
-						}
-						else if (*p == ' ' || *p == '\t') {
-							// Ignore whitespace (but disallow endlines)
-						}
-						else {
-							// It's a digit!
-							switch (*p)
-							{
-							case '0':
-								digit = 0;
-								break;
-							case '1':
-								digit = 1;
-								break;
-							case '2':
-								digit = 2;
-								break;
-							case '3':
-								digit = 3;
-								break;
-							case '4':
-								digit = 4;
-								break;
-							case '5':
-								digit = 5;
-								break;
-							case '6':
-								digit = 6;
-								break;
-							case '7':
-								digit = 7;
-								break;
-							case '8':
-								digit = 8;
-								break;
-							case '9':
-								digit = 9;
-								break;
-							default:
-								// Invalid input
-								p++;
-								continue;
-								break;
-							}
-							// Digit is set. Next, see what to do with it
-							if (!decimal && !exponent)
-							{
-								res *= 10;
-								res += digit;
-							}
-							else if (decimal && !exponent) {
-								remainder *= 10;
-								rembase *= 10;
-								remainder += digit;
-							}
-							else if (exponent) {
-								expi *= 10;
-								expi += digit;
-							}
-						}
-
-						p++;
-						i++;
-					}
-					// Iterated through the string
-					// Now, to combine the elements into my double
-					res += (T)remainder / (T)rembase;
-					if (sign) res *= -1;
-					if (exponent)
-					{
-						if (!expsign)
-						{
-							res *= (T)std::pow(10, (T)expi);
-						}
-						else {
-							res *= (T)std::pow(10, -1.0 * (T)expi);
-						}
-					}
-					return res;
-				}
-
-				template <class T>
-				T m_atoi(const char *x, size_t len)
-				{
-					T res = 0;
-					int digit = 0;
-					bool sign = false; // false is pos, true is neg
-					bool done = false;
-					size_t i = 0;
-					const char* p = x; // Set pointer to beginning of character stream
-					while (*p != '\0' && done == false && ((len) ? i < len : true))
-					{
-						if (*p == '-') {
-							sign = true;
-						}
-						else if (*p == '+') {
-							sign = false;
-						}
-						else if (*p == ' ' || *p == '\t') {
-							// Ignore whitespace (but disallow endlines)
-						}
-						else {
-							// It's a digit!
-							switch (*p)
-							{
-							case '0':
-								digit = 0;
-								break;
-							case '1':
-								digit = 1;
-								break;
-							case '2':
-								digit = 2;
-								break;
-							case '3':
-								digit = 3;
-								break;
-							case '4':
-								digit = 4;
-								break;
-							case '5':
-								digit = 5;
-								break;
-							case '6':
-								digit = 6;
-								break;
-							case '7':
-								digit = 7;
-								break;
-							case '8':
-								digit = 8;
-								break;
-							case '9':
-								digit = 9;
-								break;
-							default:
-								// Invalid input
-								done = true;
-								break;
-							}
-							// Digit is set. Next, see what to do with it
-							if (done) break;
-							res *= 10;
-							res += digit;
-						}
-						p++;
-						i++;
-					}
-
-					// Return the value
-					if (sign) res *= -1;
-					return res;
-				}
-
 				icedb::Shapes::NewShapeProperties readADDAfile(std::shared_ptr<icedb::plugins::adda::adda_handle> h,
 					std::shared_ptr<icedb::registry::IO_options> opts)
 				{
@@ -368,10 +87,8 @@ namespace icedb {
 							ICEDB_throw(icedb::error::error_types::xBadInput)
 							.add<std::string>("Reason", "Cannot read file to buffer.");
 
-
-
 						const char* pa = buffer.data(); // Start of the file
-						const char* pb = strchr(pa + 1, '\0'); // End of the file
+						const char* pb = pa + buffer.size(); // End of the file
 						const char* pNumStart = pa;
 
 
@@ -398,16 +115,19 @@ namespace icedb {
 							if (c[0] == '\n') guessNumPoints++;
 
 						float max_element = -1, junk_f = -1;
-						std::array<float, 4> firstLineVals; //(numPoints*8);
-														  //std::vector<float> &parser_vals = res.required.particle_scattering_element_coordinates;
-						std::vector<float> parser_vals((guessNumPoints * 4), 0);
+						std::vector<float> firstLineVals;
+						std::vector<float> parser_vals;
+						parser_vals.reserve(guessNumPoints * 4);
 
-						size_t actualNumReads = strints_array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size(), max_element);
-						if (actualNumReads == 0) throw (std::invalid_argument("Bad read"));
-						parser_vals.resize(actualNumReads);
+						parse_shapefile_entries(pNumStart, pb, parser_vals);
+						size_t actualNumReads = parser_vals.size();
+						//size_t actualNumReads = strints_array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size(), max_element);
+						if (parser_vals.size() == 0) throw (std::invalid_argument("Bad read"));
+						//parser_vals.resize(actualNumReads);
 
 						// Also parse just the first line to get the number of columns
-						size_t numCols = strints_array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size(), junk_f);
+						parse_shapefile_entries(pNumStart, firstLineEnd, firstLineVals);
+						size_t numCols = firstLineVals.size(); // strints_array_to_floats(pNumStart, firstLineEnd - pNumStart, firstLineVals.data(), firstLineVals.size(), junk_f);
 
 						bool good = false;
 						if (numCols == 3) good = true; // Three columns, x, y and z
