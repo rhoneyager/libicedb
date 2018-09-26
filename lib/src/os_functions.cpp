@@ -342,8 +342,8 @@ namespace icedb {
 
 #elif defined(__unix__) || defined(__APPLE__)
 			const size_t len = 65536;
-			char hname[len];
-			int res = 0;
+			char hname[len]; // A buffer of size len (65536 bytes)
+			int res = 0; // A return code
 			char* envres = NULL;
 
 			envres = getenv("USER");
@@ -354,30 +354,44 @@ namespace icedb {
 			}
 			if (!username.size()) {
 #if defined(_POSIX_C_SOURCE)
-#if _POSIX_C_SOURCE >= 199506L
+# if _POSIX_C_SOURCE >= 199506L
 				res = getlogin_r(hname, len); // getlogin and getlogin_r have problems. Avoid.
 				if (!res) username = std::string(hname);
-#else
+# else
 				envres = getlogin();
 				if (envres) username = std::string(envres);
-#endif
-				// Has getpwuid_r
+# endif
+
+				// Do we have getpwuid_r
 				if (!username.size()) {
+# if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
 					uid_t uid = geteuid();
-					struct passwd* ps = (passwd*) ICEDB_malloc(sizeof(passwd));
-					struct passwd** pres; // A pointer to the result (or NULL on failure) is stored here.
-					res = getpwuid_r(uid, ps, hname, len, pres);
-					if ((res == 0) && pres) {
+					struct passwd ps;
+					struct passwd* pres = nullptr; // A pointer to the result (or NULL on failure) is stored here.
+					res = getpwuid_r(uid, &ps, hname, len, &pres);
+					//if (pres == NULL) {
+						// Unable to look up
+					//	if (res == 0) {
+							// Not found
+							// TODO: log
+					//	}
+					//	else {
+					//		errno = res;
+							// Another error occurred
+							// TODO: log
+					//	}
+					//}
+					if (pres)  {
 						username = std::string(ps->pw_name);
 					}
 
-					ICEDB_free(ps);
+# else
+					// May have getpwuid
+					uid_t uid = geteuid();
+					struct passwd* ps = getpwuid(uid);
+					if (ps) username = std::string(ps->pw_name);
+# endif
 				}
-#else
-				// May have getpwuid
-				uid_t uid = geteuid();
-				struct passwd* ps = getpwuid(uid);
-				if (ps) username = std::string(ps->pw_name);
 #endif
 			}
 			
