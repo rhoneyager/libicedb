@@ -93,7 +93,7 @@ namespace icedb
 					generate(mProvider provider, const freqIter pstart, const freqIter pend)
 				{
 					size_t numFreqs = 0;
-					boost::shared_ptr<dielTab> tgt(new dielTab);
+					std::shared_ptr<dielTab> tgt(new dielTab);
 					while (pstart != pend)
 					{
 						std::complex<double> m = provider(*pstart);
