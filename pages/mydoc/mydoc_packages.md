@@ -18,7 +18,12 @@ If you want to link your own code against icedb, then this option is okay.
 If you want to develop icedb or greatly extend its functionality, then skip 
 to the next section.
 
-For now, packages are released on [the GitHub repository](https://github.com/rhoneyager/libicedb/releases).
+icedb packages are released monthly on 
+[the GitHub repository](https://github.com/rhoneyager/libicedb/releases).
+
+For rolling package updates, you can find packages for your platform using the links below.
+The "master" branch is the stable branch, and the "development" branch is the branch that
+will eventually become the next master.
 
 ## Build status
 
@@ -38,9 +43,9 @@ For now, packages are released on [the GitHub repository](https://github.com/rho
 | Ubuntu 18.04 / g++ 8       | [![Build status](https://icedb.visualstudio.com/icedb/_apis/build/status/Ubuntu-18.04-gcc-8?branchName=master)](https://icedb.visualstudio.com/icedb/_build/latest?definitionId=5)   | [![Build status](https://icedb.visualstudio.com/icedb/_apis/build/status/Ubuntu-18.04-gcc-8?branchName=devel)](https://icedb.visualstudio.com/icedb/_build/latest?definitionId=5)   |
 | Windows 10 / VS 2017       | [![Build status](https://icedb.visualstudio.com/icedb/_apis/build/status/Windows?branchName=master)](https://icedb.visualstudio.com/icedb/_build/latest?definitionId=3)              | [![Build status](https://icedb.visualstudio.com/icedb/_apis/build/status/Windows?branchName=devel)](https://icedb.visualstudio.com/icedb/_build/latest?definitionId=3)              |
 
-### Notes:
-- "Partially succeeded" indicates that an error occurred during the "make test" step of the build. 
-- The SCL toolset conflicts with the build testing system. Need to redo the build steps.
+### Notes
+- "Partially succeeded" indicates that an error occurred during the "make test" step of the build. You should not use packages produced by such a build in production.
+- The SCL toolset conflicts with the build testing system. We need to redo the build steps.
 - macOS needs a testing system.
 - Azure Pipelines does not provide a build agent for most BSDs. A read-only instance of CDash might be provided for those platforms.
 

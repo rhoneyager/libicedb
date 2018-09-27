@@ -20,5 +20,6 @@ Special thanks to Stefan Kneifel for strongly encouraging the development of thi
 - Jana Mendrok
 - Davide Ori
 - Jani Tyynelä
+- Ian Adams
 
 

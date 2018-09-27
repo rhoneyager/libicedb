@@ -15,7 +15,7 @@ Each development environment is different. Fortunately, icedb has few dependenci
 
 Requirements:
 
-- A C++ 2011-compatible compiler. This includes any recent versions of gcc/g++, LLVM/clang, or the Intel C++ compilers.
+- A C++ 2014-compatible compiler. This includes any recent versions of gcc/g++, LLVM/clang, or the Intel C++ compilers.
 - CMake (generates the build scripts and finds library locations)
 - NetCDF, HDF5, ZLIB (needed to store and read the database)
 - git (it provides some information to the build system)

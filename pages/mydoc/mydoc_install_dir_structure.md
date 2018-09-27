@@ -18,6 +18,8 @@ location like "/usr/local/icedb", "/opt/icedb" or "/your/home/directory/icedb".
 - The "include" directory contains all header files used for C and C++ development.
 - The "lib" directory contains libraries, along with any linker-dependent
   modules needed to link your code to icedb.
+- The "libexec" directory contains plugins. On certain platforms, such as Ubuntu, this
+  directory is instead located under "lib".
 - The "share" directory contains examples, documentation and configuration files.
 
 ## The "bin" directory

@@ -8,16 +8,23 @@ permalink: install_deps_on_win.html
 folder: mydoc
 ---
 
-Windows does not have a package manager to fetch all of the icedb dependencies, making the initial build icedb on Windows a rather elaborate process. Thus, these instructions show how to get the latest versions of the Microsoft Visual C++ compiler, CMake and Boost; also, instructions on how to acquire and compile zlib and HDF5 are provided.
+Windows does not have a package manager to fetch all of the icedb dependencies, 
+making the initial build icedb on Windows a rather elaborate process. Thus, these 
+instructions show how to get the latest versions of the Microsoft Visual C++ compiler, 
+CMake and Boost; also, instructions on how to acquire and compile zlib and HDF5 are provided.
+
+{% include note.html content="This page is UNDER CONSTRUCTION!" %}
+
 
 Requirements:
 --------------
 
-- A C++ 2011-compatible compiler. This includes any recent versions of gcc/g++, LLVM/clang, Microsoft Visual Studio 2017, or the Intel C++ compilers.
+- A C++ 2014-compatible compiler. This includes any recent versions of gcc/g++, LLVM/clang, Microsoft Visual Studio 2017, or the Intel C++ compilers.
 - CMake (generates the build scripts and finds library locations)
 - NetCDF, HDF5, ZLIB (needed to store and read the database)
 - git (it provides some information to the build system)
 - Doxygen (optional; generates local html documentation of the library functions)
+- LLNL Silo (optional; used to build a visualization plugin)
 
 # Compiling with Microsoft Visual Studio / Visual C++
 

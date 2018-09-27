@@ -29,4 +29,8 @@ use the library in diverse languages, such as Fortran, IDL, Julia, Matlab and Py
 interface that conceals file I/O details from end users, allowing them to focus on science and 
 not programming arcana. 
 
+[To download a pre-build version of icedb, click here.](./install_packages.html)
+
+[To build icedb yourself, click here.](./download.html)
+
 {% include links.html %}

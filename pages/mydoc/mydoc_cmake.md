@@ -1,7 +1,7 @@
 ---
 title: Using CMake
 tags: [getting_started, troubleshooting, installation]
-last_updated: January 27, 2018
+last_updated: September 26, 2018
 keywords: install, CMake
 summary: "Instructions for using CMake"
 sidebar: mydoc_sidebar
