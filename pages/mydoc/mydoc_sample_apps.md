@@ -10,20 +10,20 @@ folder: mydoc
 ---
 
 
-# 3-D Structure Import Program
+## 3-D Structure Import Program
 
 This program reads shapes, and then stores them
 in HDF5 files. It provides an example of how to create and manipulate
 shapes.
 
-## Example Usages:
+### Example Usages:
 
 To import a file or folder (shape.dat, shape.nc) into a new, empty database (shape.hdf5):
 ```
 icedb-3d_structures_importer --in shape.dat --out shape.hdf5 --truncate
 ```
 
-## Program options
+### Program options
 
 | Group | Option | Input type | Description |
 | ----- | -----  | ---------- | ----------- |
@@ -48,19 +48,19 @@ icedb-3d_structures_importer --in shape.dat --out shape.hdf5 --truncate
 | Metadata | constituent-names | string  | Specify the constituents. Pass in the format of "NUM1-NAME1,NUM2-NAME2,NUM3-NAME3" (i.e. 1-ice,2-water) |
 
 
-# 3-D Structure Program
+## 3-D Structure Program
 
 This program reads icedb-format shapes and passes them to a plugin for processing. 
 Many of the plugins will write out the shape in a different format.
 
-## Example Usages:
+### Example Usages:
 
 To import a file or folder (shape.dat, shape.nc) into a database (shape.hdf5):
 ```
 icedb-3d_structures --in shape.hdf5 --to shape.silo
 ```
 
-## Program options
+### Program options
 
 | Group | Option | Input type | Description |
 | ----- | -----  | ---------- | ----------- |
@@ -72,17 +72,17 @@ icedb-3d_structures --in shape.hdf5 --to shape.silo
 | I/O   | create | None | Create the output database if it does not exist. If it does, then exit without writing. |
 | I/O   | truncate | None | Overwrite the output file. If not specified, then an already-existing output file is appended to. |
 
-# Scattering Phase Functions Import Program
+## Scattering Phase Functions Import Program
 
 **TODO: Document this!**
 
-# icedb-units
+## icedb-units
 
 This is a program designed to perform basic unit interconversions.
 For now, only basic unit conversions between common mass, length, density, temperature
 and frequency units is supported. Eventually, a udunits-based interface is envisioned.
 
-## How to run
+### How to run
 
 Execution is relatively simple. Just run the program. If no arguments are passed,
 then follow the prompts specifying the input quantity, input units and output units.
@@ -106,16 +106,16 @@ The input quantity, input units and output units options are also positional.
 So, the command `icedb-units 10 m um` will convert 10 meters to micrometers.
 **Note: Negative quantities will mess up the positional parsing. In these cases, specify the input value with -i.**
 
-# icedb-version
+## icedb-version
 
 **TODO: Document this!**
 
-# icedb-refract
+## icedb-refract
 
 This program calculates the refractive index of a bulk medium, such as solid ice or liquid water.
 Mixtures (and the effective medium approximation) will be handled in a separate application.
 
-## How to run
+### How to run
 
 ###Command-line arguments:
 
