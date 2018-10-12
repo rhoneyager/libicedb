@@ -52,31 +52,52 @@ namespace icedb {
 
 			float frequency_Hz = -1; ///< Frequency (Hz)
 			float temperature_K = -1; ///< Particle temperature (K)
-
-			std::vector<std::array<float, 3> > rotation; ///< Rotation angles (in degrees)
-			enum class Rotation_Scheme { EULER, DDSCAT } rotation_scheme = Rotation_Scheme::EULER; ///< Ordering of the rotation angles.
-
-			//std::vector<float> alpha; ///< First rotation angle (degrees)
-			//std::vector<float> beta; ///< Second rotation angle (degrees)
-			//std::vector<float> gamma; ///< Third rotation angle (degrees)
-
-			/// Constituent refractive indices.
+			
+									  /// Constituent refractive indices.
 			/// Ordering is constituent_id, constituent_name, refractive index.
 			std::vector<std::tuple<int, std::string, std::complex<double> > > constituent_refractive_indices;
 
-			/// Array of incident polar angle, incident azimuth angle, scattering polar angle, scattering azimuth angle
-			std::vector<std::array<float, 4> > incid_and_scattering_angles;
-			std::vector<float> incident_polar_angle; ///< Incident polar angle (degrees)
-			std::vector<float> incident_azimuth_angle; ///< Incident azimuth angle (degrees)
-			std::vector<float> scattering_polar_angle; ///< Scattering polar angle (degrees)
-			std::vector<float> scattering_azimuth_angle; ///< Scattering azimuth angle (degrees)
+			struct ScattProps {
+				enum class Rotation_Scheme { EULER, DDSCAT } rotation_scheme = Rotation_Scheme::EULER; ///< Ordering of the rotation angles.
 
-			/// Type for the amplitude scattering matrices (i.e. the Jones matrix). Ordering is S11, S12, S21, S22.
-			typedef std::array<std::complex<double>, 4> amplitude_scattering_matrix_t;
-			/// \brief The amplitude scattering matrix.
-			/// This is horribly multi-dimensional. Dimension ordering is:
-			/// [rotation][incid_polar_angle][incid_azimuth_angle][scatt_polar_angle][scatt_azimuth_angle].
-			std::vector< amplitude_scattering_matrix_t> amplitude_scattering_matrix;
+				const std::vector<float> rot1; ///< First rotation angle (degrees). In Euler, Alpha. In DDSCAT, Theta.
+				const std::vector<float> rot2; ///< Second rotation angle (degrees). In Euler, Beta. In DDSCAT, Phi.
+				const std::vector<float> rot3; ///< Third rotation angle (degrees). In Euler, Gamma. In DDSCAT, Beta.
+
+				const std::vector<float> incident_polar_angle; ///< Incident polar angle (degrees)
+				const std::vector<float> incident_azimuth_angle; ///< Incident azimuth angle (degrees)
+				const std::vector<float> scattering_polar_angle; ///< Scattering polar angle (degrees)
+				const std::vector<float> scattering_azimuth_angle; ///< Scattering azimuth angle (degrees)
+
+				const size_t numElems = 0;
+
+				/// Type for the amplitude scattering matrices (i.e. the Jones matrix). Ordering is S11, S12, S21, S22.
+				//typedef std::array<std::complex<double>, 4> amplitude_scattering_matrix_t;
+				/// \brief The amplitude scattering matrix.
+				/// This is horribly multi-dimensional. Dimension ordering is:
+				/// [rot1][rot2][rot3][incid_polar_angle][incid_azimuth_angle][scatt_polar_angle][scatt_azimuth_angle][matrix_element_number].
+				std::vector< std::complex<double> > amplitude_scattering_matrix;
+				size_t get_unidimensional_index(size_t rot1, size_t rot2, size_t rot3, size_t i_p, size_t i_a,
+					size_t s_p, size_t s_a, size_t asm_rank) const;
+				size_t getRot_index(size_t rotNumber, float rot) const;
+				size_t getAngle_index(size_t angleNumber, float angle) const;
+				ScattProps() {}
+				ScattProps(Rotation_Scheme scheme,
+					gsl::span<const float> rot1, gsl::span<const float> rot2, gsl::span<const float> rot3,
+					gsl::span<const float> incid_pol, gsl::span<const float> incid_azi,
+					gsl::span<const float> scatt_pol, gsl::span<const float> scatt_azi)
+					: rot1(rot1.begin(), rot1.end()), rot2(rot2.begin(), rot2.end()), rot3(rot3.begin(), rot3.end()),
+					incident_polar_angle(incid_pol.begin(), incid_pol.end()),
+					incident_azimuth_angle(incid_azi.begin(), incid_azi.end()),
+					scattering_polar_angle(scatt_pol.begin(), scatt_pol.end()),
+					scattering_azimuth_angle(scatt_azi.begin(), scatt_azi.end()),
+					numElems(rot1.size() * rot2.size() * rot3.size() * incid_azi.size() * incid_pol.size()
+						* scatt_azi.size() * scatt_pol.size()),
+					amplitude_scattering_matrix(numElems),
+					rotation_scheme(scheme)
+				{}
+			};
+			std::vector<ScattProps> scattering_properties;
 		};
 
 		/// \brief A high-level class to manipulate extended scattering variables

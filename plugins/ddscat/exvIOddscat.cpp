@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 #include "ddOutput.h"
+#include "ddpar.h"
+#include "rotations.h"
 
 namespace icedb {
 	namespace plugins {
@@ -48,17 +50,25 @@ namespace icedb {
 						exvdata.scattMeth = ddrun->scattMeth;
 						exvdata.ingest_timestamp = ddrun->ingest_timestamp;
 						*/
-
+						icedb::io::ddscat::rotations rots;
+						ddrun->parfile->getRots(rots);
+						std::set<float> Betas, Thetas, Phis;
+						rots.betas(Betas);
+						rots.thetas(Thetas);
+						rots.phis(Phis);
 						const auto numRots = ddrun->fmldata->rows();
-						exvdata.rotation.resize(numRots);
-						/* Assuming that:
-						- Each rotation has the same number of scattering angles for the calculation.
-						*/
-						// First, set the incident and scattering azimuth and polar angles.
-						exvdata.incident_azimuth_angle;
-						exvdata.incident_polar_angle;
-						exvdata.scattering_azimuth_angle;
-						exvdata.scattering_polar_angle;
+						std::set<float> incid_pol{ 0 }, incid_azi{ 0 };
+						std::set<float> scatt_pol, scatt_azi;
+
+						icedb::exv::NewEXVrequiredProperties::ScattProps p{
+							icedb::exv::NewEXVrequiredProperties::ScattProps::Rotation_Scheme::DDSCAT,
+							gsl::make_span(Thetas), gsl::make_span(Phis), gsl::make_span(Betas),
+							gsl::make_span(incid_pol), gsl::make_span(incid_azi), 
+							gsl::make_span(scatt_pol), gsl::make_span(scatt_azi)};
+
+						// Get scattered pol and azi directions
+						ddrun->parfile->numPlanes();
+						ddrun->parfile->getPlane(0);
 
 						//exvdata.incident_azimuth_angle.resize(numRots);
 
@@ -80,6 +90,9 @@ namespace icedb {
 							a.amplitude_scattering_matrix[2] = std::complex<double>(f(ddOutput::fmlColDefs::F10R), f(ddOutput::fmlColDefs::F10I));
 							a.amplitude_scattering_matrix[3] = std::complex<double>(f(ddOutput::fmlColDefs::F11R), f(ddOutput::fmlColDefs::F11I));
 						}
+
+						exvdata.scattering_properties.push_back(p);
+
 
 						//--------------------------------------------------------------------------------------//
 						// The particle index is not specific enough. Let's use the filename for an id.

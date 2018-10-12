@@ -272,6 +272,31 @@ namespace icedb {
 				splitSet::splitSet<double>(sphis, p);
 			}
 
+			void rotations::betas(std::set<float> &b) const
+			{
+				using namespace std;
+				string sbetas;
+				betas(sbetas);
+				splitSet::splitSet<float>(sbetas, b);
+			}
+
+			void rotations::thetas(std::set<float> &t) const
+			{
+				using namespace std;
+				string sthetas;
+				thetas(sthetas);
+				splitSet::splitSet<float>(sthetas, t);
+			}
+
+			void rotations::phis(std::set<float> &p) const
+			{
+				using namespace std;
+				string sphis;
+				phis(sphis);
+				splitSet::splitSet<float>(sphis, p);
+			}
+
+
 			template<class T>
 			void a1(T thetad, T phid, Eigen::Matrix<T, 3, 1, 0, 3, 1> &a1)
 			{

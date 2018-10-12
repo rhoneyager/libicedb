@@ -67,6 +67,9 @@ namespace icedb {
 				void betas(std::set<double> &b) const;
 				void thetas(std::set<double> &t) const;
 				void phis(std::set<double> &p) const;
+				void betas(std::set<float> &b) const;
+				void thetas(std::set<float> &t) const;
+				void phis(std::set<float> &p) const;
 				/** \brief Convenience function to generate rotations based on
 				* betas, thetas and phis. Handles degeneracy.
 				*
