@@ -53,14 +53,19 @@ namespace icedb {
 			float frequency_Hz = -1; ///< Frequency (Hz)
 			float temperature_K = -1; ///< Particle temperature (K)
 
-			float alpha = -1; ///< First rotation angle (degrees)
-			float beta = -1; ///< Second rotation angle (degrees)
-			float gamma = -1; ///< Third rotation angle (degrees)
+			std::vector<std::array<float, 3> > rotation; ///< Rotation angles (in degrees)
+			enum class Rotation_Scheme { EULER, DDSCAT } rotation_scheme = Rotation_Scheme::EULER; ///< Ordering of the rotation angles.
+
+			//std::vector<float> alpha; ///< First rotation angle (degrees)
+			//std::vector<float> beta; ///< Second rotation angle (degrees)
+			//std::vector<float> gamma; ///< Third rotation angle (degrees)
 
 			/// Constituent refractive indices.
 			/// Ordering is constituent_id, constituent_name, refractive index.
 			std::vector<std::tuple<int, std::string, std::complex<double> > > constituent_refractive_indices;
 
+			/// Array of incident polar angle, incident azimuth angle, scattering polar angle, scattering azimuth angle
+			std::vector<std::array<float, 4> > incid_and_scattering_angles;
 			std::vector<float> incident_polar_angle; ///< Incident polar angle (degrees)
 			std::vector<float> incident_azimuth_angle; ///< Incident azimuth angle (degrees)
 			std::vector<float> scattering_polar_angle; ///< Scattering polar angle (degrees)
@@ -69,7 +74,8 @@ namespace icedb {
 			/// Type for the amplitude scattering matrices (i.e. the Jones matrix). Ordering is S11, S12, S21, S22.
 			typedef std::array<std::complex<double>, 4> amplitude_scattering_matrix_t;
 			/// \brief The amplitude scattering matrix.
-			/// \todo Clarify the dimension ordering.
+			/// This is horribly multi-dimensional. Dimension ordering is:
+			/// [rotation][incid_polar_angle][incid_azimuth_angle][scatt_polar_angle][scatt_azimuth_angle].
 			std::vector< amplitude_scattering_matrix_t> amplitude_scattering_matrix;
 		};
 

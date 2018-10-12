@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <icedb/shape.hpp>
+#include <icedb/exv.hpp>
 #include <icedb/plugin.hpp>
 
 

@@ -54,5 +54,9 @@ D_icedb_start()
 		<::icedb::Shapes::NewShapeProperties, icedb::Shapes::_impl::ShapeProps_IO_Input_Registry>
 		(1, exts, PLUGINID);
 
+	genAndRegisterIOregistryPlural_reader
+		<::icedb::exv::NewEXVrequiredProperties, icedb::exv::_impl::EXVProps_IO_Input_Registry>
+		(1, exts, PLUGINID);
+
 	return SUCCESS;
 }

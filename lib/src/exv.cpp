@@ -122,9 +122,14 @@ namespace icedb {
 			res.atts.add("Temperature_K", data->temperature_K);
 			res.atts.add("Frequency_Hz", data->frequency_Hz);
 
-			res.atts.add("alpha", data->alpha);
-			res.atts.add("beta", data->beta);
-			res.atts.add("gamma", data->gamma);
+			/// \todo Add in rotation scheme information!
+			/// \todo Add in rotation information!
+			data->rotation;
+			data->rotation_scheme;
+			//res.dsets.create
+			//res.atts.add("alpha", data->alpha);
+			//res.atts.add("beta", data->beta);
+			//res.atts.add("gamma", data->gamma);
 
 			// Refractive indices and substances
 			

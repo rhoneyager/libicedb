@@ -1,5 +1,5 @@
 #include "defs.hpp"
-#include "plugin-psu.hpp"
+#include "plugin-io-ddscat.hpp"
 #include <icedb/error.hpp>
 #include <icedb/exv.hpp>
 #include <icedb/registry.hpp>
@@ -14,28 +14,13 @@
 #include <set>
 #include <string>
 #include <vector>
-//#include "shapeIOtext.hpp"
+#include "ddOutput.h"
 
 namespace icedb {
 	namespace plugins {
-		namespace psu {
+		namespace ddscat {
 			namespace exv {
-				template <typename T>
-				void readDataset(const std::string dsetname, HH::Dataset dset, std::vector<T> &outdata)
-				{
-					auto dims = dset.getDimensions();
-					//Expects(dims.dimensionality == 2);
-					outdata.resize(dims.numElements);
-					if (dset.read<T>(outdata) < 0)
-						ICEDB_throw(icedb::error::error_types::xBadInput)
-						.add("Reason", "HDF5 error when reading a dataset.")
-						.add("Dataset", dsetname);
-				}
-
-				//------------------------------------------------------------------------------------------//
-				/// Read a Penn State psuAydinetal-style GMM and DDA geometry files.
-				//------------------------------------------------------------------------------------------//
-				::icedb::exv::NewEXVrequiredProperties readPSUfile(std::shared_ptr<icedb::plugins::psu::psu_handle> h, std::shared_ptr<icedb::registry::IO_options> opts)
+				::icedb::exv::NewEXVrequiredProperties readDDSCATdir(std::shared_ptr<icedb::plugins::ddscat::ddscat_text_handle> h, std::shared_ptr<icedb::registry::IO_options> opts)
 				{
 					// error_info holds a stack of diagnostic error messages.
 					::icedb::registry::options_ptr error_info = ::icedb::registry::options::generate();
@@ -44,6 +29,57 @@ namespace icedb {
 						// We are reading the scattering matrices into this object.
 						// See lib/icedb/exv.hpp.
 						icedb::exv::NewEXVrequiredProperties exvdata;
+
+						auto ddrun = icedb::io::ddscat::ddOutput::generate(opts->filename());
+						
+						for (size_t i = 0; i < ddrun->ms.at(0).size(); ++i) {
+							std::tuple<int, std::string, std::complex<double> > newM((int)(i + 1), std::string("unspecified"), s->ms.at(0).at(i));
+							exvdata.constituent_refractive_indices.push_back(newM);
+						}
+						exvdata.frequency_Hz = ddrun->freq;
+						exvdata.temperature_K = ddrun->temp;
+						exvdata.scattMeth = "DDSCAT";
+						
+						/*
+						exvdata.author = ddrun->author;
+						exvdata.contact = ddrun->contact;
+						exvdata.version = ddrun->version;
+						exvdata.dataset_id = ddrun->datasetID;
+						exvdata.scattMeth = ddrun->scattMeth;
+						exvdata.ingest_timestamp = ddrun->ingest_timestamp;
+						*/
+
+						const auto numRots = ddrun->fmldata->rows();
+						exvdata.rotation.resize(numRots);
+						/* Assuming that:
+						- Each rotation has the same number of scattering angles for the calculation.
+						*/
+						// First, set the incident and scattering azimuth and polar angles.
+						exvdata.incident_azimuth_angle;
+						exvdata.incident_polar_angle;
+						exvdata.scattering_azimuth_angle;
+						exvdata.scattering_polar_angle;
+
+						//exvdata.incident_azimuth_angle.resize(numRots);
+
+						for (int i = 0; i < numRots; ++i) {
+							auto &a = exvdata.rotation[i];
+							using icedb::io::ddscat::ddOutput;
+							const auto &f = ddrun->fmldata->block<1, ddOutput::fmlColDefs::NUM_FMLCOLDEFS>(i, 0);
+							const auto &o = ddrun->oridata_d.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(
+								f(ddOutput::fmlColDefs::ORIINDEX), 0);
+							a.alpha = o(ddOutput::stat_entries::BETA);
+							a.beta = o(ddOutput::stat_entries::THETA);
+							a.gamma = o(ddOutput::stat_entries::PHI);
+							a.incident_azimuth_angle = 0;
+							a.incident_polar_angle = 0;
+							a.scattering_azimuth_angle = f(ddOutput::fmlColDefs::THETAB);
+							a.scattering_polar_angle = f(ddOutput::fmlColDefs::PHIB);
+							a.amplitude_scattering_matrix[0] = std::complex<double>(f(ddOutput::fmlColDefs::F00R), f(ddOutput::fmlColDefs::F00I));
+							a.amplitude_scattering_matrix[1] = std::complex<double>(f(ddOutput::fmlColDefs::F01R), f(ddOutput::fmlColDefs::F01I));
+							a.amplitude_scattering_matrix[2] = std::complex<double>(f(ddOutput::fmlColDefs::F10R), f(ddOutput::fmlColDefs::F10I));
+							a.amplitude_scattering_matrix[3] = std::complex<double>(f(ddOutput::fmlColDefs::F11R), f(ddOutput::fmlColDefs::F11I));
+						}
 
 						//--------------------------------------------------------------------------------------//
 						// The particle index is not specific enough. Let's use the filename for an id.
@@ -94,9 +130,9 @@ namespace icedb {
 
 						// See pi.freq_number_as_string; pi.freq_units;
 						// The icedb::units library handles the conversion.
-						exvdata.frequency_Hz = (float) icedb::units::conv_spec(pi.freq_units, "Hz")
-							.convert(boost::lexical_cast<double>(pi.freq_number_as_string)); //It's a float.
-						
+						exvdata.frequency_Hz = icedb::units::conv_spec(pi.freq_units, "Hz")
+							.convert(boost::lexical_cast<float>(pi.freq_number_as_string)); //It's a float.
+
 						exvdata.temperature_K = -1; // Set this. It's a float.
 						exvdata.author = "PLACEHOLDER"; // Optional: can be set by importer program.
 						exvdata.contact = "PLACEHOLDER"; // Optional: can be set by importer program.
@@ -104,6 +140,15 @@ namespace icedb {
 						exvdata.scattMeth = "PLACEHOLDER"; // Optional: can be set by importer program.
 						exvdata.version = std::array<unsigned int, 3>{0, 0, 0}; // Optional: can be set by importer program.
 						//exvdata.ingest_timestamp; // Always set by importer program
+
+						// NOTE: At present, the EXV files do not record the PARTICLE ORIENTATION! This must be fixed later.
+						// These are in the ESSENTIAL scattering variables files, and have to be moved here.
+						// TODO: We have to work out the conventions for these rotations. Presently using Euler angles to 
+						// agree with the Mishchenko books. This may conflict with DDSCAT. Can these conventions be uniquely interconverted?
+						// We have to document the convention of the rotations. What exactly does (0,0,0) mean relative to the incident light angles?
+						exvdata.alpha = -1; // First rotation (degrees).
+						exvdata.beta = -1; // Second rotation (degrees).
+						exvdata.gamma = -1; // Third rotation (degrees).
 
 						//-----------------------
 						// Check that the appropriate datasets exist
@@ -149,7 +194,7 @@ namespace icedb {
 						//-----------------------
 						// Check that all of the read data have the correct sizes.
 						//-----------------------
-						const size_t numScattMatrices = exvdata.incident_azimuth_angle.size() * exvdata.incident_polar_angle.size() 
+						const size_t numScattMatrices = exvdata.incident_azimuth_angle.size() * exvdata.incident_polar_angle.size()
 							* exvdata.scattering_azimuth_angle.size() * exvdata.scattering_polar_angle.size();
 						{
 							bool badSize = false;
@@ -175,9 +220,6 @@ namespace icedb {
 						//-----------------------
 						// Populate the exvdata structure
 						//-----------------------
-						exvdata.rotation_scheme = icedb::exv::NewEXVrequiredProperties::Rotation_Scheme::EULER;
-						exvdata.rotation.push_back({ 0,0,0 });
-
 						exvdata.amplitude_scattering_matrix.resize(numScattMatrices);
 						for (size_t i = 0; i < S1i.size(); ++i) {
 							// NOTE: The convention of S1,S2,S3,S4 matters here.
@@ -188,9 +230,9 @@ namespace icedb {
 							// NOTE: The imaginary components get stored as positive numbers.
 							exvdata.amplitude_scattering_matrix[i] = std::array<std::complex<double>, 4> {
 								std::complex<double>(S1r[i], std::abs(S1i[i])),
-								std::complex<double>(S2r[i], std::abs(S2i[i])),
-								std::complex<double>(S3r[i], std::abs(S3i[i])),
-								std::complex<double>(S4r[i], std::abs(S4i[i]))
+									std::complex<double>(S2r[i], std::abs(S2i[i])),
+									std::complex<double>(S3r[i], std::abs(S3i[i])),
+									std::complex<double>(S4r[i], std::abs(S4i[i]))
 							};
 						}
 
@@ -213,7 +255,7 @@ namespace icedb {
 	}
 
 	using std::shared_ptr;
-	using namespace icedb::plugins::psu::exv;
+	using namespace icedb::plugins::ddscat::exv;
 
 	namespace registry {
 		template<> shared_ptr<IOhandler>
@@ -226,13 +268,13 @@ namespace icedb {
 				std::string filename = opts->filename();
 				IOhandler::IOtype iotype = opts->getVal<IOhandler::IOtype>("iotype", IOhandler::IOtype::READONLY);
 				using std::shared_ptr;
-				std::shared_ptr<icedb::plugins::psu::psu_handle> h = registry::construct_handle
-					<registry::IOhandler, icedb::plugins::psu::psu_handle>(
-						sh, PLUGINID, [&]() {return std::shared_ptr<icedb::plugins::psu::psu_handle>(
-							new icedb::plugins::psu::psu_handle(filename.c_str(), iotype)); });
+				std::shared_ptr<icedb::plugins::ddscat::ddscat_text_handle> h = registry::construct_handle
+					<registry::IOhandler, icedb::plugins::ddscat::ddscat_text_handle>(
+						sh, PLUGINID, [&]() {return std::shared_ptr<icedb::plugins::ddscat::ddscat_text_handle>(
+							new icedb::plugins::ddscat::ddscat_text_handle(filename.c_str(), iotype)); });
 
-				// Actually read the shape
-				*s = readPSUfile(h, opts);
+				/// \todo Check that the passed object is actually a directory.
+				*s = readDDSCATdir(h, opts);
 
 				// Return the opened "handle".
 				return h;

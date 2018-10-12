@@ -20,6 +20,7 @@ if (BUILD_PLUGIN_DDSCAT)
 		ddVersions.h
 		dielTabFile.cpp
 		dielTabFile.h
+		exvIOddscat.cpp
 		parids.h
 		rotations.cpp
 		rotations.h
