@@ -67,8 +67,20 @@ namespace icedb {
 							gsl::make_span(scatt_pol), gsl::make_span(scatt_azi)};
 
 						// Get scattered pol and azi directions
-						ddrun->parfile->numPlanes();
-						ddrun->parfile->getPlane(0);
+						size_t numPlanes = ddrun->parfile->numPlanes();
+						Expects(numPlanes);
+						for (size_t i = 0; i < numPlanes; ++i) {
+							double phi, thetan_min, thetan_max, dtheta;
+							ddrun->parfile->getPlane(i, phi, thetan_min, thetan_max, dtheta);
+							if (i == 0) {
+								// Use the theta directions
+								std::set<double> dscatt_azi;
+								icedb::splitSet::splitSet(thetan_min, thetan_max, dtheta, "", dscatt_azi);
+								for (const auto d : dscatt_azi) scatt_azi.emplace((float)d);
+							}
+							// In all cases, use the phi direction
+							scatt_pol.emplace(phi);
+						}
 
 						//exvdata.incident_azimuth_angle.resize(numRots);
 
