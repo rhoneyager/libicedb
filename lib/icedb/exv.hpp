@@ -60,16 +60,16 @@ namespace icedb {
 			struct ScattProps {
 				enum class Rotation_Scheme { EULER, DDSCAT } rotation_scheme = Rotation_Scheme::EULER; ///< Ordering of the rotation angles.
 
-				const std::vector<float> rot1; ///< First rotation angle (degrees). In Euler, Alpha. In DDSCAT, Theta.
-				const std::vector<float> rot2; ///< Second rotation angle (degrees). In Euler, Beta. In DDSCAT, Phi.
-				const std::vector<float> rot3; ///< Third rotation angle (degrees). In Euler, Gamma. In DDSCAT, Beta.
+				std::vector<float> rot1; ///< First rotation angle (degrees). In Euler, Alpha. In DDSCAT, Theta.
+				std::vector<float> rot2; ///< Second rotation angle (degrees). In Euler, Beta. In DDSCAT, Phi.
+				std::vector<float> rot3; ///< Third rotation angle (degrees). In Euler, Gamma. In DDSCAT, Beta.
 
-				const std::vector<float> incident_polar_angle; ///< Incident polar angle (degrees)
-				const std::vector<float> incident_azimuth_angle; ///< Incident azimuth angle (degrees)
-				const std::vector<float> scattering_polar_angle; ///< Scattering polar angle (degrees)
-				const std::vector<float> scattering_azimuth_angle; ///< Scattering azimuth angle (degrees)
+				std::vector<float> incident_polar_angle; ///< Incident polar angle (degrees)
+				std::vector<float> incident_azimuth_angle; ///< Incident azimuth angle (degrees)
+				std::vector<float> scattering_polar_angle; ///< Scattering polar angle (degrees)
+				std::vector<float> scattering_azimuth_angle; ///< Scattering azimuth angle (degrees)
 
-				const size_t numElems = 0;
+				size_t numElems = 0;
 
 				/// Type for the amplitude scattering matrices (i.e. the Jones matrix). Ordering is S11, S12, S21, S22.
 				//typedef std::array<std::complex<double>, 4> amplitude_scattering_matrix_t;

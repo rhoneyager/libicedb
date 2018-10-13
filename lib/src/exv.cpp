@@ -122,15 +122,6 @@ namespace icedb {
 			res.atts.add("Temperature_K", data->temperature_K);
 			res.atts.add("Frequency_Hz", data->frequency_Hz);
 
-			/// \todo Add in rotation scheme information!
-			/// \todo Add in rotation information!
-			data->rotation;
-			data->rotation_scheme;
-			//res.dsets.create
-			//res.atts.add("alpha", data->alpha);
-			//res.atts.add("beta", data->beta);
-			//res.atts.add("gamma", data->gamma);
-
 			// Refractive indices and substances
 			
 			std::vector<RIs> ris;
@@ -147,46 +138,75 @@ namespace icedb {
 			auto dRIs = res.dsets.create<RIs>("Constituent_Refractive_Indices", { ris.size() });
 			Expects(0 <= dRIs.write<RIs>(ris));
 
-			auto d_ia = res.dsets.createFromSpan<float>("incident_azimuth_angle", gsl::make_span(data->incident_azimuth_angle));
-			d_ia.setIsDimensionScale("incident_azimuth_angle");
-			d_ia.AddSimpleAttributes("long_name", "incident azimuth angle of the radiation in the particle reference frame", "units", "degrees");
-			auto d_sa = res.dsets.createFromSpan<float>("scattering_azimuth_angle", gsl::make_span(data->scattering_azimuth_angle));
-			d_sa.setIsDimensionScale("scattering_azimuth_angle");
-			d_sa.AddSimpleAttributes("long_name", "scattering azimuth angle of the radiation in the particle reference frame", "units", "degrees");
-			auto d_ip = res.dsets.createFromSpan<float>("incident_polar_angle", gsl::make_span(data->incident_polar_angle));
-			d_ip.setIsDimensionScale("incident_polar_angle");
-			d_ip.AddSimpleAttributes("long_name", "incident polar angle of the radiation in the particle reference frame", "units", "degrees");
-			auto d_sp = res.dsets.createFromSpan<float>("scattering_polar_angle", gsl::make_span(data->scattering_polar_angle));
-			d_sp.AddSimpleAttributes("long_name", "scattering polar angle of the radiation in the particle reference frame", "units", "degrees");
-			d_sp.setIsDimensionScale("scattering_polar_angle");
-			const std::vector<uint16_t> vscs{ 11, 12, 21, 22 };
-			auto d_scs = res.dsets.createFromSpan<uint16_t>("Scattering_Coefficient_Indices", vscs);
-			d_scs.setIsDimensionScale("Scattering_Coefficient_Indices");
-			d_scs.AddSimpleAttributes("long_name", "Indices of the amplitude scattering matrix element [following Bohren and Huffman (1983)]");
+			/// \todo Add in rotation scheme information!
+			/// \todo Add in rotation information!
+			auto g_sps = res.create("Scattering_Properties");
+			for (size_t spnum = 0; spnum < data->scattering_properties.size(); ++spnum) {
+				// Generate a name like 030.
+				std::ostringstream sspid;
+				sspid.fill('0');
+				size_t newwidth = (size_t) std::log10((double)data->scattering_properties.size()) + 1;
+				sspid.width(newwidth);
+				sspid << spnum;
+				std::string spid = sspid.str();
 
-			// Angular data
-			// TODO: check compressibility of the complex data types
-			const size_t numScattEntries = data->amplitude_scattering_matrix.size();
-			if (numScattEntries) {
-				std::vector<std::complex<double> >
-					s(numScattEntries*4);
+				// Write to the named group.
+				auto g = g_sps.create(spid.c_str());
 
-				for (size_t i = 0; i < numScattEntries; ++i) {
-					s[(4 * i) + 0] = data->amplitude_scattering_matrix[i][0];
-					s[(4 * i) + 1] = data->amplitude_scattering_matrix[i][1];
-					s[(4 * i) + 2] = data->amplitude_scattering_matrix[i][2];
-					s[(4 * i) + 3] = data->amplitude_scattering_matrix[i][3];
+				const auto &s = data->scattering_properties[spnum];
+
+				g.atts.add("Rotation_Scheme", s.rotation_scheme);
+				std::vector<string> Rotation_Names(3);
+				if (s.rotation_scheme == icedb::exv::NewEXVrequiredProperties::ScattProps::Rotation_Scheme::DDSCAT)
+					Rotation_Names = { "Theta", "Phi", "Beta" };
+				else if (s.rotation_scheme == icedb::exv::NewEXVrequiredProperties::ScattProps::Rotation_Scheme::EULER)
+					Rotation_Names = { "Alpha", "Beta", "Gamma" };
+				else {
+					ICEDB_throw(error::error_types::xUnimplementedFunction)
+						.add("Reason", "Unimplemented write for this rotation scheme.");
 				}
-				auto d_s = res.dsets.create<std::complex<double>>("amplitude_scattering_matrix", 
-					{ data->incident_polar_angle.size(),
-					data->incident_azimuth_angle.size(),
-					data->scattering_polar_angle.size(),
-					data->scattering_azimuth_angle.size(), 4 });
-				d_s.setDims({ d_ia, d_sa, d_ip, d_sp, d_scs });
+				auto d_rot1 = g.dsets.createFromSpan(Rotation_Names[0].c_str(), gsl::make_span(s.rot1))
+					.setIsDimensionScale(Rotation_Names[0]).AddSimpleAttributes("units","degrees");
+				auto d_rot2 = g.dsets.createFromSpan(Rotation_Names[1].c_str(), gsl::make_span(s.rot2))
+					.setIsDimensionScale(Rotation_Names[1]).AddSimpleAttributes("units", "degrees");
+				auto d_rot3 = g.dsets.createFromSpan(Rotation_Names[2].c_str(), gsl::make_span(s.rot3))
+					.setIsDimensionScale(Rotation_Names[2]).AddSimpleAttributes("units", "degrees");
+
+				auto d_ia = g.dsets.createFromSpan("incident_azimuth_angle", gsl::make_span(s.incident_azimuth_angle))
+					.setIsDimensionScale("incident_azimuth_angle").AddSimpleAttributes("units", "degrees");
+				d_ia.AddSimpleAttributes("long_name", "incident azimuth angle of the radiation in the particle reference frame", "units", "degrees");
+
+				auto d_ip = g.dsets.createFromSpan("incident_polar_angle", gsl::make_span(s.incident_polar_angle))
+					.setIsDimensionScale("incident_polar_angle").AddSimpleAttributes("units", "degrees");
+				d_ip.AddSimpleAttributes("long_name", "incident polar angle of the radiation in the particle reference frame", "units", "degrees");
+
+				auto d_sa = g.dsets.createFromSpan("scattering_azimuth_angle", gsl::make_span(s.scattering_azimuth_angle))
+					.setIsDimensionScale("scattering_azimuth_angle").AddSimpleAttributes("units", "degrees");
+				d_sa.AddSimpleAttributes("long_name", "scattering azimuth angle of the radiation in the particle reference frame", "units", "degrees");
+
+				auto d_sp = g.dsets.createFromSpan("scattering_polar_angle", gsl::make_span(s.scattering_polar_angle))
+					.setIsDimensionScale("scattering_polar_angle").AddSimpleAttributes("units", "degrees");
+				d_sp.AddSimpleAttributes("long_name", "scattering polar angle of the radiation in the particle reference frame", "units", "degrees");
+
+				const std::vector<uint16_t> vscs{ 11, 12, 21, 22 };
+				auto d_scs = res.dsets.createFromSpan<uint16_t>("Scattering_Coefficient_Indices", vscs);
+				d_scs.setIsDimensionScale("Scattering_Coefficient_Indices");
+				d_scs.AddSimpleAttributes("long_name", "Indices of the amplitude scattering matrix element [following Bohren and Huffman (1983)]");
+
+				//auto d_asm = g.dsets.createFromSpan(
+				//	"amplitude_scattering_matrix", gsl::make_span(s.amplitude_scattering_matrix), )
+				//	.setDims({ d_rot1,d_rot2,d_rot3,d_ia,d_ip,d_sa,d_sp,d_scs });
+				auto d_s = res.dsets.create<std::complex<double>>("amplitude_scattering_matrix",
+					{ s.rot1.size(), s.rot2.size(), s.rot3.size(),
+					s.incident_azimuth_angle.size(), s.incident_polar_angle.size(),
+					s.scattering_azimuth_angle.size(), s.scattering_polar_angle.size(), 
+					vscs.size() });
+				d_s.setDims({ d_rot1, d_rot2, d_rot3, d_ia, d_sa, d_ip, d_sp, d_scs });
 				d_s.AddSimpleAttributes("long_name", "Amplitude scattering matrix [following Bohren and Huffman (1983)]", "units", "dimensionless");
 
-				Expects(0 <= d_s.write<std::complex<double>>(s));
+				Expects(0 <= d_s.write<std::complex<double>>(s.amplitude_scattering_matrix));
 			}
+
 			return EXV(res.get());
 		}
 	}
