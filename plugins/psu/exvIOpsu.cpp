@@ -141,16 +141,18 @@ namespace icedb {
 						readDataset<float>("S3_real", hFile.dsets["S3_real"], S3r);
 						readDataset<float>("S4_imag", hFile.dsets["S4_imag"], S4i);
 						readDataset<float>("S4_real", hFile.dsets["S4_real"], S4r);
-						readDataset<float>("incident_azimuth_angle", hFile.dsets["incident_azimuth_angle"], exvdata.incident_azimuth_angle);
-						readDataset<float>("incident_polar_angle", hFile.dsets["incident_polar_angle"], exvdata.incident_polar_angle);
-						readDataset<float>("scattering_azimuth_angle", hFile.dsets["scattering_azimuth_angle"], exvdata.scattering_azimuth_angle);
-						readDataset<float>("scattering_polar_angle", hFile.dsets["scattering_polar_angle"], exvdata.scattering_polar_angle);
+						std::vector<float> incident_azimuth_angle, incident_polar_angle,
+							scattering_azimuth_angle, scattering_polar_angle;
+						readDataset<float>("incident_azimuth_angle", hFile.dsets["incident_azimuth_angle"], incident_azimuth_angle);
+						readDataset<float>("incident_polar_angle", hFile.dsets["incident_polar_angle"], incident_polar_angle);
+						readDataset<float>("scattering_azimuth_angle", hFile.dsets["scattering_azimuth_angle"], scattering_azimuth_angle);
+						readDataset<float>("scattering_polar_angle", hFile.dsets["scattering_polar_angle"], scattering_polar_angle);
 
 						//-----------------------
 						// Check that all of the read data have the correct sizes.
 						//-----------------------
-						const size_t numScattMatrices = exvdata.incident_azimuth_angle.size() * exvdata.incident_polar_angle.size() 
-							* exvdata.scattering_azimuth_angle.size() * exvdata.scattering_polar_angle.size();
+						const size_t numScattMatrices = incident_azimuth_angle.size() * incident_polar_angle.size() 
+							* scattering_azimuth_angle.size() * scattering_polar_angle.size();
 						{
 							bool badSize = false;
 							if (S1i.size() != S1r.size()) badSize = true;
@@ -175,23 +177,31 @@ namespace icedb {
 						//-----------------------
 						// Populate the exvdata structure
 						//-----------------------
-						exvdata.rotation_scheme = icedb::exv::NewEXVrequiredProperties::Rotation_Scheme::EULER;
-						exvdata.rotation.push_back({ 0,0,0 });
+						std::set<float> Alphas{ 0 }, Betas{ 0 }, Gammas{ 0 };
+						icedb::exv::NewEXVrequiredProperties::ScattProps scatt{
+							icedb::exv::NewEXVrequiredProperties::ScattProps::Rotation_Scheme::EULER,
+							Alphas, Betas, Gammas, 
+							std::set<float>{incident_polar_angle.begin(), incident_polar_angle.end()}, 
+							std::set<float>{incident_azimuth_angle.begin(), incident_azimuth_angle.end()},
+							std::set<float>{scattering_polar_angle.begin(), scattering_polar_angle.end()},
+							std::set<float>{scattering_azimuth_angle.begin(), scattering_azimuth_angle.end()}
+							};
+						//scatt.amplitude_scattering_matrix
 
-						exvdata.amplitude_scattering_matrix.resize(numScattMatrices);
 						for (size_t i = 0; i < S1i.size(); ++i) {
 							// NOTE: The convention of S1,S2,S3,S4 matters here.
 							// A few books have the matrix written as S2, S3, S4, S1. Some have S2, S1, S3, S4, and others have S1, S2, S3, S4!!!
 							// To preserve sanity, let's write these as S11, S12, S21, S22, where [ij] is row/column.
 
-							// TODO: You may have to adjust the ordering of these. Really depends on your convention.
+							// TODO: You may have to adjust the ordering of these (i.e. the indices 4*i+X).
+							// Really depends on how you ordered your netCDF dimensions.
+
 							// NOTE: The imaginary components get stored as positive numbers.
-							exvdata.amplitude_scattering_matrix[i] = std::array<std::complex<double>, 4> {
-								std::complex<double>(S1r[i], std::abs(S1i[i])),
-								std::complex<double>(S2r[i], std::abs(S2i[i])),
-								std::complex<double>(S3r[i], std::abs(S3i[i])),
-								std::complex<double>(S4r[i], std::abs(S4i[i]))
-							};
+
+							scatt.amplitude_scattering_matrix[4 * i + 0] = std::complex<double>(S1r[i], std::abs(S1i[i]));
+							scatt.amplitude_scattering_matrix[4 * i + 1] = std::complex<double>(S2r[i], std::abs(S2i[i]));
+							scatt.amplitude_scattering_matrix[4 * i + 2] = std::complex<double>(S3r[i], std::abs(S3i[i]));
+							scatt.amplitude_scattering_matrix[4 * i + 3] = std::complex<double>(S4r[i], std::abs(S4i[i]));
 						}
 
 						//-----------------------
