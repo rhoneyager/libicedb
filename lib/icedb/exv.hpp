@@ -77,8 +77,8 @@ namespace icedb {
 				/// This is horribly multi-dimensional. Dimension ordering is:
 				/// [rot1][rot2][rot3][incid_polar_angle][incid_azimuth_angle][scatt_polar_angle][scatt_azimuth_angle][matrix_element_number].
 				std::vector< std::complex<double> > amplitude_scattering_matrix;
-				size_t get_unidimensional_index(size_t rot1, size_t rot2, size_t rot3, size_t i_p, size_t i_a,
-					size_t s_p, size_t s_a, size_t asm_rank) const;
+				size_t get_unidimensional_index(float rot1, float rot2, float rot3, float i_p, float i_a,
+					float s_p, float s_a, size_t asm_rank) const;
 				size_t getRot_index(size_t rotNumber, float rot) const;
 				size_t getAngle_index(size_t angleNumber, float angle) const;
 				ScattProps() {}
@@ -86,6 +86,20 @@ namespace icedb {
 					gsl::span<const float> rot1, gsl::span<const float> rot2, gsl::span<const float> rot3,
 					gsl::span<const float> incid_pol, gsl::span<const float> incid_azi,
 					gsl::span<const float> scatt_pol, gsl::span<const float> scatt_azi)
+					: rot1(rot1.begin(), rot1.end()), rot2(rot2.begin(), rot2.end()), rot3(rot3.begin(), rot3.end()),
+					incident_polar_angle(incid_pol.begin(), incid_pol.end()),
+					incident_azimuth_angle(incid_azi.begin(), incid_azi.end()),
+					scattering_polar_angle(scatt_pol.begin(), scatt_pol.end()),
+					scattering_azimuth_angle(scatt_azi.begin(), scatt_azi.end()),
+					numElems(rot1.size() * rot2.size() * rot3.size() * incid_azi.size() * incid_pol.size()
+						* scatt_azi.size() * scatt_pol.size()),
+					amplitude_scattering_matrix(numElems),
+					rotation_scheme(scheme)
+				{}
+				ScattProps(Rotation_Scheme scheme,
+					const std::set<float>& rot1, const std::set<float>& rot2, const std::set<float>& rot3,
+					const std::set<float>& incid_pol, const std::set<float>& incid_azi,
+					const std::set<float>& scatt_pol, const std::set<float>& scatt_azi)
 					: rot1(rot1.begin(), rot1.end()), rot2(rot2.begin(), rot2.end()), rot3(rot3.begin(), rot3.end()),
 					incident_polar_angle(incid_pol.begin(), incid_pol.end()),
 					incident_azimuth_angle(incid_azi.begin(), incid_azi.end()),

@@ -35,21 +35,15 @@ namespace icedb {
 						auto ddrun = icedb::io::ddscat::ddOutput::generate(opts->filename());
 						
 						for (size_t i = 0; i < ddrun->ms.at(0).size(); ++i) {
-							std::tuple<int, std::string, std::complex<double> > newM((int)(i + 1), std::string("unspecified"), s->ms.at(0).at(i));
+							std::tuple<int, std::string, std::complex<double> > newM((int)(i + 1), std::string("unspecified"), ddrun->ms.at(0).at(i));
 							exvdata.constituent_refractive_indices.push_back(newM);
 						}
-						exvdata.frequency_Hz = ddrun->freq;
-						exvdata.temperature_K = ddrun->temp;
-						exvdata.scattMeth = "DDSCAT";
+						exvdata.frequency_Hz = (float) ddrun->freq;
+						exvdata.temperature_K = (float) ddrun->temp;
+						// TODO: if temperature is unspecified, guess it from a refractive index
+						// formula, assuming that one of the media is ice.
+
 						
-						/*
-						exvdata.author = ddrun->author;
-						exvdata.contact = ddrun->contact;
-						exvdata.version = ddrun->version;
-						exvdata.dataset_id = ddrun->datasetID;
-						exvdata.scattMeth = ddrun->scattMeth;
-						exvdata.ingest_timestamp = ddrun->ingest_timestamp;
-						*/
 						icedb::io::ddscat::rotations rots;
 						ddrun->parfile->getRots(rots);
 						std::set<float> Betas, Thetas, Phis;
@@ -62,9 +56,7 @@ namespace icedb {
 
 						icedb::exv::NewEXVrequiredProperties::ScattProps p{
 							icedb::exv::NewEXVrequiredProperties::ScattProps::Rotation_Scheme::DDSCAT,
-							gsl::make_span(Thetas), gsl::make_span(Phis), gsl::make_span(Betas),
-							gsl::make_span(incid_pol), gsl::make_span(incid_azi), 
-							gsl::make_span(scatt_pol), gsl::make_span(scatt_azi)};
+							Thetas, Phis, Betas, incid_pol, incid_azi, scatt_pol, scatt_azi};
 
 						// Get scattered pol and azi directions
 						size_t numPlanes = ddrun->parfile->numPlanes();
@@ -79,198 +71,66 @@ namespace icedb {
 								for (const auto d : dscatt_azi) scatt_azi.emplace((float)d);
 							}
 							// In all cases, use the phi direction
-							scatt_pol.emplace(phi);
+							scatt_pol.emplace((float)phi);
 						}
 
 						//exvdata.incident_azimuth_angle.resize(numRots);
 
 						for (int i = 0; i < numRots; ++i) {
-							auto &a = exvdata.rotation[i];
 							using icedb::io::ddscat::ddOutput;
 							const auto &f = ddrun->fmldata->block<1, ddOutput::fmlColDefs::NUM_FMLCOLDEFS>(i, 0);
 							const auto &o = ddrun->oridata_d.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(
-								f(ddOutput::fmlColDefs::ORIINDEX), 0);
-							a.alpha = o(ddOutput::stat_entries::BETA);
-							a.beta = o(ddOutput::stat_entries::THETA);
-							a.gamma = o(ddOutput::stat_entries::PHI);
-							a.incident_azimuth_angle = 0;
-							a.incident_polar_angle = 0;
-							a.scattering_azimuth_angle = f(ddOutput::fmlColDefs::THETAB);
-							a.scattering_polar_angle = f(ddOutput::fmlColDefs::PHIB);
-							a.amplitude_scattering_matrix[0] = std::complex<double>(f(ddOutput::fmlColDefs::F00R), f(ddOutput::fmlColDefs::F00I));
-							a.amplitude_scattering_matrix[1] = std::complex<double>(f(ddOutput::fmlColDefs::F01R), f(ddOutput::fmlColDefs::F01I));
-							a.amplitude_scattering_matrix[2] = std::complex<double>(f(ddOutput::fmlColDefs::F10R), f(ddOutput::fmlColDefs::F10I));
-							a.amplitude_scattering_matrix[3] = std::complex<double>(f(ddOutput::fmlColDefs::F11R), f(ddOutput::fmlColDefs::F11I));
+								(Eigen::Index) f(ddOutput::fmlColDefs::ORIINDEX), 0);
+
+							double Beta = o(ddOutput::stat_entries::BETA);
+							double Theta = o(ddOutput::stat_entries::THETA);
+							double Phi = o(ddOutput::stat_entries::PHI);
+							double scattering_azimuth_angle = f(ddOutput::fmlColDefs::THETAB);
+							double scattering_polar_angle = f(ddOutput::fmlColDefs::PHIB);
+							auto getIndex = [&](size_t i) {
+								return p.get_unidimensional_index(
+									(float)Theta, (float)Phi, (float)Beta,
+									0, 0, (float)scattering_polar_angle, (float)scattering_azimuth_angle,
+									i);
+							};
+
+							p.amplitude_scattering_matrix[getIndex(0)] 
+								= std::complex<double>(f(ddOutput::fmlColDefs::F00R), f(ddOutput::fmlColDefs::F00I));
+							p.amplitude_scattering_matrix[getIndex(1)]
+								= std::complex<double>(f(ddOutput::fmlColDefs::F01R), f(ddOutput::fmlColDefs::F01I));
+							p.amplitude_scattering_matrix[getIndex(2)]
+								= std::complex<double>(f(ddOutput::fmlColDefs::F10R), f(ddOutput::fmlColDefs::F10I));
+							p.amplitude_scattering_matrix[getIndex(3)]
+								= std::complex<double>(f(ddOutput::fmlColDefs::F11R), f(ddOutput::fmlColDefs::F11I));
 						}
 
 						exvdata.scattering_properties.push_back(p);
 
 
-						//--------------------------------------------------------------------------------------//
-						// The particle index is not specific enough. Let's use the filename for an id.
-						//--------------------------------------------------------------------------------------//
-						boost::filesystem::path p(opts->filename());
-						auto pfile = p.filename();
+						// Scattering matrices are read. Rotations are read. Temp and freq are read.
+
+						// Let's use the folder name for an id.
+						boost::filesystem::path pt(opts->filename());
+						auto pfile = pt.filename();
 						string fname = pfile.string().c_str();
-						// Parse the filename.
-						// Example name is psuaydinetal_aggregate_00001_HD-P1d_0.42_01_f9GHz_01_GMM.nc.
-						// We can get the particle class, id, frequency, interdipole spacing, etc.
 						error_info->add("Filename", opts->filename());
 
-						//--------------------------------------------------------------------------------------//
-						// Gain access to the data file.
-						//--------------------------------------------------------------------------------------//
+						exvdata.particle_id = fname;
 
-						// hFile is an HH::File object.
-						auto &hFile = h->file;
-						// See lib/deps/HH for the source code of the HDFforHumans library.
-						// See the docs/ directory for documentation and basic examples for this library.
-						// Groups.md, Datasets.md and Attributes.md will be particularly useful.
-
-						// To access the datasets stored under hFile, use
-						// hFile.dsets;
-						// To see if a dataset exists, use (hFile.dsets.exists("name") > 0);
-						// To list all datasets: std::vector<std::string> names = hFile.dsets.list();
-						// To open a dataset: HH::DataSet dName = hFile.dsets.open("name");
-
-						//-----------------------
-						// Parse the filename.
-						//-----------------------
-						// TODO!
-
-						// Set particle_id. It's a std::string.
-						particle_info pi = getParticleInfo(opts->filename()); // Gives information about the particle id
-						exvdata.particle_id = pi.particle_id;
-						// constituent_refractive_indices is a vector of (int, string, complex<double>) tuples.
-						// - The int is the substance id number. (1)
-						// - The string is the substance name (ice)
-						// - The complex<double> is the refractive index that you used for the scattering data calculations.
-
-						// NOTE: Refractive index currently has to use the sign convention for DDSCAT (N=n-ik), n,k>0.
-						// This goes against the B&H convention, where N=n+ik, where n,k>0. 
-						// Potential area for confusion, particularly since we write the amplitude matrices in B&H conventions.
-						// May change in the future.
-						exvdata.constituent_refractive_indices.push_back(std::make_tuple(
-							1, "ice", std::complex<double>(0, 0))); // Set the refractive index (the 0,0 part).
-
-						// See pi.freq_number_as_string; pi.freq_units;
-						// The icedb::units library handles the conversion.
-						exvdata.frequency_Hz = icedb::units::conv_spec(pi.freq_units, "Hz")
-							.convert(boost::lexical_cast<float>(pi.freq_number_as_string)); //It's a float.
-
-						exvdata.temperature_K = -1; // Set this. It's a float.
 						exvdata.author = "PLACEHOLDER"; // Optional: can be set by importer program.
 						exvdata.contact = "PLACEHOLDER"; // Optional: can be set by importer program.
 						exvdata.dataset_id = "PLACEHOLDER"; // Optional: can be set by importer program.
-						exvdata.scattMeth = "PLACEHOLDER"; // Optional: can be set by importer program.
+						exvdata.scattMeth = "DDSCAT"; // Optional: can be set by importer program. TODO: Tag with detected DDSCAT version.
 						exvdata.version = std::array<unsigned int, 3>{0, 0, 0}; // Optional: can be set by importer program.
 						//exvdata.ingest_timestamp; // Always set by importer program
 
-						// NOTE: At present, the EXV files do not record the PARTICLE ORIENTATION! This must be fixed later.
-						// These are in the ESSENTIAL scattering variables files, and have to be moved here.
-						// TODO: We have to work out the conventions for these rotations. Presently using Euler angles to 
-						// agree with the Mishchenko books. This may conflict with DDSCAT. Can these conventions be uniquely interconverted?
-						// We have to document the convention of the rotations. What exactly does (0,0,0) mean relative to the incident light angles?
-						exvdata.alpha = -1; // First rotation (degrees).
-						exvdata.beta = -1; // Second rotation (degrees).
-						exvdata.gamma = -1; // Third rotation (degrees).
-
-						//-----------------------
-						// Check that the appropriate datasets exist
-						//-----------------------
-						// These should all exist, and should all have 32-bit float data.
-						const std::set<std::string> requiredDatasets = {
-							"S1_imag", "S1_real", "S2_imag", "S2_real", "S3_imag", "S3_real",
-							"S4_imag", "S4_real", "incident_azimuth_angle", "incident_polar_angle",
-							"scattering_azimuth_angle", "scattering_polar_angle"
-						};
-						for (const auto &d : requiredDatasets) {
-							if (!(hFile.dsets.exists(d.c_str()) > 0))
-								ICEDB_throw(icedb::error::error_types::xBadInput)
-								.add<std::string>("Reason", "A required dataset is missing.")
-								.add<std::string>("Missing-dataset-name", d);
-							if (!hFile.dsets[d.c_str()].isOfType<float>())
-								ICEDB_throw(icedb::error::error_types::xBadInput)
-								.add<std::string>("Reason", "A dataset has the wrong data type. It should be a 32-bit floating point type.")
-								.add<std::string>("Dataset-name", d);
-						}
-
-						//-----------------------
-						// Read the data
-						//-----------------------
-
-						// S have dims of incid_polar_angle, incid_azimuth_angle, scatt_polar_angle, scatt_azimuth_angle
-						// sizes around 19 x 18 x 181 x 72.
-						vector<float> S1i, S1r, S2i, S2r, S3i, S3r, S4i, S4r,
-							incid_azi, incid_polar, scatt_azi, scatt_polar;
-						readDataset<float>("S1_imag", hFile.dsets["S1_imag"], S1i);
-						readDataset<float>("S1_real", hFile.dsets["S1_real"], S1r);
-						readDataset<float>("S2_imag", hFile.dsets["S2_imag"], S2i);
-						readDataset<float>("S2_real", hFile.dsets["S2_real"], S2r);
-						readDataset<float>("S3_imag", hFile.dsets["S3_imag"], S3i);
-						readDataset<float>("S3_real", hFile.dsets["S3_real"], S3r);
-						readDataset<float>("S4_imag", hFile.dsets["S4_imag"], S4i);
-						readDataset<float>("S4_real", hFile.dsets["S4_real"], S4r);
-						readDataset<float>("incident_azimuth_angle", hFile.dsets["incident_azimuth_angle"], exvdata.incident_azimuth_angle);
-						readDataset<float>("incident_polar_angle", hFile.dsets["incident_polar_angle"], exvdata.incident_polar_angle);
-						readDataset<float>("scattering_azimuth_angle", hFile.dsets["scattering_azimuth_angle"], exvdata.scattering_azimuth_angle);
-						readDataset<float>("scattering_polar_angle", hFile.dsets["scattering_polar_angle"], exvdata.scattering_polar_angle);
-
-						//-----------------------
-						// Check that all of the read data have the correct sizes.
-						//-----------------------
-						const size_t numScattMatrices = exvdata.incident_azimuth_angle.size() * exvdata.incident_polar_angle.size()
-							* exvdata.scattering_azimuth_angle.size() * exvdata.scattering_polar_angle.size();
-						{
-							bool badSize = false;
-							if (S1i.size() != S1r.size()) badSize = true;
-							if (S1i.size() != S1r.size()) badSize = true;
-							if (S1i.size() != S2i.size()) badSize = true;
-							if (S1i.size() != S2r.size()) badSize = true;
-							if (S1i.size() != S3i.size()) badSize = true;
-							if (S1i.size() != S3r.size()) badSize = true;
-							if (S1i.size() != S4i.size()) badSize = true;
-							if (S1i.size() != S4r.size()) badSize = true;
-							if (numScattMatrices != S1i.size()) badSize = true;
-							if (badSize)ICEDB_throw(icedb::error::error_types::xBadInput)
-								.add<std::string>("Reason", "Datasets have inconsistent sizes.");
-						}
-
-						//-----------------------
-						// Convert the data to the correct convention.
-						//-----------------------
-						// TODO! Strongly depends on any changes that could be made to the exv and esv table structures.
-						// Definitions must match Bohren and Huffman.
-
-						//-----------------------
-						// Populate the exvdata structure
-						//-----------------------
-						exvdata.amplitude_scattering_matrix.resize(numScattMatrices);
-						for (size_t i = 0; i < S1i.size(); ++i) {
-							// NOTE: The convention of S1,S2,S3,S4 matters here.
-							// A few books have the matrix written as S2, S3, S4, S1. Some have S2, S1, S3, S4, and others have S1, S2, S3, S4!!!
-							// To preserve sanity, let's write these as S11, S12, S21, S22, where [ij] is row/column.
-
-							// TODO: You may have to adjust the ordering of these. Really depends on your convention.
-							// NOTE: The imaginary components get stored as positive numbers.
-							exvdata.amplitude_scattering_matrix[i] = std::array<std::complex<double>, 4> {
-								std::complex<double>(S1r[i], std::abs(S1i[i])),
-									std::complex<double>(S2r[i], std::abs(S2i[i])),
-									std::complex<double>(S3r[i], std::abs(S3i[i])),
-									std::complex<double>(S4r[i], std::abs(S4i[i]))
-							};
-						}
-
-						//-----------------------
-						// Finished
-						//-----------------------
 						return exvdata;
 					}
 					//-----------------------
 					// Error tagging (if an error was detected, the code calls this)
 					//-----------------------
 					catch (icedb::error::xError &err) {
-						error_info->add<std::string>("Reason", "This file does not have the proper structure for a Penn State geometry file.");
+						error_info->add<std::string>("Reason", "Reading the directory failed.");
 						err.push(error_info);
 						throw err; // Pass the error up the stack.
 					}
