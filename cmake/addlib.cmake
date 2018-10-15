@@ -23,11 +23,13 @@ macro(addlib libname libshared )
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		COMPONENT Libraries)
 	# NSIS bug. Have to do this twice.
-	if("SHARED" STREQUAL "${libshared}")
-		INSTALL(TARGETS ${libname}
-			#EXPORT icedbTargets
-			RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-			COMPONENT Libraries)
+	if (WIN32 AND NOT CYGWIN)
+		if("SHARED" STREQUAL "${libshared}")
+			INSTALL(TARGETS ${libname}
+				#EXPORT icedbTargets
+				RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+				COMPONENT Libraries)
+		endif()
 	endif()
 endmacro(addlib libname headername)
 
@@ -88,9 +90,10 @@ macro(addplugin appname foldername folder)
 		COMPONENT Plugins)
 	# There is a bug in the NSIS generator that causes it to miss dlls.
 	# Fix is here:
-	INSTALL(TARGETS ${appname}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/icedb/plugins
-		COMPONENT Plugins)
-
+	if (WIN32 AND NOT CYGWIN)
+		INSTALL(TARGETS ${appname}
+			RUNTIME DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/icedb/plugins
+			COMPONENT Plugins)
+	endif()
 	storeplugin(${appname} ${folder})
 endmacro(addplugin appname)
