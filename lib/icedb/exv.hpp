@@ -79,8 +79,8 @@ namespace icedb {
 				std::vector< std::complex<double> > amplitude_scattering_matrix;
 				size_t get_unidimensional_index(float rot1, float rot2, float rot3, float i_p, float i_a,
 					float s_p, float s_a, size_t asm_rank) const;
-				size_t getRot_index(size_t rotNumber, float rot) const;
-				size_t getAngle_index(size_t angleNumber, float angle) const;
+				//size_t getRot_index(size_t rotNumber, float rot) const;
+				//size_t getAngle_index(size_t angleNumber, float angle) const;
 				ScattProps() {}
 				ScattProps(Rotation_Scheme scheme,
 					gsl::span<const float> rot1, gsl::span<const float> rot2, gsl::span<const float> rot3,

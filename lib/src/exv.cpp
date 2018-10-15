@@ -86,6 +86,12 @@ namespace icedb {
 			return good;
 		}
 
+		size_t NewEXVrequiredProperties::ScattProps::get_unidimensional_index(float rot1, float rot2, float rot3, float i_p, float i_a,
+			float s_p, float s_a, size_t asm_rank) const
+		{
+
+		}
+
 		EXV EXV::createEXV(
 			HH::HH_hid_t newLocationAsEmptyGroup,
 			gsl::not_null<const NewEXVrequiredProperties*> data)
