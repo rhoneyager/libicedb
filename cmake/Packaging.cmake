@@ -62,21 +62,9 @@ IF(WIN32 AND NOT UNIX)
 	find_program(MSVC_REDIST_EXE vcredist_x64.exe
 		HINTS ${MSVC_VC_REDISTS})
 	mark_as_advanced(MSVC_REDIST_EXE MSVC_PF_DIR MSVC_VC_DIR_BASE)
-	#add_custom_target(copy_vcrt_to_build_dirs
-	#	COMMAND ${CMAKE_COMMAND} -E copy MSVC_REDIST_EXE $<TARGET_FILE_DIR:icedb_base>
-	#	)
-	#set_target_properties( copy_icedb_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
-	#add_dependencies(icedb copy_icedb_dependencies_to_build_dirs)
-
 	install(PROGRAMS ${MSVC_REDIST_EXE} DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Libraries)
-	#file(GLOB_RECURSE MSVC_VC_REDISTS LIST_DIRECTORIES TRUE "${MSVC_VC_REDIST_MSVC_DIR}/*/vcredist_x64.exe")
-	#message("${MSVC_VC_REDISTS}")
-	#find_program(VC_REDIST vcredist_x64.exe
-	#	HINTS "${MSVC_VC_REDIST_MSVC_DIR}/"
-	#	)
-	#find_program(VC_REDIST vcredist_x64.exe
-	#	PATHS "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC")
 	list ( APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS " ExecWait ./bin/vcredist_x64.exe")
+
 
 	set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}\\\\LICENSE.txt")
 	

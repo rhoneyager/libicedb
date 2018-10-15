@@ -235,6 +235,13 @@ INSTALL(DIRECTORY deps/third_party/gsl
 # Code to collect the icedb dependencies into the build directory on Windows.
 # Manually collecting these all the time is rather aggrevating.
 if (WIN32 AND NOT CMAKE)
+	# There is a bug in the NSIS generator that causes it to miss dlls.
+	# Fix is here:
+	INSTALL(TARGETS icedb
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		COMPONENT Libraries)
+
+
 # all deps: hdf5: hdf5-shared, hdf5_hl-shared - handle here.
 # boost: program_options unit_test_framework date_time regex filesystem system
 #		--- not all in icedb core, but convenient to include for plugins.
