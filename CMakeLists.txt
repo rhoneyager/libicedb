@@ -8,7 +8,7 @@ project(icedb C CXX)
 # Versioning information
 set(MAJOR 0)
 set(MINOR 6)
-set(REVISION 0)
+set(REVISION 1)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 
 # Set install directory locations
