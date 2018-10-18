@@ -8,7 +8,7 @@ summary: Short summaries of the web meeting among the development team
 ---
 Notes uploaded by Davide Ori <dori@uni-koeln.de>
 
-Since the 2016 IPWG/IWSSM Bologna meeting in Bologna, a couple of people (Stefan, Jussi, Davide, Eugene, Ben) worked on an Excel workbook to describe an initial file structure and variable names (following as closely as possible the CF convention) for storing scattering datasets. The Excel file can be downloaded [here]( https://rhoneyager.github.io/libicedb/structs_metadata.html).
+Since the 2016 IPWG/IWSSM meeting in Bologna, some people (Stefan, Jussi, Davide, Eugene, Ben) worked on an Excel workbook to describe an initial file structure and variable names (following as closely as possible the CF convention) for storing scattering datasets. The Excel file can be downloaded [here]( https://rhoneyager.github.io/libicedb/structs_metadata.html).
 
 At the recent [snowfall workshop in Cologne](http://www.geomet.uni-koeln.de/forschung/en-optimice/issw/), we discussed how to better store the data in different level files:
 
@@ -43,23 +43,21 @@ We will keep the discussions ongoing via web meetings to work out the details of
 
 PARTICIPANTS: Ryan - Eugene - Stefan - Davide - Ian - Annakaisa - Patrick - Robin
 
-[MEETING SLIDES](https://)
+[MEETING SLIDES](https://drive.google.com/open?id=1hmhgupVbu4qESwX6Wek7kNgyN8girF9E)
 
-1. Apparently there has been problems with the FTP server. It might be connected with some work on the network the IT department did in the past weeks. Currently the servers looks up, running and acceccible from either inside and outside the network. If the problem persists, please report to Davide or Stefan.
-
-2. There has been a lot of improvements to the library during the past months:
+1. There have been many of improvements to the library during the past months:
   * Scattering matrices are included
   * Precompiled binaries for different OS are available
   * Test units have been coded
   * For compiling (only developers) a C++14 compatible compiler is needed. For those who cannot upgrade their systems a viable solution is to use conda as described in the installation instructions
   * Snowflake 3D structure visualization is possible with the integrated exporter of SILO files which can then be opened with common tools like Paraview
 
-3. There is need of contribution for some points:
+2. There is need of contribution for some points:
   * ADDA and DDSCAT uses different systems of rotations for the particle. We have decided to use the Euler angles yzy-system and then we need routines to convert from DDSCAT set of angles to that. Ian has some coded routines and will give help on that
   * Someone with experience with ADDA should help coding the parser for ADDA outputs. Davide will do that with the help of Eugene who might have something already coded
   * Ian will also test the library on a OSX system
 
-4. Other points of discussions:
+3. Other points of discussions:
   * Next big thing will be having orientationally averaged properties. There is a discussion on how many angles are needed and the integration method (Romberg, random, more advanced solutions)
   * It has been once raised the usefulness of having the scattering properties stored using expansions in Legendre polynomials, but the feasibility of that for orientationally averaged particles and the actual benefit is unclear
   * Ian will go to IPWG meeting in Korea. He will get contact with Alan Geer and Ralf Bennartz and report on our progress
