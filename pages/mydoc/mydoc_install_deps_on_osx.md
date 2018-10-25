@@ -24,7 +24,7 @@ Requirements:
 
 On MacOS, install XCode and Homebrew (https://brew.sh), then run
 ```
-brew install homebrew/science/netcdf doxygen hdf5 cmake git
+brew install netcdf doxygen hdf5 cmake git boost
 ```
 
 {% include note.html content="TODO: Finish these" %}
