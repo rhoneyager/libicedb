@@ -11,11 +11,11 @@
 #include "gsl/gsl_assert"
 
 #if defined(BIO_OS_WINDOWS)
-#include <Windows.h>
-#elif defined(BIO_OS_UNIX) || defined(BIO_OS_LINUX)
-#include <sys/stat.h>
+# include <Windows.h>
+#elif defined(BIO_OS_UNIX)
+# include <sys/stat.h>
 #else
-#error "This code builds only on POSIX platforms and Windows!"
+# error "This code builds only on POSIX platforms and Windows!"
 #endif
 
 namespace bIO {
