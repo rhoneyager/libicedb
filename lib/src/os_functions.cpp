@@ -259,7 +259,7 @@ namespace icedb {
 #endif
 		}
 		namespace unix {
-#if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__unix__)
 			/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
 			int moduleCallback(dl_phdr_info *info, size_t sz, void* data)
 			{
