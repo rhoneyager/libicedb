@@ -50,6 +50,10 @@ int main(int argc, char** argv) {
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
+	catch (const char* e) {
+		std::cerr << "Exception: " << e << std::endl;
+		return 1;
+	}
 	catch (...) {
 		std::cerr << "Unknown exception caught." << std::endl;
 		return 1;
