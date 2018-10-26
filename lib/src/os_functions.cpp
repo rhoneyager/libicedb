@@ -10,6 +10,7 @@
 #pragma comment(lib, "Shell32")
 #elif defined(__unix__) || defined(__APPLE__)
 #include <unistd.h>
+extern char **environ;
 #include <sys/types.h>
 #include <sys/user.h>
 #include <sys/sysctl.h>
@@ -72,6 +73,7 @@ namespace icedb {
 			/// Process ID of parent
 			int ppid;
 
+			std::vector<std::string> partialSplitEnviron;
 			std::map<std::string, std::string> expandedEnviron;
 			std::vector<std::string> expandedCmd;
 		};
@@ -89,6 +91,7 @@ namespace icedb {
 			bool doWaitOnExit = false;
 			bool doWaitOnExitQueriedDefault = false;
 			std::map<std::string, std::string> mmods;
+			std::vector<std::string> myArgvs;
 		}
 		namespace win {
 #ifdef _WIN32
@@ -256,7 +259,7 @@ namespace icedb {
 #endif
 		}
 		namespace unix {
-#if defined(__linux__) || defined(__unix__)
+#if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
 			/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
 			int moduleCallback(dl_phdr_info *info, size_t sz, void* data)
 			{
@@ -920,7 +923,10 @@ const char* ICEDB_getShareDirC() {
 * - Overrides the console control key handlers on Windows. This lets a user
 *   exit with CTRL-C without the debug code causing the app to crash.
 */
-void ICEDB_libEntry(int, char**) {
+void ICEDB_libEntry(int argc, char** argv) {
+	for (int i = 0; i < argc; ++i)
+		icedb::os_functions::vars::myArgvs.push_back(std::string(argv[i]));
+
 #ifdef _WIN32
 	// Get PID
 	DWORD pid = 0;
@@ -1145,9 +1151,30 @@ namespace icedb {
 
 			}
 #elif defined(__unix__) || defined(__MACH__)
+			if (pid == getPID()) {
+				ICEDB_getAppPathC();
+				ICEDB_getCWDC();
+				res->name = boost::filesystem::path(appPath).filename().string();
+				res->path = appPath;
+				res->cwd = CWD;
+				{ // environ parsing
+					//res->environment; // left blank
+					const char **envp = environ;
+					while (envp)
+					{
+						res->partialSplitEnviron.push_back(std::string(*envp));
+					}
+				}
+				{ //res->cmdline;
+					res->expandedCmd = icedb::os_functions::vars::myArgvs;
+				}
+				//res->startTime; // left unset
+			}
+			else {
 				ICEDB_throw(icedb::error::error_types::xUnimplementedFunction)
 					.add("Reason", "/proc does not always exist on unixes.")
 					.add("pid", pid);
+			}
 #elif defined(_WIN32)
 			//throw std::string("Unimplemented on WIN32"); // unimplemented
 			std::string filename, filepath;
@@ -1220,8 +1247,12 @@ namespace icedb {
 
 #endif
 
-					
-			splitSet::splitNullMap(res->environment, res->expandedEnviron);
+			if (!res->partialSplitEnviron.size())
+				splitSet::splitNullMap(res->environment, res->expandedEnviron);
+			else {
+				for (const auto &e : res->partialSplitEnviron)
+					splitSet::splitNullMap(e, res->expandedEnviron);
+			}
 			splitSet::splitNullVector(res->cmdline, res->expandedCmd);
 			//expandEnviron(res);
 			return res;
