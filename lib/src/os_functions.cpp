@@ -1159,10 +1159,12 @@ namespace icedb {
 				res->cwd = CWD;
 				{ // environ parsing
 					//res->environment; // left blank
-					const char **envp = environ;
-					while (envp)
+					char **envp = environ;
+					while (*envp)
 					{
-						res->partialSplitEnviron.push_back(std::string(*envp));
+						const char *cenv = *envp;
+						res->partialSplitEnviron.push_back(std::string(cenv));
+						++envp;
 					}
 				}
 				{ //res->cmdline;
