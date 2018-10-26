@@ -24,20 +24,21 @@ Requirements:
 - CMake (generates the build scripts and finds library locations)
 - NetCDF, HDF5, ZLIB (needed to store and read the database)
 - git (it provides some information to the build system)
+- Boost (required backend libraries)
 - Doxygen (optional; generates local html documentation of the library functions)
 
 
 To install these dependencies on FreeBSD-based systems, this command may be used:
 ```
-sudo pkg install hdf5 cmake doxygen git netcdf
+sudo pkg install hdf5 cmake doxygen git netcdf boost-all
 ```
 On NetBSD and OpenBSD, pkg-add should be used instead. The package names remain the same.
 
 ## Compiler-specific instructions
 
-### FreeBSD 11.1 with Clang
+### FreeBSD 11 / 12 with Clang
 
-Clang 3.8 is the default compiler on this OS. It should be preinstalled.
+Clang is the default compiler on this OS. It should be preinstalled.
 
 ```
 sudo pkg install clang
@@ -46,7 +47,7 @@ CMake options for reference (if Clang somehow is not your default, perhaps if yo
 - CMAKE\_CXX\_COMPILER=/usr/bin/clang++
 - CMAKE\_C\_COMPILER=/usr/bin/clang
 
-### FreeBSD 11.1 with GCC
+### FreeBSD with GCC
 
 ```
 sudo pkg install gcc7
@@ -62,7 +63,7 @@ Run CMake with these options:
 - Create a new build directory. It can be anywhere. Switch into this directory.
 - Run cmake to generate the build scripts. e.g.:
 ```
-cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX={install path} {Path to source directory}
+cmake -DCMAKE_INSTALL_PREFIX={install path} {Path to source directory}
 ```
 - This command, on Linux, typically defaults to generating Makefiles and will use gcc as the compiler. Consult the CMake
    documentation for details regarding how to change the compiler or other settings.
@@ -71,7 +72,10 @@ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX={install path} {P
 ```
 make
 ```
-- If the build is successful, binaries and libraries should be in the ./RelWithDebInfo directory. These can all be copied
+
+- Run the tests with ```make test```.
+
+- If the build is successful, binaries and libraries should be in the ./Release directory. These can all be copied
 to the install directory using:
 ```
 sudo make install
