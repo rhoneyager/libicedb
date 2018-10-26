@@ -27,7 +27,7 @@
 #ifdef _WIN32
 #include "windows.h"
 #endif
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 #include <dlfcn.h>
 #endif
 
@@ -306,7 +306,7 @@ namespace icedb
 				if (!dlHandle)
 					return;
 				DLLpathsLoaded.erase(fname);
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 				//dlclose(this->dlHandle);
 				/** \note glibc 2.23 has a bug that affects Ubuntu 16.04.
 				* See https://bugzilla.redhat.com/show_bug.cgi?id=1398370
@@ -340,7 +340,7 @@ namespace icedb
 						.add<std::string>("FileName", fname);
 				}
 				void* sym = nullptr;
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 				sym = dlsym(dlHandle, symbol);
 #endif
 #ifdef _WIN32
@@ -390,7 +390,7 @@ namespace icedb
 
 				auto attemptLoad = [&]() -> bool {
 
-#ifdef __unix__ // Indicates that DLSYM is provided (unix, linux, mac, etc. (sometimes even windows))
+#if defined(__unix__) || defined(__APPLE__) // Indicates that DLSYM is provided (unix, linux, mac, etc. (sometimes even windows))
 					//Check that file exists here
 					this->dlHandle = dlopen(filename.c_str(), RTLD_LAZY );
 					const char* cerror = dlerror();
