@@ -47,5 +47,10 @@ if (BUILD_PLUGIN_SILO)
 		install(PROGRAMS $<TARGET_FILE:silo>
 			DESTINATION ${CMAKE_INSTALL_BINDIR} #${RBIN_DIR}/$<CONFIG>
 			COMPONENT Plugins)
+		# There is a bug in the NSIS generator that causes it to miss dlls.
+	# Fix is here:
+	#INSTALL(TARGETS icedb
+	#	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	#	COMPONENT Libraries)
 	endif()
 endif()

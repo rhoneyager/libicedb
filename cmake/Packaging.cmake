@@ -45,6 +45,27 @@ endif()
 #	SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}")
 #endif()
 IF(WIN32 AND NOT UNIX)
+	# We want to find the VC2017 redistributables, package them in the installer, and 
+	# invoke them on install.
+	# Path looks like C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.15.26706
+	find_path(MSVC_PF_DIR "Microsoft Visual Studio"
+		HINTS "C:/Program Files" "C:/Program Files (x86)"
+		)
+	set(MSVC_DIR "${MSVC_PF_DIR}/Microsoft Visual Studio")
+	find_path(MSVC_VC_DIR_BASE VC
+		HINTS "${MSVC_DIR}"
+		PATH_SUFFIXES 2017/Enterprise 2017/Professional 2017/Community 
+			2015/Enterprise 2015/Professional 2015/Community
+		)
+	set (MSVC_VC_REDIST_MSVC_DIR "${MSVC_VC_DIR_BASE}/VC/Redist/MSVC")
+	file(GLOB MSVC_VC_REDISTS LIST_DIRECTORIES TRUE "${MSVC_VC_REDIST_MSVC_DIR}/*")
+	find_program(MSVC_REDIST_EXE vcredist_x64.exe
+		HINTS ${MSVC_VC_REDISTS})
+	mark_as_advanced(MSVC_REDIST_EXE MSVC_PF_DIR MSVC_VC_DIR_BASE)
+	install(PROGRAMS ${MSVC_REDIST_EXE} DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Libraries)
+	list ( APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS " ExecWait './bin/vcredist_x64.exe /quiet'")
+
+
 	set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}\\\\LICENSE.txt")
 	
 	# There is a bug in NSIS that does not handle full unix paths properly. Make
@@ -54,7 +75,7 @@ IF(WIN32 AND NOT UNIX)
 	SET(CPACK_NSYS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/share/icons\\\\favicon.ico")
 
 #	SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-	SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} icedb")
+	SET(CPACK_NSIS_DISPLAY_NAME "icedb")
 	SET(CPACK_NSIS_HELP_LINK "https:\\\\\\\\rhoneyager.github.io/libicedb/")
 	SET(CPACK_NSIS_URL_INFO_ABOUT "https:\\\\\\\\rhoneyager.github.io/libicedb/")
 	SET(CPACK_NSIS_CONTACT "ryan@honeyager.info")
@@ -72,6 +93,7 @@ set (CPACK_COMPONENTS_ALL
 	Examples
 	Libraries 
 	Headers
+	Plugins
 )
 
 set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION 
@@ -84,10 +106,13 @@ set(CPACK_COMPONENT_LIBRARIES_DESCRIPTION
 	"The compiled libraries")
 set(CPACK_COMPONENT_HEADERS_DESCRIPTION 
 	"Headers for code development")
+set(CPACK_COMPONENT_PLUGINS_DESCRIPTION 
+	"All of the plugins")
 
 set(CPACK_COMPONENT_HEADERS_DEPENDS Libraries)
 set(CPACK_COMPONENT_EXAMPLES_DEPENDS Libraries Applications Headers)
-set(CPACK_COMPONENT_APPLICATIONS_DEPENDS Libraries Headers)
+set(CPACK_COMPONENT_APPLICATIONS_DEPENDS Libraries)
+set(CPACK_COMPONENT_PLUGINS_DEPENDS Libraries)
 
 set(CPACK_COMPONENT_LIBRARIES_REQUIRED 1)
 

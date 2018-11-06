@@ -225,9 +225,9 @@ INSTALL(DIRECTORY deps/BinaryIO
 INSTALL(DIRECTORY deps/third_party/gsl
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
 	COMPONENT Headers)
-INSTALL(DIRECTORY deps/third_party/eigen
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
-	COMPONENT Headers)
+#INSTALL(DIRECTORY deps/third_party/eigen
+#	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
+#	COMPONENT Headers)
 
 
 # Lib installation is already covered in addlib.cmake.

@@ -127,5 +127,13 @@ int main(int argc, char** argv) {
 		cerr << "An exception has occurred: " << e.what() << endl;
 		retval = 2;
 	}
+	catch (const char *e) {
+		cerr << "An exception has occurred: " << e << endl;
+		retval = 3;
+	}
+	catch (...) {
+		cerr << "An unhandled exception occurred. " << endl;
+		retval = 4;
+	}
 	return retval;
 }

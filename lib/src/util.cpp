@@ -3,6 +3,7 @@
 #include "../icedb/util.hpp"
 #include <cstring>
 #include <cwchar>
+#include <cstdio>
 #if defined(_WIN32)
 #include <Windows.h>
 #else
