@@ -5,4 +5,4 @@ add_subdirectory(units)
 add_subdirectory(refract)
 add_subdirectory(scattering_data_importer)
 add_subdirectory(version)
-
+add_subdirectory(particle_physical_properties)

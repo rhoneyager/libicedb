@@ -13,6 +13,12 @@ namespace HH {
 	using std::initializer_list;
 	using std::tuple;
 
+	enum class RecursionType {
+		BASE,
+		ONE,
+		SUBTREE
+	};
+
 	struct Group {
 	private:
 		HH_hid_t base;
@@ -119,6 +125,75 @@ namespace HH {
 		{
 			return H5Funmount(base(), mountpoint);
 		}
+
+		/// Get names of all child groups
+		std::vector<std::string> listChildGroupNames() const {
+			std::vector<std::string> res;
+			H5G_info_t info;
+			herr_t e = H5Gget_info(base(), &info);
+			Expects(e >= 0);
+			for (hsize_t i = 0; i < info.nlinks; ++i) {
+				// Get the name
+				ssize_t szName = H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
+					i, NULL, 0, H5P_DEFAULT);
+				Expects(szName >= 0);
+				std::vector<char> vName(szName + 1, '\0');
+				H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
+					i, vName.data(), szName + 1, H5P_DEFAULT);
+
+				// Get the object and check the type
+				H5O_info_t oinfo;
+				herr_t err = H5Oget_info_by_name(base(), vName.data(), &oinfo, H5P_DEFAULT); // H5P_DEFAULT only, per docs.
+				if (err < 0) continue;
+				if (oinfo.type == H5O_type_t::H5O_TYPE_GROUP) res.push_back(std::string(vName.data()));
+			}
+			return res;
+		}
+
+		/// Search for a group using the current group as a base.
+		/// Follows a recursion policy. Recursive searches assume that the graph is not cyclic.
+		/// Allows for the specification of a maximum depth.
+		HH_NODISCARD herr_t search(
+			std::function<bool(const HH::Group&)> searchFunc,
+			std::vector<HH::Group> &res,
+			size_t max_depth = 0,
+			HH::RecursionType ret = RecursionType::ONE,
+			bool followSymLinks = true,
+			bool followHardLinks = true,
+			bool followExtLinks = true)
+		{
+			if (!isGroup()) return -1;
+			// Search the BASE
+			if (ret != RecursionType::ONE)
+				if (searchFunc(*this)) {
+					res.push_back(*this);
+				}
+			// Search children / subtree
+			if (ret != RecursionType::BASE) {
+				auto childGrpNames = listChildGroupNames();
+				for (const auto &n : childGrpNames) {
+					auto child = this->open(n.c_str());
+					RecursionType childRecur = RecursionType::BASE;
+					size_t newDepth = max_depth;
+					if (ret == RecursionType::SUBTREE && max_depth==1)
+						childRecur = RecursionType::ONE;
+					else if (ret == RecursionType::SUBTREE && max_depth == 0)
+						childRecur = RecursionType::SUBTREE;
+					else {
+						childRecur = RecursionType::SUBTREE;
+						newDepth--;
+					}
+					herr_t childErr = child.search(searchFunc, res, newDepth, childRecur);
+					if (childErr < 0) return childErr;
+				}
+			}
+			return 0;
+		}
+
+		HH_NODISCARD herr_t search(
+			const std::string &id_regex = "",
+			const std::string &group_obj_type_regex = "",
+			size_t max_depth = 0) { return 0; }
 	};
 
 	typedef Group Has_Groups;

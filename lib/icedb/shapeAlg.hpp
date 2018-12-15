@@ -8,6 +8,7 @@ namespace icedb {
 		class Virtual_Mount : public HH::Group {
 		public:
 			virtual ~Virtual_Mount() {}
+			Virtual_Mount() : HH::Group(HH::HH_hid_t::dummy()) {}
 			/// This entirely overrides the normal group mounting mechanism.
 			/// It makes symbolic or external links in the virtual file space.
 			/// If conflicts exist with the links, then the links get masked.
@@ -38,8 +39,18 @@ namespace icedb {
 		};
 	}
 
+	/// Algorithms
+	namespace Algorithms {
+
+	}
+
 	/// The Particle Physical Properties namespace
 	namespace PPP {
+		class PPP : public icedb::vmount::Virtual_Mount {
+		public:
+			~PPP() {}
+			PPP() {}
 
+		};
 	}
 }
