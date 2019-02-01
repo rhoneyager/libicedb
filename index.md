@@ -4,8 +4,14 @@ keywords: homepage icedb libicedb
 tags: [getting_started]
 sidebar: mydoc_sidebar
 permalink: index.html
-summary: Scattering and microphysical assumptions are often "hard-coded" into common radiative transfer tools. Icedb fixes this by defining a standard, common format for storing particle scattering information. It also provides a C/C++/Python reference framework for manipulating scattering databases. The developers meet semi-monthly, work is ongoing, and the first full release should be in time for the [2nd International Summer Snowfall Workshop](http://snowport.meteo.uni-koeln.de/events/issw2019).
+summary: Scattering and microphysical assumptions are often "hard-coded" into common radiative transfer tools. Icedb fixes this by defining a standard, common format for storing particle scattering information. It also provides a C/C++/Python reference framework for manipulating scattering databases. 
 ---
+
+TLDR: The developers meet semi-monthly, work is ongoing, and the first full release should be in time for the [2nd International Summer Snowfall Workshop](http://snowport.meteo.uni-koeln.de/events/issw2019).
+
+[To download a pre-built version of icedb, click here.](./install_packages.html)
+
+[To build icedb yourself, click here.](./download.html)
 
 There are now many published datasets on the scattering properties of realistically shaped snow
 and aerosol particles. These datasets represent increasingly sophisticated attempts to match the
@@ -28,9 +34,5 @@ is written in C++, and will also eventually provide a C-style interface. This wi
 use the library in diverse languages, such as Fortran, IDL, Julia, Matlab and Python. It has a natural 
 interface that conceals file I/O details from end users, allowing them to focus on science and 
 not programming arcana. 
-
-[To download a pre-built version of icedb, click here.](./install_packages.html)
-
-[To build icedb yourself, click here.](./download.html)
 
 {% include links.html %}
