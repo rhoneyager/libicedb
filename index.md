@@ -4,7 +4,7 @@ keywords: homepage icedb libicedb
 tags: [getting_started]
 sidebar: mydoc_sidebar
 permalink: index.html
-summary: icedb is a toolkit for manipulating particle scattering databases. It is under heavy development, so this site doesn't have much content yet. The instructions here will help you quickly get started. The other topics listed in the sidebar will provide additional information and detail.
+summary: Scattering and microphysical assumptions are often "hard-coded" into common radiative transfer tools. Icedb fixes this by defining a standard, common format for storing particle scattering information. It also provides a C/C++/Python reference framework for manipulating scattering databases. The developers meet semi-monthly, work is ongoing, and the first full release should be in time for the [2nd International Summer Snowfall Workshop](http://snowport.meteo.uni-koeln.de/events/issw2019).
 ---
 
 There are now many published datasets on the scattering properties of realistically shaped snow
