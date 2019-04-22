@@ -100,13 +100,13 @@ namespace icedb {
 			Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crdsF((int)(dims[0]), (int)(dims[1]));
 			if (tPSEC.isOfType<int32_t>() > 0) {
 				Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crdsI((int)(dims[0]), (int)(dims[1]));
-				Expects(0 <= tPSEC.read<int32_t>(gsl::span<int32_t>(crdsI.data(), crdsI.size())));
+				tPSEC.read<int32_t>(gsl::span<int32_t>(crdsI.data(), crdsI.size()));
 
 				crdsF = crdsI.cast<float>();
 			}
 			else if (tPSEC.isOfType<float>() > 0) {
 				Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> crdsIn((int)(dims[0]), (int)(dims[1]));
-				Expects(0 <= tPSEC.read<float>(gsl::span<float>(crdsIn.data(), crdsIn.size())));
+				tPSEC.read<float>(gsl::span<float>(crdsIn.data(), crdsIn.size()));
 
 				crdsF = crdsIn.cast<float>();
 			}
@@ -142,12 +142,12 @@ namespace icedb {
 				/// \todo Add a function to HH to describe the size of an integer, and then map this size to the fundamental smallest type.
 				if (d.second.isOfType<int32_t>() > 0) {
 					Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
-					Expects(0 <= d.second.read<int32_t>(gsl::span<int32_t>(d_data.data(), d_data.size())));
+					d.second.read<int32_t>(gsl::span<int32_t>(d_data.data(), d_data.size()));
 					ptmesh->writeData<int32_t>(d.first.c_str(), d_data, units.c_str());
 				}
 				else if (d.second.isOfType<int16_t>() > 0) {
 					Eigen::Array<int16_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
-					Expects(0 <= d.second.read<int16_t>(gsl::span<int16_t>(d_data.data(), d_data.size())));
+					d.second.read<int16_t>(gsl::span<int16_t>(d_data.data(), d_data.size()));
 
 					Eigen::Array<int32_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> conv(rows, cols);
 					
@@ -158,35 +158,35 @@ namespace icedb {
 				else if (d.second.isOfType<uint16_t>() > 0) {
 					Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> conv(rows, cols);
 					Eigen::Array<uint16_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> data(rows, cols);
-					Expects(0 <= d.second.read<uint16_t>(gsl::span<uint16_t>(data.data(), numElems)));
+					d.second.read<uint16_t>(gsl::span<uint16_t>(data.data(), numElems));
 					conv = data.cast<int>();
 					ptmesh->writeData<int>(d.first.c_str(), conv, units.c_str());
 				}
 				else if (d.second.isOfType<char>() > 0) {
 					Eigen::Array<char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
-					Expects(0 <= d.second.read<char>(gsl::span<char>(d_data.data(), d_data.size())));
+					d.second.read<char>(gsl::span<char>(d_data.data(), d_data.size()));
 					ptmesh->writeData<char>(d.first.c_str(), d_data, units.c_str());
 				}
 				else if (d.second.isOfType<float>() > 0) {
 					Eigen::Array<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
-					Expects(0 <= d.second.read<float>(gsl::span<float>(d_data.data(), d_data.size())));
+					d.second.read<float>(gsl::span<float>(d_data.data(), d_data.size()));
 					ptmesh->writeData<float>(d.first.c_str(), d_data, units.c_str());
 				}
 				else if (d.second.isOfType<double>() > 0) {
 					Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
-					Expects(0 <= d.second.read<double>(gsl::span<double>(d_data.data(), d_data.size())));
+					d.second.read<double>(gsl::span<double>(d_data.data(), d_data.size()));
 					ptmesh->writeData<double>(d.first.c_str(), d_data, units.c_str());
 				}
 				/* // no support for long in HH.
 				else if (d.second.isOfType<long>() > 0) {
 					Eigen::Array<long, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
-					Expects(0 <= d.second.read<long>(gsl::span<long>(d_data.data(), d_data.size())));
+					d.second.read<long>(gsl::span<long>(d_data.data(), d_data.size()));
 					ptmesh->writeData<long>(d.first.c_str(), d_data, units.c_str());
 				}
 				*/
 				else if (d.second.isOfType<long long>() > 0) {
 					Eigen::Array<long long, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> d_data(rows, cols);
-					Expects(0 <= d.second.read<long long>(gsl::span<long long>(d_data.data(), d_data.size())));
+					d.second.read<long long>(gsl::span<long long>(d_data.data(), d_data.size()));
 					ptmesh->writeData<long long>(d.first.c_str(), d_data, units.c_str());
 				}
 
