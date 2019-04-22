@@ -39,7 +39,7 @@ if (BUILD_PLUGIN_SILO)
 
 	if (WIN32 AND NOT CMAKE)
 		add_custom_target(copy_silo_dependencies_to_build_dirs
-			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:silo> $<TARGET_FILE_DIR:icedb_base>
+			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:silo> $<TARGET_FILE_DIR:placeholder>
 			)
 		set_target_properties( copy_silo_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
 		add_dependencies(copy_icedb_dependencies_to_build_dirs copy_silo_dependencies_to_build_dirs)
