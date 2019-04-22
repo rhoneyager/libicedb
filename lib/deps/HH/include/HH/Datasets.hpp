@@ -1012,12 +1012,12 @@ namespace HH {
 		Dataset createFromSpan(
 			const std::string & dsetname,
 			const gsl::span<const DataType> d,
-			std::vector<hsize_t> dims = { -1 },
+			std::vector<hsize_t> dims = {},
 			std::vector<hsize_t> max_dimensions = {},
 			const DatasetParameterPack & parampack = DatasetParameterPack(),
 			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>())
 		{
-			HH_Expects(dims.size());
+			if (!dims.size()) dims.push_back(d.size());
 			HH_Expects(dims.size() < 3);
 			HH::Dataset obj = HH::Handles::HH_hid_t::dummy();
 			std::vector<hsize_t> vdims(dims.begin(), dims.end());
@@ -1032,14 +1032,13 @@ namespace HH {
 			HH_Expects(p == gsl::narrow_cast<hsize_t>(d.size()));
 			obj = create<DataType>(
 				dsetname, 
-				std::initializer_list<hsize_t>(vdims.begin(), vdims.end()),
+				std::vector<hsize_t>(vdims.begin(), vdims.end()),
 				max_dimensions,
 				parampack,
 				dtype);
 
 			auto res = obj.write(d);
-			if (res < 0) throw HH_throw;
-			return obj;
+			return res;
 		}
 	};
 

@@ -237,15 +237,16 @@ namespace icedb {
 				? props->particle_scattering_element_coordinates_as_floats.size() / 3
 				: props->particle_scattering_element_coordinates_as_ints.size() / 3;
 			constexpr size_t max_x = 40000;
-			const std::vector<hsize_t> chunks2d{
-				(max_x < numScattElems) ?
-				max_x : numScattElems, 3 };
-
-			auto pl2d = HH::PL::PL::createDatasetCreation().setDatasetCreationPList<uint64_t>(
-				//t_CompressionType(HH::PL::CompressionType::ANY)
-				t_Chunking({ chunks2d[0], chunks2d[1] })
-				);
-			auto pl1d = pl2d.clone().setDatasetCreationPList<uint64_t>(t_Chunking({ chunks2d[0] }));
+			
+			auto Chunking = [&max_x, &numScattElems](const std::vector<hsize_t> & in, std::vector<hsize_t> & out) -> bool
+			{
+				out = in;
+				out = std::vector<hsize_t>{ (max_x < numScattElems) ? max_x : numScattElems, 3 };
+				return true;
+			};
+			HH::DatasetParameterPack dp_ui64;
+			dp_ui64.fChunkingStrategy = Chunking;
+			//dp_ui64.datasetCreationProperties.setFill<uint64_t>(Constants::default_val<float>());
 
 			// Write required dimensions
 			auto tblPSEN = res.dsets.create<int32_t>(
@@ -298,19 +299,17 @@ namespace icedb {
 				// Shape coordinates are integers
 				typedef decltype(props->particle_scattering_element_coordinates_as_ints)::value_type int_type;
 				tblPSEC = res.dsets.create<int_type>(
-					t_name("particle_scattering_element_coordinates"),
-					t_dimensions({ static_cast<size_t>(numScattElems), 3 }),
-					t_DatasetCreationPlist(pl2d())
-					);
+					"particle_scattering_element_coordinates",
+					{ static_cast<size_t>(numScattElems), 3 })
+					;
 				tblPSEC.write<int_type>(props->particle_scattering_element_coordinates_as_ints);
 
 			}
 			else {
 				// Shape coordinates are floats
 				tblPSEC = res.dsets.create<float>(
-					t_name("particle_scattering_element_coordinates"),
-					t_dimensions({ static_cast<size_t>(numScattElems), 3 }),
-					t_DatasetCreationPlist(pl2d())
+					"particle_scattering_element_coordinates",
+					{ static_cast<size_t>(numScattElems), 3 }
 					);
 				tblPSEC.write<float>(props->particle_scattering_element_coordinates_as_floats);
 			}
@@ -329,10 +328,9 @@ namespace icedb {
 				//	static_cast<size_t>(required->number_of_particle_constituents)
 				//};
 				auto tblPSEC2a = res.dsets.create<float>(
-					t_name("particle_scattering_element_composition_fractional"),
-					t_dimensions({ static_cast<size_t>(numScattElems),
-						static_cast<size_t>(props->particle_constituents.size()) }),
-					t_DatasetCreationPlist(pl2d())
+					"particle_scattering_element_composition_fractional",
+					{ static_cast<size_t>(numScattElems),
+						static_cast<size_t>(props->particle_constituents.size()) }
 					);
 				tblPSEC2a.write<float>(props->particle_scattering_element_composition_fractional);
 				tblPSEC2a.setDims(tblPSEN, tblPCN);
@@ -342,9 +340,8 @@ namespace icedb {
 
 			if (props->particle_scattering_element_composition_whole.size()) {
 				auto tblPSEC2b = res.dsets.create<uint16_t>(
-					t_name("particle_scattering_element_composition_whole"),
-					t_dimensions({ static_cast<size_t>(numScattElems) }),
-					t_DatasetCreationPlist(pl1d())
+					"particle_scattering_element_composition_whole",
+					{ static_cast<size_t>(numScattElems) }
 					);
 				tblPSEC2b.setDims(tblPSEN);
 				tblPSEC2b.atts.add<std::string>("description", "The constituent material ID for each scattering element.");
@@ -360,9 +357,8 @@ namespace icedb {
 
 			if (props->particle_scattering_element_radius.size()) {
 				auto tblPSER = res.dsets.create<float>(
-					t_name("particle_scattering_element_radius"),
-					t_dimensions({ static_cast<size_t>(numScattElems) }),
-					t_DatasetCreationPlist(pl1d())
+					"particle_scattering_element_radius",
+					{ static_cast<size_t>(numScattElems) }
 					);
 				tblPSER.write<float>(props->particle_scattering_element_radius);
 				tblPSER.setDims(tblPSEN);

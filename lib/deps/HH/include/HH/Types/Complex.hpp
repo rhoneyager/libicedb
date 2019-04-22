@@ -29,10 +29,10 @@ template<> inline HH_hid_t GetHDF5Type< x >(std::initializer_list<hsize_t>, void
 		struct Object_Accessor_Complex
 		{
 		private:
-			typedef ComplexDataType::value_type value_type;
+			typedef typename ComplexDataType::value_type value_type;
 			std::vector<std::array<value_type, 2> > _buf;
 		public:
-			Object_Accessor(ssize_t sz = -1) {}
+			Object_Accessor_Complex(ssize_t sz = -1) {}
 			/// \brief Converts an object into a void* array that HDF5 can natively understand.
 			/// \note The shared_ptr takes care of "deallocation" when we no longer need the "buffer".
 			const void* serialize(::gsl::span<const ComplexDataType> d)

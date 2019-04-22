@@ -140,7 +140,7 @@ namespace icedb {
 			// TODO: Teach HH how to write this type of object.
 			// TODO: Teach HH how to write complex numbers.
 			auto dRIs = res.dsets.create<RIs>("Constituent_Refractive_Indices", { ris.size() });
-			Expects(0 <= dRIs.write<RIs>(ris));
+			dRIs.write<RIs>(ris);
 
 			auto d_ia = res.dsets.createFromSpan<float>("incident_azimuth_angle", gsl::make_span(data->incident_azimuth_angle));
 			d_ia.setIsDimensionScale("incident_azimuth_angle");
@@ -180,7 +180,7 @@ namespace icedb {
 				d_s.setDims({ d_ia, d_sa, d_ip, d_sp, d_scs });
 				d_s.AddSimpleAttributes("long_name", "Amplitude scattering matrix [following Bohren and Huffman (1983)]", "units", "dimensionless");
 
-				Expects(0 <= d_s.write<std::complex<double>>(s));
+				d_s.write<std::complex<double>>(s);
 			}
 			return EXV(res.get());
 		}
