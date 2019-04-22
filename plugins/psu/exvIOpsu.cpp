@@ -26,10 +26,7 @@ namespace icedb {
 					auto dims = dset.getDimensions();
 					//Expects(dims.dimensionality == 2);
 					outdata.resize(dims.numElements);
-					if (dset.read<T>(outdata) < 0)
-						ICEDB_throw(icedb::error::error_types::xBadInput)
-						.add("Reason", "HDF5 error when reading a dataset.")
-						.add("Dataset", dsetname);
+					dset.read<T>(outdata);
 				}
 
 				//------------------------------------------------------------------------------------------//
@@ -124,7 +121,7 @@ namespace icedb {
 							"scattering_azimuth_angle", "scattering_polar_angle"
 						};
 						for (const auto &d : requiredDatasets) {
-							if (!(hFile.dsets.exists(d.c_str()) > 0))
+							if (!(hFile.dsets.exists(d.c_str())))
 								ICEDB_throw(icedb::error::error_types::xBadInput)
 								.add<std::string>("Reason", "A required dataset is missing.")
 								.add<std::string>("Missing-dataset-name", d);

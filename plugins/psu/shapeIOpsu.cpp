@@ -25,10 +25,7 @@ namespace icedb {
 					auto dims = dset.getDimensions();
 					//Expects(dims.dimensionality == 2);
 					outdata.resize(dims.numElements);
-					if (dset.read<T>(outdata) < 0)
-						ICEDB_throw(icedb::error::error_types::xBadInput)
-						.add("Reason", "HDF5 error when reading a dataset.")
-						.add("Dataset", dsetname);
+					dset.read<T>(outdata);
 				}
 
 				//------------------------------------------------------------------------------------------//
