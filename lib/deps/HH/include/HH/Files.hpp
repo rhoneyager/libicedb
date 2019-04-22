@@ -1,26 +1,21 @@
 #pragma once
-/// \see Files.md for documentation.
-
+#include "defs.hpp"
 #include <cstdio>
-#include <gsl/multi_span>
-#include <gsl/pointers>
+#include "gsl/gsl"
 #include <tuple>
 #include <hdf5.h>
 #include <hdf5_hl.h>
 
+#include "Errors.hpp"
 #include "Handles.hpp"
-//#include "Tags.hpp"
 #include "Types.hpp"
 #include "Groups.hpp"
 #include "Attributes.hpp"
 #include "Datasets.hpp"
 
 namespace HH {
-	using namespace Handles;
-	using namespace gsl;
 	using namespace HH::Handles;
 	using namespace HH::Types;
-	using namespace gsl;
 	using std::initializer_list;
 	using std::tuple;
 
@@ -36,33 +31,33 @@ namespace HH {
 		//Has_Groups grps;
 		Has_Datasets dsets;
 
-		HH_NODISCARD herr_t get_info(H5F_info_t &info) const {
+		H5F_info_t& get_info(H5F_info_t& info) const {
 			herr_t err = H5Fget_info(base(), &info);
-			if (err < 0) return err;
-			return 1;
+			HH_Expects(err >= 0);
+			return info;
 		}
 
 		/// \note Should ideally be open, but the Group::open functions get masked.
 		HH_NODISCARD static File openFile(
-			not_null<const char*> filename,
+			const std::string& filename,
 			unsigned int FileOpenFlags,
 			HH_hid_t FileAccessPlist = H5P_DEFAULT)
 		{
-			hid_t res = H5Fopen(filename, FileOpenFlags, FileAccessPlist());
-			Expects(res >= 0);
+			hid_t res = H5Fopen(filename.c_str(), FileOpenFlags, FileAccessPlist());
+			HH_Expects(res >= 0);
 			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 
 		/// \note Should ideally be create, but the Group::create functions get masked.
 		HH_NODISCARD static File createFile(
-			not_null<const char*> filename,
+			const std::string & filename,
 			unsigned int FileCreateFlags,
 			HH_hid_t FileCreationPlist = H5P_DEFAULT,
 			HH_hid_t FileAccessPlist = H5P_DEFAULT)
 		{
-			hid_t res = H5Fcreate(filename, FileCreateFlags,
+			hid_t res = H5Fcreate(filename.c_str(), FileCreateFlags,
 				FileCreationPlist(), FileAccessPlist());
-			Expects(res >= 0);
+			HH_Expects(res >= 0);
 			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 
@@ -77,12 +72,12 @@ namespace HH {
 
 		/// \brief Open a file image that is loaded into system memory as a regular HDF5 file
 		HH_NODISCARD static File open_file_image(
-			not_null<void*> buf_ptr,
+			gsl::not_null<void*> buf_ptr,
 			size_t buf_size,
 			unsigned int flags)
 		{
 			hid_t res = H5LTopen_file_image(buf_ptr.get(), buf_size, flags);
-			Expects(res >= 0);
+			HH_Expects(res >= 0);
 			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 
@@ -91,18 +86,18 @@ namespace HH {
 		/// \param block_allocation_len is the size of each new allocation as the file grows
 		/// \param backing_store_in_file determines whether a physical file is written upon close.
 		HH_NODISCARD static File create_file_image(
-			not_null<const char*> filename,
+			const std::string & filename,
 			size_t block_allocation_len = 10000000, // 10 MB
 			bool backing_store_in_file = false,
 			HH_hid_t ImageCreationPlist = HH_hid_t(H5Pcreate(H5P_FILE_ACCESS), Closers::CloseHDF5PropertyList::CloseP))
 		{
 			const auto h5Result = H5Pset_fapl_core(ImageCreationPlist(), block_allocation_len, backing_store_in_file);
-			Expects(h5Result >= 0 && "H5Pset_fapl_core failed");
+			HH_Expects(h5Result >= 0 && "H5Pset_fapl_core failed");
 			// This new memory-only dataset needs to always be writable. The flags parameter
 			// has little meaning in this context.
 			/// \todo Check if truncation actually removes the file on the disk!!!!!
-			hid_t res = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, ImageCreationPlist());
-			Expects(res >= 0);
+			hid_t res = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, ImageCreationPlist());
+			HH_Expects(res >= 0);
 			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
 		}
 

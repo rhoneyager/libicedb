@@ -3,12 +3,13 @@
 #include "defs.hpp"
 #include <cstddef>
 #include <type_traits>
-#include "gsl/span"
+#include "gsl/gsl"
 #include <array>
 #include <vector>
+#include <cstdio>
 #include <iostream>
 
-#if BIO_USING_EIGEN == 1
+#ifdef BIO_USING_EIGEN
 # include "Eigen/Dense"
 #endif
 
@@ -38,10 +39,10 @@ namespace bIO {
 	void reverseBufferBasic(bIO::byte buffer[], size_t sz)
 	{
 		Expects(sz % blockSize == 0);
-		for (bIO::byte * it = buffer; it < buffer + sz; it += blockSize)
+		for (bIO::byte* it = buffer; it < buffer + sz; it += blockSize)
 		{
-			std::byte * i = it;
-			std::byte * j = i + blockSize;
+			bIO::byte* i = it;
+			bIO::byte* j = i + blockSize;
 			std::reverse(i, j);
 		}
 	}
@@ -51,7 +52,7 @@ namespace bIO {
 	{
 		constexpr int blockSize = 4;
 		Expects(sz % blockSize == 0);
-		for (bIO::byte * it = buffer; it < buffer + sz; it += blockSize)
+		for (bIO::byte* it = buffer; it < buffer + sz; it += blockSize)
 		{
 #if defined(_MSC_FULL_VER)
 			//unsigned long _byteswap_ulong(unsigned long value);
@@ -70,8 +71,8 @@ namespace bIO {
 			//int32_t __builtin_bswap32 (int32_t x)
 			//*it = (int32_t)__builtin_bswap32((int32_t)(*it));
 #else
-			bIO::byte * i = it;
-			bIO::byte * j = i + blockSize;
+			bIO::byte* i = it;
+			bIO::byte* j = i + blockSize;
 			std::reverse(i, j);
 #endif
 		}
@@ -87,11 +88,12 @@ namespace bIO {
 
 	struct Buffer_Accessor {
 		bIO::byte** buf = nullptr;
+		FILE* fbuf = nullptr;
 		size_t cur_offset = 0;
 		size_t max_sz = 0;
 		Endianness endianness = Endianness::ENDIAN_LITTLE;
 		int record_padding_bytes = 0;
-		constexpr const Endianness get_system_endianness() {
+		const Endianness get_system_endianness() {
 			union {
 				uint32_t i;
 				char c[4];
@@ -109,58 +111,86 @@ namespace bIO {
 			return false;
 		}
 
-		Buffer_Accessor(bIO::byte** b, Endianness e = Endianness::ENDIAN_BIG, size_t max_size = 0)
+		Buffer_Accessor(bIO::byte * *b, Endianness e = Endianness::ENDIAN_BIG, size_t max_size = 0)
 			: buf(b), endianness(e), max_sz(max_size) {}
+
+		Buffer_Accessor(FILE * f, Endianness e = Endianness::ENDIAN_BIG, size_t max_size = 0)
+			: fbuf(f), endianness(e), max_sz(max_size) {}
 
 		bool _padIsOpen = false;
 	};
 
+	/// Kept separate even though is is a one-liner. For code clarity.
+	inline void advance(Buffer_Accessor & src, int num_bytes) {
+		if (src.max_sz && (src.cur_offset + num_bytes >= src.max_sz)) throw;
+		if (src.buf)
+			* (src.buf) += num_bytes;
+		else if (src.fbuf) {
+			if (fseek(src.fbuf, num_bytes, SEEK_CUR)) {
+				throw; // If fseek returns a nonzero value, then an error occurred.
+			}
+		}
+		else throw;
+		src.cur_offset += num_bytes;
+	}
+
 	template <typename OutputType, int Bytes = sizeof(OutputType)> //, bool PreserveBuffer = true>
-	OutputType read(Buffer_Accessor &src)
+	OutputType read(Buffer_Accessor & src)
 	{
 		if (src.max_sz && (src.cur_offset + Bytes >= src.max_sz)) throw;
-		if (src.need_swap())
-			reverseBuffer(*(src.buf), Bytes);
-		OutputType res = *(OutputType*)(*src.buf);
+		OutputType res;
+		if (src.buf) {
+			if (src.need_swap())
+				reverseBuffer<Bytes>(*(src.buf), Bytes);
+			res = *(OutputType*)(*src.buf);
+			advance(src, Bytes);
+		}
+		else if (src.fbuf) {
+			bIO::byte obuf[Bytes];
+			if (fread(obuf, 1, Bytes, src.fbuf)) throw;
+			if (src.need_swap())
+				reverseBuffer<Bytes>(obuf, Bytes);
+			res = *(OutputType*)(obuf);
+		}
+		else throw;
 		return res;
 	}
 
 	template <typename OutputType, int Bytes = sizeof(OutputType)>
-	void write(Buffer_Accessor &dest, const OutputType& obj)
+	void write(Buffer_Accessor & dest, const OutputType & obj)
 	{
 		if (dest.max_sz && (dest.cur_offset + Bytes >= dest.max_sz)) throw;
-		_impl::bIO_memcpy(*dest.buf, Bytes, (const void*)(&obj), Bytes);
-		//(*dest.buf) = (bIO::byte*) &obj;
-		if (dest.need_swap())
-			reverseBuffer(*(dest.buf), Bytes);
-		//return *(OutputType*)(*dest.buf);
+		if (dest.buf) {
+			_impl::bIO_memcpy(*dest.buf, Bytes, (const void*)(&obj), Bytes);
+			if (dest.need_swap())
+				reverseBuffer(*(dest.buf), Bytes);
+			advance(dest, Bytes);
+		}
+		else if (dest.fbuf) {
+			bIO::byte obuf[Bytes];
+			_impl::bIO_memcpy(obuf, Bytes, (const void*)(&obj), Bytes);
+			if (dest.need_swap())
+				reverseBuffer(obuf, Bytes);
+			fwrite(obuf, 1, Bytes, dest.fbuf);
+		}
+		else throw;
 	}
 
-	/// Kept separate even though is is a one-liner. For code clarity.
-	inline void advance(Buffer_Accessor &src, int num_bytes) {
-		if (src.max_sz && (src.cur_offset + num_bytes >= src.max_sz)) throw;
-		// DEBUG: QUICK LOOKS
-		//std::byte cur_pos[32];
-		//std::memcpy(cur_pos, *src.buf, 32);
-		//cur_pos = src.buf;
-		*(src.buf) += num_bytes;
-		src.cur_offset += num_bytes;
-	}
 
-	inline void writePad(Buffer_Accessor &src, uint64_t reclen_in_bytes = 0) {
+	inline void writePad(Buffer_Accessor & src, uint64_t reclen_in_bytes = 0) {
 		// reclen_in_bytes is only set on write operations.
 		if (!reclen_in_bytes) return;
 		// Check that the record length fits in the number of available padding bytes.
-		size_t max_reclen_in_bytes = (uint64_t) 1 << ((uint64_t) 8 * (uint64_t) src.record_padding_bytes);
+		size_t max_reclen_in_bytes = (uint64_t)1 << ((uint64_t)8 * (uint64_t)src.record_padding_bytes);
 		if (reclen_in_bytes >= max_reclen_in_bytes) throw;
 		switch (src.record_padding_bytes)
 		{
 		case 4:
-			{
-				uint32_t conv_reclen = (uint32_t)reclen_in_bytes;
-				write<uint32_t>(src, conv_reclen);
-			}
-			break;
+		{
+			uint32_t conv_reclen = (uint32_t)reclen_in_bytes;
+			write<uint32_t>(src, conv_reclen);
+		}
+		break;
 		case 8:
 			write<uint64_t>(src, reclen_in_bytes);
 			break;
@@ -169,35 +199,35 @@ namespace bIO {
 			break;
 		}
 	}
-	inline bool PadOpen(Buffer_Accessor &src, uint64_t write_reclen_in_bytes = 0)
+	inline bool PadOpen(Buffer_Accessor & src, uint64_t write_reclen_in_bytes = 0)
 	{
 		const bool doPad = !src._padIsOpen;
 		if (doPad) {
 			src._padIsOpen = true;
 			if (write_reclen_in_bytes) writePad(src, write_reclen_in_bytes); // The if statement is syntactic fluff (readability).
-			advance(src, src.record_padding_bytes);
+			if (!write_reclen_in_bytes) advance(src, src.record_padding_bytes); // writePad invokes write, which advances automatically.
 		}
 		return doPad;
 	}
-	inline void PadClose(Buffer_Accessor &src, uint64_t write_reclen_in_bytes = 0)
+	inline void PadClose(Buffer_Accessor & src, uint64_t write_reclen_in_bytes = 0)
 	{
 		if (write_reclen_in_bytes) writePad(src, write_reclen_in_bytes); // The if statement is syntactic fluff (readability).
-		advance(src, src.record_padding_bytes);
+		if (!write_reclen_in_bytes) advance(src, src.record_padding_bytes); // writePad invokes write, which advances automatically.
 		src._padIsOpen = false;
 	}
 
 	template <typename OutputType>
-	void pop(Buffer_Accessor &src, OutputType &varout)
+	void pop(Buffer_Accessor & src, OutputType & varout)
 	{
 		const bool doPad = PadOpen(src);
 		constexpr int sz = sizeof(OutputType);
 		varout = read<typename std::remove_reference<OutputType>::type>(src);
-		advance(src, sz);
+		//advance(src, sz); // Now part of read.
 		if (doPad) PadClose(src);
 	}
 
 	template <typename OutputType, typename... Rest>
-	void pop(Buffer_Accessor &src, OutputType &&varout, Rest&&... rest)
+	void pop(Buffer_Accessor & src, OutputType && varout, Rest && ... rest)
 	{
 		const bool doPad = PadOpen(src);
 		pop<OutputType>(src, varout);
@@ -208,13 +238,13 @@ namespace bIO {
 	// Support code for reads into a structure
 	template <typename StructType, typename ObjType>
 	void popStruct(
-		Buffer_Accessor &src,
-		StructType &out,
+		Buffer_Accessor & src,
+		StructType & out,
 		ptrdiff_t offset)
 	{
 		const bool doPad = PadOpen(src);
 		/// \note Neither static_cast nor reinterpret_cast handle all cases!
-		bIO::byte* obj_as_bytes = reinterpret_cast<std::byte*>(&out);
+		bIO::byte* obj_as_bytes = reinterpret_cast<bIO::byte*>(&out);
 		bIO::byte* obj_write_location = obj_as_bytes + offset;
 		ObjType temp;
 		pop<ObjType>(src, temp);
@@ -224,15 +254,15 @@ namespace bIO {
 
 	template <typename StructType, typename ObjType, typename... Rest>
 	void popStruct(
-		Buffer_Accessor &src,
-		StructType &out,
-		const gsl::span<ptrdiff_t> &members)
+		Buffer_Accessor & src,
+		StructType & out,
+		const gsl::span<ptrdiff_t> & members)
 	{
 		const bool doPad = PadOpen(src);
 		popStruct<StructType, ObjType>(src, out, *(members.begin()));
 		/// \note Old code
 		/// auto poppedmembers = members.make_subspan(1, members.size() - 1, gsl::dynamic_extent);
-		auto poppedmembers = gsl::span<ptrdiff_t>(members.data()+1,  members.size() - 1);
+		auto poppedmembers = gsl::span<ptrdiff_t>(members.data() + 1, members.size() - 1);
 		popStruct<StructType, ObjType>(src, out, poppedmembers);
 		if (doPad) PadClose(src);
 	}
@@ -240,9 +270,9 @@ namespace bIO {
 	// Support code for reads into an array.
 	template <typename ArrayType, typename ObjType>
 	void popArray(
-		Buffer_Accessor &src,
-		ArrayType* start,
-		ArrayType* end,
+		Buffer_Accessor & src,
+		ArrayType * start,
+		ArrayType * end,
 		ptrdiff_t arrayMemberOffset = 0)
 	{
 		Expects(start);
@@ -256,13 +286,13 @@ namespace bIO {
 	}
 
 
-#if BIO_USING_EIGEN == 1
+#ifdef BIO_USING_EIGEN
 	// Support code for reads into Eigen. Usually, make an Eigen::Block for storage.
 	// Assumes that we span only a single dimension.
 	template <class EigenClass>
 	void popEigen(
-		Buffer_Accessor &src,
-		EigenClass &&out)
+		Buffer_Accessor & src,
+		EigenClass && out)
 	{
 		const bool doPad = PadOpen(src);
 		const auto sz = out.size();
@@ -295,9 +325,9 @@ namespace bIO {
 	void push(Buffer_Accessor &src, const OutputType &varout)
 	{
 		const bool doPad = PadOpen(src, getRecl<OutputType>(varout));
-		constexpr int sz = sizeof(OutputType);
+		//constexpr int sz = sizeof(OutputType);
 		write<typename std::remove_reference<OutputType>::type>(src, varout);
-		advance(src, sz);
+		//advance(src, sz);
 		if (doPad) PadClose(src, getRecl<OutputType>(varout));
 	}
 	
@@ -310,7 +340,7 @@ namespace bIO {
 		if (doPad) PadClose(src, getRecl<OutputType>(varout) + getRecl<Rest...>(std::forward<Rest>(rest)...));
 	}
 
-#if BIO_USING_EIGEN == 1
+#ifdef BIO_USING_EIGEN
 	// Support code for writes from Eigen. Usually, make an Eigen::Block for storage.
 	// Assumes that we span only a single dimension.
 	template <class EigenClass>

@@ -120,7 +120,7 @@ namespace icedb {
 			
 			static EXV createEXV(
 				HH::HH_hid_t baseGrpID,
-				gsl::not_null<const char*> exvGrp,
+				const std::string& exvGrp,
 				gsl::not_null<const NewEXVrequiredProperties*> data)
 			{
 				HH::Group base(baseGrpID);

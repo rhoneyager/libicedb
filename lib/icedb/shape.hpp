@@ -156,7 +156,7 @@ namespace icedb {
 				gsl::not_null<const NewShapeProperties*> props);
 			static Shape createShape(
 				HH::HH_hid_t baseGrpID,
-				gsl::not_null<const char*> shapeGrpName,
+				const std::string& shapeGrpName,
 				gsl::not_null<const NewShapeProperties*> props);
 		};
 	}

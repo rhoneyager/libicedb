@@ -1,10 +1,9 @@
 #pragma once
+#include "defs.hpp"
 #include <hdf5.h>
 #include <memory>
 #include <functional>
-#include <gsl/gsl_assert>
 #include "Handles_HDF.hpp"
-#include "Handles_Valid.hpp"
 
 namespace HH {
 
@@ -21,11 +20,11 @@ namespace HH {
 			REFERENCE,
 			UNKNOWN
 		};
-		//template <typename handle_type = Handle_Types::UNKNOWN>
+
 		class HH_hid_t
 		{
 			::std::shared_ptr<hid_t> _h;
-			Handle_Types _typ;
+			//Handle_Types _typ;
 		public:
 			~HH_hid_t() {}
 			hid_t get() const { return *(_h.get()); }
@@ -38,7 +37,7 @@ namespace HH {
 			//bool isA() const { return (_typ == ); }
 
 			HH_hid_t(::std::shared_ptr<hid_t> h) : _h(h) {}
-			HH_hid_t(hid_t val, const std::function<void(hid_t*)> &closer = nullptr)
+			HH_hid_t(hid_t val, const std::function<void(hid_t*)>& closer = nullptr)
 			{
 				if (closer) {
 					_h = ::std::shared_ptr<hid_t>(new hid_t(val), closer);

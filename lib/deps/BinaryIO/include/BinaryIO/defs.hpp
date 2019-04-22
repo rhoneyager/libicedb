@@ -93,25 +93,18 @@ BIO_BEGIN_DECL_C
 
 // OS definitions
 #ifdef __unix__
-# ifdef __linux__
-#  define BIO_OS_LINUX
-# endif
-# define BIO_OS_UNIX
-//# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__) || defined(__APPLE__)
-//#  define BIO_OS_UNIX
-//# endif
-//# if defined(__MACH__)
-//# define BIO_OS_UNIX
-//# endif
+#ifdef __linux__
+#define BIO_OS_LINUX
 #endif
-#ifdef __MACH__
-# define BIO_OS_UNIX
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__) || defined(__APPLE__)
+#define BIO_OS_UNIX
+#endif
 #endif
 #ifdef _WIN32
-# define BIO_OS_WINDOWS
+#define BIO_OS_WINDOWS
 #endif
 #if !defined(_WIN32) && !defined(BIO_OS_UNIX) && !defined(BIO_OS_LINUX)
-# define BIO_OS_UNSUPPORTED
+#define BIO_OS_UNSUPPORTED
 #endif
 
 
@@ -221,20 +214,31 @@ BIO_END_DECL_C
 
 #if __cplusplus >= 201703L
 # if __has_include("Eigen/Dense")
-#  define BIO_USING_EIGEN 1
+#  define BIO_USING_EIGEN
 # endif
 #else
-# define BIO_USING_EIGEN 0
+# define BIO_USING_EIGEN
 #endif
 
 namespace bIO {
 	typedef bool HasError_t;
-//#if __cplusplus >= 201703L
-//	typedef std::byte byte;
-//#else
+	//#if __cplusplus >= 201703L
+	//	typedef std::byte byte;
+	//#else
 	typedef unsigned char byte;
-//#endif
+	typedef unsigned char* byte_ptr;
+	//#endif
 }
+
+// Source-code annotation language definitions
+#ifdef _MSC_FULL_VER
+# include <sal.h>
+# define BIO_IN _In_
+# define BIO_OUTPTR _Outptr_
+#else
+# define BIO_OUTPTR
+# define BIO_IN
+#endif
 
 #if 0
 #if __cplusplus >= 201703L

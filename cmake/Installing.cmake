@@ -25,7 +25,7 @@ endif()
 
 
 
-export(TARGETS icedb icedb_base
+export(TARGETS icedb icedb_base GSL HH BinaryIO Eigen
 		FILE "${PROJECT_BINARY_DIR}/icedbTargets.cmake")
 export(PACKAGE icedb)
 

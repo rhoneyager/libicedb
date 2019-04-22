@@ -3,6 +3,8 @@ include(addapp)
 include(addlib)
 include(generaterc)
 
+add_subdirectory(deps)
+
 # These are the files required by the library, placed into groups.
 set(related_cmake_objects
 	../cmake/addapp.cmake
@@ -14,32 +16,6 @@ set(related_cmake_objects
 	../cmake/generaterc.cmake
 	../cmake/GetGitRevisionDescription.cmake
 	../cmake/signing.cmake)
-
-set(gsl_objs
-	deps/third_party/gsl/gsl
-	deps/third_party/gsl/gsl_algorithm
-	deps/third_party/gsl/gsl_assert
-	deps/third_party/gsl/gsl_byte
-	deps/third_party/gsl/gsl_util
-	deps/third_party/gsl/multi_span
-	deps/third_party/gsl/pointers
-	deps/third_party/gsl/span
-	deps/third_party/gsl/string_span
-	)
-set (hh_objs
-	deps/HH/Attributes.hpp
-	deps/HH/Datasets.hpp
-	deps/HH/defs.hpp
-	deps/HH/Files.hpp
-	deps/HH/Groups.hpp
-	deps/HH/Handles.hpp
-	deps/HH/Handles_HDF.hpp
-	deps/HH/Handles_Valid.hpp
-	deps/HH/HH.hpp
-	deps/HH/PropertyLists.hpp
-	deps/HH/Tags.hpp
-	deps/HH/Types.hpp
-	deps/HH/Types/Complex.hpp)
 set(shp_objs
 	icedb/shape.hpp
 	icedb/shapeAlg.hpp
@@ -115,12 +91,6 @@ set(lib_objs
 	src/util.cpp
 	src/zeros.cpp
 	)
-list(APPEND BinaryIO_Headers
-	deps/BinaryIO/Buffers.hpp
-	deps/BinaryIO/defs.hpp
-	deps/BinaryIO/Files.hpp)
-list(APPEND BinaryIO_Headers_b
-	deps/BinaryIO/boost/Files.hpp)
 
 # On Windows, when producing a DLL, this generated file
 # will add some information that can be read by Windows
@@ -136,8 +106,6 @@ generaterc("icedb" "dll"
 	 "${CMAKE_CURRENT_BINARY_DIR}/lib.rc"
 	 )
 source_group("Extensibility" FILES ${extensible_objs})
-source_group("GSL" FILES ${gsl_objs})
-source_group("HH" FILES ${hh_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
 source_group("Errors" FILES ${error_objs})
@@ -147,14 +115,10 @@ source_group("Units" FILES ${units_objs})
 source_group("Refract" FILES ${refract_objs})
 source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
-source_group("BinaryIO" FILES ${BinaryIO_Headers})
-source_group("BinaryIO\\boost" FILES ${BinaryIO_Headers_b})
-set(libhdrs_dllbase ${gsl_objs} ${hh_objs} ${related_cmake_objects}
-	${BinaryIO_Headers} ${BinaryIO_Headers_b}
+set(libhdrs_dllbase ${related_cmake_objects}
 	"${CMAKE_CURRENT_BINARY_DIR}/icedb-cmake-settings.h")
 set(libsrcs_dllbase src/dlls_placeholder.cpp)
-set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs}
-	${db_objs}
+set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs} ${db_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
 	${extensible_objs})
 IF (WIN32 AND NOT CYGWIN)
@@ -173,9 +137,9 @@ storebin(icedb_base)
 add_library(icedb SHARED ${libsrcs})
 # compat contains the GSL and HH.
 target_include_directories(icedb SYSTEM
-	PUBLIC ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+	PUBLIC ${Boost_INCLUDE_DIRS})
 target_include_directories(icedb_base SYSTEM
-	PRIVATE ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+	PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(icedb_base PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/deps
@@ -184,7 +148,6 @@ target_include_directories(icedb_base PRIVATE
 	)
 target_include_directories(icedb PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/deps
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/third_party
 	${CMAKE_CURRENT_BINARY_DIR}
 	)
@@ -192,8 +155,6 @@ target_include_directories(icedb SYSTEM
 	INTERFACE
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/third_party>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/third_party/eigen>
 	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
 	)
@@ -202,9 +163,7 @@ target_compile_definitions(icedb
 	PUBLIC ${HDF5_DEFINITIONS})
 # Boost warning acknowledgement. 
 target_compile_definitions(icedb PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
-target_link_libraries(icedb 
-	icedb_base
-	hdf5::hdf5-shared hdf5::hdf5_hl-shared) # ZLIB::ZLIB)
+target_link_libraries(icedb icedb_base icedb::GSL icedb::HH icedb::BinaryIO icedb::Eigen3 ) # ZLIB::ZLIB)
 target_link_libraries(icedb
 	Boost::filesystem
 	Boost::system
@@ -216,19 +175,6 @@ storebin(icedb)
 INSTALL(DIRECTORY icedb
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
 	COMPONENT Headers)
-INSTALL(DIRECTORY deps/HH
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
-	COMPONENT Headers)
-INSTALL(DIRECTORY deps/BinaryIO
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
-	COMPONENT Headers)
-INSTALL(DIRECTORY deps/third_party/gsl
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
-	COMPONENT Headers)
-#INSTALL(DIRECTORY deps/third_party/eigen
-#	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
-#	COMPONENT Headers)
-
 
 # Lib installation is already covered in addlib.cmake.
 
@@ -241,21 +187,30 @@ if (WIN32 AND NOT CMAKE)
 #		--- on windows, just change the .lib to .dll.
 # zlib
 # silo: silo --- handle in the silo plugin
+	add_executable(placeholder src/_placeholder.cpp)
+	storebin(placeholder)
+	set_target_properties(placeholder PROPERTIES FOLDER "Build")
+	add_executable(placeholder2 src/_placeholder.cpp)
+	storebin(placeholder2)
+	set_target_properties(placeholder2 PROPERTIES FOLDER "Build")
 
 	add_custom_target(copy_icedb_dependencies_to_build_dirs
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_tools-shared> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::system> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::program_options> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::date_time> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::regex> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::unit_test_framework> $<TARGET_FILE_DIR:icedb_base>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impZLIB::ZLIB> $<TARGET_FILE_DIR:icedb_base>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_tools-shared> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::system> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::program_options> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::date_time> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::regex> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::unit_test_framework> $<TARGET_FILE_DIR:placeholder>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impZLIB::ZLIB> $<TARGET_FILE_DIR:placeholder>
 		)
 	set_target_properties( copy_icedb_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
-	add_dependencies(icedb copy_icedb_dependencies_to_build_dirs)
+	add_dependencies(icedb_base placeholder2)
+	add_dependencies(placeholder2 copy_icedb_dependencies_to_build_dirs)
+	# copy_icedb_dependencies_to_build_dirs has an automatic dependency on placeholder.
+	# This way, the files get copied only once.
 
 	install(PROGRAMS 
 		$<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE:hdf5::hdf5_tools-shared>

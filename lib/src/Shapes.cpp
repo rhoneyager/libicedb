@@ -184,7 +184,7 @@ namespace icedb {
 
 		Shape Shape::createShape(
 			HH::HH_hid_t baseGrpID,
-			gsl::not_null<const char*> shapeGrp,
+			const std::string& shapeGrp,
 			gsl::not_null<const NewShapeProperties*> props)
 		{
 			Group base(baseGrpID);
@@ -233,9 +233,6 @@ namespace icedb {
 			res.atts.add<string>("contact", props->contact);
 			res.atts.add<unsigned int>("version", { props->version[0], props->version[1], props->version[2] }, { 3 });
 
-
-			using namespace HH::Tags;
-			using namespace HH::Tags::PropertyLists;
 			const size_t numScattElems = (props->particle_scattering_element_coordinates_as_floats.size())
 				? props->particle_scattering_element_coordinates_as_floats.size() / 3
 				: props->particle_scattering_element_coordinates_as_ints.size() / 3;
@@ -259,14 +256,14 @@ namespace icedb {
 				tblPSEN.atts.add<std::string>("units", "None");
 
 				if (!props->particle_scattering_element_number.empty()) {
-					Expects(0 <= tblPSEN.write<int32_t>(props->particle_scattering_element_number));
+					tblPSEN.write<int32_t>(props->particle_scattering_element_number);
 				}
 				else {
 					// Create "dummy" element numbers and write.
 					std::vector<int64_t> dummyPSENs(numScattElems);
 					for (size_t i = 0; i < numScattElems; ++i)
 						dummyPSENs[i] = i + 1;
-					Expects(0 <= tblPSEN.write<int64_t>(dummyPSENs));
+					tblPSEN.write<int64_t>(dummyPSENs);
 				}
 				// NOTE: The HDF5 dimension scale specification explicitly allows for dimensions to not have assigned values.
 				// However, netCDF should have these values.
@@ -283,17 +280,17 @@ namespace icedb {
 					data_pcns[i] = props->particle_constituents[i].first;
 					data_pcn_names[i] = props->particle_constituents[i].second;
 				}
-				Expects(0 <= tblPCN.write<uint16_t>(data_pcns));
+				tblPCN.write<uint16_t>(data_pcns);
 				tblPCN.setIsDimensionScale("particle_constituent_number");
 
 				auto tblPCNnames = res.dsets.create<string>("particle_constituent_name",
 					{ static_cast<size_t>(props->particle_constituents.size()) });
-				Expects(0 <= tblPCNnames.write<string>(data_pcn_names));
+				tblPCNnames.write<string>(data_pcn_names);
 				tblPCNnames.setDims(tblPCN);
 			}
 
 			auto tblXYZ = res.dsets.create<uint16_t>("particle_axis", { 3 });
-			Expects(0 <= tblXYZ.write<uint16_t>({ 0, 1, 2 }));
+			tblXYZ.write<uint16_t>({ 0, 1, 2 });
 			tblXYZ.setIsDimensionScale("particle_axis");
 
 			HH::Dataset tblPSEC(HH::HH_hid_t::dummy()); // = res.dsets.create<uint8_t>("particle_axis", { 3 });
@@ -305,7 +302,7 @@ namespace icedb {
 					t_dimensions({ static_cast<size_t>(numScattElems), 3 }),
 					t_DatasetCreationPlist(pl2d())
 					);
-				Expects(0 <= tblPSEC.write<int_type>(props->particle_scattering_element_coordinates_as_ints));
+				tblPSEC.write<int_type>(props->particle_scattering_element_coordinates_as_ints);
 
 			}
 			else {
@@ -315,7 +312,7 @@ namespace icedb {
 					t_dimensions({ static_cast<size_t>(numScattElems), 3 }),
 					t_DatasetCreationPlist(pl2d())
 					);
-				Expects(0 <= tblPSEC.write<float>(props->particle_scattering_element_coordinates_as_floats));
+				tblPSEC.write<float>(props->particle_scattering_element_coordinates_as_floats);
 			}
 			tblPSEC.setDims(tblPSEN, tblXYZ);
 			tblPSEC.atts.add<std::string>("description", "Cartesian coordinates (x,y,z) of the center of the scattering element (dipole position, center of sphere, etc.)");
@@ -337,7 +334,7 @@ namespace icedb {
 						static_cast<size_t>(props->particle_constituents.size()) }),
 					t_DatasetCreationPlist(pl2d())
 					);
-				Expects(0 <= tblPSEC2a.write<float>(props->particle_scattering_element_composition_fractional));
+				tblPSEC2a.write<float>(props->particle_scattering_element_composition_fractional);
 				tblPSEC2a.setDims(tblPSEN, tblPCN);
 				tblPSEC2a.atts.add<std::string>("description", "Mass fractions of each constituent for each scattering element.");
 				tblPSEC2a.atts.add<std::string>("units", "None");
@@ -352,7 +349,7 @@ namespace icedb {
 				tblPSEC2b.setDims(tblPSEN);
 				tblPSEC2b.atts.add<std::string>("description", "The constituent material ID for each scattering element.");
 				tblPSEC2b.atts.add<std::string>("units", "None");
-				Expects(0 <= tblPSEC2b.write<uint16_t>(props->particle_scattering_element_composition_whole));
+				tblPSEC2b.write<uint16_t>(props->particle_scattering_element_composition_whole);
 			}
 
 			res.atts.add<float>("scattering_element_coordinates_scaling_factor", props->scattering_element_coordinates_scaling_factor);
@@ -367,7 +364,7 @@ namespace icedb {
 					t_dimensions({ static_cast<size_t>(numScattElems) }),
 					t_DatasetCreationPlist(pl1d())
 					);
-				Expects(0 <= tblPSER.write<float>(props->particle_scattering_element_radius));
+				tblPSER.write<float>(props->particle_scattering_element_radius);
 				tblPSER.setDims(tblPSEN);
 				tblPSER.atts.add<std::string>("description", "Physical radius of the scattering sphere.");
 				tblPSER.atts.add<std::string>("units", "m");

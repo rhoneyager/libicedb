@@ -1,4 +1,3 @@
-#define _SCL_SECURE_NO_WARNINGS // Issue with linterp
 #pragma warning( disable : 4244 ) // ICEDB_LOG_WARNINGs C4244 and C4267: size_t to int and int <-> _int64
 #pragma warning( disable : 4267 )
 #include <cmath>

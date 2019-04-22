@@ -1,8 +1,7 @@
 #pragma once
-#include "defs.hpp"
 #include "Handles.hpp"
 #include "Types.hpp"
-#if HH_HAS_EIGEN
+#if __has_include(<Eigen/Dense>)
 # include <Eigen/Dense>
 #endif
 namespace HH {
@@ -78,7 +77,7 @@ namespace HH {
 				struct tag_dimensions_type {};
 			}
 			typedef Tag<_detail::tag_storage_type, HH_hid_t> HH_t_storage_type;
-			typedef Tag<_detail::tag_objname_type, gsl::not_null<const char*> > t_name;
+			typedef Tag<_detail::tag_objname_type, std::string > t_name;
 			typedef Tag<_detail::tag_dimensions_type, std::initializer_list<size_t> > t_dimensions;
 		}
 		namespace Datatypes {
@@ -100,15 +99,20 @@ namespace HH {
 				template <class T> struct tag_data_as_span {};
 				template <class T> struct tag_data_as_initializer_list {};
 				template <class T> struct tag_data_as_eigen {};
+				template <class T> struct tag_dset_DatasetParameterPack {};
 			}
 			template <class T> using t_data_span
 				= Tag<_detail::tag_data_as_span<T>, gsl::span<T> >;
 			template <class T> using t_data_initializer_list
 				= Tag<_detail::tag_data_as_initializer_list<T>, std::initializer_list<T> >;
-#if HH_HAS_EIGEN
+#if __has_include(<Eigen/Dense>)
 			template <class T> using t_data_eigen
 				= Tag<_detail::tag_data_as_eigen<T>, ::Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >;
 #endif
+			/// \note Keeping as a template to avoid awkwardness wrt forward
+			/// declarations of a struct within a struct.
+			template <class T> using t_ParameterPack
+				= Tag<_detail::tag_dset_DatasetParameterPack<T>, T >;
 		}
 
 

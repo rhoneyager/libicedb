@@ -18,7 +18,7 @@ macro(addlib libname libshared )
 	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
 	INSTALL(TARGETS ${libname}
 		EXPORT icedbTargets
-		#RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		#RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} # See NSIS below
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		COMPONENT Libraries)

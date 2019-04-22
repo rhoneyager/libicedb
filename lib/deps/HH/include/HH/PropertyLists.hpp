@@ -1,9 +1,10 @@
 #pragma once
 #include <algorithm>
-//#include <optional>
+#include <optional>
 #include <tuple>
 #include <vector>
 #include <hdf5.h>
+#include "gsl/gsl"
 #include "Handles.hpp"
 #include "Handles_HDF.hpp"
 #include "Tags.hpp"
@@ -108,6 +109,17 @@ namespace HH {
 			return true;
 		}
 
+		struct DatasetCreationPListProperties {
+			bool shuffle = false;
+			bool compress = false;
+			bool gzip = false;
+			bool szip = false;
+			int gzip_level = 6;
+			unsigned int szip_PixelsPerBlock = 16;
+			unsigned int szip_options = H5_SZIP_EC_OPTION_MASK;
+
+		};
+
 		struct PL
 		{
 		private:
@@ -189,30 +201,29 @@ namespace HH {
 				}
 				/// Append the filters to a property list.
 				void append(const std::vector<filter_info>& filters) {
-					for (const auto &f : filters) {
+					for (const auto& f : filters) {
 						herr_t res = H5Pset_filter(pl(), f.id, f.flags, f.cd_values.size(), f.cd_values.data());
 						Expects(res >= 0);
 					}
 				}
 				/// Set the filters to a property list. Clears existing filters.
-				void set(const std::vector<filter_info>& filters) {
+				void set(const std::vector<filter_info> & filters) {
 					H5Premove_filter(pl(), H5Z_FILTER_ALL);
 					append(filters);
 				}
 				void clear() {
 					H5Premove_filter(pl(), H5Z_FILTER_ALL);
 				}
-				/*
 				std::optional<filter_info> has(H5Z_filter_t id) const {
 					auto fi = get();
-					auto res = std::find_if(fi.cbegin(), fi.cend(), [&id](const filter_info &f) {return f.id == id; });
+					auto res = std::find_if(fi.cbegin(), fi.cend(), [&id](const filter_info & f) {return f.id == id; });
 					if (res != fi.cend()) return *res;
 					return {};
 				}
 
 				enum class FILTER_T { SHUFFLE, COMPRESSION, OTHER };
-				
-				static FILTER_T getType(const filter_info &it) {
+
+				static FILTER_T getType(const filter_info & it) {
 					if ((it.id == H5Z_FILTER_SHUFFLE)) return FILTER_T::SHUFFLE;
 					if ((it.id == H5Z_FILTER_DEFLATE)) return FILTER_T::COMPRESSION;
 					if ((it.id == H5Z_FILTER_SZIP)) return FILTER_T::COMPRESSION;
@@ -220,12 +231,12 @@ namespace HH {
 					if ((it.id == H5Z_FILTER_SCALEOFFSET)) return FILTER_T::COMPRESSION;
 					return FILTER_T::OTHER;
 				}
-				static bool isA (const filter_info &it, FILTER_T typ){
+				static bool isA(const filter_info & it, FILTER_T typ) {
 					auto ft = getType(it);
 					if (ft == typ) return true;
 					return false;
 				};
-				void appendOfType(const std::vector<filter_info>& filters, FILTER_T typ) {
+				void appendOfType(const std::vector<filter_info> & filters, FILTER_T typ) {
 					for (auto it = filters.cbegin(); it != filters.cend(); ++it)
 					{
 						if (isA(*it, typ)) {
@@ -278,7 +289,7 @@ namespace HH {
 					Expects(0 <= H5Pset_deflate(pl(), lv));
 					appendOfType(fils, FILTER_T::OTHER);
 				}
-				*/
+
 			} filters;
 
 			/**
@@ -331,7 +342,6 @@ namespace HH {
 				constexpr bool hasFillValue = HH::Tags::has_type<t_FillValue<DataType>, vals_t >::value;
 				//t_FillValue<DataType> fill; // Used only if needed later
 
-				/*
 				// Shuffing
 				if (hasDoShuffle) {
 					filters.removeOfType(PL::Filters::FILTER_T::SHUFFLE);
@@ -372,7 +382,7 @@ namespace HH {
 						else if (isFilteravailable(H5Z_FILTER_DEFLATE).first == true) addGZIP();
 					}
 				}
-				*/
+
 				// Chunking
 				if (hasManualChunking) {
 					t_Chunking manualChunking; getOptionalValue(manualChunking, vals);
@@ -410,7 +420,7 @@ namespace HH {
 						cps.data.rdcc_w0
 					));
 				}
-				
+
 				return *this;
 			}
 			template <class ... Args>
@@ -431,7 +441,7 @@ namespace HH {
 					t_create_intermediate_group cps; getOptionalValue(cps, vals);
 					if (cps.data == true)
 						Expects(0 <= H5Pset_create_intermediate_group(base(), 1));
-					else 
+					else
 						Expects(0 <= H5Pset_create_intermediate_group(base(), -1));
 				}
 
@@ -445,6 +455,6 @@ namespace HH {
 
 		};
 
-		
+
 	}
 }

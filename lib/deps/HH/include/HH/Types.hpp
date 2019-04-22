@@ -5,18 +5,16 @@
 #include <typeinfo>
 #include <string>
 #include <vector>
-#if __cplusplus >= 201703L
-#include <string_view>
-#endif
-#include <gsl/gsl>
 #include <hdf5.h>
+#include <cstring>
 #include "Handles.hpp"
+#include "Errors.hpp"
 
 namespace HH {
 	namespace _impl {
 		inline size_t COMPAT_strncpy_s(
-			char * dest, size_t destSz,
-			const char * src, size_t srcSz)
+			char* dest, size_t destSz,
+			const char* src, size_t srcSz)
 		{
 			/** \brief Safe char array copy.
 			\returns the number of characters actually written.
@@ -26,7 +24,7 @@ namespace HH {
 			first null character or until srcSz. Note that null termination comes later.
 			\param srcSz is the max size of the source buffer.
 			**/
-			if (!dest || !src) throw std::invalid_argument("Null pointer encountered");
+			if (!dest || !src) throw HH_throw;
 #if HH_USING_SECURE_STRINGS
 			strncpy_s(dest, destSz, src, srcSz);
 #else
@@ -54,9 +52,6 @@ namespace HH {
 			std::is_same<const char*, typename std::decay<T>::type>::value
 			> {};
 		template<> struct is_string<std::string> : std::true_type {};
-#if __cplusplus >= 201703L
-		template<> struct is_string<std::string_view> : std::true_type {};
-#endif
 
 		namespace constants {
 			constexpr int _Variable_Length = -1;
@@ -76,17 +71,18 @@ namespace HH {
 		template <class DataType, int Array_Type_Dimensionality = 0>
 		HH_hid_t GetHDF5Type(
 			std::initializer_list<hsize_t> Adims = {},
-			typename std::enable_if<!is_string<DataType>::value>::type* = 0)
+			typename std::enable_if<!is_string<DataType>::value>::type * = 0)
 		{
 			if (Array_Type_Dimensionality <= 0) {
 				//static_assert(false, "HH::Types::GetHDF5Type does not understand this data type.");
-				throw std::invalid_argument("HH::Types::GetHDF5Type does not understand this data type.");
+				throw HH_throw.add("Reason", "HH::Types::GetHDF5Type does not understand this data type.");
 				return HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP); // Should never reach this. Invalid handle, just in case.
-			} else {
+			}
+			else {
 				// This is a compound array type of the same object, repeated.
 				HH_hid_t fundamental_type = GetHDF5Type<DataType, 0>();
 				hid_t t = H5Tarray_create2(fundamental_type(), Array_Type_Dimensionality, Adims.begin());
-				Expects(t >= 0);
+				if (t < 0) throw HH_throw.add("Reason", "H5Tarray_create2 failed.");
 				return HH_hid_t(t, HH::Handles::Closers::CloseHDF5Datatype::CloseP);
 			}
 		}
@@ -94,13 +90,13 @@ namespace HH {
 		template <class DataType, int String_Type_Length = constants::_Variable_Length>
 		HH_hid_t GetHDF5Type(
 			int Runtime_String_Type_Length = constants::_Variable_Length,
-			typename std::enable_if<is_string<DataType>::value>::type* = 0)
+			typename std::enable_if<is_string<DataType>::value>::type * = 0)
 		{
 			size_t strtlen = String_Type_Length;
 			if (Runtime_String_Type_Length != constants::_Variable_Length) strtlen = Runtime_String_Type_Length;
 			if (strtlen == constants::_Variable_Length) strtlen = H5T_VARIABLE;
 			hid_t t = H5Tcreate(H5T_STRING, strtlen);
-			Expects(t >= 0);
+			if (t < 0) throw HH_throw.add("Reason", "H5Tcreate failed.");
 			return HH_hid_t(t, HH::Handles::Closers::CloseHDF5Datatype::CloseP);
 		}
 
@@ -108,13 +104,25 @@ namespace HH {
 		template<> inline HH_hid_t GetHDF5Type<int8_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT8); }
 		template<> inline HH_hid_t GetHDF5Type<uint8_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT8); }
 		template<> inline HH_hid_t GetHDF5Type<int16_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT16); }
+		template<> inline HH_hid_t GetHDF5Type<int16_t const>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT16); }
 		template<> inline HH_hid_t GetHDF5Type<uint16_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT16); }
 		template<> inline HH_hid_t GetHDF5Type<int32_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT32); }
+		template<> inline HH_hid_t GetHDF5Type<int32_t const>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT32); }
 		template<> inline HH_hid_t GetHDF5Type<uint32_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT32); }
 		template<> inline HH_hid_t GetHDF5Type<int64_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_INT64); }
 		template<> inline HH_hid_t GetHDF5Type<uint64_t>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_UINT64); }
 		template<> inline HH_hid_t GetHDF5Type<float>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_FLOAT); }
+		template<> inline HH_hid_t GetHDF5Type<float const>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_FLOAT); }
 		template<> inline HH_hid_t GetHDF5Type<double>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_DOUBLE); }
+		template<> inline HH_hid_t GetHDF5Type<bool>(std::initializer_list<hsize_t>, void*) { return HH_hid_t(H5T_NATIVE_HBOOL); }
+
+		inline HH_hid_t GetHDF5TypeFixedString(hsize_t sz) { 
+			hid_t strtype = H5Tcopy(H5T_C_S1);
+			if (strtype < 0) throw HH_throw.add("Reason", "H5Tcopy failed.");
+			herr_t status = H5Tset_size(strtype, sz);
+			if (status < 0) throw HH_throw.add("Reason", "H5Tset_size failed.");
+			return HH_hid_t(strtype);
+		}
 
 		/// Function to tell if a datatype is of constant or variable length.
 
@@ -127,7 +135,7 @@ namespace HH {
 		struct Object_Accessor
 		{
 		private:
-			void *_buffer;
+			void* _buffer;
 		public:
 			Object_Accessor(ssize_t sz = -1) {}
 			/// \brief Converts an object into a void* array that HDF5 can natively understand.
@@ -147,11 +155,11 @@ namespace HH {
 			}
 			/// \brief Allocates a buffer that HDF5 can read/write into; used later as input data for object construction.
 			/// \note For POD objects, we can directly write to the object.
-			void marshalBuffer(DataType * objStart) { _buffer = static_cast<void*>(objStart); }
+			void marshalBuffer(DataType* objStart) { _buffer = static_cast<void*>(objStart); }
 			/// \brief Construct an object from an HDF5-provided data stream, 
 			/// and deallocate any temporary buffer.
 			/// \note For trivial (POD) objects, there is no need to do anything.
-			void deserialize(DataType *objStart) { }
+			void deserialize(DataType* objStart) { }
 			void freeBuffer() {}
 		};
 
@@ -171,7 +179,7 @@ namespace HH {
 			{
 				_bufStrPointers.clear();
 				_bufStrs.clear();
-				for (const auto &s : d) {
+				for (const auto& s : d) {
 					size_t sz = s.size() + 1;
 					std::unique_ptr<char[]> sobj(new char[sz]);
 					_impl::COMPAT_strncpy_s(sobj.get(), sz, s.data(), sz);

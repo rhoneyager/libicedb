@@ -1,4 +1,5 @@
 #pragma once
+#include "defs.hpp"
 #include <hdf5.h>
 
 namespace HH {
@@ -28,7 +29,7 @@ namespace HH {
 				static inline void Close(hid_t h) {
 					herr_t err = H5Aclose(h);
 				}
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					if (*h >= 0) H5Aclose(*h);
 					delete h;
 				}
@@ -37,7 +38,7 @@ namespace HH {
 				static inline void Close(hid_t h) {
 					herr_t err = H5Fclose(h);
 				}
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					if (*h >= 0) H5Fclose(*h);
 					delete h;
 				}
@@ -46,7 +47,7 @@ namespace HH {
 				static inline void Close(hid_t h) {
 					herr_t err = H5Dclose(h);
 				}
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					if (*h >= 0) H5Dclose(*h);
 					delete h;
 				}
@@ -55,7 +56,7 @@ namespace HH {
 				static inline void Close(hid_t h) {
 					herr_t err = H5Sclose(h);
 				}
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					if (*h >= 0) H5Sclose(*h);
 					delete h;
 				}
@@ -64,7 +65,7 @@ namespace HH {
 				static inline void Close(hid_t h) {
 					herr_t err = H5Tclose(h);
 				}
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					if (*h >= 0) H5Tclose(*h);
 					delete h;
 				}
@@ -73,7 +74,7 @@ namespace HH {
 				static inline void Close(hid_t h) {
 					herr_t err = H5Gclose(h);
 				}
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					if (*h >= 0) H5Gclose(*h);
 					delete h;
 				}
@@ -82,14 +83,14 @@ namespace HH {
 				static inline void Close(hid_t h) {
 					herr_t err = H5Pclose(h);
 				}
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					if (*h >= 0) H5Pclose(*h);
 					delete h;
 				}
 			};
 			struct DoNotClose {
 				static inline void Close(hid_t) { return; }
-				static inline void CloseP(hid_t *h) {
+				static inline void CloseP(hid_t* h) {
 					delete h;
 				}
 			};

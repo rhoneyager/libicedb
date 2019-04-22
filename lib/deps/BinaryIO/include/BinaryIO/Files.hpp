@@ -8,14 +8,14 @@
 #include <cerrno>
 #include <cstddef>
 
-#include "gsl/gsl_assert"
+#include "gsl/gsl"
 
 #if defined(BIO_OS_WINDOWS)
-# include <Windows.h>
-#elif defined(BIO_OS_UNIX)
-# include <sys/stat.h>
+#include <Windows.h>
+#elif defined(BIO_OS_UNIX) || defined(BIO_OS_LINUX)
+#include <sys/stat.h>
 #else
-# error "This code builds only on POSIX platforms and Windows!"
+#error "This code builds only on POSIX platforms and Windows!"
 #endif
 
 namespace bIO {
@@ -96,11 +96,7 @@ namespace bIO {
 	/// \brief Convenience function for reading a whole file into a vector.
 	/// \note If the file does not exist, or if filename points to a non-file object,
 	/// then getSize and openFile will throw.
-	template <typename BufferInnerByteType = bIO::byte>
-	HasError_t BIO_NODISCARD readFileToBuffer(
-		const std::string& filename,
-		std::vector<BufferInnerByteType> &buffer,
-		bool resizeBuffer = true)
+	inline HasError_t BIO_NODISCARD readFileToBuffer(const std::string& filename, std::vector<bIO::byte> &buffer, bool resizeBuffer = true)
 	{
 		auto pFile = _impl::openFile(filename);
 		size_t sz = buffer.size();
@@ -114,8 +110,8 @@ namespace bIO {
 		return false;
 	}
 
-	template <typename BufferInnerByteType = bIO::byte>
-	HasError_t BIO_NODISCARD readToBuffer(FILE* f, size_t numBytesToReadFromF, BufferInnerByteType* buffer, size_t bufferMaxSize) noexcept
+	inline HasError_t BIO_NODISCARD readToBuffer(
+		BIO_IN FILE* f, size_t numBytesToReadFromF, bIO::byte_ptr buffer, size_t bufferMaxSize) noexcept
 	{
 		Expects(f);
 		Expects(buffer);
