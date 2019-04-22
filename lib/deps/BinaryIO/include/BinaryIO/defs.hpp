@@ -225,8 +225,10 @@ namespace bIO {
 	//#if __cplusplus >= 201703L
 	//	typedef std::byte byte;
 	//#else
-	typedef unsigned char byte;
-	typedef unsigned char* byte_ptr;
+	//typedef unsigned char byte;
+	//typedef unsigned char* byte_ptr;
+	typedef char byte;
+	typedef char* byte_ptr;
 	//#endif
 }
 

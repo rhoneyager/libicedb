@@ -83,7 +83,7 @@ namespace icedb {
 
 						// Read the full contents of the file from the ifstream into a buffer.
 						std::vector<char> buffer;
-						if (bIO::readFileToBuffer<char>(h->filename, buffer))
+						if (bIO::readFileToBuffer(h->filename, buffer))
 							ICEDB_throw(icedb::error::error_types::xBadInput)
 							.add<std::string>("Reason", "Cannot read file to buffer.");
 

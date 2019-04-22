@@ -161,10 +161,8 @@ int main(int argc, char** argv) {
 		//Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		std::cout << "Using base group " << dbpath << std::endl;
 		HH::Group basegrp = HH::Handles::HH_hid_t::dummy();
-		if (file.exists(dbpath.c_str())) basegrp = file.open(dbpath.c_str());
-		else basegrp = file.create(dbpath.c_str(),
-			HH::PL::PL::createLinkCreation().setLinkCreationPList(
-				HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
+		if (file.exists(dbpath)) basegrp = file.open(dbpath);
+		else basegrp = file.create(dbpath);
 		//basegrp = db->createGroupStructure(dbpath);
 
 

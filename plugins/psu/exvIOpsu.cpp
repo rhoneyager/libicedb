@@ -91,7 +91,7 @@ namespace icedb {
 
 						// See pi.freq_number_as_string; pi.freq_units;
 						// The icedb::units library handles the conversion.
-						exvdata.frequency_Hz = icedb::units::conv_spec(pi.freq_units, "Hz")
+						exvdata.frequency_Hz = (float) icedb::units::conv_spec(pi.freq_units, "Hz")
 							.convert(boost::lexical_cast<float>(pi.freq_number_as_string)); //It's a float.
 						
 						exvdata.temperature_K = -1; // Set this. It's a float.
