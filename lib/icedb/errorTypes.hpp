@@ -42,6 +42,6 @@ namespace icedb {
 			xOtherError,
 			xUnsupportedIOaction
 		};
-		DL_ICEDB const char* stringify(error_types);
+		ICEDB_DL const char* stringify(error_types);
 	}
 }

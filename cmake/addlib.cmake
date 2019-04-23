@@ -1,21 +1,31 @@
-macro(addlib libname libshared )
-	if ("" STREQUAL "${ARGV2}")
-		set(headername ${libname})
+macro(addlib) #libname libshared)
+	set(libname "${ARGV0}")
+	if ("" STREQUAL "${ARGV1}")
+		set(isshared "STATIC")
 	else()
-		set(headername ${ARGV2})
+		set(isshared "${ARGV1}")
 	endif()
+	if ("" STREQUAL "${ARGV2}")
+		set(libshared ${libname})
+	else()
+		set(libshared ${ARGV2})
+	endif()
+	message("addlib name: ${libname}, shared name: ${libshared}, is shared: ${isshared}")
+
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES RELEASE_POSTFIX _Release${configappend} )
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES MINSIZEREL_POSTFIX _MinSizeRel${configappend} )
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES RELWITHDEBINFO_POSTFIX _RelWithDebInfo${configappend} )
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES DEBUG_POSTFIX _Debug${configappend} )
+
 	set_target_properties( ${libname} PROPERTIES FOLDER "Libs")
 
-	# This is for determining the build type (esp. used in registry code)
+	# These are for symbol export
+	target_compile_definitions(${libname} PRIVATE ${libshared}_EXPORTING)
+	target_compile_definitions(${libname} PUBLIC ${libshared}_SHARED=$<STREQUAL:${isshared},SHARED>)
 	target_compile_definitions(${libname} PRIVATE BUILDCONF="${CMAKE_BUILD_TYPE}")
+	# This is for determining the build type (esp. used in registry code)
 	target_compile_definitions(${libname} PRIVATE BUILDTYPE=BUILDTYPE_$<CONFIGURATION>)
-	# These two are for symbol export
-	target_compile_definitions(${libname} PRIVATE EXPORTING_${headername})
-	target_compile_definitions(${libname} PUBLIC SHARED_${headername}=$<STREQUAL:${libshared},SHARED>)
+
 	INSTALL(TARGETS ${libname}
 		EXPORT icedbTargets
 		#RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} # See NSIS below
@@ -31,7 +41,8 @@ macro(addlib libname libshared )
 				COMPONENT Libraries)
 		endif()
 	endif()
-endmacro(addlib libname headername)
+endmacro(addlib )
+
 
 macro(storebin objname)
 set_target_properties( ${objname}
@@ -78,6 +89,10 @@ macro(addplugin appname foldername folder)
 	SET_TARGET_PROPERTIES( ${appname} PROPERTIES MINSIZEREL_POSTFIX _MinSizeRel${configappend} )
 	SET_TARGET_PROPERTIES( ${appname} PROPERTIES RELWITHDEBINFO_POSTFIX _RelWithDebInfo${configappend} )
 	SET_TARGET_PROPERTIES( ${appname} PROPERTIES DEBUG_POSTFIX _Debug${configappend} )
+
+	target_compile_definitions(${appname} PRIVATE ${appname}_EXPORTING)
+	target_compile_definitions(${appname} PUBLIC ${appname}_SHARED=1)
+	message("addplugin name: ${appname}, shared name: ${appname}")
 
 	# This is for determining the build type (esp. used in registry code)
 	target_compile_definitions(${appname} PRIVATE BUILDCONF="${CMAKE_BUILD_TYPE}")

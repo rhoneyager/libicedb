@@ -1,15 +1,14 @@
 #pragma once
-#pragma once
 #pragma warning( disable : 4251 ) // warning C4251: dll-interface
 
+#include "defs.hpp"
 #include <memory>
 #include <string>
-#include <icedb/shape.hpp>
-#include <icedb/plugin.hpp>
+#include "icedb/shape.hpp"
+#include "icedb/plugin.hpp"
 
 
 #define PLUGINID "io-ddscat"
-
 
 namespace icedb {
 	namespace plugins {

@@ -11,11 +11,11 @@
 
 ICEDB_BEGIN_DECL_C
 
-DL_ICEDB size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
-DL_ICEDB char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
+ICEDB_DL size_t ICEDB_COMPAT_strncpy_s(char *dest, size_t destSz, const char* src, size_t srcSz);
+ICEDB_DL char* ICEDB_COMPAT_strdup_s(const char* src, size_t srcSz);
 
-DL_ICEDB size_t ICEDB_COMPAT_wcsncpy_s(wchar_t *dest, size_t destSz, const wchar_t* src, size_t srcSz);
-DL_ICEDB wchar_t* ICEDB_COMPAT_wcsdup_s(const wchar_t* src, size_t srcSz);
+ICEDB_DL size_t ICEDB_COMPAT_wcsncpy_s(wchar_t *dest, size_t destSz, const wchar_t* src, size_t srcSz);
+ICEDB_DL wchar_t* ICEDB_COMPAT_wcsdup_s(const wchar_t* src, size_t srcSz);
 
 
 	/** Safe file stream printf **/
@@ -45,10 +45,10 @@ DL_ICEDB wchar_t* ICEDB_COMPAT_wcsdup_s(const wchar_t* src, size_t srcSz);
 #endif
 
 /** \brief Allocate memory in bytes. Generally this is just malloced, but a custom allocator may be substituted. **/
-DL_ICEDB void* ICEDB_malloc(size_t numBytes);
+ICEDB_DL void* ICEDB_malloc(size_t numBytes);
 
 /** \brief Free memory region. Should not be double-freed. **/
-DL_ICEDB void ICEDB_free(void* obj);
+ICEDB_DL void ICEDB_free(void* obj);
 
 ICEDB_END_DECL_C
 

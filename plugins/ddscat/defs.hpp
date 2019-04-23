@@ -8,14 +8,10 @@
 // They indicate that SHARED_EXPORT_ICEDB should be used.
 // If EXPORTING_ is not defined, then SHARED_IMPORT_ICEDB should be used.
 
-#if SHARED_io_ddscat
-#if EXPORTING_io_ddscat
-#define DL_ICEDB_IO_DDSCAT SHARED_EXPORT_ICEDB
+#if io_ddscat_EXPORTS
+# define ICEDB_DL_IO_DDSCAT ICEDB_SHARED_EXPORT
 #else
-#define DL_ICEDB_IO_DDSCAT SHARED_IMPORT_ICEDB
-#endif
-#else
-#define DL_ICEDB_IO_DDSCAT SHARED_EXPORT_ICEDB
+# define ICEDB_DL_IO_DDSCAT ICEDB_SHARED_IMPORT
 #endif
 
 // Compiler interface warning suppression

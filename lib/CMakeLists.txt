@@ -70,8 +70,8 @@ set(extensible_objs
 	src/dlls.cpp
 	)
 set(lib_objs
-	#icedb/Data_Types.hpp
 	icedb/defs.h
+	icedb/Constants.hpp
 	icedb/optionsForwards.hpp
 	icedb/util.hpp
 	icedb/util.h
@@ -136,10 +136,8 @@ storebin(icedb_base)
 
 add_library(icedb SHARED ${libsrcs})
 # compat contains the GSL and HH.
-target_include_directories(icedb SYSTEM
-	PUBLIC ${Boost_INCLUDE_DIRS})
-target_include_directories(icedb_base SYSTEM
-	PRIVATE ${Boost_INCLUDE_DIRS})
+target_include_directories(icedb SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(icedb_base SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(icedb_base PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/deps
@@ -163,6 +161,8 @@ target_compile_definitions(icedb
 	PUBLIC ${HDF5_DEFINITIONS})
 # Boost warning acknowledgement. 
 target_compile_definitions(icedb PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
+target_compile_definitions(icedb PUBLIC __STDC_WANT_LIB_EXT1__=1)
+target_compile_definitions(icedb PUBLIC __STDC_WANT_SECURE_LIB__=1)
 target_link_libraries(icedb icedb_base icedb::GSL icedb::HH icedb::BinaryIO icedb::Eigen3 ) # ZLIB::ZLIB)
 target_link_libraries(icedb
 	Boost::filesystem

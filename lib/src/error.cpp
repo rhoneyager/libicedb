@@ -1,8 +1,8 @@
-#include "../icedb/error.hpp"
-#include "../icedb/options.hpp"
-#include "../icedb/error_context.h"
-#include "../icedb/error.h"
-#include "../icedb/util.h"
+#include "icedb/error.hpp"
+#include "icedb/options.hpp"
+#include "icedb/error_context.h"
+#include "icedb/error.h"
+#include "icedb/util.h"
 #include <cstdio>
 #include <cstring>
 #include <vector>
@@ -18,7 +18,7 @@ ICEDB_error_code error_context_to_code(const struct ICEDB_error_context* err) {
 	if (!err) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return err->code;
 }
-DL_ICEDB ICEDB_error_context_to_code_f ICEDB_error_context_to_code = error_context_to_code;
+ICEDB_DL ICEDB_error_context_to_code_f ICEDB_error_context_to_code = error_context_to_code;
 
 size_t error_context_to_message_size(const struct ICEDB_error_context* err) {
 	if (!err) ICEDB_DEBUG_RAISE_EXCEPTION();
@@ -58,7 +58,7 @@ size_t error_context_to_message_size(const struct ICEDB_error_context* err) {
 
 	return size_t(total);
 }
-DL_ICEDB ICEDB_error_context_to_message_size_f ICEDB_error_context_to_message_size = error_context_to_message_size;
+ICEDB_DL ICEDB_error_context_to_message_size_f ICEDB_error_context_to_message_size = error_context_to_message_size;
 
 size_t error_context_to_message(const struct ICEDB_error_context * err, size_t buf_size, char * buf)
 {
@@ -98,7 +98,7 @@ size_t error_context_to_message(const struct ICEDB_error_context * err, size_t b
 
 	return size_t(total);
 }
-DL_ICEDB ICEDB_error_context_to_message_f ICEDB_error_context_to_message = error_context_to_message;
+ICEDB_DL ICEDB_error_context_to_message_f ICEDB_error_context_to_message = error_context_to_message;
 
 size_t error_context_to_stream(const struct ICEDB_error_context * err, FILE * fp)
 {
@@ -121,7 +121,7 @@ size_t error_context_to_stream(const struct ICEDB_error_context * err, FILE * fp
 	}
 	return uint16_t(res);
 }
-DL_ICEDB ICEDB_error_context_to_stream_f ICEDB_error_context_to_stream = error_context_to_stream;
+ICEDB_DL ICEDB_error_context_to_stream_f ICEDB_error_context_to_stream = error_context_to_stream;
 
 ICEDB_error_code error_test()
 {
@@ -129,7 +129,7 @@ ICEDB_error_code error_test()
 	ICEDB_error_context_append_str(cxt, "This is a test.\n");
 	return ICEDB_ERRORCODES_TODO;
 }
-DL_ICEDB ICEDB_error_test_f ICEDB_error_test = error_test;
+ICEDB_DL ICEDB_error_test_f ICEDB_error_test = error_test;
 
 size_t error_code_to_message_size(ICEDB_error_code err)
 {
@@ -138,7 +138,7 @@ size_t error_code_to_message_size(ICEDB_error_code err)
 		1000) + 1; // -1,+1 because message_size includes the null character.
 	return res;
 }
-DL_ICEDB ICEDB_error_code_to_message_size_f ICEDB_error_code_to_message_size = error_code_to_message_size;
+ICEDB_DL ICEDB_error_code_to_message_size_f ICEDB_error_code_to_message_size = error_code_to_message_size;
 
 size_t error_code_to_message(ICEDB_error_code err, size_t buf_size, char * buf)
 {
@@ -149,7 +149,7 @@ size_t error_code_to_message(ICEDB_error_code err, size_t buf_size, char * buf)
 	size_t res = ICEDB_COMPAT_strncpy_s(buf, buf_size, ICEDB_ERRORCODES_MAP[err], cnt);
 	return size_t((res>SIZE_MAX) ? SIZE_MAX : res);
 }
-DL_ICEDB ICEDB_error_code_to_message_f ICEDB_error_code_to_message = error_code_to_message;
+ICEDB_DL ICEDB_error_code_to_message_f ICEDB_error_code_to_message = error_code_to_message;
 
 size_t error_code_to_stream(ICEDB_error_code err, FILE * fp)
 {
@@ -159,13 +159,13 @@ size_t error_code_to_stream(ICEDB_error_code err, FILE * fp)
 
 	return size_t(res);
 }
-DL_ICEDB ICEDB_error_code_to_stream_f ICEDB_error_code_to_stream = error_code_to_stream;
+ICEDB_DL ICEDB_error_code_to_stream_f ICEDB_error_code_to_stream = error_code_to_stream;
 
 struct ICEDB_error_context * get_error_context_thread_local_c()
 {
 	return __ICEDB_LOCAL_THREAD_error_context;
 }
-DL_ICEDB ICEDB_get_error_context_thread_local_f ICEDB_get_error_context_thread_local = get_error_context_thread_local_c;
+ICEDB_DL ICEDB_get_error_context_thread_local_f ICEDB_get_error_context_thread_local = get_error_context_thread_local_c;
 
 void error_context_deallocate(struct ICEDB_error_context *c)
 {
@@ -180,7 +180,7 @@ void error_context_deallocate(struct ICEDB_error_context *c)
 	}
 	ICEDB_free(c);
 }
-DL_ICEDB ICEDB_error_context_deallocate_f ICEDB_error_context_deallocate = error_context_deallocate;
+ICEDB_DL ICEDB_error_context_deallocate_f ICEDB_error_context_deallocate = error_context_deallocate;
 
 const char* error_getOSname() {
 	const char* name =
@@ -207,9 +207,9 @@ const char* error_getOSname() {
 #endif
 	return name;
 }
-DL_ICEDB ICEDB_error_getOSname_f ICEDB_error_getOSname = error_getOSname;
+ICEDB_DL ICEDB_error_getOSname_f ICEDB_error_getOSname = error_getOSname;
 
-DL_ICEDB const struct ICEDB_error_container_ftable ICEDB_ct_error = {
+ICEDB_DL const struct ICEDB_error_container_ftable ICEDB_ct_error = {
 	error_code_to_message_size,
 	error_code_to_message,
 	error_code_to_stream,
@@ -285,10 +285,10 @@ namespace icedb {
 	f(std::string); f(bool); f(std::complex<double>); \
 	f(icedb::registry::IOhandler::IOtype);
 
-#define IMPL_xError_ADD(T) template DL_ICEDB xError& xError::add<T>(const std::string&, const T);
+#define IMPL_xError_ADD(T) template ICEDB_DL xError& xError::add<T>(const std::string&, const T);
 		DOTYPES(IMPL_xError_ADD);
 
-		template<> DL_ICEDB xError& xError::add(const std::string &key,  char const * const value)
+		template<> ICEDB_DL xError& xError::add(const std::string &key,  char const * const value)
 		{
 			if (!ep->cur) push();
 			this->ep->cur->add<std::string>(key, std::string(value));
@@ -297,27 +297,27 @@ namespace icedb {
 
 
 
-		template<> DL_ICEDB std::string stringify<std::string>(error_code_t err) {
+		template<> ICEDB_DL std::string stringify<std::string>(error_code_t err) {
 			std::string res;
 			stringify(err, res);
 			return res;
 		}
-		template<> DL_ICEDB const char* stringify<const char*>(error_code_t err) {
+		template<> ICEDB_DL const char* stringify<const char*>(error_code_t err) {
 			return ICEDB_ERRORCODES_MAP[err];
 		}
 
 
-		DL_ICEDB error_context_pt get_error_context_thread_local() {
+		ICEDB_DL error_context_pt get_error_context_thread_local() {
 			return error_context_pt(get_error_context_thread_local_c(), error_context_deallocate);
 		}
 
-		DL_ICEDB void stringify(error_code_t err, std::string &res) {
+		ICEDB_DL void stringify(error_code_t err, std::string &res) {
 			res = std::string(ICEDB_ERRORCODES_MAP[err]);
 		}
-		DL_ICEDB void stringify(error_code_t err, const char** res) {
+		ICEDB_DL void stringify(error_code_t err, const char** res) {
 			*res = ICEDB_ERRORCODES_MAP[err];
 		}
-		DL_ICEDB void stringify(const error_context_pt &err, std::string &res) {
+		ICEDB_DL void stringify(const error_context_pt &err, std::string &res) {
 			// A few memory copies occur here. Inefficient, but errors should not occur much in properly running code.
 			size_t sz = ICEDB_error_context_to_message_size(err.get());
 			//std::unique_ptr<char[]> buf(new char[sz]);
@@ -325,13 +325,13 @@ namespace icedb {
 			ICEDB_error_context_to_message(err.get(), sz, buf.data());
 			res = std::string(buf.data());
 		}
-		DL_ICEDB std::string stringify(const error_context_pt &err) {
+		ICEDB_DL std::string stringify(const error_context_pt &err) {
 			std::string res;
 			stringify(err, res);
 			return res;
 		}
 
-		DL_ICEDB error_code_t error_context_to_code(const error_context_pt& err) { return ICEDB_error_context_to_code(err.get()); }
+		ICEDB_DL error_code_t error_context_to_code(const error_context_pt& err) { return ICEDB_error_context_to_code(err.get()); }
 
 	}
 }

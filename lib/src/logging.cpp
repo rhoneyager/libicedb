@@ -1,9 +1,9 @@
-#include "../icedb/logging.hpp"
+#include "icedb/logging.hpp"
 #include <iostream>
 #include <fstream>
 #include <memory>
 #include <sstream>
-#include "../icedb/misc/os_functions.h"
+#include "icedb/misc/os_functions.h"
 namespace {
 	int logConsoleThreshold = icedb::logging::PRIORITIES::ICEDB_LOG_DEBUG_WARNING;
 	int logDebugThreshold = 0;

@@ -20,7 +20,7 @@ namespace icedb {
 		namespace ddscat {
 			class ddPar;
 
-			class DL_ICEDB_IO_DDSCAT rotationsBase
+			class ICEDB_DL_IO_DDSCAT rotationsBase
 			{
 			public:
 				rotationsBase();
@@ -32,7 +32,7 @@ namespace icedb {
 				size_t _bN, _tN, _pN;
 			};
 
-			class DL_ICEDB_IO_DDSCAT rotations : public rotationsBase
+			class ICEDB_DL_IO_DDSCAT rotations : public rotationsBase
 			{
 			public:
 				rotations();

@@ -1,14 +1,15 @@
+#include "icedb/defs.h"
 #include <cmath>
 #include <complex>
 #include <valarray>
 #include <mutex>
 #include <set>
-#include "../icedb/refract/refract.hpp"
-#include "../icedb/refract/refractBase.hpp"
-#include "../icedb/zeros.hpp"
-#include "../icedb/units/units.hpp"
-#include "../icedb/error.hpp"
-#include "../icedb/logging.hpp"
+#include "icedb/refract/refract.hpp"
+#include "icedb/refract/refractBase.hpp"
+#include "icedb/zeros.hpp"
+#include "icedb/units/units.hpp"
+#include "icedb/error.hpp"
+#include "icedb/logging.hpp"
 
 namespace icedb {
 	namespace refract {

@@ -1,6 +1,7 @@
-#include "../icedb/defs.h"
-#include "../icedb/util.h"
-#include "../icedb/util.hpp"
+#include "icedb/defs.h"
+#include "icedb/util.h"
+#include "icedb/util.hpp"
+#include "icedb/error.h"
 #include <cstring>
 #include <cwchar>
 #include <cstdio>
@@ -12,7 +13,7 @@
 
 ICEDB_BEGIN_DECL_C
 
-ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(
+ICEDB_DL size_t ICEDB_COMPAT_strncpy_s(
 	char * dest, size_t destSz,
 	const char * src, size_t srcSz)
 {
@@ -40,7 +41,7 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_strncpy_s(
 	return 0; // Should never be reached
 }
 
-ICEDB_SYMBOL_SHARED char * ICEDB_COMPAT_strdup_s(const char * src, size_t srcSz)
+ICEDB_DL char * ICEDB_COMPAT_strdup_s(const char * src, size_t srcSz)
 {
 	/** \brief Safe char array initialization and copy. Null appended at end (added to srcSz). **/
 	if (!src) ICEDB_DEBUG_RAISE_EXCEPTION();
@@ -50,7 +51,7 @@ ICEDB_SYMBOL_SHARED char * ICEDB_COMPAT_strdup_s(const char * src, size_t srcSz)
 }
 
 
-ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_wcsncpy_s(
+ICEDB_DL size_t ICEDB_COMPAT_wcsncpy_s(
 	wchar_t * dest, size_t destSz,
 	const wchar_t * src, size_t srcSz)
 {
@@ -78,7 +79,7 @@ ICEDB_SYMBOL_SHARED size_t ICEDB_COMPAT_wcsncpy_s(
 	return 0; // Should never be reached
 }
 
-ICEDB_SYMBOL_SHARED wchar_t * ICEDB_COMPAT_wcsdup_s(const wchar_t * src, size_t srcSz)
+ICEDB_DL wchar_t * ICEDB_COMPAT_wcsdup_s(const wchar_t * src, size_t srcSz)
 {
 	/** \brief Safe char array initialization and copy. Null appended at end (added to srcSz). **/
 	if (!src) ICEDB_DEBUG_RAISE_EXCEPTION();
@@ -88,19 +89,19 @@ ICEDB_SYMBOL_SHARED wchar_t * ICEDB_COMPAT_wcsdup_s(const wchar_t * src, size_t 
 }
 
 
-ICEDB_SYMBOL_SHARED void * ICEDB_malloc(size_t numBytes)
+ICEDB_DL void * ICEDB_malloc(size_t numBytes)
 {
 	void* res = malloc(numBytes);
 	if (!res) ICEDB_DEBUG_RAISE_EXCEPTION();
 	return res;
 }
 
-ICEDB_SYMBOL_SHARED void ICEDB_free(void * obj)
+ICEDB_DL void ICEDB_free(void * obj)
 {
 	if (!obj) ICEDB_DEBUG_RAISE_EXCEPTION();
 	free(obj);
 }
-ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t* file, int line, const wchar_t* fsig)
+ICEDB_DL void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t* file, int line, const wchar_t* fsig)
 {
 	ICEDB_COMPAT_fwprintf_s(stderr, L"Exception raised in file %s, line %d, function %s.\n", file, line, fsig);
 
@@ -111,7 +112,7 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t* f
 	exit(999);
 #endif
 }
-ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A(const char* file, int line, const char* fsig)
+ICEDB_DL void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A(const char* file, int line, const char* fsig)
 {
 	ICEDB_COMPAT_fprintf_s(stderr, "Exception raised in file %s, line %d, function %s.\n", file, line, fsig);
 
@@ -127,7 +128,7 @@ ICEDB_END_DECL_C
 
 ICEDB_BEGIN_DECL
 namespace icedb {
-	ICEDB_SYMBOL_SHARED void* _malloc(size_t numBytes) { return ICEDB_malloc(numBytes); }
-	ICEDB_SYMBOL_SHARED void _free(void* obj) { return ICEDB_free(obj); }
+	ICEDB_DL void* _malloc(size_t numBytes) { return ICEDB_malloc(numBytes); }
+	ICEDB_DL void _free(void* obj) { return ICEDB_free(obj); }
 }
 ICEDB_END_DECL

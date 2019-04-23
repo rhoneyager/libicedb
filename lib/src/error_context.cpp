@@ -1,11 +1,11 @@
-#include "../icedb/defs.h"
-#include "../icedb/util.h"
+#include "icedb/defs.h"
+#include "icedb/util.h"
 #include <string.h>
 #include <stdlib.h>
-#include "../icedb/error_context.h"
-#include "../icedb/util.h"
+#include "icedb/error_context.h"
+#include "icedb/util.h"
 
-ICEDB_SYMBOL_PRIVATE ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context = NULL;
+ICEDB_THREAD_LOCAL ICEDB_error_context* __ICEDB_LOCAL_THREAD_error_context = NULL;
 
 struct ICEDB_error_context* error_context_create_impl(int code, const char* file, int line, const char* fsig)
 {
@@ -35,7 +35,7 @@ struct ICEDB_error_context* error_context_create_impl(int code, const char* file
 	__ICEDB_LOCAL_THREAD_error_context = res;
 	return res;
 }
-DL_ICEDB ICEDB_error_context_create_impl_f ICEDB_error_context_create_impl = error_context_create_impl;
+ICEDB_DL ICEDB_error_context_create_impl_f ICEDB_error_context_create_impl = error_context_create_impl;
 
 struct ICEDB_error_context* error_context_copy(const struct ICEDB_error_context *c)
 {
@@ -52,7 +52,7 @@ struct ICEDB_error_context* error_context_copy(const struct ICEDB_error_context 
 
 	return res;
 }
-DL_ICEDB ICEDB_error_context_copy_f ICEDB_error_context_copy = error_context_copy;
+ICEDB_DL ICEDB_error_context_copy_f ICEDB_error_context_copy = error_context_copy;
 
 void error_context_append(struct ICEDB_error_context *c, size_t sz, const char * data)
 {
@@ -75,14 +75,14 @@ void error_context_append(struct ICEDB_error_context *c, size_t sz, const char *
 	c->message_size = (size_t) ICEDB_COMPAT_strnlen_s(c->message_text, 
 		(c->message_size_alloced < UINT16_MAX-1) ? c->message_size_alloced : UINT16_MAX-1)+1; // -1,+1 because message_size includes the null character.
 }
-DL_ICEDB ICEDB_error_context_appendA_f ICEDB_error_context_appendA = error_context_append;
+ICEDB_DL ICEDB_error_context_appendA_f ICEDB_error_context_appendA = error_context_append;
 
 void error_context_append_str(struct ICEDB_error_context *c, const char * data)
 {
 	size_t sz = (size_t) strnlen(data, UINT16_MAX);
 	ICEDB_error_context_append(c, sz+1, data);
 }
-DL_ICEDB ICEDB_error_context_append_strA_f ICEDB_error_context_append_strA = error_context_append_str;
+ICEDB_DL ICEDB_error_context_append_strA_f ICEDB_error_context_append_strA = error_context_append_str;
 
 void error_context_add_string(struct ICEDB_error_context *c, size_t var_sz, const char * var_name, size_t val_sz, const char * var_val)
 {
@@ -92,7 +92,7 @@ void error_context_add_string(struct ICEDB_error_context *c, size_t var_sz, cons
 	c->var_vals[c->num_var_fields].val = ICEDB_COMPAT_strdup_s(var_val, val_sz);
 	c->num_var_fields++;
 }
-DL_ICEDB ICEDB_error_context_add_stringA_f ICEDB_error_context_add_stringA = error_context_add_string;
+ICEDB_DL ICEDB_error_context_add_stringA_f ICEDB_error_context_add_stringA = error_context_add_string;
 
 void error_context_add_string2(struct ICEDB_error_context *c, const char * var_name, const char * var_val)
 {
@@ -102,7 +102,7 @@ void error_context_add_string2(struct ICEDB_error_context *c, const char * var_n
 	ICEDB_error_context_add_string(c, strnlen(var_name, UINT16_MAX), var_name, strnlen(var_val, UINT16_MAX), var_val);
 #endif
 }
-DL_ICEDB ICEDB_error_context_add_string2A_f ICEDB_error_context_add_string2A = error_context_add_string2;
+ICEDB_DL ICEDB_error_context_add_string2A_f ICEDB_error_context_add_string2A = error_context_add_string2;
 
 void error_context_widen(struct ICEDB_error_context *c, size_t numNewSpaces)
 {
@@ -128,11 +128,11 @@ void error_context_widen(struct ICEDB_error_context *c, size_t numNewSpaces)
 	c->var_vals = newvals;
 	c->max_num_var_fields += numNewSpaces;
 }
-DL_ICEDB ICEDB_error_context_widen_f ICEDB_error_context_widen = error_context_widen;
+ICEDB_DL ICEDB_error_context_widen_f ICEDB_error_context_widen = error_context_widen;
 
 
 
-DL_ICEDB const struct ICEDB_error_context_container_ftable ICEDB_ct_error_context = {
+ICEDB_DL const struct ICEDB_error_context_container_ftable ICEDB_ct_error_context = {
 	error_context_create_impl,
 	error_context_copy,
 	error_context_append,

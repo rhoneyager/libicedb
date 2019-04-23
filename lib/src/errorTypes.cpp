@@ -1,4 +1,4 @@
-#include "../icedb/errorTypes.hpp"
+#include "icedb/errorTypes.hpp"
 namespace icedb {
 	namespace error {
 		const char* stringify(error_types et) {

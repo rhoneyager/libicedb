@@ -10,6 +10,20 @@
 
 ICEDB_BEGIN_DECL_C
 
+
+#define ICEDB_WIDEN2(x) L ## x
+#define ICEDB_WIDEN(x) ICEDB_WIDEN2(x)
+/* Global exception raising code (invokes debugger) */
+ICEDB_DL void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A(const char*, int, const char*);
+ICEDB_DL void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, int, const wchar_t*);
+#define ICEDB_DEBUG_RAISE_EXCEPTION() ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC( ICEDB_WIDEN(__FILE__), (int)__LINE__, ICEDB_WIDEN(ICEDB_FUNCSIG));
+
+#define ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A
+/* Global error codes. */
+#define ICEDB_GLOBAL_ERROR_TODO 999
+
+
+
 /** @defgroup errs Errors
 *
 * @{
@@ -23,7 +37,7 @@ ICEDB_BEGIN_DECL_C
 	\returns The minimum size of the character array needed to hold the message.
 	\param err is the error code in question. **/
 	typedef size_t (*ICEDB_error_code_to_message_size_f)(ICEDB_error_code err);
-	extern DL_ICEDB ICEDB_error_code_to_message_size_f ICEDB_error_code_to_message_size;
+	extern ICEDB_DL ICEDB_error_code_to_message_size_f ICEDB_error_code_to_message_size;
 
 	/** Support function to turn the general error code into a human-readable message.
 	This function safely writes the error string. The buffer will always be null-terminated, either at the
@@ -37,7 +51,7 @@ ICEDB_BEGIN_DECL_C
 	\param buf_size is the size of the output buffer.
 	\param buf is the buffer. **/
 	typedef size_t (*ICEDB_error_code_to_message_f)(ICEDB_error_code err, size_t buf_size, char* buf);
-	extern DL_ICEDB ICEDB_error_code_to_message_f ICEDB_error_code_to_message;
+	extern ICEDB_DL ICEDB_error_code_to_message_f ICEDB_error_code_to_message;
 
 	/** Support function to write the error code to an output stream (C-style).
 	This is a convenience function that allows for printing the error without an intermediate string copy,
@@ -46,7 +60,7 @@ ICEDB_BEGIN_DECL_C
 	\param fp is the FILE pointer.
 	\param err is the error code in question. **/
 	typedef size_t (*ICEDB_error_code_to_stream_f)(ICEDB_error_code err, FILE* fp);
-	extern DL_ICEDB ICEDB_error_code_to_stream_f ICEDB_error_code_to_stream;
+	extern ICEDB_DL ICEDB_error_code_to_stream_f ICEDB_error_code_to_stream;
 
 	/** Defines an error context. This structure contains both an error code (for fast lookups) and
 	any ancillary information to determine why / how the error occurred. The library keeps an internal buffer
@@ -57,19 +71,19 @@ ICEDB_BEGIN_DECL_C
 	/** Copy the last error context raised within the active thread. The resulting object should be freed once no longer needed. 
 	Returns NULL if no context exists. **/
 	typedef struct ICEDB_error_context* (*ICEDB_get_error_context_thread_local_f)();
-	extern DL_ICEDB ICEDB_get_error_context_thread_local_f ICEDB_get_error_context_thread_local;
+	extern ICEDB_DL ICEDB_get_error_context_thread_local_f ICEDB_get_error_context_thread_local;
 
 	/** Release the error context (this is the destructor, and frees the memory) **/
 	typedef void (*ICEDB_error_context_deallocate_f)(struct ICEDB_error_context*);
-	extern DL_ICEDB ICEDB_error_context_deallocate_f ICEDB_error_context_deallocate;
+	extern ICEDB_DL ICEDB_error_context_deallocate_f ICEDB_error_context_deallocate;
 
 	/** Get the error code from the context. **/
 	typedef ICEDB_error_code (*ICEDB_error_context_to_code_f)(const struct ICEDB_error_context*);
-	extern DL_ICEDB ICEDB_error_context_to_code_f ICEDB_error_context_to_code;
+	extern ICEDB_DL ICEDB_error_context_to_code_f ICEDB_error_context_to_code;
 
 	/** Determines the minimum buffer size for a human-readable representation of the ICEDB_error_context. **/
 	typedef size_t (*ICEDB_error_context_to_message_size_f)(const struct ICEDB_error_context*);
-	extern DL_ICEDB ICEDB_error_context_to_message_size_f ICEDB_error_context_to_message_size;
+	extern ICEDB_DL ICEDB_error_context_to_message_size_f ICEDB_error_context_to_message_size;
 	/** Support function to turn the general error code into a human-readable message.
 	This function safely writes the error string. The buffer will always be null-terminated, either at the
 	end of the written string, or at the end of the buffer. To query the necessary buffer size before writing,
@@ -82,7 +96,7 @@ ICEDB_BEGIN_DECL_C
 	\param buf_size is the size of the output buffer.
 	\param buf is the buffer. **/
 	typedef size_t (*ICEDB_error_context_to_message_f)(const struct ICEDB_error_context* err, size_t buf_size, char* buf);
-	extern DL_ICEDB ICEDB_error_context_to_message_f ICEDB_error_context_to_message;
+	extern ICEDB_DL ICEDB_error_context_to_message_f ICEDB_error_context_to_message;
 
 	/** Support function to write the error code to an output stream (C-style).
 	This is a convenience function that allows for printing the error without an intermediate string copy,
@@ -91,15 +105,15 @@ ICEDB_BEGIN_DECL_C
 	\param fp is the FILE pointer.
 	\param err is the error context in question. **/
 	typedef size_t (*ICEDB_error_context_to_stream_f)(const struct ICEDB_error_context* err, FILE* fp);
-	extern DL_ICEDB ICEDB_error_context_to_stream_f ICEDB_error_context_to_stream;
+	extern ICEDB_DL ICEDB_error_context_to_stream_f ICEDB_error_context_to_stream;
 
 	/** Testing function that raises an error. **/
 	typedef ICEDB_error_code (*ICEDB_error_test_f)();
-	extern DL_ICEDB ICEDB_error_test_f ICEDB_error_test;
+	extern ICEDB_DL ICEDB_error_test_f ICEDB_error_test;
 
 	/// Convenience function that returns an immutable string describing the OS type. Staticly allocated.
 	typedef const char* (*ICEDB_error_getOSname_f)();
-	extern DL_ICEDB ICEDB_error_getOSname_f ICEDB_error_getOSname;
+	extern ICEDB_DL ICEDB_error_getOSname_f ICEDB_error_getOSname;
 
 	/// A convenience wrapper for all error functions
 	struct ICEDB_error_container_ftable {
@@ -115,7 +129,7 @@ ICEDB_BEGIN_DECL_C
 		ICEDB_error_test_f test;
 		ICEDB_error_getOSname_f getOSname;
 	};
-	DL_ICEDB extern const struct ICEDB_error_container_ftable ICEDB_ct_error;
+	ICEDB_DL extern const struct ICEDB_error_container_ftable ICEDB_ct_error;
 
 /** @} */ // end of errs
 	ICEDB_END_DECL_C

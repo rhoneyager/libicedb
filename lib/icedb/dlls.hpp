@@ -48,7 +48,7 @@ namespace icedb
 		class DLLhandle;
 
 		/// Validator for DLLs
-		class DL_ICEDB dllValidator {
+		class ICEDB_DL dllValidator {
 		protected:
 			dllValidator();
 		private:
@@ -68,7 +68,7 @@ namespace icedb
 		* completes its load. Only after all validators pass is the dllStart
 		* routine called (the one that is passed by icedb).
 		**/
-		class DL_ICEDB dllValidatorSet {
+		class ICEDB_DL dllValidatorSet {
 		private:
 			std::vector<std::shared_ptr<const dllValidator> > validators;
 		protected:
@@ -88,7 +88,7 @@ namespace icedb
 		* fails to initialize properly. Previously, a dangling handle was
 		* produced.
 		**/
-		class DL_ICEDB DLLhandle
+		class ICEDB_DL DLLhandle
 		{
 		public:
 			DLLhandle(const std::string &filename,
@@ -108,20 +108,20 @@ namespace icedb
 
 
 		/// Load a DLL.
-		void DL_ICEDB loadDLL(const std::string &filename, std::shared_ptr<const dllValidatorSet> = dllValidatorSet::getDefault(), bool critical = false);
+		void ICEDB_DL loadDLL(const std::string &filename, std::shared_ptr<const dllValidatorSet> = dllValidatorSet::getDefault(), bool critical = false);
 		/// Load DLLs.
-		void DL_ICEDB loadDLLs(const std::vector<std::string> &dlls, std::shared_ptr<const dllValidatorSet> = dllValidatorSet::getDefault(), bool critical = false);
+		void ICEDB_DL loadDLLs(const std::vector<std::string> &dlls, std::shared_ptr<const dllValidatorSet> = dllValidatorSet::getDefault(), bool critical = false);
 		/// Load all icedb DLLs.
-		void DL_ICEDB loadDLLs();
+		void ICEDB_DL loadDLLs();
 
 		/// Print loaded DLLs
-		void DL_ICEDB printDLLs(std::ostream &out = std::cerr);
+		void ICEDB_DL printDLLs(std::ostream &out = std::cerr);
 
 		/// List DLL search paths
-		void DL_ICEDB printDLLsearchPaths(std::ostream &out = std::cerr);
+		void ICEDB_DL printDLLsearchPaths(std::ostream &out = std::cerr);
 
 		/// Find all occurances of a subpath in a search path.
-		bool DL_ICEDB findPath(std::set<boost::filesystem::path> &matches,
+		bool ICEDB_DL findPath(std::set<boost::filesystem::path> &matches,
 			const boost::filesystem::path &expr,
 			const std::set<boost::filesystem::path> &searchPaths, bool recurse);
 
@@ -144,24 +144,24 @@ namespace icedb
 		* \see loadSearchPaths
 		* \see icedb::registry::process_static_options
 		**/
-		void DL_ICEDB searchDLLs(std::vector<std::string> &dlls);
-		void DL_ICEDB searchDLLs(std::vector<std::string> &dlls,
+		void ICEDB_DL searchDLLs(std::vector<std::string> &dlls);
+		void ICEDB_DL searchDLLs(std::vector<std::string> &dlls,
 			const std::set<boost::filesystem::path> &searchPaths, bool recurse);
 
-		void DL_ICEDB add_hook_table(const char* tempsig, void* store);
-		void DL_ICEDB dump_hook_table(std::ostream &out = std::cerr);
+		void ICEDB_DL add_hook_table(const char* tempsig, void* store);
+		void ICEDB_DL dump_hook_table(std::ostream &out = std::cerr);
 
-		void DL_ICEDB list_loaded_modules(std::ostream &out = std::cerr);
+		void ICEDB_DL list_loaded_modules(std::ostream &out = std::cerr);
 	}
-	void DL_ICEDB add_options(
+	void ICEDB_DL add_options(
 		boost::program_options::options_description &cmdline,
 		boost::program_options::options_description &config,
 		boost::program_options::options_description &hidden);
 
-	void DL_ICEDB process_static_options(
+	void ICEDB_DL process_static_options(
 		boost::program_options::variables_map &vm);
 
-	void DL_ICEDB handle_config_file_options(
+	void ICEDB_DL handle_config_file_options(
 		boost::program_options::options_description &,
 		boost::program_options::variables_map &);
 }
@@ -176,12 +176,12 @@ extern "C"
 	};
 
 	/// Provides interface for DLLs to register basic information about themselves
-	DL_ICEDB dllInitResult icedb_registry_register_dll(
+	ICEDB_DL dllInitResult icedb_registry_register_dll(
 		const icedb::registry::DLLpreamble&,
 		void* funcInDllForPath);
 
 	/// Sort of a 'placeholder' symbol used to find the lib dir path.
-	SHARED_EXPORT_ICEDB void _ICEDB_dllPluginBase() noexcept;
+	ICEDB_SHARED_EXPORT void _ICEDB_dllPluginBase() noexcept;
 }
 
 #pragma warning(pop)

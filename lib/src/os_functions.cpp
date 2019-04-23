@@ -37,15 +37,14 @@ extern char **environ;
 #include <fstream>
 #include <map>
 #include <memory>
-#include "../icedb/error.h"
-#include "../icedb/error_context.h"
-#include "../icedb/error.hpp"
-#include "../icedb/misc/os_functions.h"
-#include "../icedb/misc/os_functions.hpp"
-#include "../icedb/dlls.hpp"
-//#include "../icedb/misc/mem.h"
-#include "../icedb/util.h"
-#include "../icedb/splitSet.hpp"
+#include "icedb/error.h"
+#include "icedb/error_context.h"
+#include "icedb/error.hpp"
+#include "icedb/misc/os_functions.h"
+#include "icedb/misc/os_functions.hpp"
+#include "icedb/dlls.hpp"
+#include "icedb/util.h"
+#include "icedb/splitSet.hpp"
 #include <boost/filesystem.hpp>
 #include "../private/os_impl.hpp"
 
@@ -1032,7 +1031,7 @@ namespace icedb {
 
 
 		void freeModuleInfoP(hModuleInfo p) { delete p; }
-		DL_ICEDB void freeProcessInfoP(hProcessInfo p) { delete p; }
+		ICEDB_DL void freeProcessInfoP(hProcessInfo p) { delete p; }
 		hModuleInfo getModuleInfoP(void* func)
 		{
 			std::string modpath;

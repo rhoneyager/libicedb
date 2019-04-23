@@ -31,7 +31,7 @@ namespace icedb {
 	}
 	namespace exv {
 		/// Structure containing all of the required data for the extended scattering properties of an object
-		struct DL_ICEDB NewEXVrequiredProperties :
+		struct ICEDB_DL NewEXVrequiredProperties :
 			virtual public registry::usesDLLregistry<
 			_impl::EXVProps_IO_Input_Registry,
 			registry::IO_class_registry_reader<NewEXVrequiredProperties> >,
@@ -74,7 +74,7 @@ namespace icedb {
 		};
 
 		/// \brief A high-level class to manipulate extended scattering variables
-		class DL_ICEDB EXV : 
+		class ICEDB_DL EXV : 
 			virtual public HH::Group,
 			virtual public registry::usesDLLregistry<
 			_impl::EXV_IO_Output_Registry,

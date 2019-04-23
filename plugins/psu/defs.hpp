@@ -8,14 +8,10 @@
 // They indicate that SHARED_EXPORT_SDBR should be used.
 // If EXPORTING_ is not defined, then SHARED_IMPORT_SDBR should be used.
 
-#if SHARED_io_psu
-#if EXPORTING_io_psu
-#define DL_ICEDB_IO_PSU SHARED_EXPORT_ICEDB
+#if io_psu_EXPORTS
+# define ICEDB_DL_IO_PSU ICEDB_SHARED_EXPORT
 #else
-#define DL_ICEDB_IO_PSU SHARED_IMPORT_ICEDB
-#endif
-#else
-#define DL_ICEDB_IO_PSU SHARED_EXPORT_ICEDB
+# define ICEDB_DL_IO_PSU ICEDB_SHARED_IMPORT
 #endif
 
 // Compiler interface warning suppression

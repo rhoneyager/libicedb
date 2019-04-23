@@ -1,8 +1,9 @@
+#include "icedb/defs.h"
 #include <string>
-#include "../icedb/units/units.hpp"
-#include "../icedb/units/unitsPlugins.hpp"
+#include "icedb/units/units.hpp"
+#include "icedb/units/unitsPlugins.hpp"
 #include "../private/unitsBackend.hpp"
-#include "../icedb/options.hpp"
+#include "icedb/options.hpp"
 
 namespace icedb {
 	namespace units {

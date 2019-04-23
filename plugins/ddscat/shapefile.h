@@ -1,4 +1,5 @@
 #pragma once
+#include "defs.hpp"
 #include <array>
 #include <functional>
 #include <iostream>
@@ -49,7 +50,7 @@ namespace icedb {
 	}
 	namespace io {
 		template <>
-		DL_ICEDB_IO_DDSCAT std::shared_ptr
+		ICEDB_DL_IO_DDSCAT std::shared_ptr
 			<::icedb::io::ddscat::shapefile::shapefile> customGenerator();
 	}
 }
@@ -61,7 +62,7 @@ namespace icedb {
 				class shapefile;
 
 				/// Provides local readers and writers for ddscat ddpar data (it's a binder)
-				class DL_ICEDB_IO_DDSCAT implementsDDSHP :
+				class ICEDB_DL_IO_DDSCAT implementsDDSHP :
 					private icedb::io::implementsIObasic<shapefile, shapefile_IO_output_registry,
 					shapefile_IO_input_registry, shapefile_Standard>
 				{
@@ -74,7 +75,7 @@ namespace icedb {
 				};
 
 				/// Class for reading / writing shapefiles. May be used in statistical calculations.
-				class DL_ICEDB_IO_DDSCAT shapefile :
+				class ICEDB_DL_IO_DDSCAT shapefile :
 					virtual public std::enable_shared_from_this<shapefile>,
 					virtual public ::icedb::registry::usesDLLregistry<
 						::icedb::io::ddscat::shapefile::shapefile_IO_input_registry,
@@ -196,6 +197,6 @@ namespace icedb {
 	}
 }
 
-DL_ICEDB_IO_DDSCAT std::ostream & operator<<(std::ostream &stream, const icedb::io::ddscat::shapefile::shapefile &ob);
+ICEDB_DL_IO_DDSCAT std::ostream & operator<<(std::ostream &stream, const icedb::io::ddscat::shapefile::shapefile &ob);
 //std::istream & operator>>(std::istream &stream, icedb::io::ddscat::shapefile &ob);
 

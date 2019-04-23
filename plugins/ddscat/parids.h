@@ -1,5 +1,5 @@
 #pragma once
-
+#include "plugin-io-ddscat.hpp"
 namespace icedb {
 	namespace io {
 		namespace ddscat {

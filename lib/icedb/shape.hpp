@@ -33,7 +33,7 @@ namespace icedb {
 	namespace Shapes {
 
 		/// Strucure containing a list of all of the data needed to create a new shape in the database
-		struct DL_ICEDB NewShapeProperties :
+		struct ICEDB_DL NewShapeProperties :
 			virtual public registry::usesDLLregistry<
 				_impl::ShapeProps_IO_Input_Registry,
 				registry::IO_class_registry_reader<NewShapeProperties> >,
@@ -109,7 +109,7 @@ namespace icedb {
 		/// Shapes are implemented as a set of tables and attributes, contained within a discrete Group.
 		/// This class provides a higl-level interface to accessing and manipulating shapes.
 		/// It acts as an "overlay" to an alreagy-existing group. It adds additional functions and "value".
-		class DL_ICEDB Shape :
+		class ICEDB_DL Shape :
 			virtual public HH::Group,
 			virtual public registry::usesDLLregistry<
 				_impl::Shape_IO_Output_Registry,

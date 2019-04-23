@@ -45,8 +45,8 @@ namespace icedb {
 
 		
 
-		DL_ICEDB ICEDB_ver_match compareVersions(const versionInfo_p a, const versionInfo_p b);
-		DL_ICEDB versionInfo_p getLibVersionInfo();
+		ICEDB_DL ICEDB_ver_match compareVersions(const versionInfo_p a, const versionInfo_p b);
+		ICEDB_DL versionInfo_p getLibVersionInfo();
 		/**
 		* \brief Provides information about the build environment during compilation.
 		*
@@ -56,7 +56,7 @@ namespace icedb {
 		*
 		* @param out The output stream that receives the information.
 		*/
-		DL_ICEDB void debug_preamble(const versionInfo &v, std::ostream &out = std::cerr);
+		ICEDB_DL void debug_preamble(const versionInfo &v, std::ostream &out = std::cerr);
 	}
 }
 ICEDB_END_DECL_CPP

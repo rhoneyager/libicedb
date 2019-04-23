@@ -69,7 +69,7 @@ namespace icedb
 				static std::shared_ptr<hookStorageType> hooks;
 				if (!hooks) hooks = 
 					std::shared_ptr<hookStorageType>(new hookStorageType);
-				add_hook_table(ICEDB_DEBUG_FSIG, hooks.get());
+				add_hook_table(ICEDB_FUNCSIG, hooks.get());
 				return hooks;
 			}
 		//public:
@@ -286,13 +286,13 @@ namespace icedb
 		* \param op is the export operation (provided by the lib caller)
 		* \param opref is the export operation to match (provided by the plugin)
 		**/
-		DL_ICEDB bool match_file_type(
+		ICEDB_DL bool match_file_type(
 			const char* filename, 
 			const char* type, const char* ext, 
 			const char* op = "", const char* opref = "");
 
 		/// Matches
-		DL_ICEDB bool match_file_type_multi(
+		ICEDB_DL bool match_file_type_multi(
 			std::shared_ptr<registry::IOhandler> h,
 			const char* pluginid,
 			std::shared_ptr<IO_options> opts,

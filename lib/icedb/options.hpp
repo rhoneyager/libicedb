@@ -8,7 +8,7 @@
 namespace icedb {
 	namespace registry {
 		/// Base class for external data access, throgh file I/O or database
-		struct DL_ICEDB handler_external
+		struct ICEDB_DL handler_external
 		{
 		protected:
 			handler_external(const char* id);
@@ -21,7 +21,7 @@ namespace icedb {
 
 		/// Base class to handle multiple IO operations on a single file
 		/// \todo Add functions for iteration of sub-objects.
-		struct DL_ICEDB IOhandler : public handler_external
+		struct ICEDB_DL IOhandler : public handler_external
 		{
 		protected:
 			IOhandler(const char* id);
@@ -39,7 +39,7 @@ namespace icedb {
 			};
 		};
 
-		class DL_ICEDB options : public std::enable_shared_from_this<options>
+		class ICEDB_DL options : public std::enable_shared_from_this<options>
 		{
 		protected:
 			options();
@@ -77,8 +77,8 @@ namespace icedb {
 			std::shared_ptr<options> clone() const;
 		};
 
-		DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::IOhandler::IOtype&);
-		DL_ICEDB std::istream & operator>>(std::istream&, icedb::registry::IOhandler::IOtype&);
-		DL_ICEDB std::ostream & operator<<(std::ostream&, const icedb::registry::options&);
+		ICEDB_DL std::ostream & operator<<(std::ostream&, const icedb::registry::IOhandler::IOtype&);
+		ICEDB_DL std::istream & operator>>(std::istream&, icedb::registry::IOhandler::IOtype&);
+		ICEDB_DL std::ostream & operator<<(std::ostream&, const icedb::registry::options&);
 	}
 }

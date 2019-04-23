@@ -1,3 +1,4 @@
+#include "icedb/defs.h"
 #include <algorithm>
 #include <string>
 #include <map>
@@ -11,8 +12,8 @@
 #include <sstream>
 #include <iostream>
 
-#include "../icedb/splitSet.hpp"
-#include "../icedb/error.hpp"
+#include "icedb/splitSet.hpp"
+#include "icedb/error.hpp"
 
 #pragma warning( disable : 4244 ) // lots of template math involves doubles, and I'm sick of static casting
 
@@ -165,7 +166,7 @@ namespace icedb {
 		}
 
 #define SPEC_SPLITSET_A(T) \
-	template DL_ICEDB void splitSet<T>(const T&, const T&, \
+	template ICEDB_DL void splitSet<T>(const T&, const T&, \
 	const T&, const std::string&, std::set<T> &);
 
 		//SPEC_SPLITSET_A(int);
@@ -238,7 +239,7 @@ namespace icedb {
 		}
 
 #define SPEC_SPLITSET_INTERVAL(T) \
-	template DL_ICEDB void extractInterval<T>( \
+	template ICEDB_DL void extractInterval<T>( \
 	const std::string&, T&, T&, T&, size_t&, std::string&);
 
 		//SPEC_SPLITSET_INTERVAL(int);
@@ -350,7 +351,7 @@ namespace icedb {
 		}
 
 #define SPEC_SPLITSET(T) \
-	template DL_ICEDB void splitSet<T>(const std::string &instr, std::set<T> &expanded, \
+	template ICEDB_DL void splitSet<T>(const std::string &instr, std::set<T> &expanded, \
 	const std::map<std::string, std::string> *aliases);
 
 		DOTYPES(SPEC_SPLITSET);
@@ -510,7 +511,7 @@ namespace icedb {
 			return false;
 		}
 
-#define IMPL_INTS(T) template class DL_ICEDB intervals < T >;
+#define IMPL_INTS(T) template class ICEDB_DL intervals < T >;
 		DOTYPES(IMPL_INTS);
 	}
 }

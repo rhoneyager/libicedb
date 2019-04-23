@@ -1,4 +1,4 @@
-#include "../icedb/zeros.hpp"
+#include "icedb/zeros.hpp"
 #include <cmath>
 
 namespace icedb {

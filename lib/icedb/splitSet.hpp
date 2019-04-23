@@ -41,7 +41,7 @@ namespace icedb {
 		*
 		* Commonly-used to split up the results of a Ryan_Debug::ProcessICEDB_LOG_INFO command-line structure.
 		**/
-		DL_ICEDB void splitVector(
+		ICEDB_DL void splitVector(
 			const std::string &instr, std::vector<std::string> &out, char delim = '\0');
 		inline void splitNullVector(
 			const std::string &instr, std::vector<std::string> &out) { splitVector(instr, out); }
@@ -50,7 +50,7 @@ namespace icedb {
 		*
 		* Commonly-used to split up the results of a Ryan_Debug::ProcessICEDB_LOG_INFO environment structure.
 		**/
-		DL_ICEDB void splitNullMap(
+		ICEDB_DL void splitNullMap(
 			const std::string &instr, std::map<std::string, std::string> &out);
 
 

@@ -13,11 +13,11 @@ enum ICEDB_ver_match {
 struct ICEDB_VersionInfo;
 typedef ICEDB_VersionInfo* ICEDB_VersionInfo_p;
 
-DL_ICEDB void ICEDB_VersionInfo_Free(ICEDB_VersionInfo_p);
-DL_ICEDB ICEDB_VersionInfo_p ICEDB_getLibVersionInfo();
-DL_ICEDB char* ICEDB_WriteLibVersionInfoC(ICEDB_VersionInfo_p, char*, size_t sz);
-DL_ICEDB const char* ICEDB_WriteLibVersionInfoCC(ICEDB_VersionInfo_p);
-DL_ICEDB ICEDB_ver_match ICEDB_CompareVersions(const ICEDB_VersionInfo_p a, const ICEDB_VersionInfo_p b);
+ICEDB_DL void ICEDB_VersionInfo_Free(ICEDB_VersionInfo_p);
+ICEDB_DL ICEDB_VersionInfo_p ICEDB_getLibVersionInfo();
+ICEDB_DL char* ICEDB_WriteLibVersionInfoC(ICEDB_VersionInfo_p, char*, size_t sz);
+ICEDB_DL const char* ICEDB_WriteLibVersionInfoCC(ICEDB_VersionInfo_p);
+ICEDB_DL ICEDB_ver_match ICEDB_CompareVersions(const ICEDB_VersionInfo_p a, const ICEDB_VersionInfo_p b);
 
 ICEDB_END_DECL_C
 #endif

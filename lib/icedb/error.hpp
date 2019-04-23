@@ -20,12 +20,12 @@ namespace icedb {
 		/** Defines an error condition. This is an integer. Zero (0) indicates that there is no error. **/
 		typedef int error_code_t;
 
-		DL_ICEDB void stringify(error_code_t err, std::string &);
-		DL_ICEDB void stringify(error_code_t err, char* const*);
+		ICEDB_DL void stringify(error_code_t err, std::string &);
+		ICEDB_DL void stringify(error_code_t err, char* const*);
 		template <class StringType> StringType stringify(error_code_t err) { return StringType(); }
-		template<> DL_ICEDB std::string stringify(error_code_t err);
+		template<> ICEDB_DL std::string stringify(error_code_t err);
 		//extern template std::string stringify<std::string>(error_code_t err);
-		template<> DL_ICEDB const char* stringify(error_code_t err);
+		template<> ICEDB_DL const char* stringify(error_code_t err);
 		//extern template const char* stringify<const char*>(error_code_t err);
 
 		/** Defines an error context. This structure contains both an error code (for fast lookups) and
@@ -36,19 +36,19 @@ namespace icedb {
 
 		/** Copy the last error context raised within the active thread. The resulting object should be freed once no longer needed.
 		Returns NULL if no context exists. **/
-		DL_ICEDB error_context_pt get_error_context_thread_local();
+		ICEDB_DL error_context_pt get_error_context_thread_local();
 
 		/** Get the error code from the context. Shouldn't be necessary. **/
-		DL_ICEDB error_code_t error_context_to_code(const error_context_pt&);
+		ICEDB_DL error_code_t error_context_to_code(const error_context_pt&);
 
-		DL_ICEDB void stringify(const error_context_pt &err, std::string &);
-		DL_ICEDB std::string stringify(const error_context_pt &err);
+		ICEDB_DL void stringify(const error_context_pt &err, std::string &);
+		ICEDB_DL std::string stringify(const error_context_pt &err);
 
 
 
 		/// xError is the base class for icedb C++ exceptions.
 		/// C code should use the C interface.
-		class DL_ICEDB xError : public std::exception
+		class ICEDB_DL xError : public std::exception
 		{
 		protected:
 			std::shared_ptr<error_options_inner> ep;

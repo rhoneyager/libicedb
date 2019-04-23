@@ -1,13 +1,14 @@
+#include "icedb/defs.h"
 #include <string>
 #include <map>
 #include <mutex>
 #include <vector>
-#include "../icedb/units/units.hpp"
-#include "../icedb/units/unitsPlugins.hpp"
+#include "icedb/units/units.hpp"
+#include "icedb/units/unitsPlugins.hpp"
 #include "../private/unitsBackend.hpp"
-#include "../icedb/logging.hpp"
-#include "../icedb/error.hpp"
-#include "../icedb/options.hpp"
+#include "icedb/logging.hpp"
+#include "icedb/error.hpp"
+#include "icedb/options.hpp"
 
 namespace icedb {
 	namespace units {

@@ -1,10 +1,11 @@
+#include "icedb/defs.h"
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
-#include "../icedb/shape.hpp"
-#include "../icedb/versioning/versioningForwards.hpp"
-#include "../icedb/error.hpp"
+#include "icedb/shape.hpp"
+#include "icedb/versioning/versioningForwards.hpp"
+#include "icedb/error.hpp"
 
 namespace icedb {
 	namespace registry {

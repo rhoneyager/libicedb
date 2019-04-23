@@ -10,11 +10,11 @@ In netCDF, these objects are called
 
 All datasets may contain attributes.
 
-## What is a datasets?
+## What is a dataset?
 
-A datasets is a multidimensional array of data elements, together with supporting metadata. 
+A dataset is a multidimensional array of data elements, together with supporting metadata. 
 Tables may contain different types of data, such as integers, floating point numbers and character arrays.
-In icedb, all of the elements of a datasets must have the same data type. This restriction is the same as in
+In icedb, all of the elements of a dataset must have the same data type. This restriction is the same as in
 netCDF, although HDF5 has a more relaxed implementation.
 
 Datasets are usually much larger than attributes. Unlike attributes, datasets are not automatically

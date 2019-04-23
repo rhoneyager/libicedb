@@ -15,13 +15,13 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/tokenizer.hpp>
 #include <mutex>
-#include "../icedb/logging.hpp"
-#include "../icedb/error.hpp"
-#include "../icedb/misc/os_functions.hpp"
-#include "../icedb/misc/os_functions.h"
-#include "../icedb/splitSet.hpp"
-#include "../icedb/dlls.hpp"
-#include "../icedb/versioning/versioningForwards.hpp"
+#include "icedb/logging.hpp"
+#include "icedb/error.hpp"
+#include "icedb/misc/os_functions.hpp"
+#include "icedb/misc/os_functions.h"
+#include "icedb/splitSet.hpp"
+#include "icedb/dlls.hpp"
+#include "icedb/versioning/versioningForwards.hpp"
 #include "../private/os_impl.hpp"
 
 #ifdef _WIN32
@@ -253,8 +253,8 @@ namespace icedb
 				size_t sz;
 				const char** modules;
 			};
-			DL_ICEDB void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes*);
-			DL_ICEDB ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
+			ICEDB_DL void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes*);
+			ICEDB_DL ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
 			*/
 
 			ICEDB_enumModulesRes *mods = ICEDB_enumModules(ICEDB_getPID());

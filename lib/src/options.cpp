@@ -1,10 +1,10 @@
+#include "icedb/defs.h"
 #include <boost/lexical_cast.hpp>
 #include <map>
 #include <complex>
-#include "../icedb/defs.h"
-#include "../icedb/options.hpp"
-#include "../icedb/logging.hpp"
-#include "../icedb/error.hpp"
+#include "icedb/options.hpp"
+#include "icedb/logging.hpp"
+#include "icedb/error.hpp"
 
 namespace icedb {
 	namespace registry {
@@ -73,10 +73,10 @@ namespace icedb {
 	f(unsigned int); f(unsigned long); f(unsigned long long); \
 	f(std::string); f(bool); f(std::complex<double>); f(icedb::registry::IOhandler::IOtype);
 
-#define IMPL_OPTS_SETVAL(T) template DL_ICEDB options_ptr options::setVal<T>(const std::string&, const T&);
-#define IMPL_OPTS_ADD(T) template DL_ICEDB options_ptr options::add<T>(const std::string&, const T&);
-#define IMPL_OPTS_GETVAL_A(T) template DL_ICEDB T options::getVal<T>(const std::string&) const;
-#define IMPL_OPTS_GETVAL_B(T) template DL_ICEDB T options::getVal<T>(const std::string&, const T&) const;
+#define IMPL_OPTS_SETVAL(T) template ICEDB_DL options_ptr options::setVal<T>(const std::string&, const T&);
+#define IMPL_OPTS_ADD(T) template ICEDB_DL options_ptr options::add<T>(const std::string&, const T&);
+#define IMPL_OPTS_GETVAL_A(T) template ICEDB_DL T options::getVal<T>(const std::string&) const;
+#define IMPL_OPTS_GETVAL_B(T) template ICEDB_DL T options::getVal<T>(const std::string&, const T&) const;
 #define IMPL_OPTS(T) IMPL_OPTS_SETVAL(T); IMPL_OPTS_GETVAL_A(T);IMPL_OPTS_GETVAL_B(T);IMPL_OPTS_ADD(T);
 		DOTYPES(IMPL_OPTS);
 

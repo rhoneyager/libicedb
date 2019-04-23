@@ -15,9 +15,9 @@
 
 //#define D_icedb_start() extern "C" SHARED_EXPORT_ICEDB dllInitResult dllStart()
 #define D_icedb_start() \
-	extern "C" SHARED_EXPORT_ICEDB void dlVer_impl(icedb::versioning::versionInfo& vf, void** rd); \
-	extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) { dlVer_impl(vf, rd); } \
-	extern "C" SHARED_EXPORT_ICEDB dllInitResult dllStart()
+	extern "C" ICEDB_SHARED_EXPORT void dlVer_impl(icedb::versioning::versionInfo& vf, void** rd); \
+	extern "C" ICEDB_SHARED_EXPORT void dlVer(icedb::versioning::versionInfo& vf, void** rd) { dlVer_impl(vf, rd); } \
+	extern "C" ICEDB_SHARED_EXPORT dllInitResult dllStart()
 
 //#define D_icedb_validator() extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) \
 //		{ \

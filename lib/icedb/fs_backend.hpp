@@ -47,7 +47,7 @@ namespace icedb {
 			typedef std::set<sfs::path> ExtensionsMatching_Type;
 			extern const ExtensionsMatching_Type common_hdf5_extensions;
 			/// Finds out where a symbolic link points to
-			DL_ICEDB sfs::path resolveSymLinks(const sfs::path &base);
+			ICEDB_DL sfs::path resolveSymLinks(const sfs::path &base);
 
 			/// File path, relative mount point
 			typedef std::vector<std::pair<sfs::path, std::string> > CollectedFilesRet_Type;
@@ -56,19 +56,19 @@ namespace icedb {
 			/// \param base is the base path
 			/// \param fileExtensionsToMatch is a list of file extensions that are matched
 			/// \param MatchOnAnySingleFile is a flag that forces a match if a single file is specified.
-			DL_ICEDB CollectedFilesRet_Type collectDatasetFiles(
+			ICEDB_DL CollectedFilesRet_Type collectDatasetFiles(
 				const sfs::path &base,
 				const ExtensionsMatching_Type &fileExtensionsToMatch = common_hdf5_extensions,
 				bool MatchOnAnySingleFile = true);
 
 			/// Like resolveSymLinks, but throw if the resulting path does not exist.
-			DL_ICEDB sfs::path resolveSymlinkPathandForceExists(const std::string &location);
+			ICEDB_DL sfs::path resolveSymlinkPathandForceExists(const std::string &location);
 
 			/// Like collectDatasetFiles for HDF5 files, but then check that these files are, indeed, HDF5 files.
-			DL_ICEDB CollectedFilesRet_Type collectActualHDF5files(const sfs::path &pBaseS);
+			ICEDB_DL CollectedFilesRet_Type collectActualHDF5files(const sfs::path &pBaseS);
 
 			/// Generate a unique string, used in memort-only HDF5 file trees.
-			DL_ICEDB std::string getUniqueVROOTname();
+			ICEDB_DL std::string getUniqueVROOTname();
 		}
 	}
 }

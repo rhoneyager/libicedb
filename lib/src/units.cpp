@@ -1,12 +1,12 @@
-#include "../icedb/defs.h"
+#include "icedb/defs.h"
 #pragma warning( disable : 4251 ) // DLL interface
 #include <string>
-#include "../icedb/units/units.hpp"
-#include "../private/unitsBackend.hpp"
-#include "../icedb/units/unitsPlugins.hpp"
-#include "../icedb/options.hpp"
-#include "../icedb/error.hpp"
-#include "../icedb/logging.hpp"
+#include "icedb/units/units.hpp"
+#include "private/unitsBackend.hpp"
+#include "icedb/units/unitsPlugins.hpp"
+#include "icedb/options.hpp"
+#include "icedb/error.hpp"
+#include "icedb/logging.hpp"
 
 namespace icedb {
 	namespace units {
