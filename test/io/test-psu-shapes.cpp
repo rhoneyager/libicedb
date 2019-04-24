@@ -8,7 +8,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/program_options.hpp>
 #include <icedb/misc/os_functions.hpp>
-#include <icedb/shape.hpp>
+#include <icedb/Shapes.hpp>
 #include <HH/Files.hpp>
 #include <HH/Groups.hpp>
 

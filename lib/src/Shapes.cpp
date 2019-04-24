@@ -3,8 +3,8 @@
 #include <sstream>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
-#include "icedb/shape.hpp"
-#include "icedb/versioning/versioningForwards.hpp"
+#include "icedb/Constants.hpp"
+#include "icedb/Shapes.hpp"
 #include "icedb/error.hpp"
 
 namespace icedb {
@@ -21,6 +21,40 @@ namespace icedb {
 			IO_class_registry_writer<::icedb::Shapes::Shape> >;
 	}
 	namespace Shapes {
+		const std::string Shape::_obj_type_identifier = "shape";
+		const uint16_t Shape::_current_schema_version = 0;
+
+		using CN = e_Common_Obj_Names;
+		const ICEDB_DL std::map<CN, Name_Type_t > Required_Atts = {
+			{CN::icedb_Version, {"_icedb_version", HH::Types::GetHDF5Type<uint16_t>()}},
+			{CN::Schema_Version, {"_icedb_shape_schema_version", HH::Types::GetHDF5Type<uint16_t>()}},
+			{CN::icedb_git_hash, {"_icedb_git_hash", HH::Types::GetHDF5Type<std::string>()}},
+			{CN::particle_id, {"particle_id", HH::Types::GetHDF5Type<std::string>()}},
+			{CN::dataset_id, {"dataset_id", HH::Types::GetHDF5Type<std::string>()}},
+			{CN::author, {"author", HH::Types::GetHDF5Type<std::string>()}},
+			{CN::contact, {"contact", HH::Types::GetHDF5Type<std::string>()}},
+			{CN::version, {"version", HH::Types::GetHDF5Type<uint32_t>()}}
+		};
+		const ICEDB_DL std::map<CN, Name_Type_t > Optional_Atts = {
+			{CN::scattering_element_coordinates_scaling_factor, {"scattering_element_coordinates_scaling_factor", HH::Types::GetHDF5Type<float>()}},
+			{CN::scattering_element_coordinates_units, {"scattering_element_coordinates_units", HH::Types::GetHDF5Type<std::string>()}},
+			{CN::scattering_method, {"scattering_method", HH::Types::GetHDF5Type<std::string>()}}
+		};
+		//"scattering_method"
+		const ICEDB_DL std::map<CN, Name_Type_t > Required_Dsets = {
+			{CN::particle_scattering_element_number, {"particle_scattering_element_number", HH::Types::GetHDF5Type<int32_t>()}},
+			{CN::particle_constituent_number, {"particle_constituent_number", HH::Types::GetHDF5Type<uint16_t>()}},
+			{CN::particle_constituent_name, {"particle_constituent_name", HH::Types::GetHDF5Type<std::string>()}},
+			{CN::particle_axis, {"particle_axis", HH::Types::GetHDF5Type<uint16_t>()}}
+		};
+		const ICEDB_DL std::map<CN, Name_Type_t > Optional_Dsets = {
+			{CN::particle_scattering_element_coordinates_int, {"particle_scattering_element_coordinates", HH::Types::GetHDF5Type<decltype(NewShapeProperties::particle_scattering_element_coordinates_as_ints)::value_type>()}},
+			{CN::particle_scattering_element_coordinates_float, {"particle_scattering_element_coordinates", HH::Types::GetHDF5Type<float>()}},
+			{CN::particle_scattering_element_composition_fractional, {"particle_scattering_element_composition_fractional", HH::Types::GetHDF5Type<float>()}},
+			{CN::particle_scattering_element_composition_whole, {"particle_scattering_element_composition_whole", HH::Types::GetHDF5Type<uint16_t>()}},
+			{CN::particle_scattering_element_radius, {"particle_scattering_element_radius", HH::Types::GetHDF5Type<float>()}}
+		};
+
 		bool NewShapeProperties::isValid(std::ostream *out) const {
 			bool good = true;
 
@@ -130,59 +164,6 @@ namespace icedb {
 			return good;
 		}
 
-		Shape::~Shape() {}
-		const std::string Shape::_icedb_obj_type_shape_identifier = "shape";
-		const uint16_t Shape::_icedb_current_shape_schema_version = 0;
-
-		/// \todo BUG: This primarily checks if the shape was _written_ _by_ _icedb_. Fix.
-		bool Shape::isShape(HH::HH_hid_t group) {
-			// Get link type. If this is a group, then check the attributes.
-			H5O_info_t oinfo;
-			herr_t err = H5Oget_info(group(), &oinfo);
-			if (err < 0) return false;
-			if (oinfo.type != H5O_type_t::H5O_TYPE_GROUP) return false;
-
-			HH::Group g(group);
-
-			if (!g.atts.exists("_icedb_obj_type")) return false;
-			auto aType = g.atts["_icedb_obj_type"];
-			if (H5Tget_class(aType.type()()) != H5T_STRING) return false;
-			std::string sOType = aType.read<std::string>();
-			if (sOType != Shape::_icedb_obj_type_shape_identifier) return false;
-			return true;
-		}
-		bool Shape::isShape() const {
-			return isShape(get());
-		}
-
-		bool Shape::isValid(std::ostream *out) const { return isValid(this->get(), out); }
-
-		bool Shape::isValid(HH::HH_hid_t gid, std::ostream *out) {
-			/// Check for the existence of the standard tables, dimensions and attributes, and that
-			/// they have the appropriate sizes.
-
-			/// \todo Finish this, and turn checks on attributes and variables into template functions!!!
-
-			bool good = true;
-			if (!isShape(gid)) {
-				good = false;
-				if (out) (*out) << "This is not a valid shape. Missing the appropriate icedb identifying attribute." << std::endl;
-				return good;
-			}
-			auto group = HH::Group(gid);
-
-			if (!group.atts.exists("particle_id")) {
-				good = false;
-				if (out) (*out) << "Missing the particle_id attribute." << std::endl;
-			}
-			else if (H5Tget_class(group.atts["particle_id"].type()()) != H5T_STRING) {
-				good = false;
-				if (out) (*out) << "The particle_id attribute has the wrong type." << std::endl;
-			}
-			if (out) (*out) << "TODO: Finish these checks!" << std::endl;
-			return good;
-		}
-
 		Shape Shape::createShape(
 			HH::HH_hid_t baseGrpID,
 			const std::string& shapeGrp,
@@ -217,22 +198,18 @@ namespace icedb {
 			using std::string;
 			// Write debug information
 			{
-				using namespace icedb::versioning;
-				auto libver = getLibVersionInfo();
-				string sLibVer(libver->vgithash);
-				res.atts.add<string>("_icedb_git_hash", sLibVer);
-				res.atts.add<uint64_t>("_icedb_version",
-					{ libver->vn[versionInfo::V_MAJOR], libver->vn[versionInfo::V_MINOR], libver->vn[versionInfo::V_REVISION] }, { 3 });
+				res.atts.add<string>(Constants::AttNames::icedb_git_hash, Constants::GitHash);
+				res.atts.add<uint64_t>(Constants::AttNames::icedb_version, { Constants::version[0], Constants::version[1], Constants::version[2] }, { 3 });
 			}
 
 			// Write required attributes
-			res.atts.add<std::string>("_icedb_obj_type", Shape::_icedb_obj_type_shape_identifier);
-			res.atts.add<uint16_t>("_icedb_shape_schema_version", Shape::_icedb_current_shape_schema_version);
-			res.atts.add<std::string>("particle_id", props->particle_id);
-			res.atts.add<string>("dataset_id", props->dataset_id);
-			res.atts.add<string>("author", props->author);
-			res.atts.add<string>("contact", props->contact);
-			res.atts.add<unsigned int>("version", { props->version[0], props->version[1], props->version[2] }, { 3 });
+			res.atts.add<std::string>(Constants::AttNames::icedb_object_type, Shape::_obj_type_identifier);
+			res.atts.add<uint16_t>(Required_Atts.at(CN::Schema_Version).first, Shape::_current_schema_version);
+			res.atts.add<std::string>(Required_Atts.at(CN::particle_id).first, props->particle_id);
+			res.atts.add<string>(Required_Atts.at(CN::dataset_id).first, props->dataset_id);
+			res.atts.add<string>(Required_Atts.at(CN::author).first, props->author);
+			res.atts.add<string>(Required_Atts.at(CN::contact).first, props->contact);
+			res.atts.add<unsigned int>(Required_Atts.at(CN::version).first, { props->version[0], props->version[1], props->version[2] }, { 3 });
 
 			const size_t numScattElems = (props->particle_scattering_element_coordinates_as_floats.size())
 				? props->particle_scattering_element_coordinates_as_floats.size() / 3
@@ -251,7 +228,7 @@ namespace icedb {
 
 			// Write required dimensions
 			auto tblPSEN = res.dsets.create<int32_t>(
-				"particle_scattering_element_number",
+				Required_Atts.at(CN::particle_scattering_element_number).first,
 				{ static_cast<size_t>(numScattElems) });
 			{
 				tblPSEN.atts.add<std::string>("description", "ID number of scattering element");
@@ -272,7 +249,8 @@ namespace icedb {
 				tblPSEN.setIsDimensionScale("particle_scattering_element_number");
 			}
 
-			auto tblPCN = res.dsets.create<uint16_t>("particle_constituent_number",
+			auto tblPCN = res.dsets.create<uint16_t>(
+				Required_Atts.at(CN::particle_constituent_number).first,
 				{ static_cast<size_t>(props->particle_constituents.size()) });
 			{
 				tblPCN.atts.add<std::string>("description", "ID number of the constituent material");
@@ -285,13 +263,13 @@ namespace icedb {
 				tblPCN.write<uint16_t>(data_pcns);
 				tblPCN.setIsDimensionScale("particle_constituent_number");
 
-				auto tblPCNnames = res.dsets.create<string>("particle_constituent_name",
+				auto tblPCNnames = res.dsets.create<string>(Required_Atts.at(CN::particle_constituent_name).first,
 					{ static_cast<size_t>(props->particle_constituents.size()) });
 				tblPCNnames.write<string>(data_pcn_names);
 				tblPCNnames.setDims(tblPCN);
 			}
 
-			auto tblXYZ = res.dsets.create<uint16_t>("particle_axis", { 3 });
+			auto tblXYZ = res.dsets.create<uint16_t>(Required_Dsets.at(CN::particle_axis).first, { 3 });
 			tblXYZ.write<uint16_t>({ 0, 1, 2 });
 			tblXYZ.setIsDimensionScale("particle_axis");
 
@@ -300,7 +278,7 @@ namespace icedb {
 				// Shape coordinates are integers
 				typedef decltype(props->particle_scattering_element_coordinates_as_ints)::value_type int_type;
 				tblPSEC = res.dsets.create<int_type>(
-					"particle_scattering_element_coordinates",
+					Optional_Dsets.at(CN::particle_scattering_element_coordinates_int).first,
 					{ static_cast<size_t>(numScattElems), 3 })
 					;
 				tblPSEC.write<int_type>(props->particle_scattering_element_coordinates_as_ints);
@@ -309,7 +287,7 @@ namespace icedb {
 			else {
 				// Shape coordinates are floats
 				tblPSEC = res.dsets.create<float>(
-					"particle_scattering_element_coordinates",
+					Optional_Dsets.at(CN::particle_scattering_element_coordinates_float).first,
 					{ static_cast<size_t>(numScattElems), 3 }
 					);
 				tblPSEC.write<float>(props->particle_scattering_element_coordinates_as_floats);
@@ -329,7 +307,7 @@ namespace icedb {
 				//	static_cast<size_t>(required->number_of_particle_constituents)
 				//};
 				auto tblPSEC2a = res.dsets.create<float>(
-					"particle_scattering_element_composition_fractional",
+					Optional_Dsets.at(CN::particle_scattering_element_composition_fractional).first,
 					{ static_cast<size_t>(numScattElems),
 						static_cast<size_t>(props->particle_constituents.size()) }
 					);
@@ -341,7 +319,7 @@ namespace icedb {
 
 			if (props->particle_scattering_element_composition_whole.size()) {
 				auto tblPSEC2b = res.dsets.create<uint16_t>(
-					"particle_scattering_element_composition_whole",
+					Optional_Dsets.at(CN::particle_scattering_element_composition_whole).first,
 					{ static_cast<size_t>(numScattElems) }
 					);
 				tblPSEC2b.setDims(tblPSEN);
@@ -350,15 +328,15 @@ namespace icedb {
 				tblPSEC2b.write<uint16_t>(props->particle_scattering_element_composition_whole);
 			}
 
-			res.atts.add<float>("scattering_element_coordinates_scaling_factor", props->scattering_element_coordinates_scaling_factor);
-			res.atts.add<std::string>("scattering_element_coordinates_units", props->scattering_element_coordinates_units);
+			res.atts.add<float>(Optional_Atts.at(CN::scattering_element_coordinates_scaling_factor).first, props->scattering_element_coordinates_scaling_factor);
+			res.atts.add<std::string>(Optional_Atts.at(CN::scattering_element_coordinates_units).first, props->scattering_element_coordinates_units);
 
 			if (props->scattering_method.size())
-				res.atts.add<string>("scattering_method", props->scattering_method);
+				res.atts.add<string>(Optional_Atts.at(CN::scattering_method).first, props->scattering_method);
 
 			if (props->particle_scattering_element_radius.size()) {
 				auto tblPSER = res.dsets.create<float>(
-					"particle_scattering_element_radius",
+					Optional_Dsets.at(CN::particle_scattering_element_radius).first,
 					{ static_cast<size_t>(numScattElems) }
 					);
 				tblPSER.write<float>(props->particle_scattering_element_radius);

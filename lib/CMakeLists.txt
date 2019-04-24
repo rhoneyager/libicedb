@@ -17,14 +17,16 @@ set(related_cmake_objects
 	../cmake/GetGitRevisionDescription.cmake
 	../cmake/signing.cmake)
 set(shp_objs
-	icedb/shape.hpp
-	icedb/shapeAlg.hpp
+	icedb/Shapes.hpp
+	icedb/ShapeAlgs.hpp
 	src/Shapes.cpp)
 set(exv_objs
 	icedb/exv.hpp
 	src/exv.cpp)
 set(db_objs
+	icedb/Common.hpp
 	icedb/fs_backend.hpp
+	src/Common.cpp
 	src/fs_backend.cpp
 	icedb/fs.hpp)
 set(units_objs

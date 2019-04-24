@@ -10,7 +10,7 @@ macro(addlib) #libname libshared)
 	else()
 		set(libshared ${ARGV2})
 	endif()
-	message("addlib name: ${libname}, shared name: ${libshared}, is shared: ${isshared}")
+	#message("addlib name: ${libname}, shared name: ${libshared}, is shared: ${isshared}")
 
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES RELEASE_POSTFIX _Release${configappend} )
 	SET_TARGET_PROPERTIES( ${libname} PROPERTIES MINSIZEREL_POSTFIX _MinSizeRel${configappend} )
@@ -92,7 +92,7 @@ macro(addplugin appname foldername folder)
 
 	target_compile_definitions(${appname} PRIVATE ${appname}_EXPORTING)
 	target_compile_definitions(${appname} PUBLIC ${appname}_SHARED=1)
-	message("addplugin name: ${appname}, shared name: ${appname}")
+	#message("addplugin name: ${appname}, shared name: ${appname}")
 
 	# This is for determining the build type (esp. used in registry code)
 	target_compile_definitions(${appname} PRIVATE BUILDCONF="${CMAKE_BUILD_TYPE}")

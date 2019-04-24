@@ -4,7 +4,7 @@
 #include "defs.hpp"
 #include <memory>
 #include <string>
-#include "icedb/shape.hpp"
+#include "icedb/Shapes.hpp"
 #include "icedb/plugin.hpp"
 
 

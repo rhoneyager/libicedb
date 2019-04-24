@@ -1,5 +1,5 @@
 #include <string>
-#include <icedb/shape.hpp>
+#include <icedb/Shapes.hpp>
 #include <icedb/error.hpp>
 #include <BinaryIO/Files.hpp>
 #include "plugin-adda.hpp"

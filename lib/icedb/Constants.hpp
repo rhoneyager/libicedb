@@ -1,6 +1,6 @@
 #pragma once
 #include "defs.h"
-#include "HH/Groups.hpp"
+#include <array>
 #include <map>
 #include <string>
 #include <vector>
@@ -16,7 +16,15 @@ namespace icedb {
 			return static_cast<T>(-888);
 		}
 
-		extern ICEDB_DL const std::string icedb_object_type;
+		namespace AttNames {
+			extern ICEDB_DL const std::string icedb_object_type;
+			extern ICEDB_DL const std::string icedb_git_hash;
+			extern ICEDB_DL const std::string icedb_version;
+		}
 
+		extern ICEDB_DL const std::array<uint64_t, 3> version;
+		extern ICEDB_DL const std::string GitHash;
+		extern ICEDB_DL const std::string GitBranch;
+		extern ICEDB_DL const std::string PackageGitBranch;
 	}
 }

@@ -1,5 +1,5 @@
 #include <string>
-#include <icedb/shape.hpp>
+#include <icedb/Shapes.hpp>
 #include <icedb/exv.hpp>
 #include "plugin-psu.hpp"
 

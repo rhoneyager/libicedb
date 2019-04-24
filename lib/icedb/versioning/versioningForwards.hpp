@@ -55,6 +55,7 @@ namespace icedb {
 		* to reflect the compiler variables of an external project's code.
 		*
 		* @param out The output stream that receives the information.
+		* @param v is the version information to be printed.
 		*/
 		ICEDB_DL void debug_preamble(const versionInfo &v, std::ostream &out = std::cerr);
 	}

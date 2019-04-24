@@ -14,7 +14,7 @@
 #include <vector>
 #include <chrono>
 #include <iomanip>
-#include <icedb/shape.hpp>
+#include <icedb/Shapes.hpp>
 #include <icedb/error.hpp>
 #include <icedb/fs_backend.hpp>
 #include <icedb/splitSet.hpp>

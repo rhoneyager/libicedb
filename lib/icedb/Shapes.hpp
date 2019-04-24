@@ -4,6 +4,7 @@
 #include <array>
 #include <vector>
 #include <HH/Groups.hpp>
+#include "Common.hpp"
 #include "registry.hpp"
 #include "io.hpp"
 
@@ -11,6 +12,35 @@ namespace icedb {
 	namespace Shapes {
 		class Shape;
 		struct NewShapeProperties;
+
+		enum class e_Common_Obj_Names {
+			// Attributes
+			icedb_Version, Schema_Version, icedb_git_hash, particle_id,
+			dataset_id, author, contact, version,
+			scattering_element_coordinates_scaling_factor,
+			scattering_element_coordinates_units,
+			scattering_method,
+			particle_scattering_element_radius,
+
+			// Datasets
+			particle_scattering_element_number,
+			particle_constituent_number,
+			particle_constituent_name,
+			particle_axis,
+			// particle_scattering_element_coordinates - can be a float or an int!
+			particle_scattering_element_coordinates_int,
+			particle_scattering_element_coordinates_float,
+			particle_scattering_element_composition_fractional,
+			particle_scattering_element_composition_whole
+		};
+		/// Each Swath 'group' has an attribute with this identifier.
+		/// Used for Swath collection and searching.
+		extern ICEDB_DL const std::string _obj_type_identifier;
+		extern ICEDB_DL const std::map<e_Common_Obj_Names, Name_Type_t > Required_Atts;
+		extern ICEDB_DL const std::map<e_Common_Obj_Names, Name_Type_t > Optional_Atts;
+		extern ICEDB_DL const std::map<e_Common_Obj_Names, Name_Type_t > Required_Dsets;
+		extern ICEDB_DL const std::map<e_Common_Obj_Names, Name_Type_t > Optional_Dsets;
+
 		namespace _impl {
 			class ShapeProps_IO_Input_Registry {};
 			class Shape_IO_Output_Registry {};
@@ -28,6 +58,16 @@ namespace icedb {
 			::icedb::Shapes::_impl::Shape_IO_Output_Registry,
 			IO_class_registry_writer<::icedb::Shapes::Shape> >;
 	}
+
+	template<>
+	struct Common_HH_Base < Shapes::Shape, Shapes::e_Common_Obj_Names>
+	{
+		using CN = Shapes::e_Common_Obj_Names;
+		typedef const std::map<CN, Name_Type_t> Validator_map_t;
+		static Validator_map_t getRequiredAttributes() { return Shapes::Required_Atts; }
+		static Validator_map_t getRequiredDatasets() { return Shapes::Required_Dsets; }
+		static std::string getIdentifier() { return Shapes::_obj_type_identifier; }
+	};
 
 	/// All facilities to manipulate particle shapes
 	namespace Shapes {
@@ -117,38 +157,21 @@ namespace icedb {
 			virtual public io::implementsStandardWriter<Shape, _impl::Shape_IO_Output_Registry>
 		{
 		public:
-			/// Each shape 'group' has an attribute with this identifier. Used for shape collection and searching.
-			static const std::string _icedb_obj_type_shape_identifier;
-			static const uint16_t _icedb_current_shape_schema_version;
+			static const std::string _obj_type_identifier;
+			static const uint16_t _current_schema_version;
 
-			// OPEN an already-existing shape. Validity not guaranteed.
+			/// OPEN an HDF5 handle as a shape. Validity not guaranteed.
 			Shape(HH::HH_hid_t hnd_grp = HH::HH_hid_t::dummy()) : HH::Group(hnd_grp) {  }
 
 			/// This is the unique identifier for this shape
 			//const std::string particle_unique_id;
 
-			virtual ~Shape();
-			/// \brief Is this object a shape?
-			/// \returns true if it is a shape, false otherwise.
-			static bool isShape(HH::HH_hid_t group);
-			/// \brief Is this object actually a shape?
-			bool isShape() const;
-			/// \brief Is "group" a valid shape, according to the spec.?
-			/// \param group is the HDF5 group
-			/// \throws if the object pointed to by group is not a valid HDF5 group.
-			/// \param out is an output stream to which diagnostic messages can be written. Diagnostics include why an object is not a shape (e.g. missing an essential parameter).
-			/// \throws if the output stream is somehow invalid
-			static bool isValid(HH::HH_hid_t grp, std::ostream *out = nullptr);
-			/// \brief Is this object a valid shape, according to the spec?
-			/// \param out is an output stream to which diagnostic messages can be written. Diagnostics include why an object is not a shape (e.g. missing an essential parameter).
-			/// \throws if the output stream is somehow invalid
-			bool isValid(std::ostream *out = nullptr) const;
-
+			virtual ~Shape() {}
+			
 			/// \brief Create a new shape
 			/// \param newLocationAsEmptyGroup is the empty group that is converted into a shape
+			/// \param props are the shape properties.
 			/// \throws if the group has any already-existing tables or attributes that conflict with the new shape object
-			/// \param required is a pointer to the NewShapeRequiredProperties structure, that provides the "required" shape data.
-			/// \param optional is a pointer to the Common Optional Properties structure, that provides optional, supplementary data.
 			/// \returns the new shape on success
 			/// \throws on failure
 			static Shape createShape(

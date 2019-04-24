@@ -1,7 +1,7 @@
 #include "defs.hpp"
 #include "plugin-psu.hpp"
 #include <icedb/error.hpp>
-#include <icedb/shape.hpp>
+#include <icedb/Shapes.hpp>
 #include <icedb/registry.hpp>
 #include <icedb/io.hpp>
 #include <iostream>
