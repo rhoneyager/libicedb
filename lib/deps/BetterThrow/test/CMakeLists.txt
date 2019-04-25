@@ -1,0 +1,11 @@
+include(AddTest)
+
+IF(WIN32 AND NOT UNIX)
+	add_executable(bt-test-winapi boost-test-winapi.cpp)
+	bt_add_test(bt-test-winapi)
+else()
+	add_executable(bt-test-posix boost-test-posix.cpp)
+	bt_add_test(bt-test-posix)
+endif()
+add_executable(bt-test-boost bt-test-boost.cpp Testing.hpp)
+bt_add_test(bt-test-boost)

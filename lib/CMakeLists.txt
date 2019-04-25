@@ -85,6 +85,7 @@ set(lib_objs
 	private/linterp.h
 	private/resource.h
 	private/os_impl.hpp
+	private/Testing.hpp
 	icedb/options.hpp
 	src/logging.cpp
 	src/options.cpp
@@ -165,7 +166,7 @@ target_compile_definitions(icedb
 target_compile_definitions(icedb PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
 target_compile_definitions(icedb PUBLIC __STDC_WANT_LIB_EXT1__=1)
 target_compile_definitions(icedb PUBLIC __STDC_WANT_SECURE_LIB__=1)
-target_link_libraries(icedb icedb_base icedb::GSL icedb::HH icedb::BinaryIO icedb::Eigen3 ) # ZLIB::ZLIB)
+target_link_libraries(icedb icedb_base icedb::GSL icedb::HH icedb::BinaryIO icedb::Eigen3 BetterThrow::BetterThrow) # ZLIB::ZLIB)
 target_link_libraries(icedb
 	Boost::filesystem
 	Boost::system
@@ -179,53 +180,4 @@ INSTALL(DIRECTORY icedb
 	COMPONENT Headers)
 
 # Lib installation is already covered in addlib.cmake.
-
-# Code to collect the icedb dependencies into the build directory on Windows.
-# Manually collecting these all the time is rather aggrevating.
-if (WIN32 AND NOT CMAKE)
-# all deps: hdf5: hdf5-shared, hdf5_hl-shared - handle here.
-# boost: program_options unit_test_framework date_time regex filesystem system
-#		--- not all in icedb core, but convenient to include for plugins.
-#		--- on windows, just change the .lib to .dll.
-# zlib
-# silo: silo --- handle in the silo plugin
-	add_executable(placeholder src/_placeholder.cpp)
-	storebin(placeholder)
-	set_target_properties(placeholder PROPERTIES FOLDER "Build")
-	add_executable(placeholder2 src/_placeholder.cpp)
-	storebin(placeholder2)
-	set_target_properties(placeholder2 PROPERTIES FOLDER "Build")
-
-	add_custom_target(copy_icedb_dependencies_to_build_dirs
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:hdf5::hdf5_tools-shared> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::system> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::program_options> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::date_time> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::regex> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impBoost::unit_test_framework> $<TARGET_FILE_DIR:placeholder>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:impZLIB::ZLIB> $<TARGET_FILE_DIR:placeholder>
-		)
-	set_target_properties( copy_icedb_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
-	add_dependencies(icedb_base placeholder2)
-	add_dependencies(placeholder2 copy_icedb_dependencies_to_build_dirs)
-	# copy_icedb_dependencies_to_build_dirs has an automatic dependency on placeholder.
-	# This way, the files get copied only once.
-
-	install(PROGRAMS 
-		$<TARGET_FILE:hdf5::hdf5-shared> $<TARGET_FILE:hdf5::hdf5_hl-shared> $<TARGET_FILE:hdf5::hdf5_tools-shared>
-		$<TARGET_FILE:impBoost::filesystem> $<TARGET_FILE:impBoost::system> $<TARGET_FILE:impBoost::program_options>
-		$<TARGET_FILE:impBoost::date_time> $<TARGET_FILE:impBoost::regex> $<TARGET_FILE:impBoost::unit_test_framework>
-		$<TARGET_FILE:impZLIB::ZLIB>
-		DESTINATION ${CMAKE_INSTALL_BINDIR} #${RBIN_DIR}/$<CONFIG>
-		COMPONENT Libraries)
-
-	# Boost targets do not fully have their imported_locations set. The shared libraries are not included.
-	# Query IMPORTED_LOCATION_DEBUG, IMPORTED_LOCATION_RELEASE and IMPORTED_LOCATION.
-	# Only copy shared libraries (i.e. ones that do not start with lib_____).
-		#COMMAND ${CMAKE_COMMAND} -E copy
-		#	$<TARGET_PROPERTY:boost::filesystem,IMPORTED_LOCATION_RELEASE>
-		#	$<TARGET_FILE_DIR:icedb>
-ENDIF()
+add_dependencies(icedb_base placeholder2)

@@ -48,12 +48,12 @@ if (BUILD_TESTING)
 	if(BUILD_PLUGIN_PSU)
 		# Attempt to load and unload only the PSU plugin, and check if there is an error.
 		add_test (NAME io-psu-plugin-test
-			COMMAND icedb-version --dll-no-default-locations
+			COMMAND icedb-version -- --dll-no-default-locations
 				--dll-load-onelevel $<TARGET_FILE:io_psu>
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
 		add_test (NAME io-psu-gmm-boost # Test PSU file import
-			COMMAND icedb-test-psu-shapes 
+			COMMAND icedb-test-psu-shapes --
 				--dll-load-onelevel $<TARGET_FILE:io_psu>
 				--dll-no-default-locations
 				--share-dir ${CMAKE_SOURCE_DIR}/share
@@ -102,7 +102,7 @@ if (BUILD_TESTING)
 				--dll-load-onelevel $<TARGET_FILE:io_adda>
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 		add_test (NAME io-adda-boost # Test ADDA file import
-			COMMAND icedb-test-adda-shapes 
+			COMMAND icedb-test-adda-shapes -- 
 				--dll-load-onelevel $<TARGET_FILE:io_adda>
 				--dll-no-default-locations
 				--share-dir ${CMAKE_SOURCE_DIR}/share
@@ -167,21 +167,21 @@ if (BUILD_TESTING)
 		)
 
 		add_test (NAME io-ddscat-boost-1 # Test DDSCAT file import
-			COMMAND icedb-test-ddscat7-shapes
+			COMMAND icedb-test-ddscat7-shapes -- 
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
 				--dll-no-default-locations
 				--share-dir ${CMAKE_SOURCE_DIR}/share
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat-boost-2 # Test DDSCAT file import
-			COMMAND icedb-test-ddscat6-shapes
+			COMMAND icedb-test-ddscat6-shapes -- 
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
 				--dll-no-default-locations
 				--share-dir ${CMAKE_SOURCE_DIR}/share
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			)
 		add_test (NAME io-ddscat7-1 # Test DDSCAT file import
-			COMMAND icedb-3d_structures_importer
+			COMMAND icedb-3d_structures_importer 
 				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat7ice.dat
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
@@ -275,7 +275,7 @@ if (BUILD_TESTING)
 	if(BUILD_PLUGIN_SILO)
 		# Attempt to load and unload only the silo plugin, and check if there is an error.
 		add_test (NAME io-silo-plugin-test
-			COMMAND icedb-version --dll-no-default-locations
+			COMMAND icedb-version -- --dll-no-default-locations
 			--dll-load-onelevel $<TARGET_FILE:plugin_silo>
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 	endif()

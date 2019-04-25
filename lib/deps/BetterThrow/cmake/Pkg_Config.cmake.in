@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+# Only include targets once:
+
+if( NOT TARGET BetterThrow::BetterThrow )
+    include( "${CMAKE_CURRENT_LIST_DIR}/BetterThrow-targets.cmake" )
+endif()

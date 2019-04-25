@@ -63,7 +63,7 @@ IF(WIN32 AND NOT UNIX)
 		HINTS ${MSVC_VC_REDISTS})
 	mark_as_advanced(MSVC_REDIST_EXE MSVC_PF_DIR MSVC_VC_DIR_BASE)
 	#install(PROGRAMS ${MSVC_REDIST_EXE} DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Libraries)
-	message("The MSVC redistributables are at ${MSVC_REDIST_EXE}")
+	#message("The MSVC redistributables are at ${MSVC_REDIST_EXE}")
 	#list ( APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS " ExecWait './bin/vcredist_x64.exe /quiet'")
 	# TODO: Optionally met the installers at
 	#  https://aka.ms/vs/16/release/VC_redist.x64.exe

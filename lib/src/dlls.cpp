@@ -23,6 +23,7 @@
 #include "icedb/dlls.hpp"
 #include "icedb/versioning/versioningForwards.hpp"
 #include "../private/os_impl.hpp"
+#include "BetterThrow/Info.hpp"
 
 #ifdef _WIN32
 #include "windows.h"
@@ -407,7 +408,7 @@ namespace icedb
 					}
 #endif
 #ifdef _WIN32
-					this->dlHandle = LoadLibrary(filename.c_str());
+					this->dlHandle = LoadLibraryA(filename.c_str());
 					// Could not open the dll for some reason
 					if (this->dlHandle == NULL)
 					{
@@ -898,6 +899,10 @@ namespace icedb
 		}
 	}
 
+	struct icedb_load_options {
+		icedb::logging::log_properties lps;
+	} load_options;
+	
 	void process_static_options(
 		boost::program_options::variables_map &vm)
 	{
@@ -905,11 +910,10 @@ namespace icedb
 		using std::string;
 		using namespace icedb::registry;
 
-		icedb::logging::log_properties lps;
-		if (vm.count("log-file")) lps.logFile = vm["log-file"].as<std::string>();
-		lps.consoleLogThreshold = vm["console-log-threshold"].as<int>();
-		lps.debuggerLogThreshold = vm["debug-log-threshold"].as<int>();
-		icedb::logging::setupLogging(0, nullptr, &lps);
+		if (vm.count("log-file")) load_options.lps.logFile = vm["log-file"].as<std::string>();
+		load_options.lps.consoleLogThreshold = vm["console-log-threshold"].as<int>();
+		load_options.lps.debuggerLogThreshold = vm["debug-log-threshold"].as<int>();
+		icedb::logging::setupLogging(0, nullptr, &load_options.lps);
 
 		//if (vm.count("dll-no-default-locations"))
 		//	autoLoadDLLs = false;
@@ -940,6 +944,9 @@ namespace icedb
 			exit(0);
 		}
 
+		using namespace icedb::registry;
+
+		constructSearchPaths(false, true, true);
 		std::set<boost::filesystem::path> rPaths, oPaths;
 		findPath(rPaths, boost::filesystem::path("default"), searchPathsRecursive, true);
 		findPath(oPaths, boost::filesystem::path("default"), searchPathsOne, false);
@@ -957,11 +964,21 @@ namespace icedb
 
 		loadDLLs(toLoadDlls);
 
-
 		if (vm.count("print-dll-loaded")) {
 			printDLLs();
 			exit(0);
 		}
+	}
+
+	void load() {
+		auto pinfo = BT::ProcessInfo::get();
+		int argc = (int) pinfo.cmdline.size();
+		std::vector<std::string> argv_strings;
+		std::vector<char*> argvs;
+		for (const auto& s : pinfo.cmdline) {
+			
+		}
+		pinfo.cmdline;
 	}
 
 }

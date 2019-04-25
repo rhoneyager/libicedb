@@ -158,6 +158,8 @@ namespace icedb
 		boost::program_options::options_description &config,
 		boost::program_options::options_description &hidden);
 
+	void ICEDB_DL load();
+
 	void ICEDB_DL process_static_options(
 		boost::program_options::variables_map &vm);
 

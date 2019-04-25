@@ -42,5 +42,5 @@ target_link_libraries(icedb-testing-core
 	${HDF5_HL_LIBRARIES}
 	)
 
-addapp(icedb-testing-core Testing)
+addapp_test(icedb-testing-core Testing)
 storebin(icedb-testing-core)
