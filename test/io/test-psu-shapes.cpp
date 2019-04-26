@@ -72,12 +72,12 @@ BOOST_AUTO_TEST_CASE(write_psu_as_hdf5)
 	BOOST_TEST_REQUIRE(res.isGroup() == true);
 }
 
-BOOST_AUTO_TEST_CASE(psu_generate_ppp_block_with_dummy_alg)
+BOOST_AUTO_TEST_CASE(psu_generate_ppp_block)
 {
 	using namespace std;
 	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
 	const string sIn = sBuild + "/write_psu_shape_as_hdf5.h5";
-	const string sOut = sBuild + "/psu_generate_ppp_block_with_dummy_alg.h5";
+	const string sOut = sBuild + "/psu_generate_ppp_block.h5";
 	HH::File in = HH::File::openFile(sIn, H5F_ACC_RDONLY);
 	HH::File out = HH::File::createFile(sOut, H5F_ACC_TRUNC);
 

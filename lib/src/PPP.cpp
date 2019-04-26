@@ -71,6 +71,15 @@ namespace icedb {
 			return PPP(res.get());
 		}
 
+		PPP PPP::apply(
+			const std::vector< std::reference_wrapper<const ShapeAlgs::Algorithms::Algorithm>> &alg,
+			const HH::Group& shp)
+		{
+			for (const auto& a : alg)
+				apply(a.get(), shp);
+			return *this;
+		}
+
 		PPP PPP::apply(gsl::span<const ShapeAlgs::Algorithms::Algorithm> alg, const HH::Group& shp) {
 			for (const auto& a : alg)
 				apply(a, shp);

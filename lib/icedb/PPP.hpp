@@ -1,6 +1,7 @@
 #pragma once
 #include "defs.h"
 #include <array>
+#include <functional>
 #include <vector>
 #include <HH/Groups.hpp>
 #include "Common.hpp"
@@ -88,6 +89,7 @@ namespace icedb {
 				const HH::Group& srcShape);
 
 			/// \brief Apply an algorithm to this PPP (convenience function).
+			PPP apply(const std::vector< std::reference_wrapper<const ShapeAlgs::Algorithms::Algorithm>> &alg, const HH::Group& shp = {});
 			PPP apply(gsl::span<const ShapeAlgs::Algorithms::Algorithm> alg, const HH::Group& shp = {});
 			PPP apply(const ShapeAlgs::Algorithms::Algorithm& alg, const HH::Group& shp = {});
 
@@ -95,6 +97,15 @@ namespace icedb {
 			// returns an ordered vector of algorithmic operations that will produce the desired result.
 			// param alg_set is the map of algorithms that will be searched.
 			// param shp is the source shape, if available.
+			/*
+			std::vector<std::reference_wrapper<const ShapeAlgs::Algorithms::Algorithm>>
+				findAlgs(
+					const std::vector<std::string>& requiredAtts = {},
+					const std::vector<std::string>& requiredDsets = {},
+					const std::vector<std::string>& optionalAtts = {},
+					const std::vector<std::string>& optionalDsets = {}
+					) const;
+					*/
 		};
 	}
 }
