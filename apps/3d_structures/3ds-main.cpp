@@ -20,6 +20,7 @@
 #include <HH/Files.hpp>
 #include <icedb/splitSet.hpp>
 #include <icedb/dlls.hpp>
+#include <icedb/misc/os_functions.hpp>
 
 herr_t my_hdf5_error_handler(hid_t, void *)
 {

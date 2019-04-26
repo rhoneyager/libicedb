@@ -155,7 +155,7 @@ namespace {
 		
 		using namespace icedb;
 		using namespace icedb::os_functions;
-		auto info = icedb::os_functions::getInfo(os_functions::getPID());
+		auto info = BT::ProcessInfo<std::string>::get<std::string>(BT::getPID());
 
 		// Default locations
 		// Install path apps
@@ -178,8 +178,8 @@ namespace {
 		//icedb::registry::searchPathsRecursive.emplace( appBin / "../../plugins" );
 
 		// Relative to library
-		auto modinfo = getModuleInfo((void*)_ICEDB_dllPluginBase);
-		boost::filesystem::path libpath(getPath(modinfo.get()));
+		auto modinfo = BT::getModule<std::string>((void*)_ICEDB_dllPluginBase);
+		boost::filesystem::path libpath(modinfo);
 		libpath.remove_filename();
 
 		// Check where libexec is relative to lib. Are they in the same location?
@@ -195,14 +195,7 @@ namespace {
 		// Checking environment variables
 		if (use_environment)
 		{
-
-			size_t sEnv = 0;
-			std::string env = getEnviron(info.get(), sEnv);
-			//std::string env(cenv, sEnv);
-
-			//icedb::processInfo info = icedb::getInfo(icedb::getPID());
-			std::map<std::string, std::string> mEnv;
-			splitSet::splitNullMap(env, mEnv);
+			std::map<std::string, std::string> &mEnv = info.environment;
 			//std::vector<std::string> mCands;
 			auto searchFunc = [](const std::pair<std::string, std::string> &pred, const std::string &mKey)
 			{
@@ -249,22 +242,10 @@ namespace icedb
 	{
 		void list_loaded_modules(std::ostream &out)
 		{
-			/*
-			struct ICEDB_enumModulesRes {
-				size_t sz;
-				const char** modules;
-			};
-			ICEDB_DL void ICEDB_free_enumModulesRes(ICEDB_enumModulesRes*);
-			ICEDB_DL ICEDB_enumModulesRes* ICEDB_enumModules(int pid);
-			*/
-
-			ICEDB_enumModulesRes *mods = ICEDB_enumModules(ICEDB_getPID());
-
-			for (size_t i = 0; i < mods->sz; ++i) {
-				out << mods->modules[i] << std::endl;
+			auto mods = BT::getLoadedModules<std::string>();
+			for (const auto &m : mods) {
+				out << m << std::endl;
 			}
-
-			ICEDB_free_enumModulesRes(mods);
 		}
 		
 		void add_hook_table(const char* tempsig, void* store) {
@@ -275,9 +256,8 @@ namespace icedb
 		void dump_hook_table(std::ostream &out) {
 			using namespace icedb::os_functions;
 			std::lock_guard<std::mutex> lock(m_hooks);
-			auto h = getModuleInfo((void*)dump_hook_table);
-			out << "Hook table for icedb dll at "
-				<< getPath(h.get()) << std::endl
+			auto h = BT::getModule<std::string>((void*)dump_hook_table);
+			out << "Hook table for icedb dll at " << h << std::endl
 				<< "Store\t - \tSignature\n";
 			for (const auto &i : hookTable)
 			{
@@ -543,9 +523,7 @@ namespace icedb
 				void(*fVer)(icedb::versioning::versionInfo&, void**) =
 					(void(*)(icedb::versioning::versionInfo&, void**)) func;
 				using namespace icedb::os_functions;
-				auto h = getModuleInfo((void*)func);
-				std::string filename(getPath(h.get()));
-				h.reset();
+				std::string filename = BT::getModule<std::string>((void*)func);
 				//dllInitResult(*vfStart)() = nullptr;
 				//void* vfStarta = nullptr;
 				if (fVer) {
@@ -578,14 +556,9 @@ namespace icedb
 						using namespace icedb::registry;
 						using namespace icedb;
 						using namespace icedb::os_functions;
-						auto h = getModuleInfo((void*)mdcheck);
-						std::string myPath(getPath(h.get()));
-						auto ho = getModuleInfo((void*)rdcheck);
-						std::string rPath;
-						if (rdcheck) rPath = (getPath(ho.get())); else rPath = "Unknown";
-						h.reset();
-						ho.reset();
-
+						std::string smd = BT::getModule<std::string>((void*)mdcheck);
+						std::string srd = BT::getModule<std::string>((void*)rdcheck);
+						if (smd == srd) return true;
 						if (critical)
 							ICEDB_throw(icedb::error::error_types::xDLLversionMismatch)
 							.add("is_critical", critical)
@@ -857,6 +830,7 @@ namespace icedb
 			("console-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to console. 0 is DEBUG_2, 7 is CRITICAL.")
 			("debug-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to an attached debugger (Windows only). On non-Windows, logs to stderror. 0 is DEBUG_2, 7 is CRITICAL.")
 			("log-file", po::value<std::string>(), "Set this to log debugging output to a file.")
+			("share-dir", po::value<std::string>(), "Override the share directory.")
 			;
 	}
 
@@ -915,6 +889,11 @@ namespace icedb
 		load_options.lps.debuggerLogThreshold = vm["debug-log-threshold"].as<int>();
 		icedb::logging::setupLogging(0, nullptr, &load_options.lps);
 
+		if (vm.count("share-dir")) {
+			std::string sdir = vm["share-dir"].as<std::string>();
+			os_functions::setSystemString(os_functions::System_String::SHARE_DIR, sdir);
+		}
+
 		//if (vm.count("dll-no-default-locations"))
 		//	autoLoadDLLs = false;
 
@@ -970,15 +949,28 @@ namespace icedb
 		}
 	}
 
+	void load(int argc, const char * const * argv) {
+		namespace po = boost::program_options;
+		po::options_description oall("General options");
+		icedb::add_options(oall, oall, oall);
+		po::variables_map vm;
+
+		po::store(po::command_line_parser(argc, argv).options(oall).allow_unregistered().run(), vm);
+		po::notify(vm);
+		icedb::handle_config_file_options(oall, vm);
+
+		icedb::process_static_options(vm);
+	}
+
+
 	void load() {
-		auto pinfo = BT::ProcessInfo::get();
-		int argc = (int) pinfo.cmdline.size();
-		std::vector<std::string> argv_strings;
-		std::vector<char*> argvs;
-		for (const auto& s : pinfo.cmdline) {
-			
-		}
-		pinfo.cmdline;
+		auto pinfo = BT::ProcessInfo<std::string>::get<std::string>();
+		int argc = (int)pinfo.cmdline.size();
+		std::vector<const char*> argvs;
+		for (const auto& s : pinfo.cmdline)
+			argvs.push_back(s.c_str());
+
+		load(argc, argvs.data());
 	}
 
 }
@@ -990,9 +982,8 @@ extern "C"
 		using namespace icedb;
 		icedb::registry::DLLpreamble b = p;
 		using namespace icedb::os_functions;
-		auto h = getModuleInfo((void*)ptr);
-		std::string dllPath(getPath(h.get()));
-		h.reset();
+		
+		std::string dllPath = BT::getModule<std::string>((void*)ptr);
 
 		ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "icedb_registry_register_dll called on " << dllPath
 			<< ", with ptr " << ptr << ", preamble " << b.uuid << ", " << b.name << ", " << b.description);

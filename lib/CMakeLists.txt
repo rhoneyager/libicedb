@@ -73,6 +73,8 @@ set(extensible_objs
 	)
 set(lib_objs
 	icedb/defs.h
+	icedb/icedb.h
+	icedb/icedb.hpp
 	icedb/Constants.hpp
 	icedb/optionsForwards.hpp
 	icedb/util.hpp

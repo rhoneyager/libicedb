@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <iostream>
 //#include <boost/program_options.hpp>
 
 namespace boost {
@@ -153,19 +154,8 @@ namespace icedb
 
 		void ICEDB_DL list_loaded_modules(std::ostream &out = std::cerr);
 	}
-	void ICEDB_DL add_options(
-		boost::program_options::options_description &cmdline,
-		boost::program_options::options_description &config,
-		boost::program_options::options_description &hidden);
 
-	void ICEDB_DL load();
-
-	void ICEDB_DL process_static_options(
-		boost::program_options::variables_map &vm);
-
-	void ICEDB_DL handle_config_file_options(
-		boost::program_options::options_description &,
-		boost::program_options::variables_map &);
+	
 }
 
 

@@ -21,7 +21,8 @@ BOOST_TEST_GLOBAL_FIXTURE(icedb_GlobalTestingFixture);
 BOOST_AUTO_TEST_CASE(read_ddscat7_shape1)
 {
 	using namespace std;
-	const string sfile = icedb::os_functions::getShareDir() + "/examples/shapes/DDSCAT/ddscat7ice.dat";
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/DDSCAT/ddscat7ice.dat";
 
 	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("ddscat");
 	std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
@@ -56,7 +57,8 @@ BOOST_AUTO_TEST_CASE(read_ddscat7_shape1)
 BOOST_AUTO_TEST_CASE(read_ddscat7_shape2)
 {
 	using namespace std;
-	const string sfile = icedb::os_functions::getShareDir() + "/examples/shapes/DDSCAT/ddscat7melting.dat";
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/DDSCAT/ddscat7melting.dat";
 
 	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("ddscat");
 	std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
