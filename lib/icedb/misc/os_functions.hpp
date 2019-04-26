@@ -20,7 +20,8 @@ namespace icedb {
 		ICEDB_DL void writeDebugString(const char*);
 
 		enum class System_String {
-			SHARE_DIR
+			SHARE_DIR,
+			BUILD_DIR ///< Only set in testing code
 		};
 		ICEDB_DL bool hasSystemString(System_String name);
 		ICEDB_DL std::string getSystemString(System_String name);

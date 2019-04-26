@@ -161,7 +161,7 @@ namespace icedb {
 			static const uint16_t _current_schema_version;
 
 			/// OPEN an HDF5 handle as a shape. Validity not guaranteed.
-			Shape(HH::HH_hid_t hnd_grp = HH::HH_hid_t::dummy()) : HH::Group(hnd_grp) {  }
+			Shape(HH::Group grp = HH::HH_hid_t::dummy()) : HH::Group(grp) {  }
 
 			/// This is the unique identifier for this shape
 			//const std::string particle_unique_id;
@@ -175,12 +175,8 @@ namespace icedb {
 			/// \returns the new shape on success
 			/// \throws on failure
 			static Shape createShape(
-				HH::HH_hid_t newLocationAsEmptyGroup,
-				gsl::not_null<const NewShapeProperties*> props);
-			static Shape createShape(
-				HH::HH_hid_t baseGrpID,
-				const std::string& shapeGrpName,
-				gsl::not_null<const NewShapeProperties*> props);
+				HH::Group newLocationAsEmptyGroup,
+				const NewShapeProperties& props);
 		};
 	}
 }

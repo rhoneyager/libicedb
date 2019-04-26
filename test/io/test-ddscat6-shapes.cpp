@@ -93,3 +93,22 @@ BOOST_AUTO_TEST_CASE(read_ddscat6_shape2)
 		BOOST_TEST(testris[i] == s->particle_scattering_element_composition_whole[i]);
 	}
 }
+
+BOOST_AUTO_TEST_CASE(write_ddscat6_shape_as_hdf5)
+{
+	using namespace std;
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/DDSCAT/ddscat6ice.dat";
+
+	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("ddscat");
+	std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
+	icedb::Shapes::NewShapeProperties::readVector(nullptr, opts, fileShapes);
+	BOOST_TEST_REQUIRE(fileShapes.size() == 1);
+
+	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
+	const string sOut = sBuild + "/write_ddscat6_shape_as_hdf5.h5";
+
+	HH::File out = HH::File::createFile(sOut, H5F_ACC_TRUNC);
+	auto res = icedb::Shapes::Shape::createShape(out.create("Shape_ddscat6ice"), *fileShapes.at(0).get());
+	BOOST_TEST_REQUIRE(res.isGroup() == true);
+}

@@ -65,3 +65,22 @@ BOOST_AUTO_TEST_CASE(read_adda_sphere_geom)
 	BOOST_TEST(s->particle_scattering_element_composition_fractional.size() == 0);
 }
 
+BOOST_AUTO_TEST_CASE(write_adda_shape_as_hdf5)
+{
+	using namespace std;
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/ADDA/"
+		+ "sphere.geom";
+
+	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("adda");
+	std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
+	icedb::Shapes::NewShapeProperties::readVector(nullptr, opts, fileShapes);
+	BOOST_TEST_REQUIRE(fileShapes.size() == 1);
+
+	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
+	const string sOut = sBuild + "/write_adda_shape_as_hdf5.h5";
+
+	HH::File out = HH::File::createFile(sOut, H5F_ACC_TRUNC);
+	auto res = icedb::Shapes::Shape::createShape(out.create("Shape_adda_sphere.geom"), *fileShapes.at(0).get());
+	BOOST_TEST_REQUIRE(res.isGroup() == true);
+}

@@ -165,32 +165,16 @@ namespace icedb {
 		}
 
 		Shape Shape::createShape(
-			HH::HH_hid_t baseGrpID,
-			const std::string& shapeGrp,
-			gsl::not_null<const NewShapeProperties*> props)
-		{
-			Group base(baseGrpID);
-			if (base.exists(shapeGrp)) {
-				const auto grp = base.open(shapeGrp);
-				return createShape(grp.get(), props);
-			}
-			else {
-				const auto grp = base.create(shapeGrp);
-				return createShape(grp.get(), props);
-			}
-		}
-
-		Shape Shape::createShape(
-			HH::HH_hid_t newLocationAsEmptyGroup,
-			gsl::not_null<const NewShapeProperties*> props)
+			HH::Group newLocationAsEmptyGroup,
+			const NewShapeProperties& props)
 		{
 			// Check for validity. If a shape entry is invalid, throw an exception
 			// to the user.
-			if (!props->isValid(&(std::cerr)))
+			if (!props.isValid(&(std::cerr)))
 				ICEDB_throw(error::error_types::xBadInput)
 				.add("Reason", "Cannot create a shape from the passed data. See above error "
 					"messages regarding why the shape is invalid.")
-				.add("Particle-id", props->particle_id);
+				.add("Particle-id", props.particle_id);
 
 			// newLocationAsEmptyGroup
 			HH::Group res(newLocationAsEmptyGroup);
@@ -205,15 +189,15 @@ namespace icedb {
 			// Write required attributes
 			res.atts.add<std::string>(Constants::AttNames::icedb_object_type, Shape::_obj_type_identifier);
 			res.atts.add<uint16_t>(Required_Atts.at(CN::Schema_Version).first, Shape::_current_schema_version);
-			res.atts.add<std::string>(Required_Atts.at(CN::particle_id).first, props->particle_id);
-			res.atts.add<string>(Required_Atts.at(CN::dataset_id).first, props->dataset_id);
-			res.atts.add<string>(Required_Atts.at(CN::author).first, props->author);
-			res.atts.add<string>(Required_Atts.at(CN::contact).first, props->contact);
-			res.atts.add<unsigned int>(Required_Atts.at(CN::version).first, { props->version[0], props->version[1], props->version[2] }, { 3 });
+			res.atts.add<std::string>(Required_Atts.at(CN::particle_id).first, props.particle_id);
+			res.atts.add<string>(Required_Atts.at(CN::dataset_id).first, props.dataset_id);
+			res.atts.add<string>(Required_Atts.at(CN::author).first, props.author);
+			res.atts.add<string>(Required_Atts.at(CN::contact).first, props.contact);
+			res.atts.add<unsigned int>(Required_Atts.at(CN::version).first, { props.version[0], props.version[1], props.version[2] }, { 3 });
 
-			const size_t numScattElems = (props->particle_scattering_element_coordinates_as_floats.size())
-				? props->particle_scattering_element_coordinates_as_floats.size() / 3
-				: props->particle_scattering_element_coordinates_as_ints.size() / 3;
+			const size_t numScattElems = (props.particle_scattering_element_coordinates_as_floats.size())
+				? props.particle_scattering_element_coordinates_as_floats.size() / 3
+				: props.particle_scattering_element_coordinates_as_ints.size() / 3;
 			constexpr size_t max_x = 40000;
 			
 			auto Chunking = [&max_x, &numScattElems](const std::vector<hsize_t> & in, std::vector<hsize_t> & out) -> bool
@@ -228,14 +212,14 @@ namespace icedb {
 
 			// Write required dimensions
 			auto tblPSEN = res.dsets.create<int32_t>(
-				Required_Atts.at(CN::particle_scattering_element_number).first,
+				Required_Dsets.at(CN::particle_scattering_element_number).first,
 				{ static_cast<size_t>(numScattElems) });
 			{
 				tblPSEN.atts.add<std::string>("description", "ID number of scattering element");
 				tblPSEN.atts.add<std::string>("units", "None");
 
-				if (!props->particle_scattering_element_number.empty()) {
-					tblPSEN.write<int32_t>(props->particle_scattering_element_number);
+				if (!props.particle_scattering_element_number.empty()) {
+					tblPSEN.write<int32_t>(props.particle_scattering_element_number);
 				}
 				else {
 					// Create "dummy" element numbers and write.
@@ -250,21 +234,21 @@ namespace icedb {
 			}
 
 			auto tblPCN = res.dsets.create<uint16_t>(
-				Required_Atts.at(CN::particle_constituent_number).first,
-				{ static_cast<size_t>(props->particle_constituents.size()) });
+				Required_Dsets.at(CN::particle_constituent_number).first,
+				{ static_cast<size_t>(props.particle_constituents.size()) });
 			{
 				tblPCN.atts.add<std::string>("description", "ID number of the constituent material");
-				std::vector<uint16_t> data_pcns(props->particle_constituents.size());
-				std::vector<std::string> data_pcn_names(props->particle_constituents.size());
-				for (size_t i = 0; i < props->particle_constituents.size(); ++i) {
-					data_pcns[i] = props->particle_constituents[i].first;
-					data_pcn_names[i] = props->particle_constituents[i].second;
+				std::vector<uint16_t> data_pcns(props.particle_constituents.size());
+				std::vector<std::string> data_pcn_names(props.particle_constituents.size());
+				for (size_t i = 0; i < props.particle_constituents.size(); ++i) {
+					data_pcns[i] = props.particle_constituents[i].first;
+					data_pcn_names[i] = props.particle_constituents[i].second;
 				}
 				tblPCN.write<uint16_t>(data_pcns);
 				tblPCN.setIsDimensionScale("particle_constituent_number");
 
-				auto tblPCNnames = res.dsets.create<string>(Required_Atts.at(CN::particle_constituent_name).first,
-					{ static_cast<size_t>(props->particle_constituents.size()) });
+				auto tblPCNnames = res.dsets.create<string>(Required_Dsets.at(CN::particle_constituent_name).first,
+					{ static_cast<size_t>(props.particle_constituents.size()) });
 				tblPCNnames.write<string>(data_pcn_names);
 				tblPCNnames.setDims(tblPCN);
 			}
@@ -274,14 +258,14 @@ namespace icedb {
 			tblXYZ.setIsDimensionScale("particle_axis");
 
 			HH::Dataset tblPSEC(HH::HH_hid_t::dummy()); // = res.dsets.create<uint8_t>("particle_axis", { 3 });
-			if (props->particle_scattering_element_coordinates_as_ints.size()) {
+			if (props.particle_scattering_element_coordinates_as_ints.size()) {
 				// Shape coordinates are integers
-				typedef decltype(props->particle_scattering_element_coordinates_as_ints)::value_type int_type;
+				typedef decltype(props.particle_scattering_element_coordinates_as_ints)::value_type int_type;
 				tblPSEC = res.dsets.create<int_type>(
 					Optional_Dsets.at(CN::particle_scattering_element_coordinates_int).first,
 					{ static_cast<size_t>(numScattElems), 3 })
 					;
-				tblPSEC.write<int_type>(props->particle_scattering_element_coordinates_as_ints);
+				tblPSEC.write<int_type>(props.particle_scattering_element_coordinates_as_ints);
 
 			}
 			else {
@@ -290,7 +274,7 @@ namespace icedb {
 					Optional_Dsets.at(CN::particle_scattering_element_coordinates_float).first,
 					{ static_cast<size_t>(numScattElems), 3 }
 					);
-				tblPSEC.write<float>(props->particle_scattering_element_coordinates_as_floats);
+				tblPSEC.write<float>(props.particle_scattering_element_coordinates_as_floats);
 			}
 			tblPSEC.setDims(tblPSEN, tblXYZ);
 			tblPSEC.atts.add<std::string>("description", "Cartesian coordinates (x,y,z) of the center of the scattering element (dipole position, center of sphere, etc.)");
@@ -300,7 +284,7 @@ namespace icedb {
 			//	"so scattering computations can be easily repeated with the same structure; "
 			//	"for sphere methods the coordinates describe the center location of the sphere." });
 
-			if (props->particle_scattering_element_composition_fractional.size()) {
+			if (props.particle_scattering_element_composition_fractional.size()) {
 				//const std::vector<size_t> cs{
 				//	(max_x < required->number_of_particle_scattering_elements) ?
 				//	max_x : required->number_of_particle_scattering_elements,
@@ -309,15 +293,15 @@ namespace icedb {
 				auto tblPSEC2a = res.dsets.create<float>(
 					Optional_Dsets.at(CN::particle_scattering_element_composition_fractional).first,
 					{ static_cast<size_t>(numScattElems),
-						static_cast<size_t>(props->particle_constituents.size()) }
+						static_cast<size_t>(props.particle_constituents.size()) }
 					);
-				tblPSEC2a.write<float>(props->particle_scattering_element_composition_fractional);
+				tblPSEC2a.write<float>(props.particle_scattering_element_composition_fractional);
 				tblPSEC2a.setDims(tblPSEN, tblPCN);
 				tblPSEC2a.atts.add<std::string>("description", "Mass fractions of each constituent for each scattering element.");
 				tblPSEC2a.atts.add<std::string>("units", "None");
 			}
 
-			if (props->particle_scattering_element_composition_whole.size()) {
+			if (props.particle_scattering_element_composition_whole.size()) {
 				auto tblPSEC2b = res.dsets.create<uint16_t>(
 					Optional_Dsets.at(CN::particle_scattering_element_composition_whole).first,
 					{ static_cast<size_t>(numScattElems) }
@@ -325,21 +309,21 @@ namespace icedb {
 				tblPSEC2b.setDims(tblPSEN);
 				tblPSEC2b.atts.add<std::string>("description", "The constituent material ID for each scattering element.");
 				tblPSEC2b.atts.add<std::string>("units", "None");
-				tblPSEC2b.write<uint16_t>(props->particle_scattering_element_composition_whole);
+				tblPSEC2b.write<uint16_t>(props.particle_scattering_element_composition_whole);
 			}
 
-			res.atts.add<float>(Optional_Atts.at(CN::scattering_element_coordinates_scaling_factor).first, props->scattering_element_coordinates_scaling_factor);
-			res.atts.add<std::string>(Optional_Atts.at(CN::scattering_element_coordinates_units).first, props->scattering_element_coordinates_units);
+			res.atts.add<float>(Optional_Atts.at(CN::scattering_element_coordinates_scaling_factor).first, props.scattering_element_coordinates_scaling_factor);
+			res.atts.add<std::string>(Optional_Atts.at(CN::scattering_element_coordinates_units).first, props.scattering_element_coordinates_units);
 
-			if (props->scattering_method.size())
-				res.atts.add<string>(Optional_Atts.at(CN::scattering_method).first, props->scattering_method);
+			if (props.scattering_method.size())
+				res.atts.add<string>(Optional_Atts.at(CN::scattering_method).first, props.scattering_method);
 
-			if (props->particle_scattering_element_radius.size()) {
+			if (props.particle_scattering_element_radius.size()) {
 				auto tblPSER = res.dsets.create<float>(
 					Optional_Dsets.at(CN::particle_scattering_element_radius).first,
 					{ static_cast<size_t>(numScattElems) }
 					);
-				tblPSER.write<float>(props->particle_scattering_element_radius);
+				tblPSER.write<float>(props.particle_scattering_element_radius);
 				tblPSER.setDims(tblPSEN);
 				tblPSER.atts.add<std::string>("description", "Physical radius of the scattering sphere.");
 				tblPSER.atts.add<std::string>("units", "m");

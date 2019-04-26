@@ -12,6 +12,8 @@ void icedb_GlobalTestingFixture::setup() {
 	icedb::load();
 	setSystemString(System_String::SHARE_DIR,
 		string(libicedb_sourcedir) + "/share/icedb");
+	setSystemString(System_String::BUILD_DIR,
+		string(libicedb_binarydir) + "/test");
 }
 icedb_GlobalTestingFixture::icedb_GlobalTestingFixture() {}
 void icedb_GlobalTestingFixture::teardown() {}

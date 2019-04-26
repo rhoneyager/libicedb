@@ -19,7 +19,8 @@ set(related_cmake_objects
 set(shp_objs
 	icedb/Shapes.hpp
 	icedb/ShapeAlgs.hpp
-	src/Shapes.cpp)
+	src/Shapes.cpp
+	src/ShapeAlgs.cpp)
 set(exv_objs
 	icedb/exv.hpp
 	src/exv.cpp)

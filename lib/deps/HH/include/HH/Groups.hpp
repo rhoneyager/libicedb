@@ -65,6 +65,7 @@ namespace HH {
 	private:
 		HH_hid_t base;
 	public:
+		Group() : Group(HH_hid_t{}) {}
 		Group(HH_hid_t hnd) : base(hnd), atts(hnd), dsets(hnd) { } //, grps(hnd) {}
 		Group(Group &g) : base(g.get()), atts(g.get()), dsets(g.get()) { }
 		virtual ~Group() {}
@@ -82,7 +83,7 @@ namespace HH {
 
 		static bool isGroup(HH_hid_t obj) {
 			H5I_type_t typ = H5Iget_type(obj());
-			if (typ == H5I_BADID) throw HH_throw;
+			if (typ == H5I_BADID) return false;
 			if ((typ == H5I_GROUP) || (typ == H5I_FILE)) return true;
 			return false;
 		}
