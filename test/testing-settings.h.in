@@ -1,0 +1,2 @@
+#pragma once
+#define libicedb_sourcedir "@CMAKE_SOURCE_DIR@"

@@ -9,7 +9,7 @@
 #include <icedb/Shapes.hpp>
 #include <HH/Files.hpp>
 #include <HH/Groups.hpp>
-#include "Testing.hpp"
+#include "IntegratedTesting.hpp"
 
 BOOST_TEST_GLOBAL_FIXTURE(icedb_GlobalTestingFixture);
 

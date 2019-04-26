@@ -1,4 +1,19 @@
+include(addapp)
+include(addlib)
 if (BUILD_TESTING)
+
+	configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/testing-settings.h.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/Testing/IntegratedTesting/testing-settings.h"
+		)
+
+	add_library(icedb_testing STATIC IntegratedTesting.hpp IntegratedTesting.cpp
+		"${CMAKE_CURRENT_BINARY_DIR}/Testing/IntegratedTesting/testing-settings.h")
+	addlib(icedb_testing STATIC)
+	target_include_directories(icedb_testing PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Testing>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+	target_link_libraries(icedb_testing icedb)
 
 	# CTest stuff. May switch from CTest in the future.
 	set(BUILDNAME "Unspecified_Build_Name_for_CTest" CACHE STRING "Build name variable for CTest")
@@ -61,7 +76,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-psu-gmm-1 # Test PSU file import
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
 				--truncate
 				--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04.h5
 				--dll-load-onelevel $<TARGET_FILE:io_psu>
@@ -71,7 +86,7 @@ if (BUILD_TESTING)
 		add_test (NAME io-psu-gmm-2 # Test import without the --truncate option.
 			# Really just testing that the program does not crash. 
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/PSU-GMM/psuaydinetal_geometry_aggregate_00004_GMM.nc
 				--in-format psu --out ${CMAKE_BINARY_DIR}/test/psu-gmm-a04-2.h5
 				--dll-load-onelevel $<TARGET_FILE:io_psu>
 				--dll-no-default-locations
@@ -110,7 +125,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-adda-1 # Test ADDA file import
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/ADDA/rawtext_nocomments.adda
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/ADDA/rawtext_nocomments.adda
 				--truncate
 				--in-format adda --out ${CMAKE_BINARY_DIR}/test/adda-rawtext_nocomments.h5
 				--dll-load-onelevel $<TARGET_FILE:io_adda>
@@ -119,7 +134,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-adda-2 # Test ADDA file import
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/ADDA/sphere.geom
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/ADDA/sphere.geom
 				--truncate
 				--in-format adda --out ${CMAKE_BINARY_DIR}/test/adda-sphere-geom.h5
 				--dll-load-onelevel $<TARGET_FILE:io_adda>
@@ -162,7 +177,7 @@ if (BUILD_TESTING)
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
 		execute_process(
-			COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/1mm5shape.tar.gz 
+			COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/1mm5shape.tar.gz 
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test/
 		)
 
@@ -182,7 +197,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-ddscat7-1 # Test DDSCAT file import
 			COMMAND icedb-3d_structures_importer 
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat7ice.dat
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat7ice.dat
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
@@ -191,7 +206,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-ddscat7-2 # Test DDSCAT file import
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat7melting.dat
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat7melting.dat
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7melting.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
@@ -200,7 +215,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-ddscat7-3 # Test DDSCAT file import, without the --truncate option
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat7melting.dat
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat7melting.dat
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
 				--dll-no-default-locations
@@ -217,7 +232,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-ddscat6-1 # Test DDSCAT file import
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat6ice.dat
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat6ice.dat
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat6ice.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>
@@ -226,7 +241,7 @@ if (BUILD_TESTING)
 			)
 		add_test (NAME io-ddscat6-2 # Test DDSCAT file import
 			COMMAND icedb-3d_structures_importer
-				--in ${CMAKE_SOURCE_DIR}/share/examples/shapes/DDSCAT/ddscat6melting.dat
+				--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat6melting.dat
 				--truncate
 				--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat6melting.h5
 				--dll-load-onelevel $<TARGET_FILE:io_ddscat>

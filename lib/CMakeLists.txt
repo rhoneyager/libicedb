@@ -87,7 +87,6 @@ set(lib_objs
 	private/linterp.h
 	private/resource.h
 	private/os_impl.hpp
-	private/Testing.hpp
 	icedb/options.hpp
 	src/logging.cpp
 	src/options.cpp
