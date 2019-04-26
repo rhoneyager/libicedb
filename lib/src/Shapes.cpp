@@ -21,7 +21,7 @@ namespace icedb {
 			IO_class_registry_writer<::icedb::Shapes::Shape> >;
 	}
 	namespace Shapes {
-		const std::string Shape::_obj_type_identifier = "shape";
+		const std::string _obj_type_identifier = "shape";
 		const uint16_t Shape::_current_schema_version = 0;
 
 		using CN = e_Common_Obj_Names;
@@ -187,7 +187,7 @@ namespace icedb {
 			}
 
 			// Write required attributes
-			res.atts.add<std::string>(Constants::AttNames::icedb_object_type, Shape::_obj_type_identifier);
+			res.atts.add<std::string>(Constants::AttNames::icedb_object_type, _obj_type_identifier);
 			res.atts.add<uint16_t>(Required_Atts.at(CN::Schema_Version).first, Shape::_current_schema_version);
 			res.atts.add<std::string>(Required_Atts.at(CN::particle_id).first, props.particle_id);
 			res.atts.add<string>(Required_Atts.at(CN::dataset_id).first, props.dataset_id);

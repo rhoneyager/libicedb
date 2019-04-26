@@ -157,7 +157,7 @@ namespace icedb {
 			virtual public io::implementsStandardWriter<Shape, _impl::Shape_IO_Output_Registry>
 		{
 		public:
-			static const std::string _obj_type_identifier;
+			//static const std::string _obj_type_identifier; // Has to be forward-declarable.
 			static const uint16_t _current_schema_version;
 
 			/// OPEN an HDF5 handle as a shape. Validity not guaranteed.

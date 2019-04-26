@@ -8,6 +8,8 @@
 #include <boost/program_options.hpp>
 #include <icedb/misc/os_functions.hpp>
 #include <icedb/Shapes.hpp>
+#include <icedb/ShapeAlgs.hpp>
+#include <icedb/PPP.hpp>
 #include <HH/Files.hpp>
 #include <HH/Groups.hpp>
 #include "IntegratedTesting.hpp"
@@ -68,4 +70,24 @@ BOOST_AUTO_TEST_CASE(write_psu_as_hdf5)
 	auto res = icedb::Shapes::Shape::createShape(
 		out.create("Shape_psuaydinetal_geometry_aggregate_00004_GMM"), *(fileShapes[0].get()));
 	BOOST_TEST_REQUIRE(res.isGroup() == true);
+}
+
+BOOST_AUTO_TEST_CASE(psu_generate_ppp_block_with_dummy_alg)
+{
+	using namespace std;
+	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
+	const string sIn = sBuild + "/write_psu_shape_as_hdf5.h5";
+	const string sOut = sBuild + "/psu_generate_ppp_block_with_dummy_alg.h5";
+	HH::File in = HH::File::openFile(sIn, H5F_ACC_RDONLY);
+	HH::File out = HH::File::createFile(sOut, H5F_ACC_TRUNC);
+
+	icedb::Shapes::Shape shp(in.open("Shape_psuaydinetal_geometry_aggregate_00004_GMM"));
+	icedb::PPP::PPP ppp = icedb::PPP::PPP::createPPP(out.create("psu_geom_agg_4_GMM"), shp);
+	BOOST_TEST_REQUIRE(ppp.isGroup() == true);
+
+	// Apply a "dummy" algorithm.
+	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("dummy") > 0);
+	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("dummy"), shp);
+
+	BOOST_TEST_REQUIRE(ppp.isGroup() == true);
 }

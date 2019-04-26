@@ -17,8 +17,10 @@ set(related_cmake_objects
 	../cmake/GetGitRevisionDescription.cmake
 	../cmake/signing.cmake)
 set(shp_objs
+	icedb/PPP.hpp
 	icedb/Shapes.hpp
 	icedb/ShapeAlgs.hpp
+	src/PPP.cpp
 	src/Shapes.cpp
 	src/ShapeAlgs.cpp)
 set(exv_objs

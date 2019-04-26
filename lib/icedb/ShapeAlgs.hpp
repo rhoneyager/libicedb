@@ -78,7 +78,7 @@ namespace icedb {
 
 				int weight() const { return _weight; }
 				bool isValidTarget(const HH::Group& shape = {}, gsl::span<const HH::Group> inPPPs = {}) const;
-				void calculate(HH::Group out,
+				void apply(HH::Group out,
 					const HH::Group &shape = {}, gsl::span<const HH::Group> inPPPs = {}) const
 				{
 					return _f(out, shape, inPPPs);

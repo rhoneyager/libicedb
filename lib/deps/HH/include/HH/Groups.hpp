@@ -67,7 +67,8 @@ namespace HH {
 	public:
 		Group() : Group(HH_hid_t{}) {}
 		Group(HH_hid_t hnd) : base(hnd), atts(hnd), dsets(hnd) { } //, grps(hnd) {}
-		Group(Group &g) : base(g.get()), atts(g.get()), dsets(g.get()) { }
+		//Group(Group &g) : base(g.get()), atts(g.get()), dsets(g.get()) { }
+		//const Group(const Group& g) : base(g.get()), atts(g.get()), dsets(g.get()) { }
 		virtual ~Group() {}
 		HH_hid_t get() const { return base; }
 
