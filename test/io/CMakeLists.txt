@@ -22,6 +22,7 @@ if (BUILD_PLUGIN_PSU)
 	else()
 		target_compile_definitions(icedb-test-psu-shapes PRIVATE TEST_WITH_SILO=0)
 	endif()
+	#add_dependencies(icedb-test-psu-shapes qh) # TODO: Remove after algorithm tests complete.
 	addapp_test(icedb-test-psu-shapes Testing/IO)
 	storebin(icedb-test-psu-shapes)
 endif()

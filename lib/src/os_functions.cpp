@@ -1,7 +1,9 @@
 #include "icedb/defs.h"
 #include <mutex>
 #include <map>
+#include <boost/filesystem.hpp>
 #include "BetterThrow/Error.hpp"
+#include "BetterThrow/Info.hpp"
 #include "icedb/error.hpp"
 #include "icedb/misc/os_functions.h"
 #include "icedb/misc/os_functions.hpp"
@@ -105,6 +107,22 @@ namespace icedb {
 		{
 			std::lock_guard<std::mutex> lock(m_sys);
 			vars::sys_strings[name] = in;
+		}
+
+		std::string getLibPath() {
+			return BT::getModule<std::string>((void*)libEntry);
+		}
+		std::string getLibDir() {
+			boost::filesystem::path libPath(getLibPath());
+			return libPath.remove_filename().string();
+		}
+		std::string getAppPath() {
+			auto pi = BT::ProcessInfo<std::string>::get<std::string>(BT::getPID());
+			return pi.path;
+		}
+		std::string getAppDir() {
+			boost::filesystem::path appPath(getAppPath());
+			return appPath.remove_filename().string();
 		}
 	}
 }

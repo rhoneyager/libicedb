@@ -300,11 +300,10 @@ namespace HH {
 			Eigen::Array<ScalarType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> data_in;
 			data_in.resize(res.rows(), res.cols());
 
-			herr_t e = read<ScalarType>(gsl::span<ScalarType>(data_in.data(), dims.numElements));
-			if (e < 0) throw HH_throw;
-
+			read<ScalarType>(gsl::span<ScalarType>(data_in.data(), dims.numElements));
+			
 			res = data_in;
-			return *this
+			return *this;
 		}
 
 		template <class EigenClass>

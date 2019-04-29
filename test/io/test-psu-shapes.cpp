@@ -72,6 +72,7 @@ BOOST_AUTO_TEST_CASE(write_psu_as_hdf5)
 	BOOST_TEST_REQUIRE(res.isGroup() == true);
 }
 
+/*
 BOOST_AUTO_TEST_CASE(psu_generate_ppp_block)
 {
 	using namespace std;
@@ -89,5 +90,8 @@ BOOST_AUTO_TEST_CASE(psu_generate_ppp_block)
 	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("dummy") > 0);
 	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("dummy"), shp);
 
+	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("ConvexHullAkuukkaQuickhull"), shp);
+
 	BOOST_TEST_REQUIRE(ppp.isGroup() == true);
 }
+*/

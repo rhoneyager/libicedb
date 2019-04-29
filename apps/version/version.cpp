@@ -11,6 +11,7 @@
 #include <icedb/dlls.hpp>
 #include <icedb/versioning/versioning.hpp>
 #include <icedb/misc/os_functions.hpp>
+#include <BetterThrow/Info.hpp>
 
 int main(int argc, char** argv) {
 	try {
@@ -35,12 +36,14 @@ int main(int argc, char** argv) {
 		cout << "icedb\n--------------------------------\n";
 		debug_preamble(*(libver.get()), std::cout);
 		using namespace icedb::os_functions;
+		auto pi = BT::ProcessInfo<std::string>::get<std::string>(BT::getPID());
+		auto rt = BT::RuntimeInfo<std::string>::get<std::string>();
 		cout << "App dir: " << getAppDir() << endl;
 		cout << "Lib dir: " << getLibDir() << endl;
-		cout << "Plugin dir: " << getPluginDir() << endl;
-		cout << "CWD: " << getCWD() << endl;
-		cout << "Share dir: " << getShareDir() << endl;
-		cout << "User config dir: " << getAppConfigDir() << endl;
+		//cout << "Plugin dir: " << getPluginDir() << endl;
+		cout << "CWD: " << pi.cwd << endl;
+		//cout << "Share dir: " << getShareDir() << endl;
+		//cout << "User config dir: " << getAppConfigDir() << endl;
 		cout << "icedb lib path: " << getLibPath() << endl << endl;
 		cout << "Loaded modules:" << endl;
 

@@ -2,6 +2,7 @@
 #ifndef ICEDB_HPP_OS_FUNCTIONS
 #define ICEDB_HPP_OS_FUNCTIONS
 #include "../defs.h"
+#include <string>
 
 namespace boost {
 	namespace program_options {
@@ -26,6 +27,11 @@ namespace icedb {
 		ICEDB_DL bool hasSystemString(System_String name);
 		ICEDB_DL std::string getSystemString(System_String name);
 		ICEDB_DL void setSystemString(System_String name, const std::string& in);
+		ICEDB_DL std::string getLibDir();
+		ICEDB_DL std::string getAppDir();
+		//ICEDB_DL std::string getPluginDir();
+		ICEDB_DL std::string getLibPath();
+		ICEDB_DL std::string getAppPath();
 	}
 
 	// There are two ways to initialize icedb.
