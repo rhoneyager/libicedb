@@ -1,13 +1,6 @@
-[submodule "lib/deps/third_party/eigen"]
-	path = lib/deps/third_party/eigen
-	url = https://github.com/rhoneyager/eigen-git-mirror.git
-[submodule "plugins/qhull/deps/qhull"]
-	path = plugins/qhull/deps/qhull
-	url = https://github.com/rhoneyager/qhull.git
-	branch = v721
-[submodule "plugins/qhull/deps/quickhull"]
-	path = plugins/qhull/deps/quickhull
+[submodule "lib/deps/third_party/quickhull/quickhull"]
+	path = lib/deps/third_party/quickhull/quickhull
 	url = https://github.com/akuukka/quickhull.git
-[submodule "plugins/hbf-miniball/miniball"]
-	path = plugins/hbf-miniball/miniball
+[submodule "lib/deps/third_party/miniball/miniball"]
+	path = lib/deps/third_party/miniball/miniball
 	url = https://github.com/hbf/miniball.git
