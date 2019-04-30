@@ -1,5 +1,3 @@
-#include <string>
-
 #include <icedb/defs.h>
 #include <icedb/plugin.hpp>
 #include "plugin-miniball.hpp"
@@ -9,6 +7,8 @@
 #include <icedb/Shapes.hpp>
 #include <iostream>
 #include <BetterThrow/Error.hpp>
+#include "miniball.h"
+#include <vector>
 
 namespace icedb
 {
@@ -24,7 +24,34 @@ namespace icedb
 				double& radius,
 				double& diameter)
 			{
+				//using namespace Seb;
+				typedef Seb::Point<double> Point;
+				typedef std::vector<Point> PointVector;
+				typedef Seb::Smallest_enclosing_ball<double> Miniball;
+				PointVector points; 
+				points.reserve(inPoints.rows());
+				for (size_t i = 0; i < (int)inPoints.rows(); ++i)
+					points.push_back(Point(3, inPoints.data() + (3 * i)));
 
+				// Compute the miniball by inserting each value
+				Miniball mb(3, points);
+
+				radius = mb.radius();
+				diameter = radius * 2.;
+				const double pi = 3.141592654;
+				volume = pi * (4. / 3.) * radius * radius * radius;
+				surface_area = 4. * pi * radius * radius;
+
+				//FT rad_squared = mb.squared_radius();
+				//cout << "Running time: " << Seb::Timer::instance().lapse("all") << "s" << endl
+				//	<< "Radius = " << rad << " (squared: " << rad_squared << ")" << endl
+				//	<< "Center:" << endl;
+				Miniball::Coordinate_iterator center_it = mb.center_begin();
+				//for (int j = 0; j < d; ++j)
+				//	cout << "  " << center_it[j] << endl;
+				center(0) = center_it[0];
+				center(1) = center_it[1];
+				center(2) = center_it[2];
 			}
 
 			using namespace ShapeAlgs::Algorithms;

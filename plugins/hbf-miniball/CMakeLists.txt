@@ -10,12 +10,14 @@ if (BUILD_PLUGIN_HBF_MINIBALL)
 	set(miniball_srcs
 		miniball/cpp/main/Seb.h
 		miniball/cpp/main/Seb_configure.h
-		miniball/cpp/main/Seb_debug.C
+		#miniball/cpp/main/Seb_debug.C
 		miniball/cpp/main/Seb_debug.h
 		miniball/cpp/main/Seb_point.h
 		miniball/cpp/main/Seb-inl.h
 		miniball/cpp/main/Subspan.h
 		miniball/cpp/main/Subspan-inl.h
+		my_Seb_debug.cpp
+		my_Seb_debug.h
 	)
 	
 	# ---------------------------------------
@@ -29,7 +31,9 @@ if (BUILD_PLUGIN_HBF_MINIBALL)
 	#endif(UNIX)
 	addlib(miniball STATIC)
 	target_include_directories(miniball PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/miniball/cpp/main>)
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/miniball/cpp/main>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+	target_compile_definitions(miniball PUBLIC SEB_DEBUG_H=1)
 
 	# The plugin
 	add_library(alg-hbf-miniball SHARED README.md plugin-miniball.hpp plugin-miniball.cpp)
