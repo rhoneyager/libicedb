@@ -56,7 +56,10 @@ namespace icedb
 
 			using namespace ShapeAlgs::Algorithms;
 
-			void MiniballFunction(HH::Group res, const HH::Group& shp, gsl::span<const HH::Group> inPPPs)
+			void MiniballFunction(
+				HH::Group res,
+				const HH::Group& shp,
+				const gsl::span<const HH::Group> &inPPPs)
 			{
 				const auto& SD = icedb::Shapes::Required_Dsets;
 				const auto& SDO = icedb::Shapes::Optional_Dsets;

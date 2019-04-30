@@ -22,7 +22,7 @@ namespace icedb {
 			{
 				set<string> _rsd, _rsa, _rpd, _rpa, _pd, _pa,
 					_dsd, _dsa, _dpd, _dpa;
-				typedef function<void(HH::Group, const HH::Group&, gsl::span<const HH::Group>)> func_type;
+				typedef function<void(HH::Group, const HH::Group&, const gsl::span<const HH::Group>&)> func_type;
 				func_type _f;
 				int _weight = 100;
 			public:
@@ -77,9 +77,9 @@ namespace icedb {
 				const set<string>& DisallowedPPPAttributes() const { return _dpa; }
 
 				int weight() const { return _weight; }
-				bool isValidTarget(const HH::Group& shape = {}, gsl::span<const HH::Group> inPPPs = {}) const;
+				bool isValidTarget(const HH::Group& shape = {}, const gsl::span<const HH::Group> & inPPPs = {}) const;
 				void apply(HH::Group out,
-					const HH::Group &shape = {}, gsl::span<const HH::Group> inPPPs = {}) const
+					const HH::Group shape, const gsl::span<const HH::Group> inPPPs) const // = {}) const // refs
 				{
 					return _f(out, shape, inPPPs);
 				}

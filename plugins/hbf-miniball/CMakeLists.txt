@@ -1,12 +1,9 @@
-# Implementing a separate build of qhull here, with a better build system
-# Only the qhull C++ library is needed.
-
 include(addlib)
+include(addapp)
 
 option (BUILD_PLUGIN_HBF_MINIBALL "Build the hbf miniball plugin" ON)
 
 if (BUILD_PLUGIN_HBF_MINIBALL)
-
 	set(miniball_srcs
 		miniball/cpp/main/Seb.h
 		miniball/cpp/main/Seb_configure.h
@@ -36,8 +33,27 @@ if (BUILD_PLUGIN_HBF_MINIBALL)
 	target_compile_definitions(miniball PUBLIC SEB_DEBUG_H=1)
 
 	# The plugin
-	add_library(alg-hbf-miniball SHARED README.md plugin-miniball.hpp plugin-miniball.cpp)
-	addplugin(alg-hbf-miniball Algorithms icedb)
-	target_link_libraries(alg-hbf-miniball icedb miniball)
+	add_library(alg_hbf_miniball SHARED README.md plugin-miniball.hpp plugin-miniball.cpp)
+	addplugin(alg_hbf_miniball Algorithms icedb)
+	target_link_libraries(alg_hbf_miniball icedb miniball)
 	#target_compile_definitions(io_adda PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
+
+
+	if (BUILD_TESTING)
+		generaterc("icedb-test-plugin-miniball" "exe"
+			"icedb"
+			"Test hbf-miniball algorithm code"
+			 "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
+			 )
+		set(srcs-test test-miniball.cpp)
+		IF (WIN32 AND NOT CYGWIN)
+			SET(srcs-test ${srcs-test} "${CMAKE_CURRENT_BINARY_DIR}/app.rc")
+		ENDIF()
+
+		add_executable(icedb-test-plugin-miniball ${srcs-test})
+		target_link_libraries(icedb-test-plugin-miniball icedb_testing icedb alg_hbf_miniball Boost::unit_test_framework)
+		addapp_test(icedb-test-plugin-miniball Testing/Plugins)
+		storebin(icedb-test-plugin-miniball)
+	endif()
+
 endif()

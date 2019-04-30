@@ -88,8 +88,9 @@ namespace icedb {
 
 		PPP PPP::apply(const ShapeAlgs::Algorithms::Algorithm& alg, const HH::Group& shp)
 		{
-			gsl::span<HH::Group> g(this, 1);
-			alg.apply(*this, shp, g);
+			HH::Group g(get());
+			gsl::span<const HH::Group> sg(&g, 1);
+			alg.apply(*this, shp, sg);
 			return *this;
 		}
 

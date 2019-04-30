@@ -9,7 +9,7 @@ namespace icedb {
 			PPP_required_attributes{ "particle_maximum_dimension_standard" };
 
 		namespace Algorithms {
-			bool Algorithm::isValidTarget(const HH::Group& shape, gsl::span<const HH::Group> inPPPs) const
+			bool Algorithm::isValidTarget(const HH::Group& shape, const gsl::span<const HH::Group>& inPPPs) const
 			{
 				if (_rsd.size() && !shape.isGroup()) return false;
 				if (_rsa.size() && !shape.isGroup()) return false;
@@ -79,7 +79,7 @@ namespace icedb {
 				Algorithm::AlgorithmConstructor a;
 				a.ProvidedAttributes = { "MaximumDistanceAnyTwoElements" };
 				a.RequiredPPPDatasets = { "ConvexHullPoints" };
-				a.func = [](HH::Group res, const HH::Group & shp, gsl::span<const HH::Group> inPPPs)
+				a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group>& inPPPs)
 				{
 					const auto& SD = icedb::Shapes::Required_Dsets;
 					const auto& SDO = icedb::Shapes::Optional_Dsets;
@@ -122,7 +122,7 @@ namespace icedb {
 				Algorithm::AlgorithmConstructor a;
 				a.ProvidedAttributes = { "MaximumDistanceAnyTwoElements" };
 				a.RequiredStructuralDatasets = {"particle_scattering_element_coordinates"};
-				a.func = [](HH::Group res, const HH::Group & shp, gsl::span<const HH::Group> inPPPs)
+				a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group>& inPPPs)
 				{
 					const auto& SD = icedb::Shapes::Required_Dsets;
 					const auto& SDO = icedb::Shapes::Optional_Dsets;
@@ -172,7 +172,7 @@ namespace icedb {
 					"scattering_element_coordinates_units",
 					"scattering_element_coordinates_scaling_factor"
 				};
-				a.func = [](HH::Group res, const HH::Group & shp, gsl::span<const HH::Group> inPPPs)
+				a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group>& inPPPs)
 				{
 					auto FindAttribute = [&](const std::string & name) -> HH::Attribute {
 						for (const auto& p : inPPPs)

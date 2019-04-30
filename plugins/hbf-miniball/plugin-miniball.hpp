@@ -5,7 +5,7 @@
 #include <string>
 #include <icedb/plugin.hpp>
 #include <cstdio>
-#define PLUGINID "856551F4-7D04-4F52-A770-FCF7A98543F8"
+#define PLUGINID "856551F4-7D04-4F52-A770-FCF7A98543F9"
 
 
 namespace icedb {
