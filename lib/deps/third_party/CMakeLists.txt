@@ -1,6 +1,8 @@
 include(addlib)
+add_subdirectory(eigen3)
 add_subdirectory(gsl-single)
-
+add_subdirectory(miniball)
+add_subdirectory(quickhull)
 
 # Import the locally-provided version of Eigen3.
 

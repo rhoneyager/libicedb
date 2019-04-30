@@ -1,7 +1,5 @@
 add_subdirectory(adda)
 add_subdirectory(ddscat)
 add_subdirectory(example)
-add_subdirectory(hbf-miniball)
 add_subdirectory(psu)
 add_subdirectory(silo)
-add_subdirectory(qhull)
