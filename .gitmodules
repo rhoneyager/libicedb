@@ -8,3 +8,6 @@
 [submodule "plugins/qhull/deps/quickhull"]
 	path = plugins/qhull/deps/quickhull
 	url = https://github.com/akuukka/quickhull.git
+[submodule "plugins/hbf-miniball/miniball"]
+	path = plugins/hbf-miniball/miniball
+	url = https://github.com/hbf/miniball.git

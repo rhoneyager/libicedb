@@ -43,7 +43,7 @@ namespace HH {
 
 		static bool isDataset(HH_hid_t obj) {
 			H5I_type_t typ = H5Iget_type(obj());
-			if (typ == H5I_BADID) throw HH_throw;
+			if (typ == H5I_BADID) return false;
 			if (typ == H5I_DATASET) return true;
 			//H5O_info_t oinfo;
 			//herr_t err = H5Oget_info(obj(), &oinfo);
