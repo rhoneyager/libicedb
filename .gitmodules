@@ -4,3 +4,6 @@
 [submodule "lib/deps/third_party/miniball/miniball"]
 	path = lib/deps/third_party/miniball/miniball
 	url = https://github.com/hbf/miniball.git
+[submodule "lib/deps/third_party/eigen3/eigen"]
+	path = lib/deps/third_party/eigen3/eigen
+	url = https://github.com/rhoneyager/eigen-git-mirror.git

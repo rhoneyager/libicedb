@@ -28,6 +28,8 @@ target_include_directories(miniball PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/miniball/cpp/main>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_compile_definitions(miniball PUBLIC SEB_DEBUG_H=1)
+add_library(
+    icedb::miniball ALIAS miniball )
 
 # The plugin
 #add_library(alg_hbf_miniball SHARED README.md plugin-miniball.hpp plugin-miniball.cpp)

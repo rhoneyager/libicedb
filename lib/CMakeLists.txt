@@ -16,13 +16,20 @@ set(related_cmake_objects
 	../cmake/generaterc.cmake
 	../cmake/GetGitRevisionDescription.cmake
 	../cmake/signing.cmake)
+set(alg_objs
+	src/Algorithms/Algorithms.hpp
+	src/Algorithms/basic.cpp
+	src/Algorithms/max_distance.cpp
+	src/Algorithms/miniball.cpp
+	src/Algorithms/quickhull.cpp
+	icedb/ShapeAlgs.hpp
+	src/ShapeAlgs.cpp
+	)
 set(shp_objs
 	icedb/PPP.hpp
 	icedb/Shapes.hpp
-	icedb/ShapeAlgs.hpp
 	src/PPP.cpp
-	src/Shapes.cpp
-	src/ShapeAlgs.cpp)
+	src/Shapes.cpp)
 set(exv_objs
 	icedb/exv.hpp
 	src/exv.cpp)
@@ -115,6 +122,7 @@ generaterc("icedb" "dll"
 source_group("Extensibility" FILES ${extensible_objs})
 source_group("Lib" FILES ${lib_objs})
 source_group("Shapes" FILES ${shp_objs})
+source_group("Shape Algorithms" FILES ${alg_objs})
 source_group("Errors" FILES ${error_objs})
 source_group("Extended Scattering" FILES ${exv_objs})
 source_group("Databases" FILES ${db_objs})
@@ -127,7 +135,7 @@ set(libhdrs_dllbase ${related_cmake_objects}
 set(libsrcs_dllbase src/dlls_placeholder.cpp)
 set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs} ${db_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
-	${extensible_objs})
+	${extensible_objs} ${alg_objs})
 IF (WIN32 AND NOT CYGWIN)
 	SET(libsrcs_dllbase ${libsrcs_dllbase} 
 		"${CMAKE_CURRENT_BINARY_DIR}/lib_base.rc")
@@ -170,7 +178,12 @@ target_compile_definitions(icedb
 target_compile_definitions(icedb PRIVATE _SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING=1)
 target_compile_definitions(icedb PUBLIC __STDC_WANT_LIB_EXT1__=1)
 target_compile_definitions(icedb PUBLIC __STDC_WANT_SECURE_LIB__=1)
-target_link_libraries(icedb icedb_base icedb::GSL icedb::HH icedb::BinaryIO icedb::Eigen3 BetterThrow::BetterThrow) # ZLIB::ZLIB)
+target_link_libraries(icedb icedb_base 
+	icedb::GSL icedb::HH icedb::BinaryIO icedb::Eigen3 
+	BetterThrow::BetterThrow
+	icedb::quickhull
+	icedb::miniball
+	) # ZLIB::ZLIB)
 target_link_libraries(icedb
 	Boost::filesystem
 	Boost::system

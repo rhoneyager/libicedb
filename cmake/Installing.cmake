@@ -25,7 +25,7 @@ endif()
 
 
 
-export(TARGETS icedb icedb_base GSL HH BinaryIO Eigen BetterThrow
+export(TARGETS icedb icedb_base GSL HH BinaryIO Eigen BetterThrow miniball quickhull
 		FILE "${PROJECT_BINARY_DIR}/icedbTargets.cmake")
 export(PACKAGE icedb)
 
