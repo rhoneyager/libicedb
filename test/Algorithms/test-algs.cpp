@@ -46,35 +46,35 @@ BOOST_AUTO_TEST_CASE(algs_basic_invocation)
 
 	icedb::Shapes::Shape shp(in.open("Shape_psuaydinetal_geometry_aggregate_00004_GMM"));
 	icedb::PPP::PPP ppp = icedb::PPP::PPP::createPPP(out.create("psu_geom_agg_4_GMM"), shp);
-	BOOST_TEST_REQUIRE(ppp.isGroup() == true); // Checkpoint
+	BOOST_TEST_CHECKPOINT("PPP creation succeeded.");
 
 	// Apply a "dummy" algorithm.
 	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("dummy") > 0);
 	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("dummy"), shp);
-	BOOST_TEST_REQUIRE(ppp.isGroup() == true); // Checkpoint
+	BOOST_TEST_CHECKPOINT("dummy algorithm succeeded.");
 
 	// Apply a second "dummy2" algorithm.
 	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("dummy2") > 0);
 	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("dummy2"), shp);
-	BOOST_TEST_REQUIRE(ppp.isGroup() == true); // Checkpoint
+	BOOST_TEST_CHECKPOINT("dummy2 algorithm succeeded.");
 
 	//
 	//BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("copy_to_ppp") > 0);
 	//ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("copy_to_ppp"), shp);
-	//BOOST_TEST_REQUIRE(ppp.isGroup() == true); // Checkpoint
+	//BOOST_TEST_CHECKPOINT("copy_to_ppp algorithm succeeded.");
 
 	//
 	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("ConvexHull") > 0);
 	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("ConvexHull"), shp);
-	BOOST_TEST_REQUIRE(ppp.isGroup() == true); // Checkpoint
+	BOOST_TEST_CHECKPOINT("ConvexHull algorithm succeeded.");
 
 	//
 	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("MaxDistanceTwoPoints") > 0);
 	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("MaxDistanceTwoPoints"), shp);
-	BOOST_TEST_REQUIRE(ppp.isGroup() == true); // Checkpoint
+	BOOST_TEST_CHECKPOINT("MaxDistanceTwoPoints algorithm succeeded.");
 
 	//
-	//BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("SmallestCircumscribingSphere_Points") > 0);
-	//ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("SmallestCircumscribingSphere_Points"), shp);
-	//BOOST_TEST_REQUIRE(ppp.isGroup() == true); // Checkpoint
+	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("SmallestCircumscribingSphere_Points") > 0);
+	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("SmallestCircumscribingSphere_Points"), shp);
+	BOOST_TEST_CHECKPOINT("SmallestCircumscribingSphere_Points algorithm succeeded.");
 }

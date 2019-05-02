@@ -63,7 +63,6 @@ namespace icedb {
 					// Prefer to calculate the miniball based on the convex hull points. If those are unavailable,
 					// then calculate directly from the raw coordinates.
 
-					const std::string PointDatasetName = SDO.at(SO::particle_scattering_element_coordinates_int).first;
 					const std::string ConvexHullPointsDatasetName{ "ConvexHullPoints" };
 					HH::Dataset source;
 					for (const auto& inPPP : inPPPs) {
@@ -72,18 +71,18 @@ namespace icedb {
 							break;
 						}
 					}
-					if (!source.isDataset() && shp.isGroup())
-						source = shp.dsets[PointDatasetName];
-					else throw BT_throw.add("Reason", "Algorithm is missing the sufficient datasets for it to continue.");
+					if (!source.isDataset()) throw BT_throw.add("Reason", "Algorithm is missing the sufficient datasets for it to continue.");
 
 					if (source.isOfType<int32_t>()) {
 						Eigen::ArrayXXi inPts;
 						source.readWithEigen(inPts);
+						shpPoints.resizeLike(inPts);
 						shpPoints = inPts.cast<double>();
 					}
 					else if (source.isOfType<float>()) {
 						Eigen::ArrayXXf inPts;
 						source.readWithEigen(inPts);
+						shpPoints.resizeLike(inPts);
 						shpPoints = inPts.cast<double>();
 					}
 					else if (source.isOfType<double>())
