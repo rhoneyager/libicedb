@@ -20,6 +20,27 @@ namespace icedb {
 					return a;
 				}() };
 
+				Algorithm dummy2{ []()->Algorithm::AlgorithmConstructor {
+					Algorithm::AlgorithmConstructor a;
+					a.ProvidedAttributes = { "dummyVer2" };
+					a.ProvidedDatasets = { "dummyDset2" };
+					a.func = [](HH::Group res, const HH::Group & shp, gsl::span<const HH::Group> inPPPs)
+					{
+						// This algorithm makes sure that the shape and inPPPs are valid objects.
+						if (!shp.isGroup()) throw BT_throw.add("Reason", "Shape is invalid.");
+						for (const auto& p : inPPPs)
+						{
+							if (!p.isGroup()) throw BT_throw.add("Reason", "PPP is invalid.");
+						}
+						res.atts.add<uint16_t>("dummyVer2", 1);
+						res.dsets.create<int32_t>("dummyDset2", { 2 })
+							.write<int32_t>({ 3,4 });
+					};
+					a.weight = 100;
+					return a;
+				}() };
+
+
 				Algorithm copy_to_ppp{ []()->Algorithm::AlgorithmConstructor {
 					Algorithm::AlgorithmConstructor a;
 					a.ProvidedAttributes = {
@@ -33,6 +54,7 @@ namespace icedb {
 					a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group> & inPPPs)
 					{
 						auto FindAttribute = [&](const std::string & name) -> HH::Attribute {
+							if (shp.atts.exists(name)) return shp.atts[name];
 							for (const auto& p : inPPPs)
 							{
 								if (p.atts.exists(name)) return p.atts[name];

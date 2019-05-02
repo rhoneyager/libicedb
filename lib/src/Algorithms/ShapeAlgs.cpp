@@ -63,6 +63,7 @@ namespace icedb {
 			{
 				{"copy_to_ppp", _internal_algs::copy_to_ppp},
 				{"dummy", _internal_algs::dummy},
+				{"dummy2", _internal_algs::dummy2},
 				{"ConvexHull", _internal_algs::ConvexHull},
 				{"MaxDistanceTwoPoints", _internal_algs::MaxDistanceTwoPoints},
 				{"SmallestCircumscribingSphere_Points", _internal_algs::SmallestCircumscribingSphere_Points}

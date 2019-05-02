@@ -9,6 +9,8 @@ namespace icedb {
 			namespace _internal_algs {
 				/// A "dummy" algorithm that exists only as an example.
 				extern Algorithm dummy;
+				/// A "dummy" algorithm that exists only for testing.
+				extern Algorithm dummy2;
 				/// A trivial algorithm that copies info about the dimensions to the PPP block.
 				extern Algorithm copy_to_ppp;
 				/// Find points on the convex hull. Used to speed up many other algorithms.

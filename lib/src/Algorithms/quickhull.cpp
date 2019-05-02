@@ -70,11 +70,13 @@ namespace icedb {
 						if (dPts.isOfType<int32_t>()) {
 							Eigen::ArrayXXi inPts;
 							shp.dsets[SDO.at(SO::particle_scattering_element_coordinates_int).first].readWithEigen(inPts);
+							shpPoints.resizeLike(inPts);
 							shpPoints = inPts.cast<double>();
 						}
 						else if (dPts.isOfType<float>()) {
 							Eigen::ArrayXXf inPts;
 							shp.dsets[SDO.at(SO::particle_scattering_element_coordinates_float).first].readWithEigen(inPts);
+							shpPoints.resizeLike(inPts);
 							shpPoints = inPts.cast<double>();
 						}
 						else throw;

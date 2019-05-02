@@ -89,9 +89,15 @@ namespace icedb {
 				const HH::Group& srcShape);
 
 			/// \brief Apply an algorithm to this PPP (convenience function).
-			PPP apply(const std::vector< std::reference_wrapper<const ShapeAlgs::Algorithms::Algorithm>> &alg, const HH::Group& shp = {});
-			PPP apply(gsl::span<const ShapeAlgs::Algorithms::Algorithm> alg, const HH::Group& shp = {});
-			PPP apply(const ShapeAlgs::Algorithms::Algorithm& alg, const HH::Group& shp = {});
+			PPP apply(
+				const std::vector< std::reference_wrapper<const ShapeAlgs::Algorithms::Algorithm>> &alg, 
+				const HH::Group& shp = {});
+			PPP apply(
+				gsl::span<const ShapeAlgs::Algorithms::Algorithm> alg, 
+				const HH::Group& shp = {});
+			PPP apply(
+				const ShapeAlgs::Algorithms::Algorithm& alg, 
+				const HH::Group& shp = {});
 
 			// Find algorithms to generate the requested datasets and attributes.
 			// returns an ordered vector of algorithmic operations that will produce the desired result.

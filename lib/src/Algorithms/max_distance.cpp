@@ -11,6 +11,7 @@ namespace icedb {
 				Algorithm MaxDistanceTwoPoints{ []()->Algorithm::AlgorithmConstructor {
 					Algorithm::AlgorithmConstructor a;
 					a.ProvidedAttributes = { "MaximumDistanceAnyTwoElements" };
+					a.ProvidedDatasets = { "MaximumDistanceAnyTwoElements_points" };
 					a.RequiredPPPDatasets = { "ConvexHullPoints" };
 					a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group> & inPPPs)
 					{
@@ -33,18 +34,29 @@ namespace icedb {
 						EigenXXDr pts;
 						Eigen::ArrayXXf ipts;
 						dCvx.readWithEigen(ipts);
+						pts.resizeLike(ipts);
 						pts = ipts.cast<double>();
 
 						double maxSqDist = 0;
-						for (int i = 0; i < pts.rows(); ++i) {
-							for (int j = i + 1; j < pts.rows(); ++j) {
-								Eigen::ArrayXd dist = pts.block(i, 0, 1, 3) - pts.block(j, 0, 1, 3);
+						Eigen::Array3f furthest_a, furthest_b;
+						auto rows = pts.rows();
+						auto cols = pts.cols();
+						for (int i = 0; i < rows; ++i) {
+							for (int j = i + 1; j < rows; ++j) {
+								Eigen::Array3d dist = (pts.block(i, 0, 1, 3) - pts.block(j, 0, 1, 3)).transpose();
 								double distsq = dist.square().sum();
-								if (distsq > maxSqDist) maxSqDist = distsq;
+								if (distsq > maxSqDist) {
+									maxSqDist = distsq;
+									furthest_a = pts.block(i, 0, 1, 3).transpose().cast<float>();
+									furthest_b = pts.block(j, 0, 1, 3).transpose().cast<float>();
+								}
 							}
 						}
 
 						res.atts.add<float>("MaximumDistanceAnyTwoElements", (float)std::sqrt(maxSqDist));
+						res.dsets.create<float>("MaximumDistanceAnyTwoElements_points", { 2,3 })
+							.write<float>({ furthest_a(0), furthest_a(1), furthest_a(2),
+							furthest_b(0), furthest_b(1), furthest_b(2) });
 					};
 					a.weight = 40;
 					return a;

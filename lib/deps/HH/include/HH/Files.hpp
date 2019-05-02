@@ -23,6 +23,7 @@ namespace HH {
 	private:
 		HH_hid_t base;
 	public:
+		File() : File(HH_hid_t{}) {}
 		File(HH_hid_t hnd) : base(hnd), atts(hnd), Group(hnd), dsets(hnd) {}
 		virtual ~File() {}
 		HH_hid_t get() const { return base; }
