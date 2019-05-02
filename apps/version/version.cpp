@@ -1,17 +1,17 @@
 /** \brief 3d_structures program
 **/
 
-#include <icedb/defs.h>
+#include "icedb/defs.h"
+#include "icedb/Errors/error.hpp"
+#include "icedb/Utils/dlls.hpp"
+#include "icedb/versioning/versioning.hpp"
+#include "icedb/misc/os_functions.hpp"
+#include "BetterThrow/Info.hpp"
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-#include <icedb/error.hpp>
-#include <icedb/dlls.hpp>
-#include <icedb/versioning/versioning.hpp>
-#include <icedb/misc/os_functions.hpp>
-#include <BetterThrow/Info.hpp>
 
 int main(int argc, char** argv) {
 	try {

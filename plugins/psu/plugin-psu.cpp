@@ -1,6 +1,6 @@
 #include <string>
-#include <icedb/Shapes.hpp>
-#include <icedb/exv.hpp>
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/IO/exv.hpp"
 #include "plugin-psu.hpp"
 
 namespace icedb {

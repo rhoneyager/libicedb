@@ -17,7 +17,7 @@
 #include <vector>
 #include "ddVersions.h"
 
-#include <icedb/error.hpp>
+#include "icedb/Errors/error.hpp"
 
 /// Internal namespace for the reader parsers
 namespace {

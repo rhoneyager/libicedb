@@ -5,9 +5,9 @@
 #include <string>
 #include <cstdint>
 #include "defs.hpp"
-#include <icedb/plugin.hpp>
-#include <HH/Groups.hpp>
-#include <HH/Files.hpp>
+#include "icedb/Plugins/plugin.hpp"
+#include "HH/Groups.hpp"
+#include "HH/Files.hpp"
 
 #define PLUGINID "io-psu"
 

@@ -27,9 +27,9 @@
 #include "rotations.h"
 #include "ddVersions.h"
 #include "shapefile.h"
-#include <icedb/units/units.hpp>
+#include "icedb/units/units.hpp"
 #include "dielTabFile.h"
-#include <icedb/error.hpp>
+#include "icedb/Errors/error.hpp"
 
 namespace icedb {
 	namespace registry {

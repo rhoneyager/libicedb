@@ -1,5 +1,5 @@
 #pragma once
-#include <icedb/defs.h>
+#include "icedb/defs.h"
 
 // If SHARED_(libname) is defined, then the target library both 
 // exprts and imports. If not defined, then it is a static library.

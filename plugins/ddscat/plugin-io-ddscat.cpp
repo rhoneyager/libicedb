@@ -3,7 +3,7 @@
 #include <string>
 
 #include "defs.hpp"
-#include <icedb/plugin.hpp>
+#include "icedb/Plugins/plugin.hpp"
 #include "plugin-io-ddscat.hpp"
 
 namespace icedb {

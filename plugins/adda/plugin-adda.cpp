@@ -1,7 +1,7 @@
 #include <string>
-#include <icedb/Shapes.hpp>
-#include <icedb/error.hpp>
-#include <BinaryIO/Files.hpp>
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Errors/error.hpp"
+#include "BinaryIO/Files.hpp"
 #include "plugin-adda.hpp"
 
 namespace icedb {

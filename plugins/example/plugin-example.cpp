@@ -1,9 +1,9 @@
 #include <string>
 
-#include <icedb/defs.h>
-#include <icedb/plugin.hpp>
+#include "icedb/defs.h"
+#include "icedb/Plugins/plugin.hpp"
+#include "icedb/IO/Shapes.hpp"
 #include "plugin-example.hpp"
-#include <icedb/shape.hpp>
 
 namespace icedb
 {

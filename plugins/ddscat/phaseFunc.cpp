@@ -6,10 +6,10 @@
 #include <boost/date_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "phaseFunc.h"
-#include <icedb/units/units.hpp>
-#include <icedb/versioning/versioningForwards.hpp>
-//#include <icedb/versioning/versioning.hpp>
-#include <icedb/misc/os_functions.hpp>
+#include "icedb/units/units.hpp"
+#include "icedb/versioning/versioningForwards.hpp"
+//#include "icedb/versioning/versioning.hpp"
+#include "icedb/misc/os_functions.hpp"
 
 namespace icedb {
 	namespace registry {

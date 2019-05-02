@@ -7,8 +7,8 @@
 #include <string>
 #include <Eigen/Core>
 
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 
 namespace icedb {
 	namespace io {

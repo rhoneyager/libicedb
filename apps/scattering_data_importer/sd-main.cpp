@@ -2,28 +2,25 @@
  *
 **/
 
-#include <icedb/defs.h>
+#include "icedb/defs.h"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/fs_backend.hpp"
+#include "icedb/Utils/splitSet.hpp"
+#include "icedb/IO/exv.hpp"
+#include "icedb/Plugins/plugin.hpp"
+#include "icedb/icedb.hpp"
+#include "HH/Files.hpp"
+#include "HH/Groups.hpp"
 #include <boost/program_options.hpp>
-#include <iostream>
-
-#include <fstream>
 #include <boost/tokenizer.hpp>
-
+#include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
 #include <chrono>
 #include <iomanip>
-#include <icedb/Shapes.hpp>
-#include <icedb/error.hpp>
-#include <icedb/fs_backend.hpp>
-#include <icedb/splitSet.hpp>
-#include <icedb/exv.hpp>
-
-#include <icedb/plugin.hpp>
-
-#include <HH/Files.hpp>
-#include <HH/Groups.hpp>
 
 int main(int argc, char** argv) {
 	try {

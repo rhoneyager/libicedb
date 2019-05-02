@@ -13,9 +13,9 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-#include <icedb/registry.hpp>
-#include <icedb/splitSet.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/Utils/splitSet.hpp"
+#include "icedb/IO/io.hpp"
 
 #pragma warning(push)
 #pragma warning( disable : 4251 ) // DLL interface

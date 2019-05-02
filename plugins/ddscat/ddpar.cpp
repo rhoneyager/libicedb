@@ -15,9 +15,9 @@
 #include <cmath>
 #include "ddpar.h"
 #include "ddVersions.h"
-#include <icedb/splitSet.hpp>
+#include "icedb/Utils/splitSet.hpp"
 #include "rotations.h"
-#include <icedb/error.hpp>
+#include "icedb/Errors/error.hpp"
 
 namespace {
 	

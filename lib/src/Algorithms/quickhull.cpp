@@ -1,9 +1,9 @@
-#include "icedb/ShapeAlgs.hpp"
-#include "Algorithms.hpp"
+#include "icedb/Algorithms/ShapeAlgs.hpp"
+#include "icedb/Algorithms/Algorithms.hpp"
 #include "quickhull/QuickHull.hpp"
 #include <Eigen/Dense>
 #include <HH/Groups.hpp>
-#include "icedb/Shapes.hpp"
+#include "icedb/IO/Shapes.hpp"
 
 namespace icedb {
 	namespace ShapeAlgs {

@@ -1,4 +1,9 @@
-#include <icedb/defs.h>
+#include "icedb/defs.h"
+#include "icedb/Utils/dlls.hpp"
+#include "icedb/refract/refract.hpp"
+#include "icedb/units/units.hpp"
+#include "icedb/Errors/error.hpp"
+#include "icedb/icedb.hpp"
 /// This is a program that reads datasets from an hdf5 file.
 /// It takes the desired datasets and writes them into the
 /// specified text file or directory.
@@ -6,10 +11,7 @@
 #include <boost/program_options.hpp>
 #include <exception>
 #include <iostream>
-#include <icedb/dlls.hpp>
-#include <icedb/refract/refract.hpp>
-#include <icedb/units/units.hpp>
-#include <icedb/error.hpp>
+
 
 int main(int argc, char** argv) {
 	using namespace std;

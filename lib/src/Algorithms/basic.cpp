@@ -1,5 +1,5 @@
-#include "icedb/ShapeAlgs.hpp"
-#include "Algorithms.hpp"
+#include "icedb/Algorithms/ShapeAlgs.hpp"
+#include "icedb/Algorithms/Algorithms.hpp"
 #include "BetterThrow/Error.hpp"
 
 namespace icedb {

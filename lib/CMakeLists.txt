@@ -17,93 +17,94 @@ set(related_cmake_objects
 	../cmake/GetGitRevisionDescription.cmake
 	../cmake/signing.cmake)
 set(alg_objs
-	src/Algorithms/Algorithms.hpp
+	icedb/Algorithms/Algorithms.hpp
 	src/Algorithms/basic.cpp
 	src/Algorithms/max_distance.cpp
 	src/Algorithms/miniball.cpp
 	src/Algorithms/quickhull.cpp
-	icedb/ShapeAlgs.hpp
-	src/ShapeAlgs.cpp
+	icedb/Algorithms/ShapeAlgs.hpp
+	src/Algorithms/ShapeAlgs.cpp
 	)
 set(shp_objs
-	icedb/PPP.hpp
-	icedb/Shapes.hpp
-	src/PPP.cpp
-	src/Shapes.cpp)
+	icedb/IO/PPP.hpp
+	icedb/IO/Shapes.hpp
+	src/IO/PPP.cpp
+	src/IO/Shapes.cpp)
 set(exv_objs
-	icedb/exv.hpp
-	src/exv.cpp)
+	icedb/IO/exv.hpp
+	src/IO/exv.cpp)
 set(db_objs
-	icedb/Common.hpp
-	icedb/fs_backend.hpp
-	src/Common.cpp
-	src/fs_backend.cpp
-	icedb/fs.hpp)
+	icedb/IO/Common.hpp
+	icedb/IO/fs_backend.hpp
+	src/IO/Common.cpp
+	src/IO/fs_backend.cpp
+	icedb/IO/fs.hpp)
 set(units_objs
 	icedb/units/units.hpp
 	icedb/units/unitsPlugins.hpp
 	private/unitsBackend.hpp
-	src/units.cpp
-	src/unitsPlugins.cpp
-	src/unitsSimple.cpp
+	src/Units/units.cpp
+	src/Units/unitsPlugins.cpp
+	src/Units/unitsSimple.cpp
 	)
 set(refract_objs
 	icedb/refract/refract.hpp
 	icedb/refract/refractBase.hpp
 	icedb/refract/refractBoost.hpp
 	private/refractBackend.hpp
-	src/refract.cpp
-	src/refractImpl.cpp
-	src/refractStore.cpp
+	src/Refracts/refract.cpp
+	src/Refracts/refractImpl.cpp
+	src/Refracts/refractStore.cpp
 	)
 set(versioning_objs
 	icedb/versioning/versioning.hpp
 	icedb/versioning/versioningForwards.h
 	icedb/versioning/versioningForwards.hpp
-	src/versioning.cpp)
+	src/Utils/versioning.cpp)
 set(error_objs
-	icedb/error.h
-	icedb/error.hpp
-	icedb/errorCodes.h
-	icedb/errorCodes.hpp
-	icedb/error_context.h
-	icedb/errorTypes.hpp
-	src/error.cpp
-	src/errorCodes.cpp
-	src/errorTypes.cpp
-	src/error_context.cpp
+	icedb/Errors/error.h
+	icedb/Errors/error.hpp
+	icedb/Errors/errorCodes.h
+	icedb/Errors/errorCodes.hpp
+	icedb/Errors/error_context.h
+	icedb/Errors/errorTypes.hpp
+	src/Errors/error.cpp
+	src/Errors/errorCodes.cpp
+	src/Errors/errorTypes.cpp
+	src/Errors/error_context.cpp
 	)
 set(extensible_objs
-	icedb/io.hpp
-	icedb/registry.hpp
-	icedb/plugin.hpp
-	icedb/dlls.hpp
-	src/registry.cpp
-	src/dlls.cpp
+	icedb/IO/io.hpp
+	icedb/Plugins/registry.hpp
+	icedb/Plugins/plugin.hpp
+	icedb/Utils/dlls.hpp
+	src/Utils/registry.cpp
+	src/Utils/dlls.cpp
 	)
 set(lib_objs
 	icedb/defs.h
 	icedb/icedb.h
 	icedb/icedb.hpp
-	icedb/Constants.hpp
-	icedb/optionsForwards.hpp
-	icedb/util.hpp
-	icedb/util.h
-	icedb/logging.hpp
-	icedb/splitSet.hpp
-	icedb/zeros.hpp
+	icedb/misc/Constants.hpp
+	icedb/Utils/optionsForwards.hpp
+	icedb/Utils/util.hpp
+	icedb/Utils/util.h
+	icedb/Utils/logging.hpp
+	icedb/Utils/splitSet.hpp
+	icedb/misc/zeros.hpp
 	icedb/misc/os_functions.h
 	icedb/misc/os_functions.hpp
 	private/linterp.h
 	private/resource.h
 	private/os_impl.hpp
-	icedb/options.hpp
-	src/logging.cpp
-	src/options.cpp
-	src/os_functions.cpp
-	src/splitSet.cpp
-	src/util.cpp
-	src/zeros.cpp
+	icedb/Utils/options.hpp
+	src/Misc/Constants.cpp
+	src/Utils/logging.cpp
+	src/Utils/options.cpp
+	src/Utils/os_functions.cpp
+	src/Utils/splitSet.cpp
+	src/Utils/util.cpp
+	src/Misc/zeros.cpp
 	)
 
 # On Windows, when producing a DLL, this generated file
@@ -132,7 +133,7 @@ source_group("Versioning" FILES ${versioning_objs})
 source_group("CMake" FILES ${related_cmake_objects})
 set(libhdrs_dllbase ${related_cmake_objects}
 	"${CMAKE_CURRENT_BINARY_DIR}/icedb-cmake-settings.h")
-set(libsrcs_dllbase src/dlls_placeholder.cpp)
+set(libsrcs_dllbase src/Utils/dlls_placeholder.cpp)
 set(libsrcs ${lib_objs} ${shp_objs} ${exv_objs} ${db_objs}
 	${units_objs} ${refract_objs} ${versioning_objs} ${error_objs}
 	${extensible_objs} ${alg_objs})

@@ -10,25 +10,25 @@
  * 2. Read each shape, then write to the output file.
 **/
 
-#include <icedb/defs.h>
+#include "icedb/defs.h"
+#include "icedb/icedb.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/fs_backend.hpp"
+#include "icedb/Utils/splitSet.hpp"
+#include "icedb/Utils/dlls.hpp"
+#include "HH/Groups.hpp"
+#include "HH/Files.hpp"
 #include <boost/program_options.hpp>
-#include <iostream>
-
-#include <fstream>
 #include <boost/tokenizer.hpp>
-
+#include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
 #include <chrono>
 #include <iomanip>
-#include <icedb/Shapes.hpp>
-#include <icedb/error.hpp>
-#include <icedb/fs_backend.hpp>
-#include <HH/Groups.hpp>
-#include <HH/Files.hpp>
-#include <icedb/splitSet.hpp>
-#include <icedb/dlls.hpp>
+
 
 namespace sfs = icedb::fs::sfs;
 
@@ -273,7 +273,7 @@ int main(int argc, char** argv) {
 							"output file, then provide the --truncate option to the program." << std::endl;
 					}
 					else {
-						auto shp = icedb::Shapes::Shape::createShape(basegrp.get(), s->particle_id.c_str(), s.get());
+						auto shp = icedb::Shapes::Shape::createShape(basegrp.create(s->particle_id), *s.get());
 						shp.atts.add<std::string>("date_of_icedb_ingest", { sIngestTime });
 					}
 				}

@@ -3,8 +3,8 @@
 
 #include <memory>
 #include <string>
-#include <icedb/shape.hpp>
-#include <icedb/plugin.hpp>
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Plugins/plugin.hpp"
 
 
 #define PLUGINID "f8340412-f146-47c4-8b32-a395d829f7b2"

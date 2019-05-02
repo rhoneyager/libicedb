@@ -4,8 +4,8 @@
 #include "defs.hpp"
 #include <memory>
 #include <string>
-#include "icedb/Shapes.hpp"
-#include "icedb/plugin.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Plugins/plugin.hpp"
 
 
 #define PLUGINID "io-ddscat"

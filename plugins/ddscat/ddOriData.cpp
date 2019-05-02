@@ -22,8 +22,8 @@
 #include "ddVersions.h"
 #include "rotations.h"
 //#include "refract.h"
-#include <icedb/units/units.hpp>
-#include <icedb/error.hpp>
+#include "icedb/units/units.hpp"
+#include "icedb/Errors/error.hpp"
 //#include <icedb/quadrature.hpp>
 
 #include "ddOriDataParsers.h"

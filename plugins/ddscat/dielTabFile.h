@@ -5,7 +5,7 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <icedb/error.hpp>
+#include "icedb/Errors/error.hpp"
 
 namespace icedb
 {

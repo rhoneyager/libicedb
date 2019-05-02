@@ -6,10 +6,10 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <boost/program_options.hpp>
-#include <icedb/misc/os_functions.hpp>
-#include <icedb/Shapes.hpp>
-#include <HH/Files.hpp>
-#include <HH/Groups.hpp>
+#include "icedb/misc/os_functions.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "HH/Files.hpp"
+#include "HH/Groups.hpp"
 #include "IntegratedTesting.hpp"
 
 BOOST_TEST_GLOBAL_FIXTURE(icedb_GlobalTestingFixture);

@@ -1,8 +1,8 @@
-#include "icedb/ShapeAlgs.hpp"
-#include "Algorithms.hpp"
+#include "icedb/Algorithms/ShapeAlgs.hpp"
+#include "icedb/Algorithms/Algorithms.hpp"
 #include <Eigen/Dense>
 #include <HH/Groups.hpp>
-#include "icedb/Shapes.hpp"
+#include "icedb/IO/Shapes.hpp"
 #include "miniball.h"
 #include "BetterThrow/Error.hpp"
 

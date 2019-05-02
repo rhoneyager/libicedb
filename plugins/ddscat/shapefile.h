@@ -11,9 +11,9 @@
 #include <Eigen/Dense>
 #include <memory>
 
-#include <icedb/splitSet.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Utils/splitSet.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 
 namespace icedb {
 	namespace io {

@@ -1,9 +1,9 @@
 #include "defs.hpp"
 #include "plugin-adda.hpp"
-#include <icedb/error.hpp>
-#include <icedb/Shapes.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 #include <iostream>
 #include <boost/filesystem.hpp> // Should switch to the boost-independent version
 #include <memory>
@@ -11,7 +11,7 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <BinaryIO/Files.hpp>
+#include "BinaryIO/Files.hpp"
 
 #include <sstream>
 #include <boost/spirit/include/karma.hpp>

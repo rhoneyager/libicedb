@@ -1,10 +1,10 @@
 #include "defs.hpp"
 #include "plugin-psu.hpp"
-#include <icedb/error.hpp>
-#include <icedb/exv.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
-#include <icedb/units/units.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/exv.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
+#include "icedb/units/units.hpp"
 #include <iostream>
 #include <HH/Files.hpp>
 #include <HH/Datasets.hpp>

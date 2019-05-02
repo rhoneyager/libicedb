@@ -7,7 +7,7 @@
 
 #include "ddpar.h"
 #include "rotations.h"
-#include <icedb/splitSet.hpp>
+#include "icedb/Utils/splitSet.hpp"
 
 namespace icedb {
 	namespace io {

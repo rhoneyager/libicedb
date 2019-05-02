@@ -2,7 +2,7 @@
 #include <string>
 #include "IntegratedTesting.hpp"
 #include "IntegratedTesting/testing-settings.h"
-#include "icedb/dlls.hpp"
+#include "icedb/Utils/dlls.hpp"
 #include "icedb/misc/os_functions.hpp"
 
 using namespace icedb;

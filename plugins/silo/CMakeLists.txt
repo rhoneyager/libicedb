@@ -42,7 +42,7 @@ if (BUILD_PLUGIN_SILO)
 			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:silo> $<TARGET_FILE_DIR:placeholder>
 			)
 		set_target_properties( copy_silo_dependencies_to_build_dirs PROPERTIES FOLDER "Build")
-		add_dependencies(copy_icedb_dependencies_to_build_dirs copy_silo_dependencies_to_build_dirs)
+		add_dependencies(copy_dependencies_to_build_dirs copy_silo_dependencies_to_build_dirs)
 
 		install(PROGRAMS $<TARGET_FILE:silo>
 			DESTINATION ${CMAKE_INSTALL_BINDIR} #${RBIN_DIR}/$<CONFIG>

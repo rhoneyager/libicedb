@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include "defs.hpp"
-#include <icedb/plugin.hpp>
+#include "icedb/Plugins/plugin.hpp"
 #include <fstream>
 #include <iostream>
 #include <memory>

@@ -13,7 +13,7 @@
 #include <boost/lexical_cast.hpp>
 #include "../units/units.hpp"
 #include "refractBase.hpp"
-#include "../optionsForwards.hpp"
+#include "../Utils/optionsForwards.hpp"
 
 namespace icedb {
 	namespace refract {

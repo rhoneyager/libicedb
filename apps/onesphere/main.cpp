@@ -1,13 +1,15 @@
-#include <icedb/defs.h>
+#include "icedb/defs.h"
+#include "icedb/refract/refract.hpp"
+#include "icedb/units/units.hpp"
+#include "icedb/Errors/error.hpp"
+#include "icedb/icedb.hpp"
 /// This is a program that calculates scattering by individual spheres.
 /// This program takes as many options as there are ways to specify target geometry and properties.
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <exception>
 #include <iostream>
-#include <icedb/refract/refract.hpp>
-#include <icedb/units/units.hpp>
-#include <icedb/error.hpp>
+
 
 namespace std
 {
