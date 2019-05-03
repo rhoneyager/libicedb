@@ -163,8 +163,11 @@ BOOST_AUTO_TEST_CASE(getProcessInfo_streams)
 {
 	using namespace std;
 	std::ostringstream sOut;
+#if defined(BT_OS_WINDOWS)
 	std::wostringstream sOsOut;
-
+#elif defined(BT_OS_LINUX) || defined(BT_OS_UNIX) || defined(BT_OS_MACOS)
+	std::ostringstream sOsOut;
+#endif
 	auto s = BT::ProcessInfo<std::string>::get<std::string>();
 	auto os = BT::ProcessInfo<BT::native_path_string_t>::get<BT::native_path_string_t>();
 
@@ -196,8 +199,11 @@ BOOST_AUTO_TEST_CASE(getRuntimeInfo_streams)
 {
 	using namespace std;
 	std::ostringstream sOut;
+#if defined(BT_OS_WINDOWS)
 	std::wostringstream sOsOut;
-
+#elif defined(BT_OS_LINUX) || defined(BT_OS_UNIX) || defined(BT_OS_MACOS)
+	std::ostringstream sOsOut;
+#endif
 	auto s = BT::RuntimeInfo<std::string>::get<std::string>();
 	auto os = BT::RuntimeInfo<BT::native_path_string_t>::get<BT::native_path_string_t>();
 

@@ -8,6 +8,7 @@
 #include "icedb/misc/os_functions.h"
 #include "icedb/misc/os_functions.hpp"
 #include "icedb/Utils/dlls.hpp"
+#include "icedb/Utils/util.h"
 #ifdef _WIN32
 # include <Windows.h>
 #endif

@@ -9,7 +9,7 @@ namespace HH {
 		template <class ComplexDataType>
 		HH_hid_t GetHDF5TypeComplex()
 		{
-			typedef ComplexDataType::value_type value_type;
+			typedef typename ComplexDataType::value_type value_type;
 			// Complex number is a compound datatype of two objects.
 			return GetHDF5Type<value_type, 1>({ 2 });
 		}
@@ -50,7 +50,7 @@ template<> inline HH_hid_t GetHDF5Type< x >(std::initializer_list<hsize_t>, void
 			}
 			/// \brief Allocates a buffer that HDF5 can read/write into; used later as input data for object construction.
 			/// \note For POD objects, we can directly write to the object.
-			void marshalBuffer(ComplexDataType * objStart) { _buffer = static_cast<void*>(objStart); }
+			void marshalBuffer(ComplexDataType * objStart) { } //_buffer = static_cast<void*>(objStart); }
 			/// \brief Construct an object from an HDF5-provided data stream, 
 			/// and deallocate any temporary buffer.
 			/// \note For trivial (POD) objects, there is no need to do anything.

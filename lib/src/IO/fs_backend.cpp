@@ -1,6 +1,7 @@
-#include "icedb/fs_backend.hpp"
+#include "icedb/IO/fs_backend.hpp"
 #include "gsl/gsl_assert"
-#include "../private/hdf5_load.h"
+#include <hdf5.h>
+//#include "../../private/hdf5_load.h"
 #include <algorithm>
 #include <atomic>
 #include <sstream>

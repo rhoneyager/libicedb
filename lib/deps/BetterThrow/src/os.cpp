@@ -342,7 +342,7 @@ namespace BT {
 	}
 
 	template<>
-	static ::BT::ProcessInfo<native_path_string_t> ProcessInfo<native_path_string_t>::_get(int pid) {
+	::BT::ProcessInfo<native_path_string_t> getProcessInfo(int pid) {
 		::BT::ProcessInfo<native_path_string_t> res;
 		res.pid = (pid<0) ? getPID() : pid;
 		pid = res.pid;
@@ -378,7 +378,7 @@ namespace BT {
 				if (win::getStartTime((DWORD)pid, res.startTime).first) throw BT_throw;
 			}
 #elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
-			posix::getModulePath((void*)get, res.path);
+			posix::getModulePath((void*)getOSerror, res.path);
 			if (pid == getPID()) {
 				if (posix::getCWD(res.cwd).first) throw BT_throw;
 				if (posix::getCmdLine(res.cmdline).first) throw BT_throw;
@@ -466,7 +466,7 @@ namespace BT {
 	}
 	
 	template<>
-	static const RuntimeInfo<native_path_string_t>& RuntimeInfo<native_path_string_t>::_get() {
+	RuntimeInfo<native_path_string_t> getRuntimeInfo<native_path_string_t>() {
 		// This only is queried the first time it is called.
 		static std::mutex rtmutex;
 		{

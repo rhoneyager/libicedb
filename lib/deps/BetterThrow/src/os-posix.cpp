@@ -400,7 +400,7 @@ namespace BT {
 #endif
 
 		/// Get loaded modules
-		::BT::Error_Res_t getLoadedModules(::BT::ModuleInfo_t &out)
+		::BT::Error_Res_t getLoadedModules(::BT::ModuleInfo_t<> &out)
 		{
 			static std::mutex rtmutex;
 			std::lock_guard<std::mutex> lock(rtmutex);

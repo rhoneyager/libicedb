@@ -6,6 +6,7 @@
 #pragma warning( disable : 4661 ) // Exporting vector
 
 //#include <iostream>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>

@@ -94,6 +94,11 @@ namespace BT {
 	}
 	template<> native_path_string_t getModule(void *address);
 
+	template <class T> struct ProcessInfo;
+
+	template <class U>
+	ProcessInfo<U> getProcessInfo(int pid);
+
 	/// Contains information about a process
 	template <class T = native_path_string_t>
 	struct ProcessInfo 	{
@@ -111,33 +116,34 @@ namespace BT {
 		/// Get information about a process.
 		ProcessInfo() {}
 		/// Get information about a process.
-		template <class U>
-		static ProcessInfo<U> get(int pid = -1)
-		{
-			auto p = ProcessInfo<native_path_string_t>::_get(pid);
-			ProcessInfo<U> res;
-			res.name = convertStr(p.name);
-			res.path = convertStr(p.path);
-			res.cwd = convertStr(p.cwd);
-			res.startTime = convertStr(p.startTime);
-
-			res.pid = p.pid;
-			res.ppid = p.ppid;
-			res.isElevated = p.isElevated;
-
-			for (const auto& s : p.environment)
-				res.environment.emplace(std::make_pair(convertStr(s.first), convertStr(s.second)));
-			for (const auto& s : p.cmdline)
-				res.cmdline.push_back(convertStr(s));
-
-			return res;
+		template <class U> static ProcessInfo<U> get(int pid = -1) {
+			return getProcessInfo<U>(pid);
 		}
-		/// Get information about a process.
-		template<> static ProcessInfo< native_path_string_t> get(int pid) { return _get(pid); }
-	private:
-		template<typename T> friend struct ProcessInfo;
-		static ProcessInfo<native_path_string_t> _get(int pid);
 	};
+	template <class U>
+	ProcessInfo<U> getProcessInfo(int pid)
+	{
+		auto p = getProcessInfo<native_path_string_t>(pid);
+		ProcessInfo<U> res;
+		res.name = convertStr(p.name);
+		res.path = convertStr(p.path);
+		res.cwd = convertStr(p.cwd);
+		res.startTime = convertStr(p.startTime);
+
+		res.pid = p.pid;
+		res.ppid = p.ppid;
+		res.isElevated = p.isElevated;
+
+		for (const auto& s : p.environment)
+			res.environment.emplace(std::make_pair(convertStr(s.first), convertStr(s.second)));
+		for (const auto& s : p.cmdline)
+			res.cmdline.push_back(convertStr(s));
+
+		return res;
+	}
+	/// Get information about a process.
+	template<> ProcessInfo< native_path_string_t> getProcessInfo(int pid);
+
 	/// Write processInfo to an output stream of the correct type.
 	template <class Stream, class String>
 	Stream& operator<<(Stream& out, const ProcessInfo<String>& p)
@@ -160,6 +166,9 @@ namespace BT {
 	}
 	//native_path_stream_t & operator<<(native_path_stream_t&, const ProcessInfo&);
 
+	template <class T> struct RuntimeInfo;
+	template <class U> RuntimeInfo<U> getRuntimeInfo();
+
 	/// Information about the runtime environment.
 	template <class T = native_path_string_t>
 	struct RuntimeInfo
@@ -171,23 +180,20 @@ namespace BT {
 		//native_path_string_t sharedir;
 		//native_path_string_t libdir;
 		//native_path_string_t appdir;
-
-		template <class U>
-		static RuntimeInfo<U> get() {
-			auto p = RuntimeInfo<native_path_string_t>::_get();
-			RuntimeInfo<U> res;
-			res.username = convertStr(p.username);
-			res.computername = convertStr(p.computername);
-			res.homedir = convertStr(p.homedir);
-			res.appconfigdir = convertStr(p.appconfigdir);
-
-			return res;
-		}
-		template<> static RuntimeInfo< native_path_string_t> get() { return _get(); }
-	private:
-		template<typename T> friend struct RuntimeInfo;
-		static const RuntimeInfo<native_path_string_t> & _get();
+		template <class U> static RuntimeInfo<U> get() { return getRuntimeInfo<U>(); }
 	};
+	template <class U>
+	RuntimeInfo<U> getRuntimeInfo() {
+		auto p = getRuntimeInfo<native_path_string_t>();
+		RuntimeInfo<U> res;
+		res.username = convertStr(p.username);
+		res.computername = convertStr(p.computername);
+		res.homedir = convertStr(p.homedir);
+		res.appconfigdir = convertStr(p.appconfigdir);
+
+		return res;
+	}
+	template<> RuntimeInfo< native_path_string_t> getRuntimeInfo();
 
 	/// Write RuntimeInfo to an output stream of the correct type.
 	template <class Stream, class String>

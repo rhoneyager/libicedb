@@ -35,9 +35,20 @@ target_compile_definitions(HH PUBLIC
 # the SYSTEM keyword suppresses warnings for users of the library
     target_include_directories(HH SYSTEM PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
+		$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>	
     )
-
+if(DEFINED HDF5_C_DEFINITIONS)
+	set_target_properties(HH PROPERTIES COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS}")
+endif()
+if(NOT "${HDF5_C_INCLUDE_DIRS}" STREQUAL "")
+	target_include_directories(HH SYSTEM INTERFACE "${HDF5_C_INCLUDE_DIRS}")
+endif()
+if(DEFINED HDF5_C_LIBRARIES)
+	target_link_libraries(HH INTERFACE ${HDF5_C_LIBRARIES})
+endif()
+if(DEFINED HDF5_HL_LIBRARIES)
+	target_link_libraries(HH INTERFACE ${HDF5_HL_LIBRARIES})
+endif()
 
 target_link_libraries(HH INTERFACE hdf5::hdf5-shared hdf5::hdf5_hl-shared)
 addlib(HH STATIC)

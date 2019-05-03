@@ -10,7 +10,7 @@ namespace BT {
 		::BT::Error_Res_t getElevated(bool &elevated);
 		::BT::Error_Res_t getStartTime(int pid, ::BT::native_path_string_t &startTime);
 		::BT::Error_Res_t getModulePath(void* ptr, ::BT::native_path_string_t &modPath);
-		::BT::Error_Res_t getLoadedModules(::BT::ModuleInfo_t &out);
+		::BT::Error_Res_t getLoadedModules(::BT::ModuleInfo_t<> &out);
 		::BT::Error_Res_t getUserName(::BT::native_path_string_t &username);
 		::BT::Error_Res_t getComputerName(::BT::native_path_string_t &username);
 		::BT::Error_Res_t getAppConfigDir(::BT::native_path_string_t &appConfigDir);

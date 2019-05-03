@@ -41,7 +41,7 @@ namespace icedb {
 		{
 			HH::Group g(object);
 			if (!g.isGroup()) return false;
-			if (!g.atts.exists(Constants::icedb_object_type)) return false;
+			if (!g.atts.exists(Constants::AttNames::icedb_object_type)) return false;
 			std::string expectedIdentifier = Common_HH_Base<T, CN, Name_Type_t>::getIdentifier();
 			/// \todo Enable attribute string reads again!!!!!
 			//if (!(g.atts[Constants::icedb_object_type].read<std::string>() == expectedIdentifier)) return false;
@@ -58,7 +58,7 @@ namespace icedb {
 		{
 			if (!isA(object)) {
 				if (out)
-					* out << Constants::icedb_object_type << " test failed." << std::endl;
+					* out << Constants::AttNames::icedb_object_type << " test failed." << std::endl;
 				return false;
 			}
 

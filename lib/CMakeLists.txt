@@ -184,6 +184,7 @@ target_link_libraries(icedb icedb_base
 	BetterThrow::BetterThrow
 	icedb::quickhull
 	icedb::miniball
+	hdf5::hdf5-shared hdf5::hdf5_hl-shared
 	) # ZLIB::ZLIB)
 target_link_libraries(icedb
 	Boost::filesystem
