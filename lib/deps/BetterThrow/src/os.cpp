@@ -137,7 +137,7 @@ namespace BT {
 	int getPPID(int pid) {
 		
 		try {
-#if defined(BT_OS_UNIX) 
+#if defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
 			if (pid == getPID())
 				return (int)getppid();
 			else {

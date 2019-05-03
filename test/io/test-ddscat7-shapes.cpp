@@ -105,6 +105,7 @@ BOOST_AUTO_TEST_CASE(write_ddscat7_shape_as_hdf5)
 	icedb::Shapes::NewShapeProperties::readVector(nullptr, opts, fileShapes);
 	BOOST_TEST_REQUIRE(fileShapes.size() == 1);
 
+	fileShapes[0]->particle_id = "particle_1"; // This would normally get set in the importer program.
 	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
 	const string sOut = sBuild + "/write_ddscat7_shape_as_hdf5.h5";
 

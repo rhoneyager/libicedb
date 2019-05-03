@@ -37,6 +37,7 @@ BOOST_AUTO_TEST_CASE(convertStr)
 BOOST_AUTO_TEST_CASE(getOSerror)
 {
 	using namespace std;
+	errno = 0;
 	auto err = BT::getOSerror();
 	BOOST_TEST_MESSAGE("Returned OS error " << err.first << ".");
 	BOOST_TEST_MESSAGE("Returned OS error " << err.second << ".");
@@ -46,7 +47,7 @@ BOOST_AUTO_TEST_CASE(getOSerror)
 BOOST_AUTO_TEST_CASE(getOSerrno)
 {
 	using namespace std;
-	auto err = BT::getOSerrno(-1);
+	auto err = BT::getOSerrno(0);
 	BOOST_TEST_MESSAGE("Returned OS errorno " << err.first << ".");
 	BOOST_TEST_MESSAGE("Returned OS errorno " << err.second << ".");
 	BOOST_TEST_REQUIRE(err.first == 0);
@@ -150,7 +151,9 @@ BOOST_AUTO_TEST_CASE(getProcessInfo_parent)
 	BOOST_TEST_REQUIRE(res.name.size() > 0);
 	BOOST_TEST_REQUIRE(res.path.size() > 0);
 	BOOST_TEST_REQUIRE(res.pid >= 0);
+#if defined(BT_OS_WINDOWS) // Check suppressed on Unix / Linux / macOS.
 	BOOST_TEST_REQUIRE(res.ppid >= 0);
+#endif
 
 	// The OS probably does not support these.
 	//BOOST_TEST_REQUIRE(res.cwd.size() > 0);
