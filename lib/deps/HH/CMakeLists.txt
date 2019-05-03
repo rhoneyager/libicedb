@@ -37,9 +37,9 @@ target_compile_definitions(HH PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>	
     )
-if(DEFINED HDF5_C_DEFINITIONS)
-	set_target_properties(HH PROPERTIES COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS}")
-endif()
+#if(DEFINED HDF5_C_DEFINITIONS) # Buggy because CMake want to prepend -D.
+#	set_target_properties(HH PROPERTIES COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS}")
+#endif()
 if(NOT "${HDF5_C_INCLUDE_DIRS}" STREQUAL "")
 	target_include_directories(HH SYSTEM INTERFACE "${HDF5_C_INCLUDE_DIRS}")
 endif()
