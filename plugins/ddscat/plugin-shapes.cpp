@@ -54,8 +54,6 @@ namespace icedb {
 							shpdata.particle_scattering_element_composition_whole[i] = (int32_t)ddshp->latticePtsRi(i, 0);
 						}
 
-						shpdata.particle_constituents;
-
 						for (const auto &d : ddshp->Dielectrics) {
 							shpdata.particle_constituents.push_back(std::pair<uint16_t, std::string>((uint16_t)d, "unknown"));
 						}

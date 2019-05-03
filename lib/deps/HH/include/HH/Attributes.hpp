@@ -308,7 +308,7 @@ namespace HH {
 		HH_NODISCARD static Attribute create(
 			HH_hid_t base,
 			const ::std::string& attrname,
-			::gsl::span<const hsize_t> dimensions = { 1 },
+			::gsl::span<const hsize_t> dimensions,
 			HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>(),
 			HH_hid_t AttributeCreationPlist = H5P_DEFAULT,
 			HH_hid_t AttributeAccessPlist = H5P_DEFAULT)
