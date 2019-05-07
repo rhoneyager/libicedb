@@ -734,13 +734,12 @@ namespace HH {
 				if (gzip) filters.setGZIP(gzip_level);
 				if (szip) filters.setSZIP(szip_options, szip_PixelsPerBlock);
 				if (chunk) {
-					if(0 > H5Pset_chunk(pl(),
+					HH_Expects(0 <= H5Pset_chunk(pl(),
 						(int)chunkingBlockSize.size(),
-						chunkingBlockSize.data())) throw HH_throw;
+						chunkingBlockSize.data()));
 				}
 				if (hasFillValue) {
-					HH_Expects(0 > H5Pset_fill_value(pl(), fillValue_type(), &(fillValue)))
-						throw HH_throw;
+					HH_Expects(0 <= H5Pset_fill_value(pl(), fillValue_type(), &(fillValue)));
 				}
 
 				return pl;
