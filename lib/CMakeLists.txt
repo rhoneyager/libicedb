@@ -24,6 +24,8 @@ set(alg_objs
 	src/Algorithms/quickhull.cpp
 	icedb/Algorithms/ShapeAlgs.hpp
 	src/Algorithms/ShapeAlgs.cpp
+	icedb/Algorithms/depGraph.hpp
+	src/Algorithms/depGraph.cpp
 	)
 set(shp_objs
 	icedb/IO/PPP.hpp
