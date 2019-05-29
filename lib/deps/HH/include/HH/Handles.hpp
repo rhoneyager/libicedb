@@ -21,14 +21,14 @@ namespace HH {
 			UNKNOWN
 		};
 
-		class HH_hid_t
+		class HH_DL HH_hid_t
 		{
 			::std::shared_ptr<hid_t> _h;
 			//Handle_Types _typ;
 		public:
-			~HH_hid_t() {}
-			hid_t get() const { return *(_h.get()); }
-			::std::shared_ptr<hid_t> getShared() const { return _h; }
+			~HH_hid_t();
+			hid_t get() const;
+			::std::shared_ptr<hid_t> getShared() const;
 
 			// Future handle type safety implementation:
 			//Handle_Types get_type() const { return _typ; }
@@ -36,26 +36,12 @@ namespace HH {
 			//template <typename T>
 			//bool isA() const { return (_typ == ); }
 
-			HH_hid_t() : HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP) {}
-			HH_hid_t(::std::shared_ptr<hid_t> h) : _h(h) {}
-			HH_hid_t(hid_t val, const std::function<void(hid_t*)>& closer = nullptr)
-			{
-				if (closer) {
-					_h = ::std::shared_ptr<hid_t>(new hid_t(val), closer);
-				}
-				else
-					_h = ::std::shared_ptr<hid_t>(new hid_t(val));
-			}
-			hid_t operator()() const
-			{
-				return get();
-			}
-			static HH_hid_t dummy() { return HH::Handles::HH_hid_t(-1, HH::Handles::Closers::DoNotClose::CloseP); }
-			bool isValid() const {
-				H5I_type_t typ = H5Iget_type(get());
-				if (typ == H5I_BADID) return false;
-				return true;
-			}
+			HH_hid_t();
+			HH_hid_t(::std::shared_ptr<hid_t> h);
+			HH_hid_t(hid_t val, const std::function<void(hid_t*)>& closer = nullptr);
+			hid_t operator()() const;
+			static HH_hid_t dummy();
+			bool isValid() const;
 		};
 	}
 	using Handles::HH_hid_t;

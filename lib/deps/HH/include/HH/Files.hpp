@@ -19,91 +19,53 @@ namespace HH {
 	using std::initializer_list;
 	using std::tuple;
 
-	struct File : public Group {
+	struct HH_DL File : public Group {
 	private:
 		HH_hid_t base;
 	public:
-		File() : File(HH_hid_t{}) {}
-		File(HH_hid_t hnd) : base(hnd), atts(hnd), Group(hnd), dsets(hnd) {}
-		virtual ~File() {}
-		HH_hid_t get() const { return base; }
+		File();
+		File(HH_hid_t hnd);
+		virtual ~File();
+		HH_hid_t get() const;
 
 		Has_Attributes atts;
 		//Has_Groups grps;
 		Has_Datasets dsets;
 
-		H5F_info_t& get_info(H5F_info_t& info) const {
-			herr_t err = H5Fget_info(base(), &info);
-			HH_Expects(err >= 0);
-			return info;
-		}
+		H5F_info_t& get_info(H5F_info_t& info) const;
 
 		/// \note Should ideally be open, but the Group::open functions get masked.
 		HH_NODISCARD static File openFile(
 			const std::string& filename,
 			unsigned int FileOpenFlags,
-			HH_hid_t FileAccessPlist = H5P_DEFAULT)
-		{
-			hid_t res = H5Fopen(filename.c_str(), FileOpenFlags, FileAccessPlist());
-			HH_Expects(res >= 0);
-			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
-		}
+			HH_hid_t FileAccessPlist = H5P_DEFAULT);
 
 		/// \note Should ideally be create, but the Group::create functions get masked.
 		HH_NODISCARD static File createFile(
-			const std::string & filename,
+			const std::string& filename,
 			unsigned int FileCreateFlags,
 			HH_hid_t FileCreationPlist = H5P_DEFAULT,
-			HH_hid_t FileAccessPlist = H5P_DEFAULT)
-		{
-			hid_t res = H5Fcreate(filename.c_str(), FileCreateFlags,
-				FileCreationPlist(), FileAccessPlist());
-			HH_Expects(res >= 0);
-			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
-		}
+			HH_hid_t FileAccessPlist = H5P_DEFAULT);
 
 		/// \brief Load an image of an already-opened HDF5 file into system memory
 		HH_NODISCARD static ssize_t get_file_image(
 			HH_hid_t file_id,
 			void* buf_ptr,
-			size_t buf_len)
-		{
-			return H5Fget_file_image(file_id(), buf_ptr, buf_len);
-		}
+			size_t buf_len);
 
 		/// \brief Open a file image that is loaded into system memory as a regular HDF5 file
 		HH_NODISCARD static File open_file_image(
 			gsl::not_null<void*> buf_ptr,
 			size_t buf_size,
-			unsigned int flags)
-		{
-			hid_t res = H5LTopen_file_image(buf_ptr.get(), buf_size, flags);
-			HH_Expects(res >= 0);
-			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
-		}
+			unsigned int flags);
 
-		/// \brief Create a new file image (i.e. a file that exists purely in memory)
-		/// \param filename is the file to write, if backing_store_in_file == true
-		/// \param block_allocation_len is the size of each new allocation as the file grows
-		/// \param backing_store_in_file determines whether a physical file is written upon close.
-		HH_NODISCARD static File create_file_image(
-			const std::string & filename,
-			size_t block_allocation_len = 10000000, // 10 MB
-			bool backing_store_in_file = false,
-			HH_hid_t ImageCreationPlist = HH_hid_t(H5Pcreate(H5P_FILE_ACCESS), Closers::CloseHDF5PropertyList::CloseP))
-		{
-			const auto h5Result = H5Pset_fapl_core(ImageCreationPlist(), block_allocation_len, backing_store_in_file);
-			HH_Expects(h5Result >= 0 && "H5Pset_fapl_core failed");
-			// This new memory-only dataset needs to always be writable. The flags parameter
-			// has little meaning in this context.
-			/// \todo Check if truncation actually removes the file on the disk!!!!!
-			hid_t res = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, ImageCreationPlist());
-			HH_Expects(res >= 0);
-			return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));
-		}
+		/// \brief Creates a new file image (i.e. a file that exists purely in memory)
+		HH_NODISCARD static File create_file_mem(
+			const std::string& filename,
+			size_t increment_len = 1000000, // 1 MB
+			bool flush_on_close = false);
 
-		// TODO: Creates a new file image (i.e. a file that exists purely in memory)
-		// Add a function that will use only a pre-allocated buffer. No filename needed, as this will NEVER be written.
+		HH_NODISCARD static std::string genUniqueFilename();
 
 		/// \brief Get name of the file to which an object belongs
 		/// \brief Is this path an HDF5 file?
@@ -111,6 +73,4 @@ namespace HH {
 		/// \brief Reopen an already-open file (i.e. to strip mountpoints)
 
 	};
-
-
 }

@@ -9,37 +9,13 @@
 #include <cstring>
 #include "Handles.hpp"
 #include "Errors.hpp"
+#include "gsl/gsl"
 
 namespace HH {
 	namespace _impl {
-		inline size_t COMPAT_strncpy_s(
+		HH_DL size_t COMPAT_strncpy_s(
 			char* dest, size_t destSz,
-			const char* src, size_t srcSz)
-		{
-			/** \brief Safe char array copy.
-			\returns the number of characters actually written.
-			\param dest is the pointer to the destination. Always null terminated.
-			\param destSz is the size of the destination buller, including the trailing null character.
-			\param src is the pointer to the source. Characters from src are copied either until the
-			first null character or until srcSz. Note that null termination comes later.
-			\param srcSz is the max size of the source buffer.
-			**/
-			if (!dest || !src) throw HH_throw;
-#if HH_USING_SECURE_STRINGS
-			strncpy_s(dest, destSz, src, srcSz);
-#else
-			if (srcSz <= destSz) {
-				strncpy(dest, src, srcSz);
-			}
-			else {
-				strncpy(dest, src, destSz);
-			}
-#endif
-			dest[destSz - 1] = 0;
-			for (size_t i = 0; i < destSz; ++i) if (dest[i] == '\0') return i;
-			return 0; // Should never be reached
-		}
-
+			const char* src, size_t srcSz);
 	}
 	namespace Types {
 		using namespace HH::Handles;
@@ -124,83 +100,137 @@ namespace HH {
 			return HH_hid_t(strtype);
 		}
 
-		/// Function to tell if a datatype is of constant or variable length.
-
-		/// \note HDF5 wants void* types. These are horribly hacked :-(
-		/// \note By default, we are using the POD accessor. Valid for simple data types,
-		/// where multiple objects are in the same dataspace, and each object is a 
-		/// singular instance of the base data type.
-
-		template <class DataType>
-		struct Object_Accessor
+		template <class DataType, bool FreeOnClose>
+		void FreeType(DataType d, 
+			typename std::enable_if<!std::is_pointer<DataType>::value>::type* = 0)
+		{}
+		template <class DataType, bool FreeOnClose>
+		void FreeType(DataType d,
+			typename std::enable_if<std::is_pointer<DataType>::value>::type* = 0,
+			typename std::enable_if<!FreeOnClose>::type* = 0)
+		{}
+		template <class DataType, bool FreeOnClose>
+		void FreeType(DataType d, 
+			typename std::enable_if<std::is_pointer<DataType>::value>::type* = 0,
+			typename std::enable_if<FreeOnClose>::type* = 0)
 		{
-		private:
-			void* _buffer;
-		public:
-			Object_Accessor(ssize_t sz = -1) {}
-			/// \brief Converts an object into a void* array that HDF5 can natively understand.
-			/// \note The shared_ptr takes care of "deallocation" when we no longer need the "buffer".
-			const void* serialize(::gsl::span<const DataType> d)
-			{
-				return (const void*)d.data();
-				//return std::shared_ptr<const void>((const void*)d.data(), [](const void*) {});
+			free(d);
+		}
+		
+
+		template <class T, class value_type = T, bool FreeOnClose = false>
+		struct Marshalled_Data {
+			std::vector<value_type> DataPointers;
+			~Marshalled_Data() {
+				if (FreeOnClose)
+					for (auto& p : DataPointers) 
+						FreeType<value_type, FreeOnClose>(p);
 			}
-			/// \brief Gets the size of the buffer needed to store the object from HDF5. Used
-			/// in variable-length string / complex object reads.
-			/// \note For POD objects, we do not have to allocate a buffer.
-			/// \returns Size needed. If negative, then we can directly write to the object, 
-			/// sans allocation or deallocation.
-			ssize_t getFromBufferSize() {
-				return -1;
-			}
-			/// \brief Allocates a buffer that HDF5 can read/write into; used later as input data for object construction.
-			/// \note For POD objects, we can directly write to the object.
-			void marshalBuffer(DataType* objStart) { _buffer = static_cast<void*>(objStart); }
-			/// \brief Construct an object from an HDF5-provided data stream, 
-			/// and deallocate any temporary buffer.
-			/// \note For trivial (POD) objects, there is no need to do anything.
-			void deserialize(DataType* objStart) { }
-			void freeBuffer() {}
 		};
 
-		template<>
-		struct Object_Accessor<std::string>
+		
+		namespace detail
 		{
-		private:
-			// Do serialization by making copies of each of the strings.
-			std::vector<char*> _bufStrPointers;
-			std::vector<std::unique_ptr<char[]> > _bufStrs;
-		public:
-			Object_Accessor(ssize_t sz = 0) : _bufStrPointers(sz), _bufStrs(sz) {}
-			~Object_Accessor() {}
-			/// \note Remember: the return value does not persist past another call to serialize, and
-			/// it does not persist past object lifetime.
-			const void* serialize(::gsl::span<const std::string> d)
+			/// \note HDF5 wants void* types. These are horribly hacked :-(
+			/// \note By default, we are using the POD accessor. Valid for simple data types,
+			/// where multiple objects are in the same dataspace, and each object is a 
+			/// singular instance of the base data type.
+			template <class DataType, class value_type = DataType>
+			struct Object_Accessor_Regular
 			{
-				_bufStrPointers.clear();
-				_bufStrs.clear();
-				for (const auto& s : d) {
-					size_t sz = s.size() + 1;
-					std::unique_ptr<char[]> sobj(new char[sz]);
-					_impl::COMPAT_strncpy_s(sobj.get(), sz, s.data(), sz);
-					_bufStrPointers.push_back(sobj.get());
-					_bufStrs.push_back(std::move(sobj));
+				typedef typename std::remove_const<DataType>::type mutable_DataType;
+				//typedef typename std::remove_const<typename DataType>::type mutable_DataType;
+
+				typedef std::shared_ptr<Marshalled_Data<DataType, mutable_DataType>> serialized_type;
+				typedef std::shared_ptr<const Marshalled_Data<DataType, mutable_DataType>> const_serialized_type;
+			public:
+				/// \brief Converts an object into a void* array that HDF5 can natively understand.
+				/// \note The shared_ptr takes care of "deallocation" when we no longer need the "buffer".
+				const_serialized_type serialize(::gsl::span<const DataType> d)
+				{
+					auto res = std::make_shared<Marshalled_Data<DataType, mutable_DataType>>();
+					res->DataPointers = std::vector<mutable_DataType>(d.size());
+					for (size_t i = 0; i < d.size(); ++i)
+						res->DataPointers[i] = d[i];
+					//res->DataPointers = std::vector<mutable_value_type>(d.begin(), d.end()); //return (const void*)d.data();
+					return res;
 				}
-				return (const void*)_bufStrPointers.data();
-				//return std::shared_ptr<const void>(_bufStrPointers.data(), [](const void*) {});
-			}
-			/// \note For this class specialization, _buffer is marshaled on object construction.
-			void marshalBuffer(std::string* objStart) { }
-			void deserialize(std::string* objStart) {
-				//*objStart = std::string(_buffer.get()[0], _sz);
-				//*objStart = std::string(_buffer.get(), _sz);
-			}
-			/// HDF5 will allocate character strings on read. These should all be freed.
-			void freeBuffer() {
-				//for (ssize_t i = 0; i < _sz; ++i) delete[] _buffer.get()[i];
-			}
-		};
+				/// \brief Construct an object from an HDF5-provided data stream, 
+				/// and deallocate any temporary buffer.
+				/// \note For trivial (POD) objects, there is no need to do anything.
+				serialized_type prep_deserialize(size_t numObjects)
+				{
+					auto res = std::make_shared<Marshalled_Data<DataType, mutable_DataType>>();
+					res->DataPointers = std::vector<mutable_DataType>(numObjects);
+					return res;
+				}
+				/// Unpack the data. For POD, nothing special here.
+				void deserialize(serialized_type p, gsl::span<DataType> data)
+				{
+					const size_t ds = data.size(), dp = p->DataPointers.size();
+					HH_Expects(ds == dp);
+					for (size_t i = 0; i < data.size(); ++i) {
+						data[i] = p->DataPointers[i];
+					}
+				}
+			};
 
+			template <class DataType, class value_type = DataType *>
+			struct Object_Accessor_Array
+			{
+				typedef typename std::remove_const<value_type>::type mutable_value_type;
+				typedef std::shared_ptr<const Marshalled_Data<DataType, mutable_value_type, false>> const_serialized_type;
+				typedef std::shared_ptr<Marshalled_Data<DataType, mutable_value_type, true>> serialized_type;
+			public:
+				const_serialized_type serialize(::gsl::span<const DataType> d)
+				{
+					typedef typename std::remove_const<value_type>::type mutable_value_type;
+					auto res = std::make_shared<Marshalled_Data<DataType, mutable_value_type, false>>();
+					for (const auto& i : d) {
+						res->DataPointers.push_back(const_cast<mutable_value_type>(i.data()));
+					}
+					return res;
+
+					/*
+					for (const auto& s : d) {
+						size_t sz = s.size() + 1;
+						std::vector<char> sobj(sz);
+						_impl::COMPAT_strncpy_s(sobj.data(), sz, s.data(), sz);
+						_bufStrPointers.push_back(sobj.data());
+						_bufStrs.push_back(std::move(sobj));
+					}
+					*/
+					//return (const void*)_bufStrPointers.data();
+				}
+				serialized_type prep_deserialize(size_t numObjects)
+				{
+					auto res = std::make_shared<Marshalled_Data<DataType, mutable_value_type, true>>();
+					res->DataPointers = std::vector<mutable_value_type>(numObjects);
+					return res;
+				}
+				void deserialize(serialized_type p, gsl::span<DataType> data)
+				{
+					const size_t ds = data.size(), dp = p->DataPointers.size();
+					HH_Expects(ds == dp);
+					for (size_t i = 0; i < data.size(); ++i) {
+						data[i] = p->DataPointers[i];
+					}
+				}
+			};
+
+			template<typename T>
+			struct Object_AccessorTypedef
+			{
+				typedef Object_Accessor_Regular<T> type;
+			};
+			template<>
+			struct Object_AccessorTypedef<std::string>
+			{
+				typedef Object_Accessor_Array<std::string, char*> type;
+			};
+		}
+		template<typename DataType>
+		using Object_Accessor = typename detail::Object_AccessorTypedef<DataType>::type;
 
 		/*
 		template<>

@@ -14,6 +14,7 @@
 #include "Attributes.hpp"
 #include "Tags.hpp"
 #include "Errors.hpp"
+#include "Funcs.hpp"
 //#include "PropertyLists.hpp"
 
 
@@ -32,36 +33,23 @@ namespace HH {
 	using std::tuple;
 
 
-	struct Dataset {
+	struct HH_DL Dataset {
 	private:
 		HH_hid_t dset;
 	public:
-		Dataset(HH_hid_t hnd_dset = HH::HH_hid_t::dummy()) : dset(hnd_dset), atts(hnd_dset) {}
-		virtual ~Dataset() {}
-		HH_hid_t get() const { return dset; }
+		Dataset(HH_hid_t hnd_dset = HH::HH_hid_t::dummy());
+		virtual ~Dataset();
+		HH_hid_t get() const;
 
 
-		static bool isDataset(HH_hid_t obj) {
-			H5I_type_t typ = H5Iget_type(obj());
-			if (typ == H5I_BADID) return false;
-			if (typ == H5I_DATASET) return true;
-			//H5O_info_t oinfo;
-			//herr_t err = H5Oget_info(obj(), &oinfo);
-			//if (err < 0) return false;
-			//if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) return true;
-			return false;
-		}
-		bool isDataset() const { return isDataset(dset); }
+		static bool isDataset(HH_hid_t obj);
+		inline bool isDataset() const { return isDataset(dset); }
 
 		/// Attributes
 		Has_Attributes atts;
 
 		/// Get type
-		HH_NODISCARD HH_hid_t getType() const
-		{
-			HH_Expects(isDataset());
-			return HH_hid_t(H5Dget_type(dset()), Closers::CloseHDF5Datatype::CloseP);
-		}
+		HH_NODISCARD HH_hid_t getType() const;
 		/// Get type
 		inline HH_hid_t type() const { return getType(); }
 
@@ -79,11 +67,7 @@ namespace HH {
 		}
 
 		// Get dataspace
-		HH_NODISCARD HH_hid_t getSpace() const
-		{
-			HH_Expects(isDataset());
-			return HH_hid_t(H5Dget_space(dset()), Closers::CloseHDF5Dataspace::CloseP);
-		}
+		HH_NODISCARD HH_hid_t getSpace() const;
 
 		/// Get current and maximum dimensions, and number of total points.
 		struct Dimensions {
@@ -93,22 +77,7 @@ namespace HH {
 			Dimensions(const std::vector<hsize_t>& dimscur, const std::vector<hsize_t>& dimsmax, hsize_t dality, hsize_t np)
 				: dimsCur(dimscur), dimsMax(dimsmax), dimensionality(dality), numElements(np) {}
 		};
-		Dimensions getDimensions() const
-		{
-			HH_Expects(isDataset());
-			std::vector<hsize_t> dimsCur, dimsMax;
-			auto space = getSpace();
-			if (H5Sis_simple(space()) <= 0) throw HH_throw;
-			hsize_t numPoints = gsl::narrow_cast<hsize_t>(H5Sget_simple_extent_npoints(space()));
-			int dimensionality = H5Sget_simple_extent_ndims(space());
-			if (dimensionality < 0) throw HH_throw;
-			dimsCur.resize(dimensionality);
-			dimsMax.resize(dimensionality);
-			int err = H5Sget_simple_extent_dims(space(), dimsCur.data(), dimsMax.data());
-			if (err < 0) throw HH_throw;
-
-			return Dimensions(dimsCur, dimsMax, dimsCur.size(), numPoints);
-		}
+		Dimensions getDimensions() const;
 
 		// Resize the dataset?
 
@@ -133,7 +102,7 @@ namespace HH {
 				mem_space_id(), // mem_space_id
 				file_space_id(), // file_space_id
 				xfer_plist_id(), // xfer_plist_id
-				d // data
+				d->DataPointers.data() // data
 				  //data.data() // data
 			);
 			if (ret < 0) throw HH_throw;
@@ -205,8 +174,7 @@ namespace HH {
 		/// \brief Read the dataset
 		/// \note Ensure that the correct dimension ordering is preserved
 		/// \note With default parameters, the entire dataset is read
-		
-		Dataset read(
+		inline Dataset read(
 			gsl::span<char> data,
 			HH_hid_t in_memory_dataType,
 			HH_hid_t mem_space_id = H5S_ALL,
@@ -226,6 +194,28 @@ namespace HH {
 			return *this;
 		}
 
+	private:
+		template <class DataType, class Marshaller = HH::Types::Object_Accessor<DataType> >
+		Dataset _read(HH_hid_t in_memory_dataType, size_t flsize, gsl::span<DataType> data, bool isvlen,
+			HH_hid_t mem_space_id = H5S_ALL,
+			HH_hid_t file_space_id = H5S_ALL,
+			HH_hid_t xfer_plist_id = H5P_DEFAULT) const
+		{
+			Marshaller m;
+			auto p = m.prep_deserialize(flsize);
+			herr_t ret = H5Dread(
+				dset(),
+				in_memory_dataType(),
+				mem_space_id(),
+				file_space_id(),
+				xfer_plist_id(),
+				(void*)p->DataPointers.data());
+			if (ret < 0) throw HH_throw.add("Reason", "H5Dread failed.");
+			m.deserialize(p, data);
+			return *this;
+		}
+	public:
+
 		template <class DataType>
 		Dataset read(
 			gsl::span<DataType> data,
@@ -235,15 +225,23 @@ namespace HH {
 			HH_hid_t xfer_plist_id = H5P_DEFAULT) const
 		{
 			HH_Expects(isDataset());
-			auto ret = H5Dread(
-				dset(), // dataset id
-				in_memory_dataType(), // mem_type_id
-				mem_space_id(), // mem_space_id
-				file_space_id(), // file_space_id
-				xfer_plist_id(), // xfer_plist_id
-				data.data() // data
-			);
-			if (ret < 0) throw HH_throw;
+			auto ftype = getType();
+			H5T_class_t type_class = H5Tget_class(ftype());
+			// Detect if this is a variable-length array string type:
+			bool isVLenArrayType = false;
+			if (type_class == H5T_STRING) {
+				htri_t i = H5Tis_variable_str(ftype());
+				if (i > 0) isVLenArrayType = true;
+			}
+			hsize_t flsize = getDimensions().numElements;
+
+			_read(in_memory_dataType,
+				flsize,
+				data,
+				isVLenArrayType,
+				mem_space_id,
+				file_space_id,
+				xfer_plist_id);
 			return *this;
 		}
 
@@ -359,45 +357,13 @@ namespace HH {
 #endif
 
 		/// Attach a dimension scale to this table.
-		HH_MAYBE_UNUSED Dataset attachDimensionScale(unsigned int DimensionNumber, const Dataset & scale)
-		{
-			HH_Expects(isDataset());
-			HH_Expects(isDataset(scale.get()));
-			const herr_t res = H5DSattach_scale(dset(), scale.dset(), DimensionNumber);
-			if (res != 0) throw HH_throw;
-			return *this;
-		}
+		HH_MAYBE_UNUSED Dataset attachDimensionScale(unsigned int DimensionNumber, const Dataset& scale);
 		/// Detach a dimension scale
-		HH_MAYBE_UNUSED Dataset detachDimensionScale(unsigned int DimensionNumber, const Dataset & scale)
-		{
-			HH_Expects(isDataset());
-			HH_Expects(isDataset(scale.get()));
-			const herr_t res = H5DSdetach_scale(dset(), scale.dset(), DimensionNumber);
-			if (res != 0) throw HH_throw;
-			return *this;
-		}
-		HH_MAYBE_UNUSED Dataset setDims(std::initializer_list<Dataset> dims) {
-			unsigned int i = 0;
-			for (auto it = dims.begin(); it != dims.end(); ++it, ++i) {
-				attachDimensionScale(i, *it);
-			}
-			return *this;
-		}
-		HH_MAYBE_UNUSED Dataset setDims(const Dataset & dims) {
-			attachDimensionScale(0, dims);
-			return *this;
-		}
-		HH_MAYBE_UNUSED Dataset setDims(const Dataset & dim1, const Dataset & dim2) {
-			attachDimensionScale(0, dim1);
-			attachDimensionScale(1, dim2);
-			return *this;
-		}
-		HH_MAYBE_UNUSED Dataset setDims(const Dataset & dim1, const Dataset & dim2, const Dataset & dim3) {
-			attachDimensionScale(0, dim1);
-			attachDimensionScale(1, dim2);
-			attachDimensionScale(2, dim3);
-			return *this;
-		}
+		HH_MAYBE_UNUSED Dataset detachDimensionScale(unsigned int DimensionNumber, const Dataset& scale);
+		HH_MAYBE_UNUSED Dataset setDims(std::initializer_list<Dataset> dims);
+		HH_MAYBE_UNUSED Dataset setDims(const Dataset& dims);
+		HH_MAYBE_UNUSED Dataset setDims(const Dataset& dim1, const Dataset& dim2);
+		HH_MAYBE_UNUSED Dataset setDims(const Dataset& dim1, const Dataset& dim2, const Dataset& dim3);
 		/*
 		template <typename AttType>
 		Dataset AddSimpleAttributes(const std::pair<std::string, AttType> &att)
@@ -439,77 +405,23 @@ namespace HH {
 		}
 
 		/// Is this dataset used as a dimension scale?
-		bool isDimensionScale() const {
-			HH_Expects(isDataset());
-			const htri_t res = H5DSis_scale(dset());
-			if (res < 0) throw HH_throw;
-			return (res > 0) ? true : false;
-		}
+		bool isDimensionScale() const;
 
 		/// Designate this table as a dimension scale
-		HH_MAYBE_UNUSED Dataset setIsDimensionScale(const std::string & dimensionScaleName) {
-			HH_Expects(isDataset());
-			const htri_t res = H5DSset_scale(dset(), dimensionScaleName.c_str());
-			if (res != 0) throw HH_throw;
-			return *this;
-		}
+		HH_MAYBE_UNUSED Dataset setIsDimensionScale(const std::string& dimensionScaleName);
 		/// Set the axis label for the dimension designated by DimensionNumber
-		HH_MAYBE_UNUSED Dataset setDimensionScaleAxisLabel(unsigned int DimensionNumber, const std::string & label)
-		{
-			HH_Expects(isDataset());
-			const htri_t res = H5DSset_label(dset(), DimensionNumber, label.c_str());
-			if (res != 0) throw HH_throw;
-			return *this;
-		}
+		HH_MAYBE_UNUSED Dataset setDimensionScaleAxisLabel(unsigned int DimensionNumber, const std::string& label);
 		/// \brief Get the axis label for the dimension designated by DimensionNumber
 		/// \todo See if there is ANY way to dynamically determine the label size. HDF5 docs do not discuss this.
-		std::string getDimensionScaleAxisLabel(unsigned int DimensionNumber) const
-		{
-			HH_Expects(isDataset());
-			constexpr size_t max_label_size = 1000;
-			std::array<char, max_label_size> label;
-			label.fill('\0');
-			const ssize_t res = H5DSget_label(dset(), DimensionNumber, label.data(), max_label_size);
-			// res is the size of the label. The HDF5 documentation does not include whether the label is null-terminated,
-			// so I am terminating it manually.
-			if (res < 0) throw HH_throw;
-			label[max_label_size - 1] = '\0';
-			return std::string(label.data());
-		}
-		HH_MAYBE_UNUSED Dataset getDimensionScaleAxisLabel(unsigned int DimensionNumber, std::string & res) const {
-			HH_Expects(isDataset());
-			res = getDimensionScaleAxisLabel(DimensionNumber);
-			return *this;
-		}
+		std::string getDimensionScaleAxisLabel(unsigned int DimensionNumber) const;
+		HH_MAYBE_UNUSED Dataset getDimensionScaleAxisLabel(unsigned int DimensionNumber, std::string& res) const;
 		/// \brief Get the name of this table's defined dimension scale
 		/// \todo See if there is ANY way to dynamically determine the label size. HDF5 docs do not discuss this.
-		std::string getDimensionScaleName() const
-		{
-			HH_Expects(isDataset());
-			constexpr size_t max_label_size = 1000;
-			std::array<char, max_label_size> label;
-			label.fill('\0');
-			const ssize_t res = H5DSget_scale_name(dset(), label.data(), max_label_size);
-			if (res < 0) throw HH_throw;
-			// res is the size of the label. The HDF5 documentation does not include whether the label is null-terminated,
-			// so I am terminating it manually.
-			label[max_label_size - 1] = '\0';
-			return std::string(label.data());
-		}
-		HH_MAYBE_UNUSED Dataset getDimensionScaleName(std::string & res) const {
-			res = getDimensionScaleName();
-			return *this;
-		}
+		std::string getDimensionScaleName() const;
+		HH_MAYBE_UNUSED Dataset getDimensionScaleName(std::string& res) const;
 
 		/// Is a dimension scale attached to this dataset in a certain position?
-		bool isDimensionScaleAttached(const Dataset & scale, unsigned int DimensionNumber) const {
-			HH_Expects(scale.isDataset());
-			HH_Expects(isDataset());
-			auto ret = H5DSis_attached(dset(), scale.get()(), DimensionNumber);
-			if (ret < 0) throw HH_throw;
-			return (ret > 0) ? true : false;
-		}
-
+		bool isDimensionScaleAttached(const Dataset& scale, unsigned int DimensionNumber) const;
 	};
 
 	inline bool Chunking_Max(const std::vector<hsize_t> & in, std::vector<hsize_t> & out)
@@ -518,18 +430,7 @@ namespace HH {
 		return true;
 	}
 
-	inline std::pair<bool, bool> isFilteravailable(H5Z_filter_t filt) {
-		unsigned int filter_config = 0;
-		htri_t avl = H5Zfilter_avail(filt);
-		if (avl <= 0) return std::make_pair(false, false);
-		herr_t err = H5Zget_filter_info(filt, &filter_config);
-		if (err < 0) throw HH_throw;
-		bool compress = false;
-		bool decompress = false;
-		if (filter_config & H5Z_FILTER_CONFIG_ENCODE_ENABLED) compress = true;
-		if (filter_config & H5Z_FILTER_CONFIG_DECODE_ENABLED) decompress = true;
-		return std::make_pair(compress, decompress);
-	}
+	HH_DL std::pair<bool, bool> isFilteravailable(H5Z_filter_t filt);
 
 	template <class DataType>
 	bool CanUseSZIP(HH_hid_t dtype = HH::Types::GetHDF5Type<DataType>())
@@ -565,12 +466,12 @@ namespace HH {
 
 	Life would be easier if HDF5 allowed for an easy way to insert filters at specified orderings.
 	**/
-	struct Filters {
+	struct HH_DL Filters {
 	private:
-		HH_hid_t pl; // = HH_hid_t::dummy();
+		HH_hid_t pl;
 	public:
-		Filters(HH_hid_t newbase) : pl(newbase) {}
-		virtual ~Filters() {}
+		Filters(HH_hid_t newbase);
+		virtual ~Filters();
 		/// \see https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFilter for meanings
 		struct filter_info {
 			H5Z_filter_t id = -1;
@@ -578,113 +479,30 @@ namespace HH {
 			std::vector<unsigned int> cd_values;
 		};
 		/// Get a vector of the filters that are implemented
-		std::vector<filter_info> get() const {
-			int nfilts = H5Pget_nfilters(pl());
-			if (nfilts < 0) throw HH_throw;
-			std::vector<filter_info> res;
-			for (int i = 0; i < nfilts; ++i) {
-				filter_info obj;
-				size_t cd_nelems = 0;
-				obj.id = H5Pget_filter2(pl(), i, &(obj.flags), &cd_nelems, nullptr, 0, nullptr, nullptr);
-				obj.cd_values.resize(cd_nelems);
-				H5Pget_filter2(pl(), i, &(obj.flags), &cd_nelems, obj.cd_values.data(), 0, nullptr, nullptr);
-
-				res.push_back(obj);
-			}
-			return res;
-		}
+		std::vector<filter_info> get() const;
 		/// Append the filters to a property list.
-		void append(const std::vector<filter_info>& filters) {
-			for (const auto& f : filters) {
-				herr_t res = H5Pset_filter(pl(), f.id, f.flags, f.cd_values.size(), f.cd_values.data());
-				if (res < 0) throw HH_throw;
-			}
-		}
+		void append(const std::vector<filter_info>& filters);
 		/// Set the filters to a property list. Clears existing filters.
-		void set(const std::vector<filter_info> & filters) {
-			if (H5Premove_filter(pl(), H5Z_FILTER_ALL) < 0) throw HH_throw;
-			append(filters);
-		}
-		void clear() {
-			if (H5Premove_filter(pl(), H5Z_FILTER_ALL) < 0) throw HH_throw;
-		}
+		void set(const std::vector<filter_info>& filters);
+		void clear();
 
-		enum class FILTER_T { SHUFFLE, COMPRESSION, OTHER };
+		enum class FILTER_T { SHUFFLE, COMPRESSION, SCALE, OTHER };
 
-		bool has(H5Z_filter_t id) const {
-			auto fi = get();
-			auto res = std::find_if(fi.cbegin(), fi.cend(), [&id](const filter_info & f) {return f.id == id; });
-			if (res != fi.cend()) return true;
-			return false;
-		}
+		bool has(H5Z_filter_t id) const;
 
 
-		static FILTER_T getType(const filter_info & it) {
-			if ((it.id == H5Z_FILTER_SHUFFLE)) return FILTER_T::SHUFFLE;
-			if ((it.id == H5Z_FILTER_DEFLATE)) return FILTER_T::COMPRESSION;
-			if ((it.id == H5Z_FILTER_SZIP)) return FILTER_T::COMPRESSION;
-			if ((it.id == H5Z_FILTER_NBIT)) return FILTER_T::COMPRESSION;
-			if ((it.id == H5Z_FILTER_SCALEOFFSET)) return FILTER_T::COMPRESSION;
-			return FILTER_T::OTHER;
-		}
-		static bool isA(const filter_info & it, FILTER_T typ) {
-			auto ft = getType(it);
-			if (ft == typ) return true;
-			return false;
-		};
-		void appendOfType(const std::vector<filter_info> & filters, FILTER_T typ) {
-			for (auto it = filters.cbegin(); it != filters.cend(); ++it)
-			{
-				if (isA(*it, typ)) {
-					herr_t res = H5Pset_filter(pl(), it->id, it->flags, it->cd_values.size(), it->cd_values.data());
-					if (res < 0) throw HH_throw;
-				}
-			}
-		}
-		void removeOfType(FILTER_T typ) {
-			auto fils = get();
-			clear();
-			for (auto it = fils.cbegin(); it != fils.cend(); ++it)
-			{
-				if (!isA(*it, typ)) {
-					herr_t res = H5Pset_filter(pl(), it->id, it->flags, it->cd_values.size(), it->cd_values.data());
-					if (res < 0) throw HH_throw;
-				}
-			}
-		}
+		static FILTER_T getType(const filter_info& it);
+		static bool isA(const filter_info& it, FILTER_T typ);
+		void appendOfType(const std::vector<filter_info>& filters, FILTER_T typ);
+		void removeOfType(FILTER_T typ);
 
-		void setShuffle() {
-			if (has(H5Z_FILTER_SHUFFLE)) return;
-			auto fils = get();
-			clear();
-			if(0 > H5Pset_shuffle(pl())) throw HH_throw; // Bit shuffling.
-			appendOfType(fils, FILTER_T::COMPRESSION);
-			appendOfType(fils, FILTER_T::OTHER);
-		}
-		void setSZIP(unsigned int optm, unsigned int ppb) {
-			if (has(H5Z_FILTER_SZIP)) return;
-			auto fils = get();
-			clear();
-			appendOfType(fils, FILTER_T::SHUFFLE);
-
-			//unsigned int optm = H5_SZIP_EC_OPTION_MASK;
-			//unsigned int ppb = 16;
-			//if (pixels_per_block.has_value()) ppb = pixels_per_block.value();
-
-			if(0 > H5Pset_szip(pl(), optm, ppb)) throw HH_throw;
-			appendOfType(fils, FILTER_T::OTHER);
-		}
-		void setGZIP(unsigned int level) {
-			auto fils = get();
-			clear();
-			appendOfType(fils, FILTER_T::SHUFFLE);
-			if (0 > H5Pset_deflate(pl(), level)) throw HH_throw;
-			appendOfType(fils, FILTER_T::OTHER);
-		}
-
+		void setShuffle();
+		void setSZIP(unsigned int optm, unsigned int ppb);
+		void setGZIP(unsigned int level);
+		void setScaleOffset(H5Z_SO_scale_type_t scale_type, int scale_factor);
 	};
 
-	struct DatasetParameterPack
+	struct HH_DL DatasetParameterPack
 	{
 	private:
 		std::vector<std::pair<unsigned int, Dataset> > _dimsToAttach;
@@ -713,6 +531,9 @@ namespace HH {
 				char c;
 				unsigned char uc;
 			} fillValue = { 0 };
+			bool scale = false;
+			int scale_factor = 1;
+			H5Z_SO_scale_type_t scale_type = H5Z_SO_FLOAT_DSCALE;
 			HH_hid_t fillValue_type = HH_hid_t::dummy();
 			template <class DataType>
 			DatasetCreationPListProperties& setFill(DataType fill)
@@ -724,26 +545,7 @@ namespace HH {
 				return *this;
 			}
 
-			HH_hid_t generate(const std::vector<hsize_t>& chunkingBlockSize) const {
-				hid_t plid = H5Pcreate(H5P_DATASET_CREATE);
-				if (plid < 0) throw HH_throw;
-				HH_hid_t pl(plid, Handles::Closers::CloseHDF5PropertyList::CloseP);
-
-				Filters filters(pl);
-				if (shuffle) filters.setShuffle();
-				if (gzip) filters.setGZIP(gzip_level);
-				if (szip) filters.setSZIP(szip_options, szip_PixelsPerBlock);
-				if (chunk) {
-					HH_Expects(0 <= H5Pset_chunk(pl(),
-						(int)chunkingBlockSize.size(),
-						chunkingBlockSize.data()));
-				}
-				if (hasFillValue) {
-					HH_Expects(0 <= H5Pset_fill_value(pl(), fillValue_type(), &(fillValue)));
-				}
-
-				return pl;
-			}
+			HH_hid_t generate(const std::vector<hsize_t>& chunkingBlockSize) const;
 		} datasetCreationProperties;
 
 		std::function<bool(const std::vector<hsize_t>&, std::vector<hsize_t>&)>
@@ -756,87 +558,32 @@ namespace HH {
 		HH_hid_t DatasetAccessPlist = H5P_DEFAULT;
 
 		/// Attach a dimension scale to this table.
-		HH_MAYBE_UNUSED DatasetParameterPack& attachDimensionScale(unsigned int DimensionNumber, const Dataset & scale)
-		{
-			_dimsToAttach.push_back(std::make_pair(DimensionNumber, scale));
-			return *this;
-		}
-		HH_MAYBE_UNUSED DatasetParameterPack& setDims(std::initializer_list<Dataset> dims) {
-			_dimsToAttach.clear();
-			unsigned int i = 0;
-			for (auto it = dims.begin(); it != dims.end(); ++it, ++i) {
-				attachDimensionScale(i, *it);
-			}
-			return *this;
-		}
-		HH_MAYBE_UNUSED DatasetParameterPack& setDims(const Dataset & dims) {
-			_dimsToAttach.clear();
-			attachDimensionScale(0, dims);
-			return *this;
-		}
-		HH_MAYBE_UNUSED DatasetParameterPack& setDims(const Dataset & dim1, const Dataset & dim2) {
-			_dimsToAttach.clear();
-			attachDimensionScale(0, dim1);
-			attachDimensionScale(1, dim2);
-			return *this;
-		}
-		HH_MAYBE_UNUSED DatasetParameterPack& setDims(const Dataset & dim1, const Dataset & dim2, const Dataset & dim3) {
-			_dimsToAttach.clear();
-			attachDimensionScale(0, dim1);
-			attachDimensionScale(1, dim2);
-			attachDimensionScale(2, dim3);
-			return *this;
-		}
+		HH_MAYBE_UNUSED DatasetParameterPack& attachDimensionScale(unsigned int DimensionNumber, const Dataset& scale);
+		HH_MAYBE_UNUSED DatasetParameterPack& setDims(std::initializer_list<Dataset> dims);
+		HH_MAYBE_UNUSED DatasetParameterPack& setDims(const Dataset& dims);
+		HH_MAYBE_UNUSED DatasetParameterPack& setDims(const Dataset& dim1, const Dataset& dim2);
+		HH_MAYBE_UNUSED DatasetParameterPack& setDims(const Dataset& dim1, const Dataset& dim2, const Dataset& dim3);
 
-		HH_MAYBE_UNUSED Dataset apply(HH::HH_hid_t h) const {
-			HH::Dataset d(h);
+		HH_MAYBE_UNUSED Dataset apply(HH::HH_hid_t h) const;
 
-			for (auto& ndims : _dimsToAttach)
-				d.attachDimensionScale(ndims.first, ndims.second);
-			atts.apply(h);
-			return d;
-		}
+		HH_hid_t generateDatasetCreationPlist(const std::vector<hsize_t>& dims) const;
 
-		HH_hid_t generateDatasetCreationPlist(const std::vector<hsize_t> & dims) const
-		{
-			if (UseCustomDatasetCreationPlist) return DatasetCreationPlistCustom;
-
-			std::vector<hsize_t> chunk_sizes;
-			HH_Expects(fChunkingStrategy(dims, chunk_sizes));
-
-			return datasetCreationProperties.generate(chunk_sizes);
-		}
-
-		DatasetParameterPack() {}
-		DatasetParameterPack(const AttributeParameterPack & a,
+		DatasetParameterPack();
+		DatasetParameterPack(const AttributeParameterPack& a,
 			HH_hid_t LinkCreationPlist = H5P_DEFAULT,
-			//HH_hid_t DatasetCreationPlist = H5P_DEFAULT,
-			HH_hid_t DatasetAccessPlist = H5P_DEFAULT
-		) : atts(a), LinkCreationPlist(LinkCreationPlist),
-			//DatasetCreationPlist(DatasetCreationPlist), 
-			DatasetAccessPlist(DatasetAccessPlist)
-		{}
+			HH_hid_t DatasetAccessPlist = H5P_DEFAULT);
 	};
 
-	struct Has_Datasets {
+	struct HH_DL Has_Datasets {
 	private:
 		HH_hid_t base;
 	public:
-		Has_Datasets(HH_hid_t obj) : base(obj) {  }
-		virtual ~Has_Datasets() {}
+		Has_Datasets(HH_hid_t obj);
+		virtual ~Has_Datasets();
 
 		/// \brief Does a dataset with the specified name exist?
 		/// This checks for a link with the given name, and checks that the link is a dataset.
-		bool exists(const std::string& dsetname, HH_hid_t LinkAccessPlist = H5P_DEFAULT) const {
-			htri_t linkExists = H5Lexists(base(), dsetname.c_str(), LinkAccessPlist());
-			if (linkExists < 0) throw HH_throw;
-			if (linkExists == 0) return false;
-			H5O_info_t oinfo;
-			herr_t err = H5Oget_info_by_name(base(), dsetname.c_str(), &oinfo, H5P_DEFAULT); // H5P_DEFAULT only, per docs.
-			if (err < 0) throw HH_throw;
-			if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) return true;
-			return false;
-		}
+		bool exists(const std::string& dsetname, HH_hid_t LinkAccessPlist = H5P_DEFAULT) const;
 
 
 		// Remove by name - handled by removing the link
@@ -844,51 +591,16 @@ namespace HH {
 		// Rename - handled by a new hard link
 
 		/// \brief Open a dataset
-		Dataset open(const std::string & dsetname,
-			HH_hid_t DatasetAccessPlist = H5P_DEFAULT) const
-		{
-			hid_t dsetid = H5Dopen(base(), dsetname.c_str(), DatasetAccessPlist());
-			if (dsetid < 0) throw HH_throw.add("Reason", "Cannot open dataset").add("Name", dsetname);
-			return Dataset(HH_hid_t(dsetid, Closers::CloseHDF5Dataset::CloseP));
-		}
+		Dataset open(const std::string& dsetname,
+			HH_hid_t DatasetAccessPlist = H5P_DEFAULT) const;
 
-		Dataset operator[](const std::string & dsetname) const {
-			return open(dsetname);
-		}
+		Dataset operator[](const std::string& dsetname) const;
 
 		/// \brief List all datasets under this group
-		std::vector<std::string> list() const {
-			std::vector<std::string> res;
-			H5G_info_t info;
-			herr_t e = H5Gget_info(base(), &info);
-			if (e < 0) throw HH_throw;
-			for (hsize_t i = 0; i < info.nlinks; ++i) {
-				// Get the name
-				ssize_t szName = H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
-					i, NULL, 0, H5P_DEFAULT);
-				if(szName < 0) throw HH_throw;
-				std::vector<char> vName(szName + 1, '\0');
-				H5Lget_name_by_idx(base(), ".", H5_INDEX_NAME, H5_ITER_INC,
-					i, vName.data(), szName + 1, H5P_DEFAULT);
-
-				// Get the object and check the type
-				H5O_info_t oinfo;
-				herr_t err = H5Oget_info_by_name(base(), vName.data(), &oinfo, H5P_DEFAULT); // H5P_DEFAULT only, per docs.
-				if (err < 0) continue;
-				if (oinfo.type == H5O_type_t::H5O_TYPE_DATASET) res.push_back(std::string(vName.data()));
-			}
-			return res;
-		}
+		std::vector<std::string> list() const;
 
 		/// \brief Open all datasets under the group. Convenience function
-		std::map<std::string, Dataset> openAll() const {
-			auto ls = list();
-			std::map<std::string, Dataset> res;
-			for (const auto& l : ls) {
-				res[l] = open(l.c_str());
-			}
-			return res;
-		}
+		std::map<std::string, Dataset> openAll() const;
 
 	private:
 		template <class DataType>

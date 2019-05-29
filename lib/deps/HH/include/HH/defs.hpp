@@ -103,5 +103,107 @@
 #  define HH_ERROR_INHERITS_FROM std::exception
 # endif
 
+#ifdef __unix__
+# ifdef __linux__
+#  define HH_OS_LINUX
+# endif
+# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+#  define HH_OS_UNIX
+# endif
+#endif
+#if (defined(__APPLE__) || defined(__MACH__))
+# define HH_OS_MACOS
+#endif
+#ifdef _WIN32
+# define HH_OS_WINDOWS
+#endif
+#if !defined(HH_OS_WINDOWS) && !defined(HH_OS_UNIX) && !defined(HH_OS_LINUX)
+# define HH_OS_UNSUPPORTED
+# pragma message("HH defs.h warning: operating system is unrecognized.")
+#endif
+
+
+/* Symbol export / import macros */
+
+/**
+ * \defgroup Symbols_Shared Defines that relate to symbol export / import.
+ * @{
+ *
+ * \def HH_COMPILER_EXPORTS_VERSION_UNKNOWN
+ * Defined when we have no idea what the compiler is.
+ *
+ * \def HH_COMPILER_EXPORTS_VERSION_A
+ * Defined when the compiler is like MSVC.
+ *
+ * \def HH_COMPILER_EXPORTS_VERSION_B
+ * Defined when the compiler is like GNU, Intel, or Clang.
+ */
+
+#if defined(_MSC_FULL_VER)
+# define HH_COMPILER_EXPORTS_VERSION_A
+#elif defined(__INTEL_COMPILER) || defined(__GNUC__) || defined(__MINGW32__) \
+	|| defined(__clang__)
+# define HH_COMPILER_EXPORTS_VERSION_B
+#else
+# define HH_COMPILER_EXPORTS_VERSION_UNKNOWN
+#endif
+
+ // Defaults for static libraries
+
+ /**
+  * \def HH_SHARED_EXPORT
+  * \brief A tag used to tell the compiler that a symbol should be exported.
+  **/
+  /**
+   * \def HH_SHARED_IMPORT
+   * \brief A tag used to tell the compiler that a symbol should be imported.
+   **/
+   /**
+	* \def HH_HIDDEN
+	* \brief A tag used to tell the compiler that a symbol should not be listed,
+	* but it may be referenced from other code modules.
+	**/
+	/**
+	 * \def HH_PRIVATE
+	 * \brief A tag used to tell the compiler that a symbol should not be listed,
+	 * and it may not be referenced from other code modules.
+	 **/
+
+#if defined HH_COMPILER_EXPORTS_VERSION_A
+# define HH_SHARED_EXPORT __declspec(dllexport)
+# define HH_SHARED_IMPORT __declspec(dllimport)
+# define HH_HIDDEN
+# define HH_PRIVATE
+#elif defined HH_COMPILER_EXPORTS_VERSION_B
+# define HH_SHARED_EXPORT __attribute__ ((visibility("default")))
+# define HH_SHARED_IMPORT __attribute__ ((visibility("default")))
+# define HH_HIDDEN __attribute__ ((visibility("hidden")))
+# define HH_PRIVATE __attribute__ ((visibility("internal")))
+#else
+# pragma message("HH++ defs.h warning: compiler is unrecognized. Shared libraries may not export their symbols properly.")
+# define HH_SHARED_EXPORT
+# define HH_SHARED_IMPORT
+# define HH_HIDDEN
+# define HH_PRIVATE
+#endif
+
+	 /**
+	  * \def HH_DL
+	  * \brief A preprocessor tag that indicates that a symbol is to be exported/imported.
+	  *
+	  * If (libname)_SHARED is defined, then the target library both
+	  * exports and imports. If not defined, then it is a static library.
+	  **/
+
+#if HH_SHARED
+# if HH_EXPORTING
+#  define HH_DL HH_SHARED_EXPORT
+# else
+#  define HH_DL HH_SHARED_IMPORT
+# endif
+#else
+# define HH_DL
+#endif
+
 // Closing include guard
 #endif

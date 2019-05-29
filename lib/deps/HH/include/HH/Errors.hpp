@@ -69,7 +69,7 @@ namespace HH {
 		}
 	};
 
-	class xError;
+	class Error;
 }
 
 /// Add info about there an exception was thrown.
