@@ -16,15 +16,18 @@
 #include "IntegratedTesting.hpp"
 
 HH::File in;
-std::string sBuild;
+std::string sBuild, sShare;
 struct icedb_algTestingFixture : protected icedb_GlobalTestingFixture {
 	icedb_algTestingFixture() {}
 	void setup()
 	{
 		using namespace std;
 		icedb_GlobalTestingFixture::setup();
+		sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+		const string sIn = sShare + "/examples/shapes/PSU-GMM/"
+		+ "write_psu_shape_as_hdf5.h5";
 		sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
-		const string sIn = sBuild + "/write_psu_shape_as_hdf5.h5";
+		//const string sIn = sBuild + "/write_psu_shape_as_hdf5.h5";
 		in = HH::File::openFile(sIn, H5F_ACC_RDONLY);
 	}
 	void teardown() { icedb_GlobalTestingFixture::teardown(); }
