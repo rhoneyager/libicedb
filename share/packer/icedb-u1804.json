@@ -45,8 +45,9 @@
 			  "wget https://vstsagentpackage.azureedge.net/agent/2.154.1/vsts-agent-linux-x64-2.154.1.tar.gz",
 			  "mkdir myagent && cd myagent",
 			  "tar xzf ../vsts-agent-linux-x64-2.154.1.tar.gz",
-			  "chown :msbuild .",
-			  "chmod g+rwX .",
+			  "chown -R msbuild:msbuild .",
+			  "chmod -R u+rwX .",
+			  "chmod -R g+rwX .",
 			  "echo Done"
 		  ]
 	  }
