@@ -10,13 +10,14 @@ else()
 	else()
 		string(SUBSTRING "${GITREFSPECVAR}" 11 -1 GITBRANCH )
 	endif()
-
-	# This config file stores basic information about the build.
-	# Version number, git hash, ...
-	# This gets pulled into the icedb target.
-	configure_file (
-		"${CMAKE_CURRENT_SOURCE_DIR}/lib/util/cmake-settings.h.in"
-		"${CMAKE_CURRENT_BINARY_DIR}/lib/icedb-cmake-settings.h"
-	    )
-
 endif()
+
+# This config file stores basic information about the build.
+# Version number, git hash, ...
+# This gets pulled into the icedb target.
+configure_file (
+	"${CMAKE_CURRENT_SOURCE_DIR}/lib/util/cmake-settings.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/lib/icedb-cmake-settings.h"
+    )
+
+
