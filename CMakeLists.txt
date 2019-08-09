@@ -22,10 +22,10 @@ addBaseProject()
 include(AddDocs)
 # Find the necessary packages.
 include(GetDependencies)
-# Tests of the code. Handles the "make test" command.
-include(Testing)
 # This handles extra parts of the "make" command, used to build the code.
 include(Building)
+# Tests of the code. Handles the "make test" command.
+include(Testing)
 
 # The different components are in different subdirectories
 add_subdirectory(lib)
