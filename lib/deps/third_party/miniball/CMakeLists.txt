@@ -30,7 +30,7 @@ target_include_directories(miniball PUBLIC
 target_compile_definitions(miniball PUBLIC SEB_DEBUG_H=1)
 add_library(
     icedb::miniball ALIAS miniball )
-
+#list(APPEND ICEDB_TARGETS miniball)
 # The plugin
 #add_library(alg_hbf_miniball SHARED README.md plugin-miniball.hpp plugin-miniball.cpp)
 #addplugin(alg_hbf_miniball Algorithms icedb)

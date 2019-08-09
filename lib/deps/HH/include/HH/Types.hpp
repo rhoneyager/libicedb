@@ -150,7 +150,7 @@ namespace HH {
 				{
 					auto res = std::make_shared<Marshalled_Data<DataType, mutable_DataType>>();
 					res->DataPointers = std::vector<mutable_DataType>(d.size());
-					for (size_t i = 0; i < d.size(); ++i)
+					for (size_t i = 0; i < (size_t) d.size(); ++i)
 						res->DataPointers[i] = d[i];
 					//res->DataPointers = std::vector<mutable_value_type>(d.begin(), d.end()); //return (const void*)d.data();
 					return res;
@@ -169,7 +169,7 @@ namespace HH {
 				{
 					const size_t ds = data.size(), dp = p->DataPointers.size();
 					HH_Expects(ds == dp);
-					for (size_t i = 0; i < data.size(); ++i) {
+					for (size_t i = 0; i < (size_t) data.size(); ++i) {
 						data[i] = p->DataPointers[i];
 					}
 				}
@@ -212,7 +212,7 @@ namespace HH {
 				{
 					const size_t ds = data.size(), dp = p->DataPointers.size();
 					HH_Expects(ds == dp);
-					for (size_t i = 0; i < data.size(); ++i) {
+					for (size_t i = 0; i < (size_t) data.size(); ++i) {
 						data[i] = p->DataPointers[i];
 					}
 				}

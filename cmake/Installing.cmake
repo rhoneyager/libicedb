@@ -24,8 +24,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 
+list(APPEND ICEDB_TARGETS icedb icedb_base GSL HH BinaryIO BetterThrow Eigen miniball quickhull )
 
-export(TARGETS icedb icedb_base GSL HH BinaryIO Eigen BetterThrow miniball quickhull
+export(TARGETS ${ICEDB_TARGETS} 
 		FILE "${PROJECT_BINARY_DIR}/icedbTargets.cmake")
 export(PACKAGE icedb)
 

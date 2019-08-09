@@ -91,7 +91,7 @@ std::istream& operator>>(std::istream& in, ::icedb::registry::IOhandler::IOtype&
 	else if ("READWRITE" == v) val = IOhandler::IOtype::READWRITE;
 	else if ("EXCLUSIVE" == v) val = IOhandler::IOtype::EXCLUSIVE;
 	else if ("TRUNCATE" == v) val = IOhandler::IOtype::TRUNCATE;
-	else if ("DEBUG" == v) val = IOhandler::IOtype::DEBUG;
+	//else if ("DEBUG" == v) val = IOhandler::IOtype::DEBUG;
 	else if ("CREATE" == v) val = IOhandler::IOtype::CREATE;
 	else ICEDB_throw(::icedb::error::error_types::xBadInput)
 		.add<std::string>("Reason","Unlisted IOtype value")
@@ -107,7 +107,7 @@ std::ostream& operator<<(std::ostream &out, const ::icedb::registry::IOhandler::
 	else if (val == IOhandler::IOtype::READWRITE) v = "READWRITE";
 	else if (val == IOhandler::IOtype::EXCLUSIVE) v = "EXCLUSIVE";
 	else if (val == IOhandler::IOtype::TRUNCATE) v = "TRUNCATE";
-	else if (val == IOhandler::IOtype::DEBUG) v = "DEBUG";
+	//else if (val == IOhandler::IOtype::DEBUG) v = "DEBUG";
 	else if (val == IOhandler::IOtype::CREATE) v = "CREATE";
 	else ICEDB_throw(::icedb::error::error_types::xBadInput)
 		.add<std::string>("Reason", "Unlisted IOtype value")
@@ -194,7 +194,7 @@ std::ostream& operator<<(std::ostream &out, const ::icedb::registry::options& va
 					create(filename);
 					break;
 				case IOtype::EXCLUSIVE:
-				case IOtype::DEBUG:
+				//case IOtype::DEBUG:
 				case IOtype::READWRITE:
 					ICEDB_throw(icedb::error::error_types::xUnsupportedIOaction)
 						.add("Reason", "IO mode READWRITE "

@@ -22,3 +22,4 @@ target_include_directories(quickhull PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 add_library(
     icedb::quickhull ALIAS quickhull )
+#list(APPEND ICEDB_TARGETS quickhull)

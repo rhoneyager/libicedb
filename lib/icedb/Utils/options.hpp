@@ -34,7 +34,7 @@ namespace icedb {
 				READWRITE,
 				EXCLUSIVE,
 				TRUNCATE,
-				DEBUG,
+				//DEBUG,
 				CREATE
 			};
 		};
