@@ -292,8 +292,9 @@ namespace icedb {
 						{
 							bool isNotHeaderLine = false;
 							size_t first_nonnumeric = lin.find_first_not_of(" \t0123456789.");
-							size_t first_numeric = lin.find_first_of("0123456789.");
-							if ((first_numeric != std::string::npos) && (first_nonnumeric < first_numeric)) isNotHeaderLine = true;
+							// NOTE: Bugfix for 200micron/1mm27shape.txt.
+							//size_t first_numeric = lin.find_first_of("0123456789.");
+							//if ((first_numeric != std::string::npos) && (first_nonnumeric < first_numeric)) isNotHeaderLine = true;
 							if (first_nonnumeric == std::string::npos) isNotHeaderLine = true;
 
 							if (isNotHeaderLine) {
