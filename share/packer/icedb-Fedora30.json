@@ -23,7 +23,7 @@
 			  "sleep 5",
 			  "echo installing base packages",
 			  "yum update -y",
-			  "yum install -y cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel redhat-lsb-core make yum-cron vim wget curl libunwind compat-openssl10 openssl",
+			  "yum install -y cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel redhat-lsb-core make yum-cron vim wget curl libunwind compat-openssl10 openssl p7zip gcc gcc-c++",
 			  "cd /root",
 			  "echo Install dotnet",
 			  "wget https://dot.net/v1/dotnet-install.sh",

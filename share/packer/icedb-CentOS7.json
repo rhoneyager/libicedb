@@ -23,7 +23,7 @@
 			  "sleep 5",
 			  "echo installing base packages",
 			  "yum update -y",
-			  "yum install -y cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel redhat-lsb-core make centos-release-scl yum-cron vim wget curl libunwind",
+			  "yum install -y cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel redhat-lsb-core make centos-release-scl yum-cron vim wget curl libunwind p7zip",
 			  "echo Note: CentOS has a very old gcc. Use scl or conda instead.",
 			  "yum install -y devtoolset-6 devtoolset-7 devtoolset-8",
 			  "cd /root",
