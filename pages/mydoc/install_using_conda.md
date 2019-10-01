@@ -15,7 +15,7 @@ conservative distributions, like CentOS and Red Hat Enterprise Linux. Older vers
 of other distributions, like Ubuntu 14.04, may also benefit.
 
 From the Conda Project's website:
-```
+```Text
 Conda is an open source package management system and environment management system 
 that runs on Windows, macOS and Linux. Conda quickly installs, runs and updates packages 
 and their dependencies. Conda easily creates, saves, loads and switches between 
