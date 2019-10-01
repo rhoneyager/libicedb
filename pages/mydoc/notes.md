@@ -4,7 +4,7 @@ keywords: icedb libicedb discussion notes
 tags: [collaboration]
 sidebar: mydoc_sidebar
 permalink: notes.html
-summary: Short summaries of the web meeting among the development team
+summary: Short summaries of the meetings among the development team
 ---
 Notes uploaded by Davide Ori <dori@uni-koeln.de>
 
@@ -38,6 +38,18 @@ separated from any specific database but can be used with any dataset.
 We will keep the discussions ongoing via web meetings to work out the details of the different file types.
 
 **ENTRIES ARE IN REVERSE CHRONOLOGICAL ORDER**
+
+## The Second International Summer Snowfall Workshop (27 - 30 Aug 2019)
+
+The meeting slides and report are available [here](http://snowport.meteo.uni-koeln.de/events/issw2019).
+
+## The Snow Scattering Dinner (11 Dec 2018)
+
+PARTICIPANTS: Ryan - Ian - Joe - Kuo - Guosheng - Robin - Ben - Patrick
+
+## Notes from the 7th Scattering WebEx Meeting (27 Nov 2018)
+
+Ian gave a talk describing the recent IPWG meeting (Nov 5-9). Slides are [here](https://www.cgms-info.org/Agendas/PPT/CGMS-47-IPWG-WP-02).
 
 ## Notes from the 6th Scattering WebEx Meeting (17 Oct 2018)
 
