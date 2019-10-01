@@ -26,3 +26,7 @@ git clone --recurse-submodules https://github.com/rhoneyager/libicedb.git
 
 Once downloaded, go the the appropriate section of the "Specific build instructions" area
 (on the sidebar) that matches your operating system.
+
+NOTE: If you have a very old version of git, then the above command might not work. Upgrade
+your version of git. If you can use Conda for providing package dependencies, then follow its
+installation instructions [here](https://rhoneyager.github.io/libicedb/install_using_conda.html).
