@@ -43,7 +43,7 @@ First-time creation of the "icedb" environment:
 
 After installing Conda, you will want to create a special "environment" for icedb. An environment is an isolated installation of packages. This command creates the "icedb" environment and gathers all of the packages that you need to build icedb:
 ```
-conda create --name icedb gcc_linux-64 gxx_linux-64 boost hdf5 cmake make
+conda create --name icedb gcc_linux-64 gxx_linux-64 boost hdf5 cmake make git
 ```
 
 Using the "icedb" environment, and building the code:
@@ -57,9 +57,14 @@ conda activate icedb
 3. Create a new build directory. It can be anywhere. Switch into this directory.
 4. Run cmake to generate the build scripts. e.g.:
 ```
-cmake -DCMAKE_INSTALL_PREFIX={install path} {Path to source directory}
+cmake {Path to source directory}
 ```
 This command defaults to using the Conda-installed packages for the build.
+
+If you eventually want to install icedb somewhere, then call cmake like this:
+```
+cmake -DCMAKE_INSTALL_PREFIX={install path} {Path to source directory}
+```
 
 5. Build the code, using:
 ```
