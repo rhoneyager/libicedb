@@ -12,10 +12,10 @@ folder: mydoc
 ## Download icedb
 
 First download or clone icedb from the [Github repo](https://github.com/rhoneyager/libicedb). 
-Development is ongoing, so cloning the repository probably makes the most sense. However, 
-for anyone unexperienced with git, GitHub or version control, you might just want to 
-download a ZIP file containing the latest copy of the source code. In this case, click the 
-**Clone or download** button, and then click **Download ZIP**.
+Development is ongoing, so cloning the repository probably makes the most sense. On the repository page, click the 
+**Clone or download** button, and then copy either the SSH or HTTPS URL to use with the git clone command.
+
+{% include note.html content="The Download as ZIP option is not recommended. It causes problems with icedb's dependency and version tracking code." %}
 
 When cloning icedb, you need to get both the icedb source and it's git submodules!
 If you do not get the submodules, then the CMake configuration step will fail!
