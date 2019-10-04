@@ -22,9 +22,6 @@ namespace icedb {
 				case IOtype::EXCLUSIVE:
 					file = HH::File::openFile(filename, H5F_ACC_EXCL);
 					break;
-				case IOtype::DEBUG:
-					file = HH::File::openFile(filename, H5F_ACC_DEBUG);
-					break;
 				case IOtype::CREATE:
 					file = HH::File::openFile(filename, H5F_ACC_TRUNC); // H5F_ACC_CREAT is deprecated.
 					break;
