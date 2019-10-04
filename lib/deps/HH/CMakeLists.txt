@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-
+set( CMAKE_DIRECTORY_LABELS "HH" )
 set(HH_MAJOR 0)
 set(HH_MINOR 7)
 set(HH_REVISION 1)

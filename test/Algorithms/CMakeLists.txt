@@ -1,4 +1,7 @@
 # Documents the app in Windows Explorer
+
+set( CMAKE_DIRECTORY_LABELS "algs" )
+
 generaterc("icedb-test-algs" "exe"
 	"icedb"
 	"Test standard algorithm code"

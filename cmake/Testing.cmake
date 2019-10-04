@@ -54,12 +54,13 @@ function(prep_test GITB)
 	message(STATUS "Site ${SITE}")
 	#mark_as_advanced(BUILDNAME SITE)
 	#message("${HN}")
+	configure_file(${PROJECT_SOURCE_DIR}/cmake/CTestCustom.cmake.in ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
+
+ENABLE_TESTING()
+include(CTest)
 
 endfunction()
 
 prep_test("${GITBRANCH}")
 
-
-ENABLE_TESTING()
-INCLUDE(CTest)
 

@@ -4,7 +4,7 @@ include(addlib)
 include(generaterc)
 
 add_subdirectory(deps)
-
+set( CMAKE_DIRECTORY_LABELS "icedb" )
 # These are the files required by the library, placed into groups.
 set(related_cmake_objects
 	../cmake/addapp.cmake

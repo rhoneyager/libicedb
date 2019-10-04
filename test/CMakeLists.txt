@@ -1,5 +1,6 @@
 include(addapp)
 include(addlib)
+set( CMAKE_DIRECTORY_LABELS "test" )
 if (BUILD_TESTING)
 
 	configure_file (

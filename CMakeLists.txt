@@ -38,3 +38,4 @@ include(Installing)
 # Allows for the creation of binary and source packages. These are complete, precompiled distributions of MiRS.
 # Supports .tar.gz, .tar.bz2, .deb and .rpm packages.
 include(Packaging)
+

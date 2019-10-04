@@ -1,4 +1,5 @@
 include(addapp)
+set( CMAKE_DIRECTORY_LABELS "io" )
 
 if (BUILD_PLUGIN_PSU)
 	# Documents the app in Windows Explorer
