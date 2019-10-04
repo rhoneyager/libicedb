@@ -56,8 +56,8 @@ function(prep_test GITB)
 	#message("${HN}")
 	configure_file(${PROJECT_SOURCE_DIR}/cmake/CTestCustom.cmake.in ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
-ENABLE_TESTING()
-include(CTest)
+	#ENABLE_TESTING()
+	#include(CTest)
 
 endfunction()
 
