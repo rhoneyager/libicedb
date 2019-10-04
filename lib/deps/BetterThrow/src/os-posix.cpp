@@ -253,7 +253,8 @@ namespace BT {
 #elif defined(BT_OS_UNIX)
 			// Use sysctl to get arguments
 			// See https://www.freebsd.org/cgi/man.cgi?sysctl(3)
-			std::string cmdnulls(my_path_max, '\0');
+			std::vector<char> cmdnulls(my_path_max, '\0');
+			//std::string cmdnulls(my_path_max, '\0');
 			int mib[4];
 			mib[0] = CTL_KERN;  mib[1] = KERN_PROC;
 			mib[2] = KERN_PROC_ARGS;
@@ -261,7 +262,7 @@ namespace BT {
 			mib[3] = getpid(); // -1 implies current process on macos, but this
 			// does not work on FreeBSD.
 			size_t len = cmdnulls.size();
-			int retsize = sysctl(mib, 4, cmdnulls.data(), &len, NULL, 0);
+			int retsize = sysctl(mib, 4, (void*) cmdnulls.data(), &len, NULL, 0);
 			BT_POSIX_CHECK_OSERROR(retsize < 0);
 
 			// This loop splits the command line "string" on nulls.

@@ -4,6 +4,7 @@
 #include <array>
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 #include <unordered_set>
 #include <cstdarg>
@@ -22,10 +23,10 @@ namespace icedb
 				vertexRunnable() {}
 				virtual ~vertexRunnable() {}
 				// id field is present to allow for encapsulation within a class
-				virtual void run(const std::string &id = "") = 0;
+				virtual void run(const std::string &id = std::string("")) = 0;
 				// runSupported tells if the code can handle this id. Used for 
 				// derived / base class vertexRunnable handling
-				virtual bool runSupported(const std::string &id = "") = 0;
+				virtual bool runSupported(const std::string &id = std::string("")) = 0;
 			};
 
 
@@ -48,8 +49,8 @@ namespace icedb
 				inline void setOR(bool o) { _slotOR = o; }
 				inline bool isOR() const { return _slotOR; }
 				bool addSlot(vertex* slot);
-				void run(vertexRunnable*, const std::string &id = "") const;
-				void run(const std::string &id = "") const;
+				void run(vertexRunnable*, const std::string &id = std::string("")) const;
+				void run(const std::string &id = std::string("")) const;
 				void setVertexRunnableCode(vertexRunnable* target);
 
 				// Make connector between two criteria

@@ -2,6 +2,8 @@
 #include <fstream>
 #include <queue>
 #include <set>
+#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
