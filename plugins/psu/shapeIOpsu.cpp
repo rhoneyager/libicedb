@@ -61,7 +61,7 @@ namespace icedb {
 
 						// Declare variables that cover both in scope.
 
-						size_t numPoints;
+						size_t numPoints = 0;
 						vector<int32_t> particle_index;
 						vector<int32_t> element_indices;
 						vector<float>   x, y, z, rs;

@@ -8,7 +8,7 @@ namespace HH {
 	using std::tuple;
 
 	File::File() : File(HH_hid_t{}) {}
-	File::File(HH_hid_t hnd) : base(hnd), atts(hnd), Group(hnd), dsets(hnd) {}
+	File::File(HH_hid_t hnd) : Group(hnd), base(hnd), atts(hnd), dsets(hnd) {}
 	File::~File() {}
 	HH_hid_t File::get() const { return base; }
 

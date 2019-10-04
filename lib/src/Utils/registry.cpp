@@ -190,10 +190,17 @@ std::ostream& operator<<(std::ostream &out, const ::icedb::registry::options& va
 				case IOtype::CREATE:
 					if (exists(path(filename))) ICEDB_throw(icedb::error::error_types::xFileExists)
 						.add("file_name", filename);
+					create(filename);
+					break;
 				case IOtype::TRUNCATE:
 					create(filename);
 					break;
 				case IOtype::EXCLUSIVE:
+					ICEDB_throw(icedb::error::error_types::xUnsupportedIOaction)
+						.add("Reason", "IO mode EXCLUSIVE "
+							"is currently unsupported in serialization code.");
+					break;
+
 				//case IOtype::DEBUG:
 				case IOtype::READWRITE:
 					ICEDB_throw(icedb::error::error_types::xUnsupportedIOaction)
@@ -305,8 +312,8 @@ std::ostream& operator<<(std::ostream &out, const ::icedb::registry::options& va
 						if (sa == b) return true;
 						return false;
 					};
-					auto res = sfilename.find(m);
-					auto resb = stype.find(m);
+					//auto res = sfilename.find(m);
+					//auto resb = stype.find(m);
 
 					if (match(sfilename, m)) return true;
 					if (match(stype, m)) return true;

@@ -102,7 +102,7 @@ namespace icedb {
 				using namespace std;
 				_init();
 
-				size_t length = in.size();
+				//size_t length = in.size();
 
 				// First, do header processing
 				size_t pend = 0;
@@ -289,7 +289,7 @@ namespace icedb {
 				// reflects this choice.
 
 				// Produce the reverse map. Original map is guaranteed to not be disjoint.
-				size_t rmap[dielColumns::NUMCOLS];
+				/*size_t rmap[dielColumns::NUMCOLS];
 				for (size_t i = 0; i < dielColumns::NUMCOLS; ++i)
 					rmap[i] = 0;
 				//std::fill_n(rmap,dielColumns::NUMCOLS, 0);
@@ -299,6 +299,7 @@ namespace icedb {
 						if (loc) // Not all columns may be displayed
 							rmap[loc - 1] = i;
 				}
+				*/
 				// The reverse map lists the columns in order, and is padded with zeros 
 				// at the end.
 

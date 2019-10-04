@@ -39,7 +39,7 @@ size_t error_context_to_message_size(const struct ICEDB_error_context* err) {
 #else
 	size_t expectedSize = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			// Manually size a temporary buffer, and then copy the data.
 			expectedSize += seplen + strlen(err->var_vals[i].val) + strlen(err->var_vals[i].varname);
 		}
@@ -47,7 +47,7 @@ size_t error_context_to_message_size(const struct ICEDB_error_context* err) {
 	char *tempbuf = (char*)ICEDB_malloc(sizeof(char)*expectedSize);
 	size_t j = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			j += sprintf(tempbuf + j, sep, err->var_vals[i].varname, err->var_vals[i].val);
 		}
 	}
@@ -74,12 +74,12 @@ size_t error_context_to_message(const struct ICEDB_error_context * err, size_t b
 
 #ifdef ICEDB_USING_SECURE_STRINGS
 	if (err->num_var_fields)
-		for (int i = 0; i < err->num_var_fields; ++i)
+		for (size_t i = 0; i < err->num_var_fields; ++i)
 			total += sprintf_s(buf + total, buf_size - total, sep, err->var_vals[i].varname, err->var_vals[i].val);
 #else
 	size_t expectedSize = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			// Manually size a temporary buffer, and then copy the data.
 			expectedSize += seplen + strlen(err->var_vals[i].val) + strlen(err->var_vals[i].varname);
 		}
@@ -87,7 +87,7 @@ size_t error_context_to_message(const struct ICEDB_error_context * err, size_t b
 	char *tempbuf = (char*)ICEDB_malloc(sizeof(char)*expectedSize);
 	size_t j = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			j += sprintf(tempbuf + j, sep, err->var_vals[i].varname, err->var_vals[i].val);
 		}
 	}
@@ -116,7 +116,7 @@ size_t error_context_to_stream(const struct ICEDB_error_context * err, FILE * fp
 
 	// Write the error variables
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i)
+		for (size_t i = 0; i < err->num_var_fields; ++i)
 			ICEDB_COMPAT_fprintf_s(fp, "\t%s\t=\t%s\n", err->var_vals[i].varname, err->var_vals[i].val);
 	}
 	return uint16_t(res);
@@ -172,7 +172,7 @@ void error_context_deallocate(struct ICEDB_error_context *c)
 	if (!c) ICEDB_DEBUG_RAISE_EXCEPTION();
 	if (c->message_text) ICEDB_free(c->message_text);
 	if (c->var_vals) { // Should always exist, as the construction function automatically widens / allocates.
-		for (int i = 0; i < c->num_var_fields; ++i) {
+		for (size_t i = 0; i < c->num_var_fields; ++i) {
 			ICEDB_free(c->var_vals[i].val);
 			ICEDB_free(c->var_vals[i].varname);
 		}

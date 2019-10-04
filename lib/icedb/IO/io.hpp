@@ -394,7 +394,7 @@ namespace icedb
 			bool autoCompress;
 			// Controls whether boost::serialization can write this file.
 			//bool serializable;
-			implementsStandardWriter(bool autoCompress = true, bool canSerialize = false) :
+			implementsStandardWriter(bool autoCompress = true) : // bool canSerialize
 				autoCompress(autoCompress)//, serializable(canSerialize)
 			{}
 

@@ -43,10 +43,10 @@ namespace icedb {
 
 					auto outNumPoints = vertexBuffer.size();
 					outPoints.resize(outNumPoints, 3);
-					for (int i = 0; i < vertexBuffer.size(); ++i) {
-						outPoints(i, 0) = vertexBuffer[i].x;
-						outPoints(i, 1) = vertexBuffer[i].y;
-						outPoints(i, 2) = vertexBuffer[i].z;
+					for (size_t i = 0; i < vertexBuffer.size(); ++i) {
+						outPoints((int)i, 0) = vertexBuffer[i].x;
+						outPoints((int)i, 1) = vertexBuffer[i].y;
+						outPoints((int)i, 2) = vertexBuffer[i].z;
 					}
 				}
 

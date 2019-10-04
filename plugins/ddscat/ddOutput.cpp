@@ -68,8 +68,8 @@ namespace icedb {
 				ddvertag(src.ddvertag),
 				s(src.s),
 				oridata_d(src.oridata_d),
-				avgdata(src.avgdata),
 				ms(src.ms),
+				avgdata(src.avgdata),
 				numOriData(src.numOriData),
 				shape(src.shape)
 			{

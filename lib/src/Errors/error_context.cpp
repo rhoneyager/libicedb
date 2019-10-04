@@ -46,7 +46,7 @@ struct ICEDB_error_context* error_context_copy(const struct ICEDB_error_context 
 	res->message_text = (char*)ICEDB_malloc(c->message_size_alloced);
 	ICEDB_COMPAT_strncpy_s(res->message_text, c->message_size_alloced, c->message_text, c->message_size_alloced);
 
-	for (int i = 0; i < c->num_var_fields; ++i)
+	for (size_t i = 0; i < c->num_var_fields; ++i)
 		ICEDB_error_context_add_string2(res, c->var_vals[i].varname, c->var_vals[i].val);
 
 	return res;

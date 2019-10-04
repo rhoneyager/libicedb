@@ -114,7 +114,7 @@ namespace icedb {
 						for (const char* c = pNumStart; c != pb; ++c)
 							if (c[0] == '\n') guessNumPoints++;
 
-						float max_element = -1, junk_f = -1;
+						//float max_element = -1, junk_f = -1;
 						std::vector<float> firstLineVals;
 						std::vector<float> parser_vals;
 						parser_vals.reserve(guessNumPoints * 4);

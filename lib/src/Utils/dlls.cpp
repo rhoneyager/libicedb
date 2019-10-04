@@ -157,6 +157,14 @@ namespace {
 		using namespace icedb::os_functions;
 		auto info = BT::ProcessInfo<std::string>::get<std::string>(BT::getPID());
 
+		if (use_cmake) {
+			ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Construction of search paths from CMake is unimplemented.");
+		}
+		if (use_icedb_conf) {
+			ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Construction of search paths from icedb conf is unimplemented.");
+		}
+
+
 		// Default locations
 		// Install path apps
 
@@ -279,7 +287,7 @@ namespace icedb
 			std::shared_ptr<const registry::dllValidatorSet> validators;
 			DLLhandleImpl(std::shared_ptr<const registry::dllValidatorSet> dvs,
 				DLLhandle *p)
-				: dlHandle(nullptr), validators(dvs), parent(p) {
+				: parent(p), dlHandle(nullptr), validators(dvs) {
 			}
 			void close() {
 				if (fname.size())
@@ -667,7 +675,7 @@ namespace icedb
 
 			for (const auto &sbase : searchPaths)
 			{
-				size_t sDlls = dlls.size();
+				//size_t sDlls = dlls.size(); // debugging
 				path base(sbase);
 				//base = icedb::fs::expandSymlink<path, path>(base);
 				if (!exists(base)) continue;
@@ -701,7 +709,7 @@ namespace icedb
 						}
 					}
 				}
-				size_t eDlls = dlls.size();
+				//size_t eDlls = dlls.size(); // debugging
 			}
 		}
 
@@ -723,7 +731,7 @@ namespace icedb
 		void loadDLLs(const std::vector<std::string> &dlls, std::shared_ptr<const dllValidatorSet> dvs, bool critical)
 		{
 			for (const auto &dll : dlls)
-				loadDLL(dll, dvs);
+				loadDLL(dll, dvs, critical);
 		}
 
 		void loadDLL(const std::string &filename, std::shared_ptr<const dllValidatorSet> dvs, bool critical)

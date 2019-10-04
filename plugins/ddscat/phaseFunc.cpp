@@ -125,8 +125,8 @@ namespace icedb {
 
 				pf_class_registry::inputParamsPartial::inputParamsPartial()
 					: aeff(0), aeff_version(aeff_version_type::EQUIV_V_SPHERE),
-					m(1.33, 0), shape(shape_type::SPHEROID), eps(1.), maxDiamFull(0),
-					lengthUnits("um")
+					m(1.33, 0), shape(shape_type::SPHEROID), maxDiamFull(0),
+					lengthUnits("um"), eps(1.)
 				{}
 
 				/// \todo The entire system needs to be revamped. Cunits needs to be set by the plugins.
@@ -206,7 +206,7 @@ namespace icedb {
 					std::complex<double> a, std::complex<double> b, std::complex<double> c, std::complex<double> d)
 				{
 					using namespace std;
-					typedef complex<double> CD;
+					//typedef complex<double> CD;
 					complex<double> i(0, 1);
 
 					double rphi = phi * boost::math::constants::pi<double>() / 180.0;

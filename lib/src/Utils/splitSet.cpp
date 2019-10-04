@@ -187,8 +187,8 @@ namespace icedb {
 			typedef boost::tokenizer<boost::char_separator<char> >
 				tokenizer;
 			boost::char_separator<char> seprange(":/");
-			bool isRange = false;
-			if (instr.find('/') != string::npos) { isRange = true; specializer = "range"; }
+			if (instr.find('/') != string::npos) 
+				specializer = "range";
 			tokenizer trange(instr,seprange);
 			vector<T> range;
 			size_t i = 0;
@@ -457,7 +457,7 @@ namespace icedb {
 					T start, end, interval;
 					size_t n;
 					std::string specializer;
-					bool isRange = false;
+					//bool isRange = false;
 					extractInterval(s, start, end, interval, n, specializer);
 					if (specializer == "range")
 					{

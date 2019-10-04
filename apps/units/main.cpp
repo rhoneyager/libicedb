@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 			try {
 				inVal = boost::lexical_cast<double>(temp);
 			}
-			catch (boost::bad_lexical_cast) {
+			catch (boost::bad_lexical_cast&) {
 				ICEDB_throw(icedb::error::error_types::xBadInput)
 					.add<std::string>("Reason", "Cannot parse input number")
 					.add<string>("Input _Number_", temp);

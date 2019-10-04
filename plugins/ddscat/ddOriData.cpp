@@ -981,7 +981,7 @@ namespace icedb {
 
 			double ddOriData::guessTemp(size_t dielIndex) const
 			{
-				const auto od = selectData();
+				//const auto od = selectData();
 				return -999;
 				//return rtmath::refract::guessTemp(freq(), M(dielIndex));
 			}

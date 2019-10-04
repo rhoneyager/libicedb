@@ -25,7 +25,7 @@ namespace icedb {
 					typedef Seb::Smallest_enclosing_ball<double> Miniball;
 					PointVector points;
 					points.reserve(inPoints.rows());
-					for (size_t i = 0; i < (int)inPoints.rows(); ++i)
+					for (size_t i = 0; i < (size_t)inPoints.rows(); ++i)
 						points.push_back(Point(3, inPoints.data() + (3 * i)));
 
 					// Compute the miniball by inserting each value
@@ -51,12 +51,12 @@ namespace icedb {
 
 				void MiniballFunction(
 					HH::Group res,
-					const HH::Group & shp,
+					const HH::Group &, // shp,
 					const gsl::span<const HH::Group> & inPPPs)
 				{
-					const auto& SD = icedb::Shapes::Required_Dsets;
-					const auto& SDO = icedb::Shapes::Optional_Dsets;
-					using SO = icedb::Shapes::e_Common_Obj_Names;
+					//const auto& SD = icedb::Shapes::Required_Dsets;
+					//const auto& SDO = icedb::Shapes::Optional_Dsets;
+					//using SO = icedb::Shapes::e_Common_Obj_Names;
 					typedef Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> EigenXXDr;
 					EigenXXDr shpPoints; // (0, 3);
 

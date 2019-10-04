@@ -19,12 +19,12 @@
 	extern "C" ICEDB_SHARED_EXPORT void dlVer(icedb::versioning::versionInfo& vf, void** rd) { dlVer_impl(vf, rd); } \
 	extern "C" ICEDB_SHARED_EXPORT dllInitResult dllStart()
 
-//#define D_icedb_validator() extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) \
-//		{ \
-//		icedb::versioning::genVersionInfo(vf); \
+//#define D_icedb_validator() extern "C" SHARED_EXPORT_ICEDB void dlVer(icedb::versioning::versionInfo& vf, void** rd) 
+//		{ 
+//		icedb::versioning::genVersionInfo(vf); 
 //		*rd = (void*) &(icedb_registry_register_dll); }
 //#define gcc_init(x) void __attribute__((constructor)) plugin_gcc_init() { x(); }
-//#define msvc_init(x) BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved) \
+//#define msvc_init(x) BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved) 
 //{ if (dwReason == DLL_PROCESS_ATTACH) x(); return true; }
 
 #ifndef _MSC_FULL_VER

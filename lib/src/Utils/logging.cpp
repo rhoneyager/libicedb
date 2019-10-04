@@ -45,9 +45,10 @@ namespace icedb {
 			}
 		}
 		void setupLogging(
-			int argc,
-			char** argv,
-			const log_properties* lps) {
+			int, // argc,
+			char**, // argv,
+			const log_properties* lps)
+		{
 			if (lps) {
 				logConsoleThreshold = lps->consoleLogThreshold;
 				logDebugThreshold = lps->debuggerLogThreshold;

@@ -390,7 +390,7 @@ namespace BT {
 		std::map<std::string, std::string> mmods;
 #if defined(__linux__) || defined(__unix__)
 		/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
-		int moduleCallback(dl_phdr_info* info, size_t sz, void* data)
+		int moduleCallback(dl_phdr_info* info, size_t, void*)
 		{
 			std::string name(info->dlpi_name);
 			if (!name.size()) return 0;
@@ -452,13 +452,13 @@ namespace BT {
 			{
 				const size_t len = 65536;
 				char hname[len]; // A buffer of size len (65536 bytes)
-				char* charres = NULL;
 				int res = 0;
 #if defined(_POSIX_C_SOURCE)
 # if _POSIX_C_SOURCE >= 199506L
 				res = getlogin_r(hname, len);
 				if (!res) { username = std::string(hname); return BT_POSIX_SUCCESS;}
 # else
+				char* charres = NULL;
 				charres = getlogin();
 				if (charres) { username = std::string(charres); return BT_POSIX_SUCCESS; }
 # endif
@@ -476,7 +476,10 @@ namespace BT {
 				struct passwd ps;
 				struct passwd* pres = nullptr; // A pointer to the result (or NULL on failure)
 				res = getpwuid_r(uid, &ps, hname, len, &pres);
-				if (pres) {
+				// res = 0 on success, and nonzero on error. Subsumed by pres, because it is 
+				// only set to non-null on success.
+				// Adding res==0 check explicitly to suppress a build warning.
+				if (pres && (res==0)) {
 					username = std::string(ps.pw_name);
 					return BT_POSIX_SUCCESS;
 				}
@@ -499,6 +502,7 @@ namespace BT {
 			char hname[len]; // A buffer of size len (65536 bytes)
 			int res = 0; // A return code
 			res = gethostname(hname, len); // May be empty
+			BT_POSIX_CHECK_ERRNO(res!=0);
 			BT_POSIX_CHECK_OSERROR(hname[0] == '\0');
 			username = ::BT::native_path_string_t(hname);
 			return BT_POSIX_SUCCESS;

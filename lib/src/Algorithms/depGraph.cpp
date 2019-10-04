@@ -33,7 +33,7 @@ namespace icedb
 				return connector;
 			}
 
-			vertex::vertex(bool OR) : _slotOR(OR), _target(nullptr)
+			vertex::vertex(bool OR) : _target(nullptr), _slotOR(OR)
 			{
 				//_signals.reserve(12);
 				//_slots.reserve(12);
