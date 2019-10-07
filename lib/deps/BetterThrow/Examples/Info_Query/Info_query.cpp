@@ -93,6 +93,7 @@ int main(int, char**)
 	}
 	catch (std::exception & f) {
 		BT::print_exception(f);
+		return 1;
 	}
 	return 0;
 }

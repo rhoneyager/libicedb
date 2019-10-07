@@ -60,7 +60,7 @@
 #ifdef _WIN32
 # define BT_OS_WINDOWS
 #endif
-#if !defined(BT_OS_WINDOWS) && !defined(BT_OS_UNIX) && !defined(BT_OS_LINUX)
+#if !defined(BT_OS_WINDOWS) && !defined(BT_OS_UNIX) && !defined(BT_OS_LINUX) && !defined(BT_OS_MACOS)
 # define BT_OS_UNSUPPORTED
 #endif
 

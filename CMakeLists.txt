@@ -17,7 +17,9 @@ include(GNUInstallDirs)
 include(BuildOptions)
 include(addBaseProject)
 addBaseProject()
-ENABLE_TESTING()
+include(CTest)
+include(CTestUseLaunchers)
+#ENABLE_TESTING()
 
 # Generate doxygen documentation, if needed.
 include(AddDocs)
@@ -39,7 +41,5 @@ include(Packaging)
 # Tests of the code. Handles the "make test" command.
 include(Testing)
 
-
-include(CTest)
 
 

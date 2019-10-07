@@ -12,10 +12,10 @@
 
 #if defined(BIO_OS_WINDOWS)
 #include <Windows.h>
-#elif defined(BIO_OS_UNIX) || defined(BIO_OS_LINUX)
+#elif defined(BIO_OS_UNIX) || defined(BIO_OS_LINUX) || defined(BIO_OS_APPLE)
 #include <sys/stat.h>
 #else
-#error "This code builds only on POSIX platforms and Windows!"
+#error "This code builds only on POSIX platforms, macOS and Windows!"
 #endif
 
 namespace bIO {

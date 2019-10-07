@@ -16,11 +16,6 @@ if (BUILD_TESTING)
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 	target_link_libraries(icedb_testing icedb)
 
-	# CTest stuff. May switch from CTest in the future.
-	set(BUILDNAME "Unspecified_Build_Name_for_CTest" CACHE STRING "Build name variable for CTest")
-	set(SITE "Unknown_Site_Name_for_CTest" CACHE STRING "Site name")
-	mark_as_advanced(BUILDNAME SITE)
-
 	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test)
 
 	# The tests here are workflow tests. They exist to ensure that the 
