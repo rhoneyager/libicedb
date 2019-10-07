@@ -283,9 +283,11 @@ namespace BT {
 			mib[3] = getpid(); // -1 implies current process on macos, but this
 			struct kinfo_proc proc;
 			size_t size = sizeof(proc);
-			int retsize = sysctl(mib, sizeof mib, &proc, &size, NULL, 0);
+			int retsize = sysctl(mib, 4, &proc, &size, NULL, 0);
+			//int retsize = sysctl(mib, sizeof mib, &proc, &size, NULL, 0);
 			BT_POSIX_CHECK_OSERROR(retsize < 0);
-			BT_UNIMPLEMENTED;
+			//BT_UNIMPLEMENTED;
+			return BT_POSIX_SUCCESS;
 #else
 			BT_UNIMPLEMENTED;
 #endif
@@ -332,15 +334,21 @@ namespace BT {
 				int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid };
 				struct kinfo_proc proc;
 				size_t size = sizeof(proc);
+				struct timeval curtime, stime;
+				gettimeofday(&curtime, NULL);
 				if (sysctl(mib, 4, &proc, &size, NULL, 0) == 0) {
-					// proc.kp_proc.p_starttime.tv_sec
+					// proc.kp_proc.p_starttime.tv_sec is process lifetime to date.
+					// Can work out the ptocess time from the current date.
+					gettimeofday(&stime,NULL);
+					stime.tv_sec -= proc.kp_proc.p_starttime.tv_sec;
+
 					char sbuff[200];
 					strftime(sbuff, sizeof sbuff, "%D %T",
 							//gmtime(&proc.ki_start.tv_sec));
-						gmtime(&proc.kp_proc.p_starttime.tv_sec));
+						//gmtime(&proc.kp_proc.p_starttime.tv_sec));
+						gmtime(&stime.tv_sec));
 					startTime = std::string(sbuff);
 				}
-				BT_UNIMPLEMENTED;
 #else
 				BT_UNIMPLEMENTED;
 #endif
