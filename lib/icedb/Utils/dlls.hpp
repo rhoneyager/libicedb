@@ -53,9 +53,8 @@ namespace icedb
 		class ICEDB_DL dllValidator {
 		protected:
 			dllValidator();
-		private:
 		public:
-			~dllValidator();
+			virtual ~dllValidator();
 			virtual const char* validationSymbol() const = 0;
 			virtual bool validate(void* func, bool critical = false) const = 0;
 			static std::shared_ptr<const dllValidator> genDefaultValidator();
@@ -77,7 +76,7 @@ namespace icedb
 			dllValidatorSet();
 		public:
 			void append(std::shared_ptr<const dllValidator>);
-			~dllValidatorSet();
+			virtual ~dllValidatorSet();
 			static std::shared_ptr<dllValidatorSet> generate();
 			static std::shared_ptr<const dllValidatorSet> getDefault();
 			bool validate(const DLLhandle*, bool critical = false) const;

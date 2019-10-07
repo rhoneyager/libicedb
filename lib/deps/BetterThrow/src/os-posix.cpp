@@ -8,13 +8,16 @@ extern char** environ;
 #include <pwd.h>
 #include <dlfcn.h>
 #include <cerrno>
+#ifdef __GLIBC__
+#include <execinfo.h>  // backtrace*
+#endif
 #ifdef __unix__
 #include <link.h> // not on mac
 #endif
 #include <dirent.h>
 #endif
 #ifdef __APPLE__
-#include <mach-o/dyld.h>
+# include <mach-o/dyld.h>
 #endif
 #include <cstdint>
 #include <memory>
@@ -277,16 +280,65 @@ namespace BT {
 			return BT_POSIX_SUCCESS;
 #elif defined(BT_OS_MACOS)
 			// macOS does not have KERN_PROC_ARGS, unfortunately.
-			int mib[4];
-			mib[0] = CTL_KERN;  mib[1] = KERN_PROC;
-			mib[2] = KERN_PROC_PID;
-			mib[3] = getpid(); // -1 implies current process on macos, but this
-			struct kinfo_proc proc;
-			size_t size = sizeof(proc);
-			int retsize = sysctl(mib, 4, &proc, &size, NULL, 0);
-			//int retsize = sysctl(mib, sizeof mib, &proc, &size, NULL, 0);
-			BT_POSIX_CHECK_OSERROR(retsize < 0);
-			//BT_UNIMPLEMENTED;
+            // See https://gist.github.com/nonowarn/770696
+			int mib[3];
+            int argmax = -1;
+            int nargs = -1;
+            char *cp = nullptr;
+            //char *sp = nullptr;
+            size_t size = sizeof(argmax);
+			mib[0] = CTL_KERN;  mib[1] = KERN_ARGMAX;
+            
+            int retsize = sysctl(mib, 2, &argmax, &size, NULL, 0);
+            BT_POSIX_CHECK_OSERROR(retsize < 0);
+            std::vector<char> procargs(argmax, '\0');
+            
+            mib[0] = CTL_KERN;
+            mib[1] = KERN_PROCARGS2;
+            mib[2] = getpid();
+            
+            size = (size_t)argmax;
+            retsize = sysctl(mib, 3, procargs.data(), &size, NULL, 0);
+            BT_POSIX_CHECK_OSERROR(retsize < 0);
+            
+            memcpy(&nargs, procargs.data(), sizeof(nargs));
+            cp = procargs.data() + sizeof(nargs);
+            
+            /* Skip the saved exec_path. */
+            for (; cp < procargs.data()+size; cp++) {
+              if (*cp == '\0') {
+                /* End of exec_path reached. */
+                break;
+              }
+            }
+            if (cp == procargs.data()+size) throw BT_throw;
+
+            /* Skip trailing '\0' characters. */
+            for (; cp < procargs.data()+size; cp++) {
+              if (*cp != '\0') {
+                /* Beginning of first argument reached. */
+                break;
+              }
+            }
+            if (cp == procargs.data()+size) throw BT_throw;
+            /* Save where the argv[0] string starts. */
+            //sp = cp;
+
+            /*
+             * Iterate through the '\0'-terminated strings and convert '\0' to ' '
+             * until a string is found that has a '=' character in it (or there are
+             * no more strings in procargs).  There is no way to deterministically
+             * know where the command arguments end and the environment strings
+             * start, which is why the '=' character is searched for as a heuristic.
+             */
+            const char* pcur = cp;
+            do {
+                std::string tosplit(pcur);
+                if (tosplit.find_first_of("=") != std::string::npos) break;
+                cmdline.push_back(tosplit);
+                pcur += tosplit.size() + 1;
+            } while (pcur[0]); // A double null indicates the end of the comand line.
+            
 			return BT_POSIX_SUCCESS;
 #else
 			BT_UNIMPLEMENTED;
@@ -459,11 +511,11 @@ namespace BT {
 			// NOTE: these functions are buggy on various platforms and may fail.
 			// See https://github.com/Microsoft/WSL/issues/888 for an example.
 			{
-				const size_t len = 65536;
-				char hname[len]; // A buffer of size len (65536 bytes)
-				int res = 0;
 #if defined(_POSIX_C_SOURCE)
 # if _POSIX_C_SOURCE >= 199506L
+                const size_t len = 65536;
+                char hname[len]; // A buffer of size len (65536 bytes)
+                int res = 0;
 				res = getlogin_r(hname, len);
 				if (!res) { username = std::string(hname); return BT_POSIX_SUCCESS;}
 # else

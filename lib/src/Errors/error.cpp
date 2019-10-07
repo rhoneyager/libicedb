@@ -227,6 +227,37 @@ ICEDB_END_DECL_C
 
 namespace icedb {
 	namespace error {
+        bool _doBacktrace = false;
+        void enable_backtrace() {
+            _doBacktrace = true;
+        }
+#ifdef __GLIBC__
+        std::string getBacktrace() {
+            std::string res;
+            if (!_doBacktrace) return std::string("disabled");
+            
+            static const int maxfuncs = 50;  // gather no more than this many functions in the backtrace
+            void *stack[maxfuncs];           // call stack
+            char **stacknames = nullptr;               // backtrace function names
+            size_t nfuncs;                   // number of functions returned by backtrace
+            nfuncs = backtrace(stack, maxfuncs);                // number of functions in the backtrace
+            stacknames = backtrace_symbols(&stack[0], nfuncs);  // generate the backtrace names from symbols
+            
+            if (stacknames) {
+                for(size_t n=0;n<nfuncs;++n) {
+                    res += std::string(stacknames[n]);
+                    res += "\n";
+                }
+                free(stacknames);
+            }
+            return res;
+        }
+#else
+    std::string getBacktrace() {
+          return std::string("unimplemented");
+    }
+#endif
+    
 		class error_options_inner {
 		public:
 			std::list<::icedb::registry::const_options_ptr> stk;

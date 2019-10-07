@@ -66,6 +66,8 @@ namespace icedb {
 			template <class T> xError& add(const std::string &key, const T value);
 
 		};
+    
+        ICEDB_DL void enable_backtrace();
 	}
 }
 
@@ -80,8 +82,22 @@ namespace icedb {
 	.add<std::string>("source_filename", std::string(__FILE__)) \
 	.add<int>("source_line", (int)__LINE__) \
 	.add<std::string>("source_function", std::string(ICEDB_FUNCSIG))
+
+#ifdef __GLIBC__
+namespace icedb {
+namespace Error {
+ICEDB_DL std::string getBacktrace();
+}
+}
+# define ICEDB_BACKTRACE .add<std::string>("backtrace", getBacktrace())
+#else
+# define ICEDB_BACKTRACE
+#endif
+
 #define ICEDB_RSmkError(x) ::icedb::error::xError(x).push() \
-	ICEDB_RSpushErrorvars
+	ICEDB_RSpushErrorvars \
+    ICEDB_BACKTRACE
+
 /// \todo Detect if inherits from std::exception or not.
 /// If inheritable, check if it is an xError. If yes, push a new context.
 /// If not inheritable, push a new context with what() as the expression.

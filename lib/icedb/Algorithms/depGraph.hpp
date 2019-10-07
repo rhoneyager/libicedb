@@ -118,7 +118,7 @@ namespace icedb
 				vertexSet &_remaining,
 				vertexSet &ignored)
 				{
-					const size_t numVertices = vertices.size();
+					//const size_t numVertices = vertices.size();
 					std::map<vertex*, size_t> ranking;
 					vertexSet _filled;
 					//_filled.reserve(numVertices);

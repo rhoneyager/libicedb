@@ -65,7 +65,8 @@ namespace icedb {
 		{
 			if (hasVal(key)) ICEDB_throw(::icedb::error::error_types::xKeyExists)
 				.add<std::string>("key", key)
-				.add<T>("newValue", value);
+				.template add<T>("newValue", value)
+                .template add<T>("oldValue", getVal<T>(key));
 			return this->setVal<T>(key, value);
 		}
 
