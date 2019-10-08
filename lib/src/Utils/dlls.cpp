@@ -896,7 +896,7 @@ namespace icedb
 
         load_options.backtrace = vm["backtrace"].as<bool>();
         if (load_options.backtrace)
-            icedb::error::
+            icedb::error::enable_backtrace();
 		if (vm.count("log-file")) load_options.lps.logFile = vm["log-file"].as<std::string>();
 		load_options.lps.consoleLogThreshold = vm["console-log-threshold"].as<int>();
 		load_options.lps.debuggerLogThreshold = vm["debug-log-threshold"].as<int>();

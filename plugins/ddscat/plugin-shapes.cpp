@@ -74,8 +74,9 @@ namespace icedb {
 				}
 				// Error tagging
 				catch (icedb::error::xError &err) {
-					error_info->add<std::string>("Reason", "This file does not have the proper structure for a Penn State geometry file.");
+					error_info->add<std::string>("Reason", "This file does not have the proper structure for a ddscat shape file.");
 					err.push(error_info);
+                    err ICEDB_RSpushErrorvars;
 					throw err;
 				}
 			}

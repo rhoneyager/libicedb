@@ -83,13 +83,13 @@ namespace icedb {
 	.add<int>("source_line", (int)__LINE__) \
 	.add<std::string>("source_function", std::string(ICEDB_FUNCSIG))
 
-#ifdef __GLIBC__
+#if defined(__GLIBC__) || defined(__APPLE__)
 namespace icedb {
-namespace Error {
-ICEDB_DL std::string getBacktrace();
+    namespace error {
+        ICEDB_DL std::string getBacktrace();
+    }
 }
-}
-# define ICEDB_BACKTRACE .add<std::string>("backtrace", getBacktrace())
+# define ICEDB_BACKTRACE .add<std::string>("backtrace", ::icedb::error::getBacktrace())
 #else
 # define ICEDB_BACKTRACE
 #endif

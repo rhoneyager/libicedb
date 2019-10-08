@@ -12,6 +12,10 @@
 #include <list>
 #include <sstream>
 
+#if defined(__APPLE__) || defined(__GLIBC__)
+# include <execinfo.h>
+#endif
+
 ICEDB_BEGIN_DECL_C
 
 ICEDB_error_code error_context_to_code(const struct ICEDB_error_context* err) {
@@ -231,7 +235,7 @@ namespace icedb {
         void enable_backtrace() {
             _doBacktrace = true;
         }
-#ifdef __GLIBC__
+#if defined(__GLIBC__) || defined(__APPLE__)
         std::string getBacktrace() {
             std::string res;
             if (!_doBacktrace) return std::string("disabled");
@@ -307,7 +311,7 @@ namespace icedb {
 		template <class T> xError& xError::add(const std::string &key, const T value)
 		{
 			if (!ep->cur) push();
-			this->ep->cur->add<T>(key, value);
+			this->ep->cur->set<T>(key, value);
 			return *this;
 		}
 
