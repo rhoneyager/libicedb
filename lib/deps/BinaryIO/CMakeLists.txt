@@ -28,6 +28,7 @@ target_compile_definitions(BinaryIO PUBLIC
 		$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
     )
 addlib(BinaryIO STATIC)
+storebin(BinaryIO)
 INSTALL(DIRECTORY include/BinaryIO
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
 	COMPONENT Headers)

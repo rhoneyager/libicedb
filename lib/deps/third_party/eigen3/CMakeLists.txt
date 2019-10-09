@@ -33,6 +33,7 @@ target_compile_definitions(Eigen PUBLIC
 		$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
     )
 addlib(Eigen STATIC)
+storebin(Eigen)
 #INSTALL(DIRECTORY eigen
 #	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
 #	COMPONENT Headers)

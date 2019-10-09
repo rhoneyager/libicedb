@@ -16,6 +16,7 @@ add_library(
     icedb::BetterThrow ALIAS BetterThrow )
 # Based on os, mark either os-win.cpp or os-posix.cpp as a header file (so no compilation).
 addlib(BetterThrow STATIC)
+storebin(BetterThrow)
 IF(WIN32 AND NOT UNIX)
 	set_source_files_properties(os-posix.cpp PROPERTIES HEADER_FILE_ONLY TRUE)
 else()

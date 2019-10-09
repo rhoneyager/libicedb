@@ -1,3 +1,4 @@
+include(addapp)
 set( CMAKE_DIRECTORY_LABELS "algs" )
 
 generaterc("icedb-test-algs" "exe"
@@ -18,10 +19,10 @@ target_link_libraries(icedb-test-algs icedb_testing icedb Boost::unit_test_frame
 addapp_test(icedb-test-algs Testing/Algorithms)
 storebin(icedb-test-algs)
 
-add_test (NAME alg-tests # Test basic algorithms
+add_custom_target(alg-tests # Test basic algorithms
 	COMMAND icedb-test-algs --
 		--dll-no-default-locations
 		--share-dir ${CMAKE_SOURCE_DIR}/share
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
-
+register_test(alg-tests "Testing/Algorithms")

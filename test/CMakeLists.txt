@@ -50,7 +50,8 @@ if (BUILD_TESTING)
 
 	if (BUILD_APPS)
 		# Run a program without loading any plugins
-		add_test(NAME plugin-test-load-none
+		add_custom_target(plugin-test-load-none
 			COMMAND icedb-version --dll-no-default-locations WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+		register_test(plugin-test-load-none "Testing/Base")
 	endif()
 endif()
