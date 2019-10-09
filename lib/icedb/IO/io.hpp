@@ -22,7 +22,8 @@ namespace icedb
 			/// Opaque pointer to hide boost stream internals
 			class hSerialization;
 
-			/// Handles serialization IO for various classes. Also works for compressible text files (ddpar, ...)
+			/// \brief Handles serialization IO for various classes. Also works for compressible text files (ddpar, ...)
+			/// \note This is very old code. Mostly stripped out, but the static functions are still used.
 			struct ICEDB_DL serialization_handle : public icedb::registry::IOhandler
 			{
 				serialization_handle(const char* filename,
@@ -341,44 +342,6 @@ namespace icedb
 				reader.io_multi_processor = std::bind(readerBinder,
 					std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
 					inF);
-
-				// The vector reader gets ignored for the standard reader class. The standard file types 
-				// get handled by the single object reader.
-				/*
-				auto vectorReaderBinder = [&](
-					std::shared_ptr<icedb::registry::IOhandler> sh,
-					std::shared_ptr<icedb::registry::IO_options> opts,
-					std::vector<std::shared_ptr<obj_class> > &obj, inFunc inF) 
-					-> std::shared_ptr<icedb::registry::IOhandler>
-				{
-					using namespace icedb::registry;
-					using namespace icedb::io::TextFiles;
-					std::string exporttype = opts->exportType();
-					std::string filename = opts->filename();
-					IOhandler::IOtype iotype = opts->getVal<IOhandler::IOtype>("iotype", IOhandler::IOtype::READONLY);
-					std::string key = opts->getVal<std::string>("key", "");
-					using std::shared_ptr;
-
-					std::shared_ptr<serialization_handle> h;
-					if (!sh)
-						h = std::shared_ptr<serialization_handle>(new serialization_handle(filename.c_str(), iotype));
-					else {
-						if (sh->getId() != std::string(serialization_handle::getSHid()))
-							RDthrow debug::xDuplicateHook("Bad passed plugin");
-						h = std::dynamic_pointer_cast<serialization_handle>(sh);
-					}
-
-					// serialization_handle handles compression details
-					// Read from a stream, not to a file. Filename is for serialization method detection.
-					inF(obj, *(h->reader.lock().get()), opts); // CHANGE THIS
-					//reader(obj, *(h->reader.get()), filename);
-
-					return h; // Pass back the handle
-				};
-				reader.io_vector_processor = std::bind(vectorReaderBinder,
-					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
-					inF);
-				*/
 			}
 		};
 

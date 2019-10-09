@@ -329,11 +329,13 @@ std::ostream& operator<<(std::ostream &out, const ::icedb::registry::options& va
 				const std::set<std::string> &mtypes)
 			{
 				std::string spluginid(pluginid);
+				// If we already found a handle for the same type of I/O, return it.
 				if (h)
 				{
 					if (h->getId() != spluginid) return false;
 					return true;
 				}
+				// Otherwise, match on file type.
 				else {
 					std::string filename = opts->filename();
 					std::string type = opts->filetype();
