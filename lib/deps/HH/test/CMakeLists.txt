@@ -8,6 +8,7 @@ if (HH_TEST)
 		test-hh-types.cpp
 		IntegratedTesting.hpp IntegratedTesting.cpp)
 	addapp_test(HH-tests Testing/HH)
+	storebin(HH-tests)
 	target_link_libraries(HH-tests HH Boost::unit_test_framework)
 	add_test (NAME HH-tests
 		COMMAND HH-tests
