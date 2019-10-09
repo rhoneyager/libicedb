@@ -938,7 +938,7 @@ namespace icedb
 
 		using namespace icedb::registry;
 
-		constructSearchPaths(false, true, true);
+		//constructSearchPaths(false, true, true);
 		std::set<boost::filesystem::path> rPaths, oPaths;
 		findPath(rPaths, boost::filesystem::path("default"), searchPathsRecursive, true);
 		findPath(oPaths, boost::filesystem::path("default"), searchPathsOne, false);

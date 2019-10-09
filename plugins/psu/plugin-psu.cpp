@@ -65,11 +65,11 @@ D_icedb_start()
 	const char *exts[nexts] = { "psu", "psu-shape" };
 	genAndRegisterIOregistryPlural_reader
 		<::icedb::Shapes::NewShapeProperties, icedb::Shapes::_impl::ShapeProps_IO_Input_Registry>
-		(1, exts, PLUGINID);
+		(nexts, exts, PLUGINID);
 
 	genAndRegisterIOregistryPlural_reader
 		<::icedb::exv::NewEXVrequiredProperties, icedb::exv::_impl::EXVProps_IO_Input_Registry>
-		(1, exts, PLUGINID);
+		(1, exts, PLUGINID); // 1 for now because exvs are not added to list.
 
 	//genAndRegisterIOregistry_writer<::icedb::Shapes::Shape,
 	//	icedb::Shapes::_impl::Shape_IO_Output_Registry>("psu", PLUGINID);

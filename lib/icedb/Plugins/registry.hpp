@@ -194,6 +194,7 @@ namespace icedb
 				)> io_multi_matcher_type;
 			io_multi_matcher_type io_multi_matches;
 			std::string registered_name;
+            //std::string _comment; ///< Used for tracing and debugging.
 		};
 
 		template<class object>

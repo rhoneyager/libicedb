@@ -170,6 +170,7 @@ namespace icedb
 		* \param extension is the extension of the file (hdf5, silo, tsv, ...)
 		* \param writeMulti is an optional multi-type writer. If not specified, the writer has a default name that must be specialized.
 		* \param custom_writeSingle is an optional single type writer that is not the custom one.
+        * \param comment is an optional comment used for tracing.
 		**/
 		template<class T>
 		IO_class_registry_reader<T>
@@ -178,7 +179,6 @@ namespace icedb
 			const char* pluginid,
 			const char* exportType = "")
 		{
-			
 				IO_class_registry_reader<T> res;
 				//res.io_matches = std::bind(match_file_type, _1, _2, extension);
 				auto opts2 = IO_options::generate();
@@ -187,6 +187,9 @@ namespace icedb
 				res.io_multi_matches = std::bind(match_file_type_multi, std::placeholders::_1, pluginid, std::placeholders::_2, opts2);
 
 				res.io_multi_processor = read_file_type_multi<T>;
+            
+                //res._comment = std::string(pluginid) + "---"
+                //    + std::string(extension) + "---" + std::string(exportType);
 				//res.io_vector_processor = read_file_type_vector<T>;
 				// Temporarily disabling.
 				// TODO: Add an interface to expose either the iteration function or the single read function.
@@ -204,13 +207,6 @@ namespace icedb
 		{
 			auto res = genIOregistry_reader<T>(extension, pluginid, exportType);
 			doRegisterHook<T, IO_reg_class, IO_class_registry_reader<T> >(res);
-			/*
-#ifdef _MSC_FULL_VER
-			T::usesDLLregistry<IO_reg_class, IO_class_registry_reader<T> >::registerHook(res);
-#else
-			T::template usesDLLregistry<IO_reg_class, IO_class_registry_reader<T> >::registerHook(res);
-#endif
-			*/
 		}
 
 

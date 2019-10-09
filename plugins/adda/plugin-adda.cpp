@@ -63,7 +63,7 @@ D_icedb_start()
 	const char *exts[nexts] = { "adda", "adda-shape" };
 	genAndRegisterIOregistryPlural_reader
 		<::icedb::Shapes::NewShapeProperties, icedb::Shapes::_impl::ShapeProps_IO_Input_Registry>
-		(1, exts, PLUGINID);
+		(nexts, exts, PLUGINID);
 
 	return SUCCESS;
 }
