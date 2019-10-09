@@ -1,4 +1,3 @@
-find_package(Doxygen)
 if(NOT BUILD_DOCUMENTATION)
 	set(BUILD_DOCUMENTATION "No" CACHE STRING "Build and/or install Doxygen-produced documentation?" FORCE)
 	set_property(CACHE BUILD_DOCUMENTATION PROPERTY STRINGS No BuildOnly BuildAndInstall)
@@ -6,6 +5,7 @@ endif()
 
 if(BUILD_DOCUMENTATION STREQUAL "No")
 else()
+    find_package(Doxygen)
     if (NOT DOXYGEN_FOUND)
         message(SEND_ERROR "Documentation build requested but Doxygen is not found.")
     endif()

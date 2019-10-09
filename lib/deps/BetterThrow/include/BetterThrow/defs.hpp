@@ -57,7 +57,7 @@
 #if (defined(__APPLE__) || defined(__MACH__)) && !defined(BT_OS_UNIX)
 # define BT_OS_MACOS
 #endif
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
 # define BT_OS_WINDOWS
 #endif
 #if !defined(BT_OS_WINDOWS) && !defined(BT_OS_UNIX) && !defined(BT_OS_LINUX) && !defined(BT_OS_MACOS)

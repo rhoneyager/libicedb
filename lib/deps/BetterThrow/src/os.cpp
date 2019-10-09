@@ -1,4 +1,4 @@
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__CYGWIN__)
 #define _BIND_TO_CURRENT_VCLIBS_VERSION 1
 #include <Windows.h>
 #include <ShlObj.h>
