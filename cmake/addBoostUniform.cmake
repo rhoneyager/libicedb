@@ -17,18 +17,13 @@ if(APPLE)
 endif()
 
 set(Boost_FIND_QUIETLY ON)
-#set(Boost_DEBUG ON)
-
-if (WIN32 AND NOT CYGWIN)
-    option ( AUTOLINK_BOOST
-       "Automatically link Boost" ON)
-        set(WINBOOST_AUTOLINK ${AUTOLINK_BOOST})
-	mark_as_advanced(AUTOLINK_BOOST)
-else()
-    set(WINBOOST_AUTOLINK OFF)
-endif()
+set(BOOST_STATIC_LINK OFF)
 set(Boost_USE_STATIC_RUNTIME OFF)
 set(Boost_USE_STATIC_LIBS OFF)
+add_definitions(-DBOOST_ALL_DYN_LINK)
+add_definitions(-DBOOST_LOG_DYN_LINK)
+#set(Boost_DEBUG ON)
+
 #message("argv ${ARGV} ${args}")
 #if (NOT WINBOOST_AUTOLINK)
 #    add_definitions(-DBOOST_ALL_NO_LIB)
