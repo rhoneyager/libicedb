@@ -28,7 +28,7 @@ namespace icedb {
 		* Now, with the appropriate DLL loaded, the udunits system will be used for most conversions.
 		* The derived classes still have a bit of code for when udunits is not installed.
 		**/
-		class DL_ICEDB converter
+		class ICEDB_DL converter
 		{
 		public:
 			virtual ~converter();
@@ -58,7 +58,7 @@ namespace icedb {
 
 		/// \brief Perform interconversions between frequency, wavelength and wavenumber
 		/// (GHz, Hz, m, cm, um, cm^-1, m^-1)
-		class DL_ICEDB conv_spec : public converter
+		class ICEDB_DL conv_spec : public converter
 		{
 		public:
 			conv_spec(const std::string &inUnits, const std::string &outUnits);

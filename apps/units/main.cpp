@@ -1,12 +1,13 @@
-#include <icedb/defs.h>
+#include "icedb/defs.h"
+#include "icedb/Utils/dlls.hpp"
+#include "icedb/units/units.hpp"
+#include "icedb/Errors/error.hpp"
+#include "icedb/icedb.hpp"
 /// This is a program that converts units
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <exception>
 #include <iostream>
-#include <icedb/dlls.hpp>
-#include <icedb/units/units.hpp>
-#include <icedb/error.hpp>
 
 int main(int argc, char** argv) {
 	using namespace std;
@@ -61,7 +62,7 @@ int main(int argc, char** argv) {
 			try {
 				inVal = boost::lexical_cast<double>(temp);
 			}
-			catch (boost::bad_lexical_cast) {
+			catch (boost::bad_lexical_cast&) {
 				ICEDB_throw(icedb::error::error_types::xBadInput)
 					.add<std::string>("Reason", "Cannot parse input number")
 					.add<string>("Input _Number_", temp);

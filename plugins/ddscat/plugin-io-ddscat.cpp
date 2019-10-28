@@ -1,10 +1,9 @@
 /// \brief Provides silo file IO
-#define _SCL_SECURE_NO_WARNINGS
 
 #include <string>
 
 #include "defs.hpp"
-#include <icedb/plugin.hpp>
+#include "icedb/Plugins/plugin.hpp"
 #include "plugin-io-ddscat.hpp"
 
 namespace icedb {

@@ -1,9 +1,9 @@
 #include "defs.hpp"
 #include "plugin-io-ddscat.hpp"
-#include <icedb/error.hpp>
-#include <icedb/shape.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 #include <iostream>
 #include <boost/filesystem.hpp> // Should switch to the boost-independent version
 #include <memory>
@@ -54,8 +54,6 @@ namespace icedb {
 							shpdata.particle_scattering_element_composition_whole[i] = (int32_t)ddshp->latticePtsRi(i, 0);
 						}
 
-						shpdata.particle_constituents;
-
 						for (const auto &d : ddshp->Dielectrics) {
 							shpdata.particle_constituents.push_back(std::pair<uint16_t, std::string>((uint16_t)d, "unknown"));
 						}
@@ -76,8 +74,9 @@ namespace icedb {
 				}
 				// Error tagging
 				catch (icedb::error::xError &err) {
-					error_info->add<std::string>("Reason", "This file does not have the proper structure for a Penn State geometry file.");
+					error_info->add<std::string>("Reason", "This file does not have the proper structure for a ddscat shape file.");
 					err.push(error_info);
+                    err ICEDB_RSpushErrorvars;
 					throw err;
 				}
 			}

@@ -17,6 +17,12 @@ macro(addapp appname foldername)
 		COMPONENT Applications)
 endmacro(addapp appname foldername)
 
+macro(addapp_test appname foldername)
+	target_include_directories(${appname} 
+		PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/../../lib/private )
+	addapp_base(${appname} ${foldername})
+endmacro(addapp_test appname foldername)
+
 
 macro(add_header_files srcs)
   if( hds )
@@ -25,3 +31,10 @@ macro(add_header_files srcs)
   endif()
 endmacro(add_header_files srcs)
 
+macro(register_test tgtname foldername)
+	set_target_properties( ${tgtname} PROPERTIES FOLDER "${foldername}")
+	add_test(NAME t-${tgtname}
+		COMMAND cmake --build ${CMAKE_BINARY_DIR} --target ${tgtname}
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		)
+endmacro(register_test tgtname foldername)

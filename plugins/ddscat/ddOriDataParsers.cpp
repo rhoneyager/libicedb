@@ -23,8 +23,8 @@
 #include "ddOriDataParsers.h"
 #include "ddOriData.h"
 #include "ddVersions.h"
-#include <icedb/error.hpp>
-#include <icedb/units/units.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/units/units.hpp"
 
 //#include "../rtmath/refract.h"
 
@@ -503,11 +503,11 @@ namespace icedb
 			{
 				using namespace std;
 				using namespace ddOriDataParsers;
-				auto od = _parent.avgdata.avg.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(0, 0);
+				//auto od = _parent.avgdata.avg.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(0, 0);
 				//auto od = _parent.oridata_d.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(_row, 0);
 
 				// The frequency is needed when reading this matrix
-				const double f = freq();
+				//const double f = freq();
 
 				string lin;
 				mMuellerIndices mIndices;// = _muellerMap;
@@ -608,7 +608,7 @@ namespace icedb
 				using namespace std;
 				using namespace ddOriDataParsers;
 
-				auto od = _parent.oridata_d.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(_row, 0);
+				//auto od = _parent.oridata_d.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_DOUBLES>(_row, 0);
 				//auto &os = _parent.oridata_s.at(_row);
 				//auto &oi = _parent.oridata_i.block<1, ddOutput::stat_entries::NUM_STAT_ENTRIES_INTS>(_row, 0);
 

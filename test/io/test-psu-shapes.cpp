@@ -4,28 +4,31 @@
 #include <exception>
 #define BOOST_TEST_MODULE icedb-psu-shapes
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 #include <boost/program_options.hpp>
-#include <icedb/misc/os_functions.hpp>
-#include <icedb/shape.hpp>
-#include <HH/Files.hpp>
-#include <HH/Groups.hpp>
+#include "icedb/misc/os_functions.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Algorithms/ShapeAlgs.hpp"
+#include "icedb/IO/PPP.hpp"
+#include "HH/Files.hpp"
+#include "HH/Groups.hpp"
+#include "IntegratedTesting.hpp"
+
+BOOST_TEST_GLOBAL_FIXTURE(icedb_GlobalTestingFixture);
 
 #if (BOOST_VERSION / 100 % 1000) < 59
 	#define BOOST_TEST BOOST_CHECK
 	#define BOOST_TEST_REQUIRE BOOST_REQUIRE
 #endif
 
-std::string sShareDir;
-
 BOOST_AUTO_TEST_CASE(read_psu_gmm)
 {
 	using namespace std;
-	const string sGMMfile = sShareDir + "/examples/shapes/PSU-GMM/"
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/PSU-GMM/"
 		+ "psuaydinetal_geometry_aggregate_00004_GMM.nc";
 
-	auto opts = icedb::registry::options::generate()->filename(sGMMfile)->filetype("psu");
+	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("psu");
 	std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
 	icedb::Shapes::NewShapeProperties::readVector(nullptr, opts, fileShapes);
 
@@ -48,64 +51,47 @@ BOOST_AUTO_TEST_CASE(read_psu_gmm)
 
 }
 
-
-
-int BOOST_TEST_CALL_DECL
-main(int argc, char* argv[])
+BOOST_AUTO_TEST_CASE(write_psu_as_hdf5)
 {
-	try {
-		// The icedb library needs to process its own options, and 
-		// it needs to load its file-handling plugins.
-		namespace po = boost::program_options;
-		sShareDir = icedb::os_functions::getShareDir();
-		po::options_description desc("General options");
-		desc.add_options()
-			("share-dir,s", po::value<std::string>()->default_value(sShareDir), "share/icedb directory");
-		icedb::add_options(desc, desc, desc); // Icedb has its own options.
-		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
-		po::notify(vm);
-		icedb::process_static_options(vm); 
+	using namespace std;
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/PSU-GMM/"
+		+ "psuaydinetal_geometry_aggregate_00004_GMM.nc";
 
-		sShareDir = vm["share-dir"].as<std::string>();
+	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("psu");
+	std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
+	icedb::Shapes::NewShapeProperties::readVector(nullptr, opts, fileShapes);
+	BOOST_TEST_REQUIRE(fileShapes.size() == 1);
 
-		int nArgc = 1;
-		char* nArgv[] = { argv[0] };
-		return ::boost::unit_test::unit_test_main(&init_unit_test, nArgc, nArgv);
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
-	catch (...)
-	{
-		std::cerr << "An unhandled exception has occurred." << std::endl;
-		return 2;
-	}
+	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
+	const string sOut = sBuild + "/write_psu_shape_as_hdf5.h5";
+
+	HH::File out = HH::File::createFile(sOut, H5F_ACC_TRUNC);
+	auto res = icedb::Shapes::Shape::createShape(
+		out.create("Shape_psuaydinetal_geometry_aggregate_00004_GMM"), *(fileShapes[0].get()));
+	BOOST_TEST_REQUIRE(res.isGroup() == true);
 }
 
-
 /*
-const string sOutFile = "";
+BOOST_AUTO_TEST_CASE(psu_generate_ppp_block)
+{
+	using namespace std;
+	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
+	const string sIn = sBuild + "/write_psu_shape_as_hdf5.h5";
+	const string sOut = sBuild + "/psu_generate_ppp_block.h5";
+	HH::File in = HH::File::openFile(sIn, H5F_ACC_RDONLY);
+	HH::File out = HH::File::createFile(sOut, H5F_ACC_TRUNC);
 
-HH::File file = HH::File::createFile(pToRaw.string().c_str(), H5F_ACC_TRUNC);
+	icedb::Shapes::Shape shp(in.open("Shape_psuaydinetal_geometry_aggregate_00004_GMM"));
+	icedb::PPP::PPP ppp = icedb::PPP::PPP::createPPP(out.create("psu_geom_agg_4_GMM"), shp);
+	BOOST_TEST_REQUIRE(ppp.isGroup() == true);
 
+	// Apply a "dummy" algorithm.
+	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("dummy") > 0);
+	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("dummy"), shp);
 
-HH::File file = HH::File::openFile(sGMMfile.c_str(), H5F_ACC_RDONLY);
-std::cout << "Using base group " << dbpath << std::endl;
-if (!file.exists(dbpath.c_str())) ICEDB_throw(icedb::error::error_types::xCannotFindReference)
-	.add("Reason", "Cannot find the shape in the input file.")
-	.add("dbpath", dbpath)
-	.add("Input-file", sFromRaw);
-HH::Group basegrp = file.open(dbpath.c_str());
-icedb::Shapes::Shape shp(basegrp.get());
-//if (!shp.isShape()) ICEDB_throw(icedb::error::error_types::xPathExistsWrongType)
-//	.add("Reason", "The object in the input file is not a valid shape.")
-//	.add("dbpath", dbpath)
-//	.add("Input-file", sFromRaw);
-auto opts = icedb::registry::IO_options::generate();
-opts->filename(sToRaw);
-opts->filetype(outformat);
-shp.write(nullptr, opts);
+	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("ConvexHullAkuukkaQuickhull"), shp);
+
+	BOOST_TEST_REQUIRE(ppp.isGroup() == true);
+}
 */

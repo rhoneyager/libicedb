@@ -1,3 +1,4 @@
+set( CMAKE_DIRECTORY_LABELS "plugins" )
 add_subdirectory(adda)
 add_subdirectory(ddscat)
 add_subdirectory(example)

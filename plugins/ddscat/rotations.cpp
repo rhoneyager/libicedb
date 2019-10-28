@@ -7,7 +7,7 @@
 
 #include "ddpar.h"
 #include "rotations.h"
-#include <icedb/splitSet.hpp>
+#include "icedb/Utils/splitSet.hpp"
 
 namespace icedb {
 	namespace io {
@@ -57,9 +57,10 @@ namespace icedb {
 
 			rotationsBase::rotationsBase()
 				:
-				_bMin(0), _bMax(360), _bN(6),
-				_tMin(0), _tMax(90), _tN(6),
-				_pMin(0), _pMax(180), _pN(6)
+				_bMin(0), _bMax(360),
+				_tMin(0), _tMax(90),
+				_pMin(0), _pMax(180),
+				_bN(6), _tN(6), _pN(6)
 			{
 			}
 

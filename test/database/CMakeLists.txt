@@ -24,5 +24,5 @@ target_include_directories(icedb-database SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 #	PRIVATE ${HDF5_DEFINITIONS})
 target_link_libraries(icedb-database icedb ${Boost_PROGRAM_OPTIONS_LIBRARY}) # ${HDF5_LIBRARIES})
 
-addapp(icedb-database Testing)
+addapp_test(icedb-database Testing)
 storebin(icedb-database)

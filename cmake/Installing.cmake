@@ -24,8 +24,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 
+list(APPEND ICEDB_TARGETS icedb icedb_base GSL HH BinaryIO BetterThrow Eigen miniball quickhull )
 
-export(TARGETS icedb icedb_base
+export(TARGETS ${ICEDB_TARGETS} 
 		FILE "${PROJECT_BINARY_DIR}/icedbTargets.cmake")
 export(PACKAGE icedb)
 
@@ -56,7 +57,7 @@ INSTALL(EXPORT icedbTargets
 INSTALL(FILES LICENSE.txt README.md
 	DESTINATION ${CMAKE_INSTALL_DOCDIR}
 	)
-INSTALL(DIRECTORY share/examples
+INSTALL(DIRECTORY share/icedb/examples
 	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icedb
 	COMPONENT Examples
 	)

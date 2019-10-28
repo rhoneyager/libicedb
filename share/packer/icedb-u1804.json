@@ -1,0 +1,55 @@
+{
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "lxd-packer-bionic",
+      "image": "ubuntu:bionic",
+      "output_image": "icedb-ubuntu-bionic",
+      "publish_properties": {
+        "description": "icedb base environment for Ubuntu 18.04"
+      }
+    }
+
+  ],
+  "provisioners": [
+	  {
+		  "type": "file",
+		  "source": "resources/50unattended-upgrades",
+		  "destination": "/etc/apt/apt.conf.d/50unattended-upgrades"
+	  },
+          {
+		  "type": "file",
+		  "source": "resources/root-readme.md",
+		  "destination": "/root/readme.md"
+	  },
+	  {
+		  "type": "shell",
+		  "inline": [
+			  "cloud-init init",
+			  "ip addr",
+			  "apt clean -y",
+			  "apt update -y",
+			  "apt upgrade -y",
+			  "echo installing Base packages",
+			  "apt install -y build-essential cmake cmake-curses-gui libhdf5-dev git git-lfs zlib1g-dev libboost-all-dev doxygen graphviz libsilo-dev libeigen3-dev netcdf-bin libnetcdf-dev hdf5-tools gcc g++ gcc-6 g++-6 gcc-7 g++-7 gcc-8 g++-8 clang-8 clang-tools-8 vtk7 libvtk7-dev voro++-dev voro++ qhull-bin libqhull-dev vim-nox libflann-dev strace valgrind gdb wget unattended-upgrades p7zip-full",
+			  "echo installing MS Agent Dependencies",
+			  "apt install -y libicu60 liblttng-ust0 libcurl4 libssl1.1 libssl1.0.0 libkrb5-3 zlib1g libunwind8",
+			  "cd /root",
+			  "echo Install dotnet",
+			  "wget https://dot.net/v1/dotnet-install.sh",
+			  "chmod 700 dotnet-install.sh",
+			  "./dotnet-install.sh",
+			  "useradd -m msbuild",
+			  "echo Download and extract the build agent",
+			  "cd /home/msbuild",
+			  "wget https://vstsagentpackage.azureedge.net/agent/2.154.1/vsts-agent-linux-x64-2.154.1.tar.gz",
+			  "mkdir myagent && cd myagent",
+			  "tar xzf ../vsts-agent-linux-x64-2.154.1.tar.gz",
+			  "chown -R msbuild:msbuild .",
+			  "chmod -R u+rwX .",
+			  "chmod -R g+rwX .",
+			  "echo Done"
+		  ]
+	  }
+  ]
+}

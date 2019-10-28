@@ -42,6 +42,8 @@ elseif("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Darwin")
 	#set (ICEDB_COMMON_EXE_LIBS ${ICEDB_COMMON_EXE_LIBS} thr)
 elseif("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Windows")
 	#set (ICEDB_COMMON_EXE_LIBS ${ICEDB_COMMON_EXE_LIBS} thr)
+elseif("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "CYGWIN")
+	#set .....
 else()
 	message("Unhandled system name: ${CMAKE_HOST_SYSTEM_NAME}. Build system should be expanded to handle this case.")
 endif()

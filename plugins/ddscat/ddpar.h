@@ -1,5 +1,6 @@
 #pragma once
 #include "defs.hpp"
+#include "plugin-io-ddscat.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -13,8 +14,8 @@
 #include <boost/lexical_cast.hpp>
 #include "ddVersions.h"
 #include "parids.h"
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 
 namespace icedb {
 	namespace io {
@@ -30,7 +31,7 @@ namespace icedb {
 		template <> std::shared_ptr<::icedb::io::ddscat::ddPar>
 			customGenerator<::icedb::io::ddscat::ddPar>();
 
-		//DL_ICEDB_IO_DDSCAT
+		//ICEDB_DL_IO_DDSCAT
 		//std::shared_ptr<::icedb::io::ddscat::ddPar> customGenerator();
 
 		namespace ddscat {
@@ -398,7 +399,7 @@ namespace icedb {
 	inline void name(bool v) { __setStringBool(id, v, bfalse, btrue); }
 
 		/// Provides local readers and writers for ddscat ddpar data (it's a binder)
-			class DL_ICEDB_IO_DDSCAT implementsDDPAR :
+			class ICEDB_DL_IO_DDSCAT implementsDDPAR :
 				private icedb::io::implementsIObasic<ddPar, ddPar_IO_output_registry,
 				ddPar_IO_input_registry, ddPar_Standard>
 			{
@@ -416,7 +417,7 @@ namespace icedb {
 			* Used to both extract information necessary for shapefile formation, and used when
 			* upgrading ddscat versions. It also provides writing functionality for the files.
 			**/
-			class DL_ICEDB_IO_DDSCAT ddPar :
+			class ICEDB_DL_IO_DDSCAT ddPar :
 				virtual public std::enable_shared_from_this<ddPar>,
 				virtual public ::icedb::registry::usesDLLregistry<
 				::icedb::io::ddscat::ddPar_IO_input_registry,

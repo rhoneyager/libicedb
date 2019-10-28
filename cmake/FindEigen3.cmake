@@ -73,7 +73,7 @@ else (EIGEN3_INCLUDE_DIR)
       ${CMAKE_INSTALL_PREFIX}/include
       ${KDE4_INCLUDE_DIR}
       ${EIGEN3_INCLUDE_DIR_BASE}
-      ${PROJECT_SOURCE_DIR}/lib/deps/third_party/eigen
+      ${PROJECT_SOURCE_DIR}/lib/deps/third_party/eigen3
       PATH_SUFFIXES eigen3 eigen
     )
 

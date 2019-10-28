@@ -1,10 +1,10 @@
 #include "defs.hpp"
 #include "plugin-psu.hpp"
-#include <icedb/error.hpp>
-#include <icedb/exv.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
-#include <icedb/units/units.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/exv.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
+#include "icedb/units/units.hpp"
 #include <iostream>
 #include <HH/Files.hpp>
 #include <HH/Datasets.hpp>
@@ -26,10 +26,7 @@ namespace icedb {
 					auto dims = dset.getDimensions();
 					//Expects(dims.dimensionality == 2);
 					outdata.resize(dims.numElements);
-					if (dset.read<T>(outdata) < 0)
-						ICEDB_throw(icedb::error::error_types::xBadInput)
-						.add("Reason", "HDF5 error when reading a dataset.")
-						.add("Dataset", dsetname);
+					dset.read<T>(outdata);
 				}
 
 				//------------------------------------------------------------------------------------------//
@@ -94,7 +91,7 @@ namespace icedb {
 
 						// See pi.freq_number_as_string; pi.freq_units;
 						// The icedb::units library handles the conversion.
-						exvdata.frequency_Hz = icedb::units::conv_spec(pi.freq_units, "Hz")
+						exvdata.frequency_Hz = (float) icedb::units::conv_spec(pi.freq_units, "Hz")
 							.convert(boost::lexical_cast<float>(pi.freq_number_as_string)); //It's a float.
 						
 						exvdata.temperature_K = -1; // Set this. It's a float.
@@ -124,7 +121,7 @@ namespace icedb {
 							"scattering_azimuth_angle", "scattering_polar_angle"
 						};
 						for (const auto &d : requiredDatasets) {
-							if (!(hFile.dsets.exists(d.c_str()) > 0))
+							if (!(hFile.dsets.exists(d.c_str())))
 								ICEDB_throw(icedb::error::error_types::xBadInput)
 								.add<std::string>("Reason", "A required dataset is missing.")
 								.add<std::string>("Missing-dataset-name", d);

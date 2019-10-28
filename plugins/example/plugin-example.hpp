@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-#include <icedb/plugin.hpp>
+#include "icedb/Plugins/plugin.hpp"
 #include <cstdio>
 #define PLUGINID "Example"
 

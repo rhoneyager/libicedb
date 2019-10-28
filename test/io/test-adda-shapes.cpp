@@ -4,25 +4,26 @@
 #include <exception>
 #define BOOST_TEST_MODULE icedb-adda-shapes
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 #include <boost/program_options.hpp>
-#include <icedb/misc/os_functions.hpp>
-#include <icedb/shape.hpp>
-#include <HH/Files.hpp>
-#include <HH/Groups.hpp>
+#include "icedb/misc/os_functions.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "HH/Files.hpp"
+#include "HH/Groups.hpp"
+#include "IntegratedTesting.hpp"
+
+BOOST_TEST_GLOBAL_FIXTURE(icedb_GlobalTestingFixture);
 
 #if (BOOST_VERSION / 100 % 1000) < 59
 #define BOOST_TEST BOOST_CHECK
 #define BOOST_TEST_REQUIRE BOOST_REQUIRE
 #endif
 
-std::string sShareDir;
-
 BOOST_AUTO_TEST_CASE(read_adda_rawtext_nocomments)
 {
 	using namespace std;
-	const string sfile = sShareDir + "/examples/shapes/ADDA/"
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/ADDA/"
 		+ "rawtext_nocomments.adda";
 
 	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("adda");
@@ -44,7 +45,8 @@ BOOST_AUTO_TEST_CASE(read_adda_rawtext_nocomments)
 BOOST_AUTO_TEST_CASE(read_adda_sphere_geom)
 {
 	using namespace std;
-	const string sfile = sShareDir + "/examples/shapes/ADDA/"
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/ADDA/"
 		+ "sphere.geom";
 
 	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("adda");
@@ -63,39 +65,23 @@ BOOST_AUTO_TEST_CASE(read_adda_sphere_geom)
 	BOOST_TEST(s->particle_scattering_element_composition_fractional.size() == 0);
 }
 
-
-int BOOST_TEST_CALL_DECL
-main(int argc, char* argv[])
+BOOST_AUTO_TEST_CASE(write_adda_shape_as_hdf5)
 {
-	try {
-		// The icedb library needs to process its own options, and 
-		// it needs to load its file-handling plugins.
-		sShareDir = icedb::os_functions::getShareDir();
-		namespace po = boost::program_options;
-		po::options_description desc("General options");
-		desc.add_options()
-			("share-dir,s", po::value<std::string>()->default_value(sShareDir), "share/icedb directory");
-		icedb::add_options(desc, desc, desc); // Icedb has its own options.
-		po::variables_map vm;
-		po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
-		po::notify(vm);
-		icedb::process_static_options(vm);
+	using namespace std;
+	string sShare = icedb::os_functions::getSystemString(icedb::os_functions::System_String::SHARE_DIR);
+	const string sfile = sShare + "/examples/shapes/ADDA/"
+		+ "sphere.geom";
 
-		sShareDir = vm["share-dir"].as<std::string>();
+	auto opts = icedb::registry::options::generate()->filename(sfile)->filetype("adda");
+	std::vector<std::shared_ptr<icedb::Shapes::NewShapeProperties> > fileShapes;
+	icedb::Shapes::NewShapeProperties::readVector(nullptr, opts, fileShapes);
+	BOOST_TEST_REQUIRE(fileShapes.size() == 1);
 
-		int nArgc = 1;
-		char* nArgv[] = { argv[0] };
-		return ::boost::unit_test::unit_test_main(&init_unit_test, nArgc, nArgv);
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
-	catch (...)
-	{
-		std::cerr << "An unhandled exception has occurred." << std::endl;
-		return 2;
-	}
+	fileShapes[0]->particle_id = "particle_1"; // This would normally get set in the importer program.
+	string sBuild = icedb::os_functions::getSystemString(icedb::os_functions::System_String::BUILD_DIR);
+	const string sOut = sBuild + "/write_adda_shape_as_hdf5.h5";
+
+	HH::File out = HH::File::createFile(sOut, H5F_ACC_TRUNC);
+	auto res = icedb::Shapes::Shape::createShape(out.create("Shape_adda_sphere.geom"), *fileShapes.at(0).get());
+	BOOST_TEST_REQUIRE(res.isGroup() == true);
 }
-

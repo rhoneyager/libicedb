@@ -1,0 +1,52 @@
+{
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "lxd-packer-fedora30",
+      "image": "images:fedora/30",
+      "output_image": "icedb/fedora/30",
+      "publish_properties": {
+        "description": "icedb base environment for Fedora 30"
+      }
+    }
+
+  ],
+  "provisioners": [
+          {
+		  "type": "file",
+		  "source": "resources/root-readme.md",
+		  "destination": "/root/readme.md"
+	  },
+	  {
+		  "type": "shell",
+		  "inline": [
+			  "sleep 5",
+			  "echo installing base packages",
+			  "yum update -y",
+			  "yum install -y cmake doxygen hdf5-devel hdf5 git zlib-devel netcdf-devel boost-devel redhat-lsb-core make yum-cron vim wget curl libunwind compat-openssl10 openssl p7zip gcc gcc-c++ rpm-build",
+			  "cd /root",
+			  "echo Install dotnet",
+			  "wget https://dot.net/v1/dotnet-install.sh",
+			  "chmod 700 dotnet-install.sh",
+			  "./dotnet-install.sh",
+			  "useradd -m msbuild",
+			  "echo Download and extract the build agent",
+			  "cd /home/msbuild",
+			  "wget https://vstsagentpackage.azureedge.net/agent/2.154.1/vsts-agent-linux-x64-2.154.1.tar.gz",
+			  "mkdir myagent && cd myagent",
+			  "tar xzf ../vsts-agent-linux-x64-2.154.1.tar.gz",
+			  "chown -R msbuild:msbuild .",
+			  "chmod -R u+rwX .",
+			  "chmod -R g+rwX .",
+			  "./bin/installdependencies.sh",
+			  "echo Done"
+		  ]
+	  },
+          {
+		  "type": "file",
+		  "source": "resources/yum-cron.conf",
+		  "destination": "/etc/yum/yum-cron.conf"
+	  }
+
+  ]
+}

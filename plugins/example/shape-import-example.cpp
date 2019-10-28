@@ -1,9 +1,9 @@
 #include "defs.hpp"
 #include "plugin-example.hpp"
-#include <icedb/error.hpp>
-#include <icedb/shape.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 #include <iostream>
 #include <HH/Files.hpp>
 #include <HH/Datasets.hpp>

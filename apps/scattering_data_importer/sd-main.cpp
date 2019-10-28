@@ -2,28 +2,25 @@
  *
 **/
 
-#include <icedb/defs.h>
+#include "icedb/defs.h"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/fs_backend.hpp"
+#include "icedb/Utils/splitSet.hpp"
+#include "icedb/IO/exv.hpp"
+#include "icedb/Plugins/plugin.hpp"
+#include "icedb/icedb.hpp"
+#include "HH/Files.hpp"
+#include "HH/Groups.hpp"
 #include <boost/program_options.hpp>
-#include <iostream>
-
-#include <fstream>
 #include <boost/tokenizer.hpp>
-
+#include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
 #include <chrono>
 #include <iomanip>
-#include <icedb/shape.hpp>
-#include <icedb/error.hpp>
-#include <icedb/fs_backend.hpp>
-#include <icedb/splitSet.hpp>
-#include <icedb/exv.hpp>
-
-#include <icedb/plugin.hpp>
-
-#include <HH/Files.hpp>
-#include <HH/Groups.hpp>
 
 int main(int argc, char** argv) {
 	try {
@@ -90,7 +87,7 @@ int main(int argc, char** argv) {
 		string informat = vm["in-format"].as<string>();
 		// Metadata
 		string sAuthor, sContact, sScattMeth, sSFunits, sDatasetID;
-		float sSFfactor = 1.0f;
+		//float sSFfactor = 1.0f;
 		array<unsigned int, 3> version = { 1, 0, 0 };
 		if (vm.count("author")) sAuthor = vm["author"].as<string>();
 		if (vm.count("contact-information")) sContact = vm["contact-information"].as<string>();
@@ -120,7 +117,7 @@ int main(int argc, char** argv) {
 					int c_id = boost::lexical_cast<int>(vc[0]);
 					constit_ids[c_id] = vc[1];
 				}
-				catch (boost::bad_lexical_cast) {
+				catch (boost::bad_lexical_cast&) {
 					ICEDB_throw(icedb::error::error_types::xBadInput)
 						.add("Reason", "Trying to construct the constituent map, but encountered ill-formatted input")
 						.add("Constituent-Names", sConstits)
@@ -161,10 +158,8 @@ int main(int argc, char** argv) {
 		//Databases::Database::Database_ptr db = Databases::Database::openDatabase(pToRaw.string(), iof);
 		std::cout << "Using base group " << dbpath << std::endl;
 		HH::Group basegrp = HH::Handles::HH_hid_t::dummy();
-		if (file.exists(dbpath.c_str())) basegrp = file.open(dbpath.c_str());
-		else basegrp = file.create(dbpath.c_str(),
-			HH::PL::PL::createLinkCreation().setLinkCreationPList(
-				HH::Tags::PropertyLists::t_LinkCreationPlist(true))());
+		if (file.exists(dbpath)) basegrp = file.open(dbpath);
+		else basegrp = file.create(dbpath);
 		//basegrp = db->createGroupStructure(dbpath);
 
 

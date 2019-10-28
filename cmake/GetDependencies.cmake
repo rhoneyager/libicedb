@@ -3,8 +3,9 @@ include(addBoostUniform)
 
 
 # The two dependencies: boost and HDF5
-addBoostUniform(1.45.0 REQUIRED COMPONENTS program_options unit_test_framework date_time regex filesystem system)
+addBoostUniform(1.45.0 REQUIRED COMPONENTS program_options unit_test_framework date_time regex serialization filesystem system)
 amend_boost_libs(Boost::filesystem impBoost::filesystem)
+amend_boost_libs(Boost::serialization impBoost::serialization)
 amend_boost_libs(Boost::system impBoost::system)
 amend_boost_libs(Boost::program_options impBoost::program_options)
 amend_boost_libs(Boost::date_time impBoost::date_time)

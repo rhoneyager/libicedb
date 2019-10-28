@@ -6,10 +6,10 @@
 #include <boost/date_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "phaseFunc.h"
-#include <icedb/units/units.hpp>
-#include <icedb/versioning/versioningForwards.hpp>
-//#include <icedb/versioning/versioning.hpp>
-#include <icedb/misc/os_functions.hpp>
+#include "icedb/units/units.hpp"
+#include "icedb/versioning/versioningForwards.hpp"
+//#include "icedb/versioning/versioning.hpp"
+#include "icedb/misc/os_functions.hpp"
 
 namespace icedb {
 	namespace registry {
@@ -125,16 +125,17 @@ namespace icedb {
 
 				pf_class_registry::inputParamsPartial::inputParamsPartial()
 					: aeff(0), aeff_version(aeff_version_type::EQUIV_V_SPHERE),
-					m(1.33, 0), shape(shape_type::SPHEROID), eps(1.), maxDiamFull(0),
-					lengthUnits("um")
+					m(1.33, 0), maxDiamFull(0), lengthUnits("um"),
+                    shape(shape_type::SPHEROID),
+                    eps(1.)
 				{}
 
 				/// \todo The entire system needs to be revamped. Cunits needs to be set by the plugins.
 				/// Or, pre-conversion into the appropriate units needs to be performed
 				/// before the plugins are invoked.
 				pf_class_registry::cross_sections::cross_sections() :
-					Cbk(-1), Cext(-1), Csca(-1), Cabs(-1), g(-1), valid(false),
-					Cunits("mm^2") {}
+					Cbk(-1), Cext(-1), Csca(-1), Cabs(-1), g(-1),
+					Cunits("mm^2"), valid(false) {}
 
 				void pf_provider::findHandler(
 					const char* name, const pf_class_registry *res)
@@ -206,7 +207,7 @@ namespace icedb {
 					std::complex<double> a, std::complex<double> b, std::complex<double> c, std::complex<double> d)
 				{
 					using namespace std;
-					typedef complex<double> CD;
+					//typedef complex<double> CD;
 					complex<double> i(0, 1);
 
 					double rphi = phi * boost::math::constants::pi<double>() / 180.0;
@@ -243,7 +244,7 @@ namespace icedb {
 				void muellerBH(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn)
 				{
 					using std::complex;
-					complex<double> scratch;
+					//complex<double> scratch;
 					// Sn(2) = Sn(0,0)
 					// Sn(1) = Sn(1,1)
 					// Sn(3) = Sn(0,1)
@@ -321,7 +322,7 @@ namespace icedb {
 				}
 
 				/// \todo Test rtmath::phasefuncs::invertS
-#pragma message("phaseFunc.cpp: Test invertS")
+//#pragma message("phaseFunc.cpp: Test invertS")
 				void invertS(const Eigen::Matrix4d &Snn, const Eigen::Matrix4d &Knn, double fGHz, Eigen::Matrix2cd& Sn)
 				{
 					// TODO: make sure it's correct via testing. Am I solving for the correct matrix?
@@ -375,7 +376,7 @@ namespace icedb {
 					Sn(1, 1).real(val);
 				}
 
-#pragma message("phaseFunc.cpp: Test genExtinctionMatrix")
+//#pragma message("phaseFunc.cpp: Test genExtinctionMatrix")
 				/// \todo Test rtmath::phaseFuncs::genExtinctionMatrix
 				void genExtinctionMatrix(Eigen::Matrix4d &Knn, const Eigen::Matrix2cd &Sn, double fGHz)
 				{

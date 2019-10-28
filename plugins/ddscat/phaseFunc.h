@@ -7,8 +7,8 @@
 #include <string>
 #include <Eigen/Core>
 
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 
 namespace icedb {
 	namespace io {
@@ -53,27 +53,27 @@ namespace icedb {
 			{
 				/// Provides a reference to the desired phase function 
 				/// routine. This is implemented to allow user choice in Mueller method.
-				DL_ICEDB_IO_DDSCAT void selectMueller(const std::string &id,
+				ICEDB_DL_IO_DDSCAT void selectMueller(const std::string &id,
 					std::function<void(const Eigen::Matrix2cd&, Eigen::Matrix4d&)>&);
 
 				// Note following conventions: matrix is [[S2, S3][S4,S1]] = [[Sn0, Sn1][Sn2, Sn3]]
 				// Sn is the matrix in linear form {S1, S2, S3, S4}, so it should avoid any 
 				// of the subsequent issues with forgetting the index transformations.
 
-				DL_ICEDB_IO_DDSCAT void muellerBH(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
-				DL_ICEDB_IO_DDSCAT void muellerTMATRIX(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
+				ICEDB_DL_IO_DDSCAT void muellerBH(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
+				ICEDB_DL_IO_DDSCAT void muellerTMATRIX(const Eigen::Matrix2cd& Sn, Eigen::Matrix4d& Snn);
 
-				DL_ICEDB_IO_DDSCAT void convertFtoS(const Eigen::Matrix2cd &f, Eigen::Matrix2cd& Sn, double phi,
+				ICEDB_DL_IO_DDSCAT void convertFtoS(const Eigen::Matrix2cd &f, Eigen::Matrix2cd& Sn, double phi,
 					std::complex<double> a, std::complex<double> b, std::complex<double> c, std::complex<double> d);
 
-				DL_ICEDB_IO_DDSCAT void invertS(const Eigen::Matrix4d &Snn, const Eigen::Matrix4d &Knn, double fGHz, Eigen::Matrix2cd& Sn);
+				ICEDB_DL_IO_DDSCAT void invertS(const Eigen::Matrix4d &Snn, const Eigen::Matrix4d &Knn, double fGHz, Eigen::Matrix2cd& Sn);
 
-				DL_ICEDB_IO_DDSCAT void genExtinctionMatrix(Eigen::Matrix4d &Knn, const Eigen::Matrix2cd &Sn, double fGHz);
+				ICEDB_DL_IO_DDSCAT void genExtinctionMatrix(Eigen::Matrix4d &Knn, const Eigen::Matrix2cd &Sn, double fGHz);
 
 				/// \brief This class is used for registration of phase function and cross-section
 				/// providers.
 				/// \note Full stats will use a connector when passed to this code.
-				struct DL_ICEDB_IO_DDSCAT pf_class_registry
+				struct ICEDB_DL_IO_DDSCAT pf_class_registry
 				{
 					virtual ~pf_class_registry();
 					/// Module name. Tagging is handled elsewhere.
@@ -170,7 +170,7 @@ namespace icedb {
 				/// from multiple sources, such as DDA, Tmatrix, ...
 				///
 				/// \todo Add stats-conversion code here
-				class DL_ICEDB_IO_DDSCAT pf_provider :
+				class ICEDB_DL_IO_DDSCAT pf_provider :
 					virtual public registry::usesDLLregistry <pf_registry, pf_class_registry >
 				{
 				public:
@@ -193,7 +193,7 @@ namespace icedb {
 					const pf_class_registry::inputParamsPartial& iparams;
 				};
 
-				struct DL_ICEDB_IO_DDSCAT pfRunSetContainer :
+				struct ICEDB_DL_IO_DDSCAT pfRunSetContainer :
 					virtual public registry::usesDLLregistry<
 					pfRunSetContainer_IO_input_registry,
 					registry::IO_class_registry_reader<pfRunSetContainer> >,

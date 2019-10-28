@@ -1,5 +1,4 @@
 /// \brief Provides silo file IO
-#define _SCL_SECURE_NO_WARNINGS
 
 #include <string>
 #include <icedb/defs.h>

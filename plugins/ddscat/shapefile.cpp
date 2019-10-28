@@ -17,9 +17,9 @@
 #include <boost/lexical_cast.hpp>
 #include <memory>
 
-#include <icedb/splitSet.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/error.hpp>
+#include "icedb/Utils/splitSet.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/Errors/error.hpp"
 #include "shapefile.h"
 
 namespace {

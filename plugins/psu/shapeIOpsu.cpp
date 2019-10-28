@@ -1,12 +1,12 @@
 #include "defs.hpp"
 #include "plugin-psu.hpp"
-#include <icedb/error.hpp>
-#include <icedb/shape.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
+#include "HH/Files.hpp"
+#include "HH/Datasets.hpp"
 #include <iostream>
-#include <HH/Files.hpp>
-#include <HH/Datasets.hpp>
 #include <boost/filesystem.hpp> // Should switch to the boost-independent version
 #include <memory>
 #include <map>
@@ -25,10 +25,7 @@ namespace icedb {
 					auto dims = dset.getDimensions();
 					//Expects(dims.dimensionality == 2);
 					outdata.resize(dims.numElements);
-					if (dset.read<T>(outdata) < 0)
-						ICEDB_throw(icedb::error::error_types::xBadInput)
-						.add("Reason", "HDF5 error when reading a dataset.")
-						.add("Dataset", dsetname);
+					dset.read<T>(outdata);
 				}
 
 				//------------------------------------------------------------------------------------------//
@@ -64,7 +61,7 @@ namespace icedb {
 
 						// Declare variables that cover both in scope.
 
-						size_t numPoints;
+						size_t numPoints = 0;
 						vector<int32_t> particle_index;
 						vector<int32_t> element_indices;
 						vector<float>   x, y, z, rs;

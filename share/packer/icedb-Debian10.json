@@ -1,0 +1,62 @@
+{
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "lxd-packer-debian10",
+      "image": "images:debian/10",
+      "output_image": "icedb/debian/10",
+      "publish_properties": {
+        "description": "icedb base environment for Debian 10 (buster)"
+      }
+    }
+
+  ],
+  "provisioners": [
+          {
+		  "type": "file",
+		  "source": "resources/root-readme.md",
+		  "destination": "/root/readme.md"
+	  },
+	  {
+		  "type": "shell",
+		  "inline": [
+			  "cloud-init init",
+			  "ip addr",
+			  "apt clean -y",
+			  "apt update -y",
+			  "apt upgrade -y",
+			  "echo installing Base packages",
+			  "apt install -y build-essential cmake cmake-curses-gui libhdf5-dev git git-lfs zlib1g-dev libboost-all-dev doxygen graphviz libsilo-dev libeigen3-dev netcdf-bin libnetcdf-dev hdf5-tools gcc g++ gcc-7 g++-7 gcc-8 g++-8 clang clang-tools vtk7 libvtk7-dev voro++-dev voro++ qhull-bin libqhull-dev vim-nox libflann-dev strace valgrind gdb wget unattended-upgrades p7zip-full",
+			  "echo installing MS Agent Dependencies",
+			  "apt install -y libicu63 liblttng-ust0 libcurl4 libssl1.1 libkrb5-3 zlib1g libunwind8 multiarch-support",
+			  "echo Installing up-ported old libraries - libicu60 libssl1.0.0",
+			  "cd /root",
+			  "wget http://security.debian.org/debian-security/pool/updates/main/o/openssl1.0/libssl1.0.2_1.0.2s-1~deb9u1_amd64.deb",
+			  "wget http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u11_amd64.deb",
+			  "dpkg -i libssl1.0.2_1.0.2s-1~deb9u1_amd64.deb",
+			  "dpkg -i libssl1.0.0_1.0.1t-1+deb8u11_amd64.deb",
+			  "echo dpkg -i libicu60 libssl1.0.0",
+			  "echo Install dotnet",
+			  "wget https://dot.net/v1/dotnet-install.sh",
+			  "chmod 700 dotnet-install.sh",
+			  "./dotnet-install.sh",
+			  "useradd -m msbuild",
+			  "echo Download and extract the build agent",
+			  "cd /home/msbuild",
+			  "wget https://vstsagentpackage.azureedge.net/agent/2.154.1/vsts-agent-linux-x64-2.154.1.tar.gz",
+			  "mkdir myagent && cd myagent",
+			  "tar xzf ../vsts-agent-linux-x64-2.154.1.tar.gz",
+			  "chown -R msbuild:msbuild .",
+			  "chmod -R u+rwX .",
+			  "chmod -R g+rwX .",
+			  "echo Done"
+		  ]
+	  },
+	  {
+		  "type": "file",
+		  "source": "resources/50unattended-upgrades",
+		  "destination": "/etc/apt/apt.conf.d/50unattended-upgrades"
+	  }
+
+  ]
+}

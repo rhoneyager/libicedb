@@ -1,9 +1,9 @@
 #include "defs.hpp"
 #include "plugin-adda.hpp"
-#include <icedb/error.hpp>
-#include <icedb/shape.hpp>
-#include <icedb/registry.hpp>
-#include <icedb/io.hpp>
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Plugins/registry.hpp"
+#include "icedb/IO/io.hpp"
 #include <iostream>
 #include <boost/filesystem.hpp> // Should switch to the boost-independent version
 #include <memory>
@@ -11,7 +11,7 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <BinaryIO/Files.hpp>
+#include "BinaryIO/Files.hpp"
 
 #include <sstream>
 #include <boost/spirit/include/karma.hpp>
@@ -83,7 +83,7 @@ namespace icedb {
 
 						// Read the full contents of the file from the ifstream into a buffer.
 						std::vector<char> buffer;
-						if (bIO::readFileToBuffer<char>(h->filename, buffer))
+						if (bIO::readFileToBuffer(h->filename, buffer))
 							ICEDB_throw(icedb::error::error_types::xBadInput)
 							.add<std::string>("Reason", "Cannot read file to buffer.");
 
@@ -102,7 +102,10 @@ namespace icedb {
 							const char* lineEnd = strchr(pNumStart + 1, '\n');
 							pNumStart = lineEnd + 1;
 						}
-						if (pNumStart >= pb) throw(std::invalid_argument("Cannot find any points in a shapefile."));
+						if (pNumStart >= pb)
+							ICEDB_throw(icedb::error::error_types::xBadInput)
+								.add("Reason", "Cannot find any points in a shapefile.")
+								;
 
 						const char* firstLineEnd = strchr(pNumStart + 1, '\n'); // End of the first line containing numeric data.
 																				// Attempt to guess the number of points based on the number of lines in the file.
@@ -114,7 +117,7 @@ namespace icedb {
 						for (const char* c = pNumStart; c != pb; ++c)
 							if (c[0] == '\n') guessNumPoints++;
 
-						float max_element = -1, junk_f = -1;
+						//float max_element = -1, junk_f = -1;
 						std::vector<float> firstLineVals;
 						std::vector<float> parser_vals;
 						parser_vals.reserve(guessNumPoints * 4);
@@ -122,7 +125,9 @@ namespace icedb {
 						parse_shapefile_entries(pNumStart, pb, parser_vals);
 						size_t actualNumReads = parser_vals.size();
 						//size_t actualNumReads = strints_array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size(), max_element);
-						if (parser_vals.size() == 0) throw (std::invalid_argument("Bad read"));
+						if (parser_vals.size() == 0)
+							ICEDB_throw(icedb::error::error_types::xBadInput)
+                                                                .add("Reason", "Bad read. parser_vals is empty.");
 						//parser_vals.resize(actualNumReads);
 
 						// Also parse just the first line to get the number of columns
@@ -132,7 +137,10 @@ namespace icedb {
 						bool good = false;
 						if (numCols == 3) good = true; // Three columns, x, y and z
 						if (numCols == 4) good = true; // Four columns, x, y, z and material
-						if (!good) throw (std::invalid_argument("Bad read"));
+						if (!good)
+							ICEDB_throw(icedb::error::error_types::xBadInput)
+                                                                .add("Reason", "Bad read. numCols is wrong. Should be 3 or 4.")
+								.add("numCols", numCols);
 
 						size_t actualNumPoints = actualNumReads / numCols;
 
@@ -206,8 +214,9 @@ namespace icedb {
 					}
 					// Error tagging
 					catch (icedb::error::xError &err) {
-						error_info->add<std::string>("Reason", "This file does not have the proper structure for a Penn State geometry file.");
+						error_info->add<std::string>("Reason", "This file does not have the proper structure for an ADDA shape file.");
 						err.push(error_info);
+                        err ICEDB_RSpushErrorvars;
 						throw err;
 					}
 				}

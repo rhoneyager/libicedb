@@ -1,4 +1,5 @@
 #pragma once
+#include "plugin-io-ddscat.hpp"
 #include <boost/lexical_cast.hpp>
 
 namespace icedb

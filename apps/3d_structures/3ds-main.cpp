@@ -1,26 +1,24 @@
 /** \brief 3d_structures program
 **/
 
-#include <icedb/defs.h>
-#include <boost/program_options.hpp>
+#include "icedb/defs.h"
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/Errors/error.hpp"
+#include "icedb/IO/fs_backend.hpp"
+#include "HH/Groups.hpp"
+#include "HH/Files.hpp"
+#include "icedb/Utils/splitSet.hpp"
+#include "icedb/Utils/dlls.hpp"
+#include "icedb/misc/os_functions.hpp"
 #include <iostream>
-
 #include <fstream>
-#include <boost/tokenizer.hpp>
-
 #include <memory>
 #include <string>
 #include <vector>
 #include <chrono>
 #include <iomanip>
-#include <icedb/shape.hpp>
-#include <icedb/error.hpp>
-#include <icedb/fs_backend.hpp>
-#include <HH/Groups.hpp>
-#include <HH/Files.hpp>
-#include <icedb/splitSet.hpp>
-#include <icedb/shape.hpp>
-#include <icedb/dlls.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/program_options.hpp>
 
 herr_t my_hdf5_error_handler(hid_t, void *)
 {

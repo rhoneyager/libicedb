@@ -1,6 +1,6 @@
 #include <string>
-#include <icedb/shape.hpp>
-#include <icedb/exv.hpp>
+#include "icedb/IO/Shapes.hpp"
+#include "icedb/IO/exv.hpp"
 #include "plugin-psu.hpp"
 
 namespace icedb {
@@ -21,9 +21,6 @@ namespace icedb {
 					break;
 				case IOtype::EXCLUSIVE:
 					file = HH::File::openFile(filename, H5F_ACC_EXCL);
-					break;
-				case IOtype::DEBUG:
-					file = HH::File::openFile(filename, H5F_ACC_DEBUG);
 					break;
 				case IOtype::CREATE:
 					file = HH::File::openFile(filename, H5F_ACC_TRUNC); // H5F_ACC_CREAT is deprecated.
@@ -68,11 +65,11 @@ D_icedb_start()
 	const char *exts[nexts] = { "psu", "psu-shape" };
 	genAndRegisterIOregistryPlural_reader
 		<::icedb::Shapes::NewShapeProperties, icedb::Shapes::_impl::ShapeProps_IO_Input_Registry>
-		(1, exts, PLUGINID);
+		(nexts, exts, PLUGINID);
 
 	genAndRegisterIOregistryPlural_reader
 		<::icedb::exv::NewEXVrequiredProperties, icedb::exv::_impl::EXVProps_IO_Input_Registry>
-		(1, exts, PLUGINID);
+		(1, exts, PLUGINID); // 1 for now because exvs are not added to list.
 
 	//genAndRegisterIOregistry_writer<::icedb::Shapes::Shape,
 	//	icedb::Shapes::_impl::Shape_IO_Output_Registry>("psu", PLUGINID);

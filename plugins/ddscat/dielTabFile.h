@@ -1,10 +1,12 @@
 #pragma once
+#include "plugin-io-ddscat.hpp"
 #include <complex>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
-#include <icedb/error.hpp>
+#include "icedb/Errors/error.hpp"
 
 namespace icedb
 {
@@ -41,7 +43,7 @@ namespace icedb
 			* these files is quite customizable, allowing for column reordering
 			* and suppression.
 			**/
-			class DL_ICEDB_IO_DDSCAT dielTab
+			class ICEDB_DL_IO_DDSCAT dielTab
 			{
 			public:
 				dielTab();

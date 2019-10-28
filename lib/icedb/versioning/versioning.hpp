@@ -11,7 +11,7 @@
 #include <string>
 #include "versioningForwards.hpp"
 #include "icedb-cmake-settings.h"
-#include "../util.h"
+#include "../Utils/util.h"
 
 #define QUOTE(str) #str
 #define EXPAND_AND_QUOTE(str) QUOTE(str)

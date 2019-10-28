@@ -1,10 +1,13 @@
 #pragma once
 #ifndef ICEDB_H_DEFS
 #define ICEDB_H_DEFS
-#ifndef __STDC_WANT_LIB_EXT1__
-#define __STDC_WANT_LIB_EXT1__ 1
-#endif
+
 #include <stddef.h>
+#if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
+#define ICEDB_USING_SECURE_STRINGS 1
+#define ICEDB_DEFS_COMPILER_HAS_FPRINTF_S
+#define ICEDB_DEFS_COMPILER_HAS_FPUTS_S
+#endif
 
 #if defined(__cplusplus) || defined(c_plusplus)
 # define ICEDB_BEGIN_DECL
@@ -34,144 +37,163 @@
 # define ICEDB_CALL_CPP extern "CPP"
 #endif
 
-// gcc 4.4 will not work. No decltype!
-// constexpr fix for gcc 4.4
-//#if defined(__cplusplus)
-//#if __cplusplus < 201103L
-//#define constexpr const
-//#define noexcept
-//#endif
-//#endif
 
 ICEDB_BEGIN_DECL_C
 
 /* Compiler and version diagnostics */
 
 /* Detection of the operating system and compiler version. Used to declare symbol export / import. */
+// OS definitions
+/**
+ * \defgroup OS Preprocessor macros that relate to OS detection.
+ * @{
+ **/
 
+#ifdef __unix__
+# ifdef __linux__
+#  define ICEDB_OS_LINUX
+# endif
+# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+#  define ICEDB_OS_UNIX
+# endif
+#endif
+#if (defined(__APPLE__) || defined(__MACH__))
+# define ICEDB_OS_MACOS
+#endif
+#ifdef _WIN32
+# define ICEDB_OS_WINDOWS
+#endif
+#ifdef __CYGWIN__ 
+# define ICEDB_OS_LINUX
+#endif
+#if !defined(ICEDB_OS_WINDOWS) && !defined(ICEDB_OS_UNIX) && !defined(ICEDB_OS_LINUX) && !defined(ICEDB_OS_MACOS)
+# define ICEDB_OS_UNSUPPORTED
+# pragma message("ICEDB defs.h warning: operating system is unrecognized.")
+#endif
+
+ /**@}*/
 /* Declare the feature sets that are supported */
 //#define ICEDB_FEATURE_GZIP 0 /* Auto-detection of gzip. Needed for hdf5 file storage. */
 
 
+/**
+ * \defgroup Function_Tagging Defines that relate to function tagging.
+ * @{
+ **/
+
+ // Definitions to get function signatures.
+ // In C99 and C++11, __func__ should work in all cases for getting the function name.
+ // However, I want the entire function signature.
+#if defined(_MSC_FULL_VER)
+# define ICEDB_FUNCSIG __FUNCSIG__
+#else
+# define ICEDB_FUNCSIG __PRETTY_FUNCTION__
+#endif
+
+// Convenience definitions: 
+// These are nonexistant defines that are used to help humans read the code.
+
+/// Tags a parameter that gets modfied by a function.
+#define ICEDB_OUT
+/// Denotes an 'optional' parameter (one which can be replaced with a NULL or nullptr)
+#define ICEDB_OPTIONAL
+
+/**@}*/
+
 /* Symbol export / import macros */
-#if defined _MSC_FULL_VER
-#define COMPILER_EXPORTS_VERSION_A_ICEDB
-#elif defined __INTEL_COMPILER
-#define COMPILER_EXPORTS_VERSION_B_ICEDB
-#elif defined __GNUC__
-#define COMPILER_EXPORTS_VERSION_B_ICEDB
-#elif defined __MINGW32__
-#define COMPILER_EXPORTS_VERSION_B_ICEDB
-#elif defined __clang__
-#define COMPILER_EXPORTS_VERSION_B_ICEDB
+
+/**
+ * \defgroup Symbols_Shared Defines that relate to symbol export / import.
+ * @{
+ *
+ * \def ICEDB_COMPILER_EXPORTS_VERSION_UNKNOWN
+ * Defined when we have no idea what the compiler is.
+ *
+ * \def ICEDB_COMPILER_EXPORTS_VERSION_A
+ * Defined when the compiler is like MSVC.
+ *
+ * \def ICEDB_COMPILER_EXPORTS_VERSION_B
+ * Defined when the compiler is like GNU, Intel, or Clang.
+ */
+
+#if defined(_MSC_FULL_VER)
+# define ICEDB_COMPILER_EXPORTS_VERSION_A
+#elif defined(__INTEL_COMPILER) || defined(__GNUC__) || defined(__MINGW32__) \
+	|| defined(__clang__)
+# define ICEDB_COMPILER_EXPORTS_VERSION_B
 #else
-#define COMPILER_EXPORTS_VERSION_UNKNOWN
+# define ICEDB_COMPILER_EXPORTS_VERSION_UNKNOWN
 #endif
 
-// Defaults for static libraries
-#define SHARED_EXPORT_ICEDB
-#define SHARED_IMPORT_ICEDB
-#define HIDDEN_ICEDB
-#define PRIVATE_ICEDB
+ // Defaults for static libraries
 
-#if defined COMPILER_EXPORTS_VERSION_A_ICEDB
-#undef SHARED_EXPORT_ICEDB
-#undef SHARED_IMPORT_ICEDB
-#define SHARED_EXPORT_ICEDB __declspec(dllexport)
-#define SHARED_IMPORT_ICEDB __declspec(dllimport)
-#elif defined COMPILER_EXPORTS_VERSION_B_ICEDB
-#undef SHARED_EXPORT_ICEDB
-#undef SHARED_IMPORT_ICEDB
-#undef HIDDEN_ICEDB
-#undef PRIVATE_ICEDB
-#define SHARED_EXPORT_ICEDB __attribute__ ((visibility("default")))
-#define SHARED_IMPORT_ICEDB __attribute__ ((visibility("default")))
-#define HIDDEN_ICEDB __attribute__ ((visibility("hidden")))
-#define PRIVATE_ICEDB __attribute__ ((visibility("internal")))
+/**
+* \def ICEDB_SHARED_EXPORT
+* \brief A tag used to tell the compiler that a symbol should be exported.
+**/
+/**
+* \def ICEDB_SHARED_IMPORT
+* \brief A tag used to tell the compiler that a symbol should be imported.
+**/
+/**
+* \def ICEDB_HIDDEN
+* \brief A tag used to tell the compiler that a symbol should not be listed,
+* but it may be referenced from other code modules.
+**/
+/**
+* \def ICEDB_PRIVATE
+* \brief A tag used to tell the compiler that a symbol should not be listed,
+* and it may not be referenced from other code modules.
+**/
+
+#if defined ICEDB_COMPILER_EXPORTS_VERSION_A
+# define ICEDB_SHARED_EXPORT __declspec(dllexport)
+# define ICEDB_SHARED_IMPORT __declspec(dllimport)
+# define ICEDB_HIDDEN
+# define ICEDB_PRIVATE
+#elif defined ICEDB_COMPILER_EXPORTS_VERSION_B
+# define ICEDB_SHARED_EXPORT __attribute__ ((visibility("default")))
+# define ICEDB_SHARED_IMPORT __attribute__ ((visibility("default")))
+# define ICEDB_HIDDEN __attribute__ ((visibility("hidden")))
+# define ICEDB_PRIVATE __attribute__ ((visibility("internal")))
 #else
-#pragma message("defs.h warning: compiler is unrecognized")
+# pragma message("ICEDB defs.h warning: compiler is unrecognized. Shared libraries may not export their symbols properly.")
+# define ICEDB_SHARED_EXPORT
+# define ICEDB_SHARED_IMPORT
+# define ICEDB_HIDDEN
+# define ICEDB_PRIVATE
 #endif
 
-// OS definitions
-#ifdef __unix__
-#ifdef __linux__
-#define ICEDB_OS_LINUX
-#endif
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__) || defined(__APPLE__)
-#define ICEDB_OS_UNIX
-#endif
-#endif
-#ifdef _WIN32
-#define ICEDB_OS_WINDOWS
-#endif
-#if !defined(_WIN32) && !defined(ICEDB_OS_UNIX) && !defined(ICEDB_OS_LINUX)
-#define ICEDB_OS_UNSUPPORTED
-#endif
+/**
+* \def ICEDB_DL
+* \brief A preprocessor tag that indicates that a symbol is to be exported/imported.
+*
+* If (libname)_SHARED is defined, then the target library both
+* exports and imports. If not defined, then it is a static library.
+**/
 
-
-// If SHARED_(libname) is defined, then the target library both 
-// exprts and imports. If not defined, then it is a static library.
-
-// Macros defined as EXPORTING_(libname) are internal to the library.
-// They indicate that SHARED_EXPORT_SDBR should be used.
-// If EXPORTING_ is not defined, then SHARED_IMPORT_SDBR should be used.
-
-#if SHARED_icedb
-#if EXPORTING_icedb
-#define DL_ICEDB SHARED_EXPORT_ICEDB
+#if icedb_SHARED
+# if icedb_EXPORTING
+#  define ICEDB_DL ICEDB_SHARED_EXPORT
+# else
+#  define ICEDB_DL ICEDB_SHARED_IMPORT
+# endif
 #else
-#define DL_ICEDB SHARED_IMPORT_ICEDB
-#endif
-#else
-#define DL_ICEDB SHARED_EXPORT_ICEDB
-#endif
-/* Symbol export / import macros */
-#define ICEDB_SYMBOL_SHARED DL_ICEDB
-#define ICEDB_SYMBOL_PRIVATE HIDDEN_ICEDB
-
-#if SHARED_icedb_io_ddscat
-#if EXPORTING_icedb_io_ddscat
-#define DL_ICEDB_IO_DDSCAT SHARED_EXPORT_ICEDB
-#else
-#define DL_ICEDB_IO_DDSCAT SHARED_IMPORT_ICEDB
-#endif
-#else
-#define DL_ICEDB_IO_DDSCAT SHARED_EXPORT_ICEDB
+# define ICEDB_DL
 #endif
 
-
-#ifdef _MSC_FULL_VER
-#define ICEDB_DEBUG_FSIG __FUNCSIG__
-#endif
-#if defined(__GNUC__) || defined(__clang__)
-#if defined(__PRETTY_FUNCTION__)
-#define ICEDB_DEBUG_FSIG __PRETTY_FUNCTION__
-#elif defined(__func__)
-#define ICEDB_DEBUG_FSIG __func__
-#elif defined(__FUNCTION__)
-#define ICEDB_DEBUG_FSIG __FUNCTION__
+#if defined(_MSC_FULL_VER)
+# pragma warning (disable: 4251) // needs to have dll-interface to be used by clients of class
+# define ICEDB_DEPRECATED [[deprecated]]
 #else
-#define ICEDB_DEBUG_FSIG ""
-#endif
+# define ICEDB_DEPRECATED
 #endif
 
-#define ICEDB_WIDEN2(x) L ## x
-#define ICEDB_WIDEN(x) ICEDB_WIDEN2(x)
-/* Global exception raising code (invokes debugger) */
-ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A(const char*, int, const char*);
-ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, int, const wchar_t*);
-#define ICEDB_DEBUG_RAISE_EXCEPTION() ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC( ICEDB_WIDEN(__FILE__), (int)__LINE__, ICEDB_WIDEN(ICEDB_DEBUG_FSIG));
-
-#define ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_A
-/* Global error codes. */
-#define ICEDB_GLOBAL_ERROR_TODO 999
-#if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
-#define ICEDB_USING_SECURE_STRINGS 1
-#define ICEDB_DEFS_COMPILER_HAS_FPRINTF_S
-#define ICEDB_DEFS_COMPILER_HAS_FPUTS_S
-#else
-#define _CRT_SECURE_NO_WARNINGS
+#ifndef GSL_THROW_ON_CONTRACT_VIOLATION
+# define GSL_THROW_ON_CONTRACT_VIOLATION
 #endif
+
+/** @} **/
 
 /* Thread local storage stuff */
 #ifdef _MSC_FULL_VER
@@ -189,13 +211,6 @@ ICEDB_SYMBOL_SHARED void ICEDB_DEBUG_RAISE_EXCEPTION_HANDLER_WC(const wchar_t*, 
 #pragma warning( disable : 4275 ) // DLL interface
 #endif
 
-/// Pointer to an object that is modfied by a function
-#define ICEDB_OUT
-/// Denotes an 'optional' parameter (one which can be replaced with a NULL or nullptr)
-#define ICEDB_OPTIONAL
-
-ICEDB_END_DECL_C
-
 // Errata:
 
 #ifndef ICEDB_NO_ERRATA
@@ -204,5 +219,8 @@ ICEDB_END_DECL_C
 #define _HAS_AUTO_PTR_ETC	(!_HAS_CXX17)
 #endif /* _HAS_AUTO_PTR_ETC */
 #endif
+
+
+ICEDB_END_DECL_C
 
 #endif

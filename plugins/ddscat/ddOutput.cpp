@@ -27,9 +27,9 @@
 #include "rotations.h"
 #include "ddVersions.h"
 #include "shapefile.h"
-#include <icedb/units/units.hpp>
+#include "icedb/units/units.hpp"
 #include "dielTabFile.h"
-#include <icedb/error.hpp>
+#include "icedb/Errors/error.hpp"
 
 namespace icedb {
 	namespace registry {
@@ -68,8 +68,8 @@ namespace icedb {
 				ddvertag(src.ddvertag),
 				s(src.s),
 				oridata_d(src.oridata_d),
-				avgdata(src.avgdata),
 				ms(src.ms),
+				avgdata(src.avgdata),
 				numOriData(src.numOriData),
 				shape(src.shape)
 			{
@@ -145,9 +145,10 @@ namespace icedb {
 				fmldata->conservativeResize(numTotAngles, Eigen::NoChange);
 			}
 
-			ddOutput::Avgdata::Avgdata() : beta_min(0), beta_max(0), beta_n(0),
-				theta_min(0), theta_max(0), theta_n(0),
-				phi_min(0), phi_max(0), phi_n(0), hasAvg(0)
+			ddOutput::Avgdata::Avgdata() : beta_min(0), beta_max(0),
+				theta_min(0), theta_max(0),
+				phi_min(0), phi_max(0),
+                beta_n(0), theta_n(0), phi_n(0), hasAvg(0)
 			{
 				pdata = std::shared_ptr<Eigen::Matrix<float, Eigen::Dynamic,
 					avgScaColDefs::NUM_AVGSCACOLDEFS> >(new Eigen::Matrix<float, Eigen::Dynamic,
