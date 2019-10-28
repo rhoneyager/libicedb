@@ -27,9 +27,6 @@ namespace icedb
 				case IOtype::EXCLUSIVE:
 					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_EXCL ));
 					//break;
-				case IOtype::DEBUG:
-					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_DEBUG ));
-					//break;
 				case IOtype::CREATE:
 					//file = std::shared_ptr<siloFile>(new siloFile(filename, H5F_ACC_CREAT ));
 					//break;
