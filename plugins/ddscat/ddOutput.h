@@ -17,9 +17,11 @@
 #include "icedb/Utils/splitSet.hpp"
 #include "icedb/IO/io.hpp"
 
+#if defined(_MSC_FULL_VER)
 #pragma warning(push)
 #pragma warning( disable : 4251 ) // DLL interface
 #pragma warning( disable : 4661 ) // Exporting vector
+#endif
 
 namespace boost { namespace filesystem { class path; } }
 
@@ -282,4 +284,7 @@ namespace icedb {
 		}
 	}
 }
+#if defined(_MSC_FULL_VER)
 #pragma warning(pop)
+#endif
+

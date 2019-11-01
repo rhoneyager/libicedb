@@ -1,6 +1,8 @@
 #pragma once
 #include "defs.hpp"
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4251 ) // DLL interface
+#endif
 #include <functional>
 #include <complex>
 #include <map>

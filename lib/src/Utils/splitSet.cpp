@@ -15,7 +15,9 @@
 #include "icedb/Utils/splitSet.hpp"
 #include "icedb/Errors/error.hpp"
 
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4244 ) // lots of template math involves doubles, and I'm sick of static casting
+#endif
 
 namespace icedb {
 	namespace splitSet {

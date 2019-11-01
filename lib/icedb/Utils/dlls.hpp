@@ -1,9 +1,11 @@
 #pragma once
 #include "../defs.h"
 
+#if defined(_MSC_FULL_VER)
 #pragma warning(push)
 #pragma warning( disable : 4251 ) // DLL interface
 #pragma warning( disable : 4661 ) // Exporting vector
+#endif
 
 //#include <iostream>
 #include <memory>
@@ -176,4 +178,7 @@ extern "C"
 	ICEDB_SHARED_EXPORT void _ICEDB_dllPluginBase() noexcept;
 }
 
+#if defined(_MSC_FULL_VER)
 #pragma warning(pop)
+#endif
+

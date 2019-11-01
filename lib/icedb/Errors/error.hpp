@@ -22,7 +22,7 @@ namespace icedb {
 
 		ICEDB_DL void stringify(error_code_t err, std::string &);
 		ICEDB_DL void stringify(error_code_t err, char* const*);
-		template <class StringType> StringType stringify(error_code_t err) { return StringType(); }
+		template <class StringType> StringType stringify(error_code_t ) { return StringType(); }
 		template<> ICEDB_DL std::string stringify(error_code_t err);
 		//extern template std::string stringify<std::string>(error_code_t err);
 		template<> ICEDB_DL const char* stringify(error_code_t err);

@@ -147,6 +147,7 @@ namespace icedb {
 						if (name)
 							if (std::string(name) != std::string(c.name)) continue;
 						res = &c;
+						if (!res) throw; // Check that it is valid.
 					}
 				}
 

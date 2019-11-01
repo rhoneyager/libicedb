@@ -1,5 +1,7 @@
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4251 ) // DLL interface
 #pragma warning( disable : 4661 ) // Exporting vector
+#endif
 #include <iostream>
 #include <fstream>
 #include <sstream>

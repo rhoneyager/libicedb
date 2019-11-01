@@ -1,5 +1,7 @@
 #include "icedb/defs.h"
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4251 ) // DLL interface
+#endif
 #include <string>
 #include "icedb/units/units.hpp"
 #include "private/unitsBackend.hpp"

@@ -311,7 +311,7 @@ namespace icedb {
 			}
 			*/
 
-			void ddPar::writeDDSCAT(const ddPar* p, std::ostream &out, std::shared_ptr<registry::IO_options> opts)
+			void ddPar::writeDDSCAT(const ddPar* p, std::ostream &out, std::shared_ptr<registry::IO_options> )
 			{
 				// Writing is much easier than reading!
 				using namespace std;

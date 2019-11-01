@@ -13,7 +13,7 @@ namespace icedb {
 					a.ProvidedAttributes = { "MaximumDistanceAnyTwoElements" };
 					a.ProvidedDatasets = { "MaximumDistanceAnyTwoElements_points" };
 					a.RequiredPPPDatasets = { "ConvexHullPoints" };
-					a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group> & inPPPs)
+					a.func = [](HH::Group res, const HH::Group & , const gsl::span<const HH::Group> & inPPPs)
 					{
 						//const auto& SD = icedb::Shapes::Required_Dsets;
 						//const auto& SDO = icedb::Shapes::Optional_Dsets;

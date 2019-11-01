@@ -231,7 +231,7 @@ namespace icedb
 					// surrounding other symbols. Valid numeric digits are numbers and '.'
 					std::vector<std::string> snums;
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 
 					auto nDone = [&]()
@@ -242,7 +242,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (csnum.size()) nDone();
@@ -329,7 +329,7 @@ namespace icedb
 					std::vector<std::string> snums;
 					snums.reserve(30);
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 					csnum.reserve(200);
 
@@ -341,7 +341,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (c == '-') csnum.push_back(c);
@@ -405,7 +405,7 @@ namespace icedb
 					std::vector<std::string> snums;
 					snums.reserve(30);
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 					csnum.reserve(200);
 
@@ -417,7 +417,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (c == '-') csnum.push_back(c);
@@ -468,7 +468,7 @@ namespace icedb
 					std::vector<std::string> snums;
 					snums.reserve(30);
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 					csnum.reserve(200);
 
@@ -480,7 +480,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (c == '-') csnum.push_back(c);

@@ -20,7 +20,7 @@ namespace icedb {
 		namespace psu {
 			namespace Shapes {
 				template <typename T>
-				void readDataset(const std::string dsetname, HH::Dataset dset, std::vector<T> &outdata)
+				void readDataset(const std::string , HH::Dataset dset, std::vector<T> &outdata)
 				{
 					auto dims = dset.getDimensions();
 					//Expects(dims.dimensionality == 2);
@@ -217,7 +217,7 @@ namespace icedb {
 			read_file_type_multi<icedb::Shapes::NewShapeProperties>
 				(shared_ptr<IOhandler> sh, shared_ptr<IO_options> opts,
 					shared_ptr<icedb::Shapes::NewShapeProperties > s,
-					shared_ptr<const icedb::registry::collectionTyped<icedb::Shapes::NewShapeProperties> > filter)
+					shared_ptr<const icedb::registry::collectionTyped<icedb::Shapes::NewShapeProperties> > )
 			{
 				// Prepare to read the shape - open a "handle" to the file if it is not already open.
 				std::string filename = opts->filename();

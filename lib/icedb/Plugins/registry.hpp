@@ -1,7 +1,10 @@
 #pragma once
 
+#if defined(_MSC_FULL_VER)
 #pragma warning(push)
 #pragma warning( disable : 4661 ) // Exporting vector
+#endif
+
 #include "../defs.h"
 #include <functional>
 #include <iostream>
@@ -301,5 +304,7 @@ namespace icedb
 	}
 }
 
-
+#if defined(_MSC_FULL_VER)
 #pragma warning(pop)
+#endif
+
