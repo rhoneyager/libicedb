@@ -655,7 +655,7 @@ namespace icedb
 				//_statTable_Size_ts.at(stat_entries_size_ts::NUMF) = _scattMatricesRaw.size();
 			}
 
-			void ddOriData::readS_ADDA(std::istream &in)
+			void ddOriData::readS_ADDA(std::istream &) //in)
 			{
 				ICEDB_throw(icedb::error::error_types::xUnimplementedFunction);
 				/*

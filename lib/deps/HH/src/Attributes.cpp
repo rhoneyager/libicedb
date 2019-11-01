@@ -193,8 +193,8 @@ namespace HH {
 	Attribute Has_Attributes::createFixedLengthString(
 		const std::string& attrname,
 		const std::string& data,
-		HH_hid_t AttributeCreationPlist,
-		HH_hid_t AttributeAccessPlist)
+		HH_hid_t , // AttributeCreationPlist,
+		HH_hid_t ) //AttributeAccessPlist)
 	{
 		return Almost_Attribute_Fixed_String::createFixedLengthString(base, attrname, data.size());
 	}
