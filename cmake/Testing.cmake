@@ -38,6 +38,10 @@ function(prep_test GITB)
 		message(STATUS "Unknown OS ${CMAKE_HOST_SYSTEM_NAME}")
 		set(TESTING_SYSTEM_NAME "Unknown")
 	endif()
+	if(EXISTS "/WEIRD_AL_YANKOVIC")
+		set(TESTING_SYSTEM_NAME "Charliecloud_${TESTING_SYSTEM_NAME}")
+	endif()
+
 
 	# Compiler info
 	#message("${CMAKE_CXX_COMPILER_ID}")
