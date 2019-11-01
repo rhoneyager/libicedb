@@ -62,15 +62,16 @@ namespace icedb {
 			std::map<std::string, Algorithm> common_algorithms
 			{
 #ifdef ICEDB_OS_MACOS
-# warning "common_algorithms on macOS is buggy due to compiler problems."
-#else
+# warning "common_algorithms on AppleClang on macOS is buggy due to compiler problems. TODO: Improve compiler detection / use CMake for this."
+#endif
+//#else
 				{"copy_to_ppp", _internal_algs::copy_to_ppp},
 				{"dummy", _internal_algs::dummy},
 				{"dummy2", _internal_algs::dummy2},
 				{"ConvexHull", _internal_algs::ConvexHull},
 				{"MaxDistanceTwoPoints", _internal_algs::MaxDistanceTwoPoints},
 				{"SmallestCircumscribingSphere_Points", _internal_algs::SmallestCircumscribingSphere_Points}
-#endif
+//#endif
 			};
 		}
 	}
