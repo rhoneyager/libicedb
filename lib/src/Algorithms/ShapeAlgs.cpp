@@ -1,3 +1,5 @@
+#include "icedb/defs.h"
+#include <mutex>
 #include "icedb/Algorithms/ShapeAlgs.hpp"
 #include "icedb/IO/Shapes.hpp"
 #include "BetterThrow/Error.hpp"
@@ -59,6 +61,21 @@ namespace icedb {
 				return true;
 			}
 
+			const std::map<std::string, Algorithm>& get_common_algorithms()
+			{
+				static std::map<std::string, Algorithm> res
+				{
+						{"copy_to_ppp", _internal_algs::copy_to_ppp},
+						{"dummy", _internal_algs::dummy},
+						{"dummy2", _internal_algs::dummy2},
+						{"ConvexHull", _internal_algs::ConvexHull},
+						{"MaxDistanceTwoPoints", _internal_algs::MaxDistanceTwoPoints},
+						{"SmallestCircumscribingSphere_Points", _internal_algs::SmallestCircumscribingSphere_Points}
+				};
+				return res;
+			}
+
+			/*
 			std::map<std::string, Algorithm> common_algorithms
 			{
 				{"copy_to_ppp", _internal_algs::copy_to_ppp},
@@ -68,6 +85,7 @@ namespace icedb {
 				{"MaxDistanceTwoPoints", _internal_algs::MaxDistanceTwoPoints},
 				{"SmallestCircumscribingSphere_Points", _internal_algs::SmallestCircumscribingSphere_Points}
 			};
+			*/
 		}
 	}
 }
