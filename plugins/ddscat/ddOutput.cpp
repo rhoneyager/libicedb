@@ -60,6 +60,8 @@ namespace icedb {
 			}
 
 			ddOutput::ddOutput(const ddOutput &src) :
+				std::enable_shared_from_this<ddOutput>(),
+				icedb::io::implementsStandardWriter<ddOutput, ddOutput_IO_output_registry>(),
 				description(src.description),
 				ingest_timestamp(src.ingest_timestamp),
 				freq(src.freq),

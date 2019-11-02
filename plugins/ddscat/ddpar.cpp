@@ -210,6 +210,8 @@ namespace icedb {
 			}
 
 			ddPar::ddPar(const ddPar &src)
+				: std::enable_shared_from_this<ddPar>(),
+				icedb::io::implementsStandardWriter<icedb::io::ddscat::ddPar, icedb::io::ddscat::ddPar_IO_output_registry>()
 			{
 				// Expensive copy constructor. Implements cloning to avoid screwups.
 				_version = src._version;

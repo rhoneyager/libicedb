@@ -223,7 +223,7 @@ namespace icedb
 					// eps imag in 42-49
 					// mkd in 59-66
 					// substance number in 78+
-					double mre, mim, ere, eim, mkd;
+					double mre, mim, ere, eim; //, mkd;
 					std::complex<double> eps;
 
 					// Different ddscat versions write their numbers differently. There are
@@ -261,7 +261,7 @@ namespace icedb
 					mim = boost::lexical_cast<double>(snums[1]);
 					ere = boost::lexical_cast<double>(snums[2]);
 					eim = boost::lexical_cast<double>(snums[3]);
-					mkd = boost::lexical_cast<float>(snums[4]);
+					//mkd = boost::lexical_cast<float>(snums[4]);
 					subst = boost::lexical_cast<size_t>(snums[5]);
 					m = std::complex<double>(mre, mim);
 					eps = std::complex<double>(ere, eim);
