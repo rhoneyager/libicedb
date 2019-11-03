@@ -7,7 +7,7 @@ project(icedb C CXX)
 
 # Versioning information
 set(MAJOR 0)
-set(MINOR 6)
+set(MINOR 7)
 set(REVISION 99)
 set(icedb_VERSION ${MAJOR}.${MINOR}.${REVISION})
 
