@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 #include "icedb/Errors/error.hpp"
 

@@ -1,7 +1,10 @@
 #pragma once
 
+#if defined(_MSC_FULL_VER)
 #pragma warning(push)
 #pragma warning( disable : 4661 ) // Exporting vector
+#endif
+
 #include "../defs.h"
 #include <functional>
 #include <iostream>
@@ -194,6 +197,7 @@ namespace icedb
 				)> io_multi_matcher_type;
 			io_multi_matcher_type io_multi_matches;
 			std::string registered_name;
+            //std::string _comment; ///< Used for tracing and debugging.
 		};
 
 		template<class object>
@@ -300,5 +304,7 @@ namespace icedb
 	}
 }
 
-
+#if defined(_MSC_FULL_VER)
 #pragma warning(pop)
+#endif
+

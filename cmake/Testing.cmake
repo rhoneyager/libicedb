@@ -42,6 +42,10 @@ function(prep_test GITB)
 		message(STATUS "Unknown OS ${CMAKE_HOST_SYSTEM_NAME}")
 		set(TESTING_SYSTEM_NAME "Unknown")
 	endif()
+	if(EXISTS "/WEIRD_AL_YANKOVIC")
+		set(TESTING_SYSTEM_NAME "Charliecloud_${TESTING_SYSTEM_NAME}")
+	endif()
+
 
 	# Compiler info
 	#message("${CMAKE_CXX_COMPILER_ID}")
@@ -50,6 +54,9 @@ function(prep_test GITB)
 
 	message(STATUS "Git Branch: ${GITB}")
 	message(STATUS "System ID: ${TESTING_SYSTEM_NAME}")
+	if (DEFINED ENV{CONDA_PREFIX})
+		set(TESTING_SYSTEM_NAME "${TESTING_SYSTEM_NAME}_conda")
+	endif()
 	message(STATUS "Compilers: ${TESTING_COMPILER}")
 	message(STATUS "HDF5 Version: ${HDF5_VERSION}")
 	set(BUILDNAME_BASE "${GITB}_${TESTING_SYSTEM_NAME}_${TESTING_COMPILER}_H5_${HDF5_VERSION}_${CMAKE_BUILD_TYPE}")
@@ -60,12 +67,9 @@ function(prep_test GITB)
 	message(STATUS "Site ${SITE}")
 	#mark_as_advanced(BUILDNAME SITE)
 	#message("${HN}")
-
+	configure_file(${PROJECT_SOURCE_DIR}/cmake/CTestCustom.cmake.in ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 endfunction()
 
 prep_test("${GITBRANCH}")
 
-
-ENABLE_TESTING()
-INCLUDE(CTest)
 

@@ -1,5 +1,5 @@
 option (BUILD_APPS "Build the apps" ON)
-
+set( CMAKE_DIRECTORY_LABELS "apps" )
 if (BUILD_APPS)
 	add_subdirectory(3d_structures)
 	add_subdirectory(3d_structures_importer)

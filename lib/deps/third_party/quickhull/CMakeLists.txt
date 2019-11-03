@@ -18,6 +18,7 @@ add_library(quickhull STATIC
 	quickhull/Structs/VertexDataSource.hpp
 	)
 addlib(quickhull STATIC)
+storebin(quickhull)
 target_include_directories(quickhull PUBLIC 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 add_library(

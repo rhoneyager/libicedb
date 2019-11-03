@@ -58,11 +58,13 @@ namespace icedb {
 				};
 				Algorithm() {}
 				Algorithm(AlgorithmConstructor a)
-					: _weight(a.weight), _rsd(a.RequiredStructuralDatasets), _rsa(a.RequiredStructuralAttributes),
+					: _rsd(a.RequiredStructuralDatasets), _rsa(a.RequiredStructuralAttributes),
 					_rpd(a.RequiredPPPDatasets), _rpa(a.RequiredPPPAttributes),
 					_pd(a.ProvidedDatasets), _pa(a.ProvidedAttributes),
 					_dsd(a.DisallowedStructuralDatasets), _dsa(a.DisallowedStructuralAttributes),
-					_dpd(a.DisallowedPPPDatasets), _dpa(a.DisallowedPPPAttributes), _f(a.func) {}
+					_dpd(a.DisallowedPPPDatasets), _dpa(a.DisallowedPPPAttributes), _f(a.func),
+			       		_weight(a.weight)
+				{}
 				~Algorithm() {}
 
 				const set<string>& RequiredStructuralDatasets() const { return _rsd; }

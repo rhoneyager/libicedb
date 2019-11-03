@@ -24,6 +24,7 @@ add_library(miniball STATIC
 #	target_link_libraries(qhull_r m)
 #endif(UNIX)
 addlib(miniball STATIC)
+storebin(miniball)
 target_include_directories(miniball PUBLIC 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/miniball/cpp/main>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)

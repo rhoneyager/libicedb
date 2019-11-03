@@ -96,14 +96,17 @@ BIO_BEGIN_DECL_C
 #ifdef __linux__
 #define BIO_OS_LINUX
 #endif
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__) || defined(__APPLE__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
 #define BIO_OS_UNIX
 #endif
 #endif
 #ifdef _WIN32
 #define BIO_OS_WINDOWS
 #endif
-#if !defined(_WIN32) && !defined(BIO_OS_UNIX) && !defined(BIO_OS_LINUX)
+#if defined(__APPLE__)
+#define BIO_OS_APPLE
+#endif
+#if !defined(_WIN32) && !defined(BIO_OS_UNIX) && !defined(BIO_OS_LINUX) && !defined(BIO_OS_APPLE)
 #define BIO_OS_UNSUPPORTED
 #endif
 

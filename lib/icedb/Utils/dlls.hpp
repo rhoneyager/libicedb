@@ -1,9 +1,11 @@
 #pragma once
 #include "../defs.h"
 
+#if defined(_MSC_FULL_VER)
 #pragma warning(push)
 #pragma warning( disable : 4251 ) // DLL interface
 #pragma warning( disable : 4661 ) // Exporting vector
+#endif
 
 //#include <iostream>
 #include <memory>
@@ -53,9 +55,8 @@ namespace icedb
 		class ICEDB_DL dllValidator {
 		protected:
 			dllValidator();
-		private:
 		public:
-			~dllValidator();
+			virtual ~dllValidator();
 			virtual const char* validationSymbol() const = 0;
 			virtual bool validate(void* func, bool critical = false) const = 0;
 			static std::shared_ptr<const dllValidator> genDefaultValidator();
@@ -77,7 +78,7 @@ namespace icedb
 			dllValidatorSet();
 		public:
 			void append(std::shared_ptr<const dllValidator>);
-			~dllValidatorSet();
+			virtual ~dllValidatorSet();
 			static std::shared_ptr<dllValidatorSet> generate();
 			static std::shared_ptr<const dllValidatorSet> getDefault();
 			bool validate(const DLLhandle*, bool critical = false) const;
@@ -177,4 +178,7 @@ extern "C"
 	ICEDB_SHARED_EXPORT void _ICEDB_dllPluginBase() noexcept;
 }
 
+#if defined(_MSC_FULL_VER)
 #pragma warning(pop)
+#endif
+

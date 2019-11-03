@@ -1,4 +1,4 @@
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__CYGWIN__)
 #define _BIND_TO_CURRENT_VCLIBS_VERSION 1
 #include <Windows.h>
 #include <ShlObj.h>
@@ -113,7 +113,7 @@ namespace BT {
 	}
 
 	int getPID() {
-#if defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
+#if defined(BT_OS_UNIX) || defined(BT_OS_LINUX) || defined(BT_OS_MACOS)
 		return (int)getpid();
 #elif defined(BT_OS_WINDOWS)
 		DWORD pid = 0;
@@ -137,7 +137,7 @@ namespace BT {
 	int getPPID(int pid) {
 		
 		try {
-#if defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
+#if defined(BT_OS_UNIX) || defined(BT_OS_LINUX) || defined(BT_OS_MACOS)
 			if (pid == getPID())
 				return (int)getppid();
 			else {
@@ -330,7 +330,7 @@ namespace BT {
 		}
 		return std::pair<int64_t, std::string>(dw, std::string("Unknown"));
 
-#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
+#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX) || defined(BT_OS_MACOS)
 		return getOSerrno();
 #else
 # ifdef BT_FORCE_OS_ERRORS
@@ -344,7 +344,7 @@ namespace BT {
 	template<>
 	::BT::ProcessInfo<native_path_string_t> getProcessInfo(int pid) {
 		::BT::ProcessInfo<native_path_string_t> res;
-		res.pid = (pid<0) ? getPID() : pid;
+		res.pid = (pid<=0) ? getPID() : pid;
 		pid = res.pid;
 
 		try {
@@ -377,7 +377,7 @@ namespace BT {
 				if (win::getElevated(res.isElevated).first) throw BT_throw;
 				if (win::getStartTime((DWORD)pid, res.startTime).first) throw BT_throw;
 			}
-#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
+#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX) || defined(BT_OS_MACOS)
 			posix::getModulePath((void*)getOSerror, res.path);
 			if (pid == getPID()) {
 				if (posix::getCWD(res.cwd).first) throw BT_throw;
@@ -426,7 +426,7 @@ namespace BT {
 
 #if defined(BT_OS_WINDOWS)
 		auto err = win::getModulePath(address, modpath);
-#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
+#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX) || defined(BT_OS_MACOS)
 		auto err = posix::getModulePath(address, modpath);
 #else
 # ifdef BT_FORCE_OS_ERRORS
@@ -449,7 +449,7 @@ namespace BT {
 		ModuleInfo_t<::BT::native_path_string_t> res;
 #if defined(BT_OS_WINDOWS)
 		auto err = win::getLoadedModules(res);
-#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
+#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX) || defined(BT_OS_MACOS)
 		auto err = posix::getLoadedModules(res);
 #else
 # ifdef BT_FORCE_OS_ERRORS
@@ -479,7 +479,7 @@ namespace BT {
 				if (win::getComputerName(rtinfo.computername).first) throw BT_throw;
 				if (win::getAppConfigDir(rtinfo.appconfigdir).first) throw BT_throw;
 				if (win::getHomeDir(rtinfo.homedir).first) throw BT_throw;
-#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX)
+#elif defined(BT_OS_UNIX) || defined(BT_OS_LINUX) || defined(BT_OS_MACOS)
 				if (posix::getUserName(rtinfo.username).first) throw BT_throw;
 				if (posix::getComputerName(rtinfo.computername).first) throw BT_throw;
 				if (posix::getAppConfigDir(rtinfo.appconfigdir).first) throw BT_throw;

@@ -10,7 +10,7 @@ namespace icedb {
 					Algorithm::AlgorithmConstructor a;
 					a.ProvidedAttributes = { "dummyVer" };
 					a.ProvidedDatasets = { "dummyDset" };
-					a.func = [](HH::Group res, const HH::Group & shp, gsl::span<const HH::Group> inPPPs)
+					a.func = [](HH::Group res, const HH::Group & , gsl::span<const HH::Group> )
 					{
 						res.atts.add<uint16_t>("dummyVer", 1);
 						res.dsets.create<int32_t>("dummyDset", { 2 })

@@ -95,12 +95,12 @@ namespace HH {
 		auto d = getDimensions();
 		//using namespace Tags::ObjSizes;
 		using namespace std;
-		cout << "Attribute has:\n\tnPoints:\t" << d.numElements
+		out << "Attribute has:\n\tnPoints:\t" << d.numElements
 			<< "\n\tDimensionality:\t" << d.dimensionality
 			<< "\n\tDimensions:\t[\t";
 		for (const auto& m : d.dimsCur)
-			cout << m << "\t";
-		cout << "]" << endl;
+			out << m << "\t";
+		out << "]" << endl;
 	}
 	Almost_Attribute_base::~Almost_Attribute_base() {}
 	Almost_Attribute_base::Almost_Attribute_base(
@@ -193,8 +193,8 @@ namespace HH {
 	Attribute Has_Attributes::createFixedLengthString(
 		const std::string& attrname,
 		const std::string& data,
-		HH_hid_t AttributeCreationPlist,
-		HH_hid_t AttributeAccessPlist)
+		HH_hid_t , // AttributeCreationPlist,
+		HH_hid_t ) //AttributeAccessPlist)
 	{
 		return Almost_Attribute_Fixed_String::createFixedLengthString(base, attrname, data.size());
 	}

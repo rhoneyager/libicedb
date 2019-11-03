@@ -48,7 +48,7 @@ namespace icedb {
 			/// Validate that all required properties are set, and that they have the correct dimensions.
 			/// Writes diagnostic messages to the output stream.
 			/// \todo Write this function
-			inline bool isValid(std::ostream *errout = nullptr) const { return true; }
+			inline bool isValid(std::ostream * = nullptr) const { return true; }
 
 			float frequency_Hz = -1; ///< Frequency (Hz)
 			float temperature_K = -1; ///< Particle temperature (K)

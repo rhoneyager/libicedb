@@ -45,12 +45,6 @@ option(BT_TEST_WITH_BOOST "Test the Boost bindings in the code." ON)
 
 add_subdirectory(src)
 if (BT_TEST)
-	# CTest stuff. May switch from CTest in the future.
-	set(BUILDNAME "Unspecified_Build_Name_for_CTest" CACHE STRING "Build name variable for CTest")
-	set(SITE "Unknown_Site_Name_for_CTest" CACHE STRING "Site name")
-	mark_as_advanced(BUILDNAME SITE)
-	enable_testing()
-
 	add_subdirectory(test)
 	add_subdirectory(Examples)
 endif ()

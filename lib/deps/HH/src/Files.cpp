@@ -8,7 +8,7 @@ namespace HH {
 	using std::tuple;
 
 	File::File() : File(HH_hid_t{}) {}
-	File::File(HH_hid_t hnd) : base(hnd), atts(hnd), Group(hnd), dsets(hnd) {}
+	File::File(HH_hid_t hnd) : Group(hnd), base(hnd), atts(hnd), dsets(hnd) {}
 	File::~File() {}
 	HH_hid_t File::get() const { return base; }
 
@@ -22,6 +22,8 @@ namespace HH {
 		unsigned int FileOpenFlags,
 		HH_hid_t FileAccessPlist)
 	{
+        hid_t isFile = H5Fis_hdf5(filename.c_str());
+        HH_Expects(isFile > 0);
 		hid_t res = H5Fopen(filename.c_str(), FileOpenFlags, FileAccessPlist());
 		HH_Expects(res >= 0);
 		return File(HH_hid_t(res, Closers::CloseHDF5File::CloseP));

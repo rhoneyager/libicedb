@@ -17,6 +17,9 @@ include(GNUInstallDirs)
 include(BuildOptions)
 include(addBaseProject)
 addBaseProject()
+include(CTest)
+include(CTestUseLaunchers)
+#ENABLE_TESTING()
 
 # Generate doxygen documentation, if needed.
 include(AddDocs)
@@ -24,9 +27,6 @@ include(AddDocs)
 include(GetDependencies)
 # This handles extra parts of the "make" command, used to build the code.
 include(Building)
-# Tests of the code. Handles the "make test" command.
-include(Testing)
-
 # The different components are in different subdirectories
 add_subdirectory(lib)
 add_subdirectory(plugins)
@@ -38,3 +38,8 @@ include(Installing)
 # Allows for the creation of binary and source packages. These are complete, precompiled distributions of MiRS.
 # Supports .tar.gz, .tar.bz2, .deb and .rpm packages.
 include(Packaging)
+# Tests of the code. Handles the "make test" command.
+include(Testing)
+
+
+

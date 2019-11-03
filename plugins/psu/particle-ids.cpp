@@ -38,7 +38,7 @@ namespace icedb {
 					.add<std::string>("Reason", "Cannot get the particle information from the filename. Unexpected format.");
 				res.particle_type = vSplit[1];
 				try { res.particle_number = boost::lexical_cast<int>(vSplit[2]); }
-				catch (boost::bad_lexical_cast) {
+				catch (boost::bad_lexical_cast&) {
 					ICEDB_throw(icedb::error::error_types::xBadInput)
 						.add<std::string>("Reason", "Cannot get the particle id number from the filename. Unexpected format.")
 						.add<std::string>("Bad-id-num", vSplit[2]);

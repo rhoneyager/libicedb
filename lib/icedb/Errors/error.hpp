@@ -22,7 +22,7 @@ namespace icedb {
 
 		ICEDB_DL void stringify(error_code_t err, std::string &);
 		ICEDB_DL void stringify(error_code_t err, char* const*);
-		template <class StringType> StringType stringify(error_code_t err) { return StringType(); }
+		template <class StringType> StringType stringify(error_code_t ) { return StringType(); }
 		template<> ICEDB_DL std::string stringify(error_code_t err);
 		//extern template std::string stringify<std::string>(error_code_t err);
 		template<> ICEDB_DL const char* stringify(error_code_t err);
@@ -66,6 +66,8 @@ namespace icedb {
 			template <class T> xError& add(const std::string &key, const T value);
 
 		};
+    
+        ICEDB_DL void enable_backtrace();
 	}
 }
 
@@ -80,8 +82,22 @@ namespace icedb {
 	.add<std::string>("source_filename", std::string(__FILE__)) \
 	.add<int>("source_line", (int)__LINE__) \
 	.add<std::string>("source_function", std::string(ICEDB_FUNCSIG))
+
+#if defined(__GLIBC__) || defined(__APPLE__)
+namespace icedb {
+    namespace error {
+        ICEDB_DL std::string getBacktrace();
+    }
+}
+# define ICEDB_BACKTRACE .add<std::string>("backtrace", ::icedb::error::getBacktrace())
+#else
+# define ICEDB_BACKTRACE
+#endif
+
 #define ICEDB_RSmkError(x) ::icedb::error::xError(x).push() \
-	ICEDB_RSpushErrorvars
+	ICEDB_RSpushErrorvars \
+    ICEDB_BACKTRACE
+
 /// \todo Detect if inherits from std::exception or not.
 /// If inheritable, check if it is an xError. If yes, push a new context.
 /// If not inheritable, push a new context with what() as the expression.

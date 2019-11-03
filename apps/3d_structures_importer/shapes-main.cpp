@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 					int c_id = boost::lexical_cast<int>(vc[0]);
 					constit_ids[c_id] = vc[1];
 				}
-				catch (boost::bad_lexical_cast) {
+				catch (boost::bad_lexical_cast&) {
 					ICEDB_throw(icedb::error::error_types::xBadInput)
 						.add("Reason", "Trying to construct the constituent map, but encountered ill-formatted input")
 						.add("Constituent-Names", sConstits)

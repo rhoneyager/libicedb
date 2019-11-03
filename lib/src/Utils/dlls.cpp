@@ -157,6 +157,14 @@ namespace {
 		using namespace icedb::os_functions;
 		auto info = BT::ProcessInfo<std::string>::get<std::string>(BT::getPID());
 
+		if (use_cmake) {
+			ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Construction of search paths from CMake is unimplemented.");
+		}
+		if (use_icedb_conf) {
+			ICEDB_log("dlls", logging::ICEDB_LOG_DEBUG_2, "Construction of search paths from icedb conf is unimplemented.");
+		}
+
+
 		// Default locations
 		// Install path apps
 
@@ -279,7 +287,7 @@ namespace icedb
 			std::shared_ptr<const registry::dllValidatorSet> validators;
 			DLLhandleImpl(std::shared_ptr<const registry::dllValidatorSet> dvs,
 				DLLhandle *p)
-				: dlHandle(nullptr), validators(dvs), parent(p) {
+				: parent(p), dlHandle(nullptr), validators(dvs) {
 			}
 			void close() {
 				if (fname.size())
@@ -513,10 +521,10 @@ namespace icedb
 
 		
 		
-		class dllValidatorIcedb : public dllValidator {
+		class dllValidatorIcedb : virtual public dllValidator {
 		public:
 			dllValidatorIcedb() {}
-			~dllValidatorIcedb() {}
+			virtual ~dllValidatorIcedb() {}
 			virtual const char* validationSymbol() const { const char* r = "dlVer"; return r; }
 			virtual bool validate(void* func, bool critical) const
 			{
@@ -667,7 +675,7 @@ namespace icedb
 
 			for (const auto &sbase : searchPaths)
 			{
-				size_t sDlls = dlls.size();
+				//size_t sDlls = dlls.size(); // debugging
 				path base(sbase);
 				//base = icedb::fs::expandSymlink<path, path>(base);
 				if (!exists(base)) continue;
@@ -701,7 +709,7 @@ namespace icedb
 						}
 					}
 				}
-				size_t eDlls = dlls.size();
+				//size_t eDlls = dlls.size(); // debugging
 			}
 		}
 
@@ -723,7 +731,7 @@ namespace icedb
 		void loadDLLs(const std::vector<std::string> &dlls, std::shared_ptr<const dllValidatorSet> dvs, bool critical)
 		{
 			for (const auto &dll : dlls)
-				loadDLL(dll, dvs);
+				loadDLL(dll, dvs, critical);
 		}
 
 		void loadDLL(const std::string &filename, std::shared_ptr<const dllValidatorSet> dvs, bool critical)
@@ -831,6 +839,7 @@ namespace icedb
 			("debug-log-threshold", po::value<int>()->default_value(4), "Set threshold for logging output to an attached debugger (Windows only). On non-Windows, logs to stderror. 0 is DEBUG_2, 7 is CRITICAL.")
 			("log-file", po::value<std::string>(), "Set this to log debugging output to a file.")
 			("share-dir", po::value<std::string>(), "Override the share directory.")
+            ("backtrace", po::value<bool>()->default_value(false), "Generate backtraces on throw?")
 			;
 	}
 
@@ -875,6 +884,7 @@ namespace icedb
 
 	struct icedb_load_options {
 		icedb::logging::log_properties lps;
+        bool backtrace = false;
 	} load_options;
 	
 	void process_static_options(
@@ -884,6 +894,9 @@ namespace icedb
 		using std::string;
 		using namespace icedb::registry;
 
+        load_options.backtrace = vm["backtrace"].as<bool>();
+        if (load_options.backtrace)
+            icedb::error::enable_backtrace();
 		if (vm.count("log-file")) load_options.lps.logFile = vm["log-file"].as<std::string>();
 		load_options.lps.consoleLogThreshold = vm["console-log-threshold"].as<int>();
 		load_options.lps.debuggerLogThreshold = vm["debug-log-threshold"].as<int>();
@@ -925,7 +938,7 @@ namespace icedb
 
 		using namespace icedb::registry;
 
-		constructSearchPaths(false, true, true);
+		//constructSearchPaths(false, true, true);
 		std::set<boost::filesystem::path> rPaths, oPaths;
 		findPath(rPaths, boost::filesystem::path("default"), searchPathsRecursive, true);
 		findPath(oPaths, boost::filesystem::path("default"), searchPathsOne, false);

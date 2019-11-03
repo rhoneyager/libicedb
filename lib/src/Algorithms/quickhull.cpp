@@ -43,10 +43,10 @@ namespace icedb {
 
 					auto outNumPoints = vertexBuffer.size();
 					outPoints.resize(outNumPoints, 3);
-					for (int i = 0; i < vertexBuffer.size(); ++i) {
-						outPoints(i, 0) = vertexBuffer[i].x;
-						outPoints(i, 1) = vertexBuffer[i].y;
-						outPoints(i, 2) = vertexBuffer[i].z;
+					for (size_t i = 0; i < vertexBuffer.size(); ++i) {
+						outPoints((int)i, 0) = vertexBuffer[i].x;
+						outPoints((int)i, 1) = vertexBuffer[i].y;
+						outPoints((int)i, 2) = vertexBuffer[i].z;
 					}
 				}
 
@@ -55,7 +55,7 @@ namespace icedb {
 					Algorithm::AlgorithmConstructor a;
 					a.RequiredStructuralDatasets = { "particle_scattering_element_coordinates", "particle_scattering_element_number" };
 					a.ProvidedDatasets = { "ConvexHullPoints" };
-					a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group> & inPPPs)
+					a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group> & )
 					{
 						const auto& SD = icedb::Shapes::Required_Dsets;
 						const auto& SDO = icedb::Shapes::Optional_Dsets;

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-
+set( CMAKE_DIRECTORY_LABELS "HH" )
 set(HH_MAJOR 0)
 set(HH_MINOR 7)
 set(HH_REVISION 1)
@@ -91,6 +91,7 @@ endif()
 
 target_link_libraries(HH PUBLIC hdf5::hdf5-shared hdf5::hdf5_hl-shared GSL)
 addlib(HH SHARED HH)
+storebin(HH)
 #addlib(HH STATIC)
 #INSTALL(DIRECTORY include/HH
 #	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/MiRS-${MiRS_VERSION}

@@ -12,6 +12,10 @@
 #include <list>
 #include <sstream>
 
+#if defined(__APPLE__) || defined(__GLIBC__)
+# include <execinfo.h>
+#endif
+
 ICEDB_BEGIN_DECL_C
 
 ICEDB_error_code error_context_to_code(const struct ICEDB_error_context* err) {
@@ -39,7 +43,7 @@ size_t error_context_to_message_size(const struct ICEDB_error_context* err) {
 #else
 	size_t expectedSize = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			// Manually size a temporary buffer, and then copy the data.
 			expectedSize += seplen + strlen(err->var_vals[i].val) + strlen(err->var_vals[i].varname);
 		}
@@ -47,7 +51,7 @@ size_t error_context_to_message_size(const struct ICEDB_error_context* err) {
 	char *tempbuf = (char*)ICEDB_malloc(sizeof(char)*expectedSize);
 	size_t j = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			j += sprintf(tempbuf + j, sep, err->var_vals[i].varname, err->var_vals[i].val);
 		}
 	}
@@ -74,12 +78,12 @@ size_t error_context_to_message(const struct ICEDB_error_context * err, size_t b
 
 #ifdef ICEDB_USING_SECURE_STRINGS
 	if (err->num_var_fields)
-		for (int i = 0; i < err->num_var_fields; ++i)
+		for (size_t i = 0; i < err->num_var_fields; ++i)
 			total += sprintf_s(buf + total, buf_size - total, sep, err->var_vals[i].varname, err->var_vals[i].val);
 #else
 	size_t expectedSize = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			// Manually size a temporary buffer, and then copy the data.
 			expectedSize += seplen + strlen(err->var_vals[i].val) + strlen(err->var_vals[i].varname);
 		}
@@ -87,7 +91,7 @@ size_t error_context_to_message(const struct ICEDB_error_context * err, size_t b
 	char *tempbuf = (char*)ICEDB_malloc(sizeof(char)*expectedSize);
 	size_t j = 0;
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i) {
+		for (size_t i = 0; i < err->num_var_fields; ++i) {
 			j += sprintf(tempbuf + j, sep, err->var_vals[i].varname, err->var_vals[i].val);
 		}
 	}
@@ -116,7 +120,7 @@ size_t error_context_to_stream(const struct ICEDB_error_context * err, FILE * fp
 
 	// Write the error variables
 	if (err->num_var_fields) {
-		for (int i = 0; i < err->num_var_fields; ++i)
+		for (size_t i = 0; i < err->num_var_fields; ++i)
 			ICEDB_COMPAT_fprintf_s(fp, "\t%s\t=\t%s\n", err->var_vals[i].varname, err->var_vals[i].val);
 	}
 	return uint16_t(res);
@@ -172,7 +176,7 @@ void error_context_deallocate(struct ICEDB_error_context *c)
 	if (!c) ICEDB_DEBUG_RAISE_EXCEPTION();
 	if (c->message_text) ICEDB_free(c->message_text);
 	if (c->var_vals) { // Should always exist, as the construction function automatically widens / allocates.
-		for (int i = 0; i < c->num_var_fields; ++i) {
+		for (size_t i = 0; i < c->num_var_fields; ++i) {
 			ICEDB_free(c->var_vals[i].val);
 			ICEDB_free(c->var_vals[i].varname);
 		}
@@ -227,6 +231,37 @@ ICEDB_END_DECL_C
 
 namespace icedb {
 	namespace error {
+        bool _doBacktrace = false;
+        void enable_backtrace() {
+            _doBacktrace = true;
+        }
+#if defined(__GLIBC__) || defined(__APPLE__)
+        std::string getBacktrace() {
+            std::string res;
+            if (!_doBacktrace) return std::string("disabled");
+            
+            static const int maxfuncs = 50;  // gather no more than this many functions in the backtrace
+            void *stack[maxfuncs];           // call stack
+            char **stacknames = nullptr;               // backtrace function names
+            size_t nfuncs;                   // number of functions returned by backtrace
+            nfuncs = backtrace(stack, maxfuncs);                // number of functions in the backtrace
+            stacknames = backtrace_symbols(&stack[0], nfuncs);  // generate the backtrace names from symbols
+            
+            if (stacknames) {
+                for(size_t n=0;n<nfuncs;++n) {
+                    res += std::string(stacknames[n]);
+                    res += "\n";
+                }
+                free(stacknames);
+            }
+            return res;
+        }
+#else
+    std::string getBacktrace() {
+          return std::string("unimplemented");
+    }
+#endif
+    
 		class error_options_inner {
 		public:
 			std::list<::icedb::registry::const_options_ptr> stk;
@@ -276,7 +311,7 @@ namespace icedb {
 		template <class T> xError& xError::add(const std::string &key, const T value)
 		{
 			if (!ep->cur) push();
-			this->ep->cur->add<T>(key, value);
+			this->ep->cur->set<T>(key, value);
 			return *this;
 		}
 

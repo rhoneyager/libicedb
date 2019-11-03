@@ -15,7 +15,9 @@
 #include "icedb/Utils/splitSet.hpp"
 #include "icedb/Errors/error.hpp"
 
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4244 ) // lots of template math involves doubles, and I'm sick of static casting
+#endif
 
 namespace icedb {
 	namespace splitSet {
@@ -187,8 +189,8 @@ namespace icedb {
 			typedef boost::tokenizer<boost::char_separator<char> >
 				tokenizer;
 			boost::char_separator<char> seprange(":/");
-			bool isRange = false;
-			if (instr.find('/') != string::npos) { isRange = true; specializer = "range"; }
+			if (instr.find('/') != string::npos) 
+				specializer = "range";
 			tokenizer trange(instr,seprange);
 			vector<T> range;
 			size_t i = 0;
@@ -457,7 +459,7 @@ namespace icedb {
 					T start, end, interval;
 					size_t n;
 					std::string specializer;
-					bool isRange = false;
+					//bool isRange = false;
 					extractInterval(s, start, end, interval, n, specializer);
 					if (specializer == "range")
 					{

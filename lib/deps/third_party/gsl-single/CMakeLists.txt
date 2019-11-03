@@ -27,6 +27,7 @@ target_compile_definitions(GSL PUBLIC
 		$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INCLUDE_DIR}>
     )
 addlib(GSL STATIC)
+storebin(GSL)
 INSTALL(DIRECTORY include/gsl
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/icedb-${icedb_VERSION}
 	COMPONENT Headers)

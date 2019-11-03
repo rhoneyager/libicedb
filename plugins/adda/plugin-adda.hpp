@@ -1,6 +1,7 @@
 #pragma once
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4251 ) // warning C4251: dll-interface
-
+#endif
 #include <memory>
 #include <string>
 #include "defs.hpp"
@@ -16,9 +17,6 @@ namespace icedb {
 		namespace adda {
 
 			/** This is a handle - an opaque object - that can open the ADDA text.
-			* This handle gets passed to the main program and icedb libraries in a few places. It holds
-			* the HDF5 object that is used to read the files. When it is no longer needed, it is released and the
-			* Penn State database file is closed.
 			**/
 			struct adda_handle : public registry::IOhandler
 			{

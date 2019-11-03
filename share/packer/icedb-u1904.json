@@ -31,7 +31,7 @@
 			  "apt update -y",
 			  "apt upgrade -y",
 			  "echo installing Base packages",
-			  "apt install -y build-essential cmake cmake-curses-gui libhdf5-dev git git-lfs zlib1g-dev libboost-all-dev doxygen graphviz libsilo-dev libeigen3-dev netcdf-bin libnetcdf-dev hdf5-tools gcc g++ gcc-6 g++-6 gcc-7 g++-7 gcc-8 g++-8 gcc-9 g++-9 clang clang-tools vtk7 libvtk7-dev voro++-dev voro++ qhull-bin libqhull-dev vim-nox libflann-dev strace valgrind gdb wget unattended-upgrades",
+			  "apt install -y build-essential cmake cmake-curses-gui libhdf5-dev git git-lfs zlib1g-dev libboost-all-dev doxygen graphviz libsilo-dev libeigen3-dev netcdf-bin libnetcdf-dev hdf5-tools gcc g++ gcc-6 g++-6 gcc-7 g++-7 gcc-8 g++-8 gcc-9 g++-9 clang clang-tools vtk7 libvtk7-dev voro++-dev voro++ qhull-bin libqhull-dev vim-nox libflann-dev strace valgrind gdb wget unattended-upgrades p7zip-full",
 			  "echo installing MS Agent Dependencies",
 			  "apt install -y libicu63 liblttng-ust0 libcurl4 libssl1.1 libkrb5-3 zlib1g libunwind8",
 			  "echo Installing up-ported old libraries",

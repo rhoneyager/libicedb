@@ -196,7 +196,7 @@ namespace icedb {
 				insertKey(id, std::static_pointer_cast<ddParParsers::ddParLine>(line));
 			}
 
-			bool ddPar::__getStringBool(ddParParsers::ParId id, const std::string &bfalse, const std::string &btrue) const
+			bool ddPar::__getStringBool(ddParParsers::ParId id, const std::string &, const std::string &btrue) const
 			{
 				std::shared_ptr<const ddParParsers::ddParLineSimple<std::string> > line;
 				std::shared_ptr< const ddParParsers::ddParLine > linein;

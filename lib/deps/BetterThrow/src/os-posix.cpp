@@ -8,13 +8,16 @@ extern char** environ;
 #include <pwd.h>
 #include <dlfcn.h>
 #include <cerrno>
+#ifdef __GLIBC__
+#include <execinfo.h>  // backtrace*
+#endif
 #ifdef __unix__
 #include <link.h> // not on mac
 #endif
 #include <dirent.h>
 #endif
 #ifdef __APPLE__
-#include <mach-o/dyld.h>
+# include <mach-o/dyld.h>
 #endif
 #include <cstdint>
 #include <memory>
@@ -253,7 +256,8 @@ namespace BT {
 #elif defined(BT_OS_UNIX)
 			// Use sysctl to get arguments
 			// See https://www.freebsd.org/cgi/man.cgi?sysctl(3)
-			std::string cmdnulls(my_path_max, '\0');
+			std::vector<char> cmdnulls(my_path_max, '\0');
+			//std::string cmdnulls(my_path_max, '\0');
 			int mib[4];
 			mib[0] = CTL_KERN;  mib[1] = KERN_PROC;
 			mib[2] = KERN_PROC_ARGS;
@@ -261,7 +265,7 @@ namespace BT {
 			mib[3] = getpid(); // -1 implies current process on macos, but this
 			// does not work on FreeBSD.
 			size_t len = cmdnulls.size();
-			int retsize = sysctl(mib, 4, cmdnulls.data(), &len, NULL, 0);
+			int retsize = sysctl(mib, 4, (void*) cmdnulls.data(), &len, NULL, 0);
 			BT_POSIX_CHECK_OSERROR(retsize < 0);
 
 			// This loop splits the command line "string" on nulls.
@@ -276,15 +280,66 @@ namespace BT {
 			return BT_POSIX_SUCCESS;
 #elif defined(BT_OS_MACOS)
 			// macOS does not have KERN_PROC_ARGS, unfortunately.
-			int mib[4];
-			mib[0] = CTL_KERN;  mib[1] = KERN_PROC;
-			mib[2] = KERN_PROC_PID;
-			mib[3] = getpid(); // -1 implies current process on macos, but this
-			struct kinfo_proc proc;
-			size_t size = sizeof(proc);
-			int retsize = sysctl(mib, sizeof mib, &proc, &size, NULL, 0);
-			BT_POSIX_CHECK_OSERROR(retsize < 0);
-			BT_UNIMPLEMENTED;
+            // See https://gist.github.com/nonowarn/770696
+			int mib[3];
+            int argmax = -1;
+            int nargs = -1;
+            char *cp = nullptr;
+            //char *sp = nullptr;
+            size_t size = sizeof(argmax);
+			mib[0] = CTL_KERN;  mib[1] = KERN_ARGMAX;
+            
+            int retsize = sysctl(mib, 2, &argmax, &size, NULL, 0);
+            BT_POSIX_CHECK_OSERROR(retsize < 0);
+            std::vector<char> procargs(argmax, '\0');
+            
+            mib[0] = CTL_KERN;
+            mib[1] = KERN_PROCARGS2;
+            mib[2] = getpid();
+            
+            size = (size_t)argmax;
+            retsize = sysctl(mib, 3, procargs.data(), &size, NULL, 0);
+            BT_POSIX_CHECK_OSERROR(retsize < 0);
+            
+            memcpy(&nargs, procargs.data(), sizeof(nargs));
+            cp = procargs.data() + sizeof(nargs);
+            
+            /* Skip the saved exec_path. */
+            for (; cp < procargs.data()+size; cp++) {
+              if (*cp == '\0') {
+                /* End of exec_path reached. */
+                break;
+              }
+            }
+            if (cp == procargs.data()+size) throw BT_throw;
+
+            /* Skip trailing '\0' characters. */
+            for (; cp < procargs.data()+size; cp++) {
+              if (*cp != '\0') {
+                /* Beginning of first argument reached. */
+                break;
+              }
+            }
+            if (cp == procargs.data()+size) throw BT_throw;
+            /* Save where the argv[0] string starts. */
+            //sp = cp;
+
+            /*
+             * Iterate through the '\0'-terminated strings and convert '\0' to ' '
+             * until a string is found that has a '=' character in it (or there are
+             * no more strings in procargs).  There is no way to deterministically
+             * know where the command arguments end and the environment strings
+             * start, which is why the '=' character is searched for as a heuristic.
+             */
+            const char* pcur = cp;
+            do {
+                std::string tosplit(pcur);
+                if (tosplit.find_first_of("=") != std::string::npos) break;
+                cmdline.push_back(tosplit);
+                pcur += tosplit.size() + 1;
+            } while (pcur[0]); // A double null indicates the end of the comand line.
+            
+			return BT_POSIX_SUCCESS;
 #else
 			BT_UNIMPLEMENTED;
 #endif
@@ -331,15 +386,21 @@ namespace BT {
 				int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid };
 				struct kinfo_proc proc;
 				size_t size = sizeof(proc);
+				struct timeval curtime, stime;
+				gettimeofday(&curtime, NULL);
 				if (sysctl(mib, 4, &proc, &size, NULL, 0) == 0) {
-					// proc.kp_proc.p_starttime.tv_sec
+					// proc.kp_proc.p_starttime.tv_sec is process lifetime to date.
+					// Can work out the ptocess time from the current date.
+					gettimeofday(&stime,NULL);
+					stime.tv_sec -= proc.kp_proc.p_starttime.tv_sec;
+
 					char sbuff[200];
 					strftime(sbuff, sizeof sbuff, "%D %T",
 							//gmtime(&proc.ki_start.tv_sec));
-						gmtime(&proc.kp_proc.p_starttime.tv_sec));
+						//gmtime(&proc.kp_proc.p_starttime.tv_sec));
+						gmtime(&stime.tv_sec));
 					startTime = std::string(sbuff);
 				}
-				BT_UNIMPLEMENTED;
 #else
 				BT_UNIMPLEMENTED;
 #endif
@@ -358,6 +419,7 @@ namespace BT {
 		::BT::Error_Res_t GetCurrentModule(void* hModule)
 		{
 			hModule = (void*)GetCurrentModule;
+			if (!hModule) throw; // Junk line to suppress compiler warning. Always gets optimized away.
 			return BT_POSIX_SUCCESS;
 		}
 
@@ -390,7 +452,7 @@ namespace BT {
 		std::map<std::string, std::string> mmods;
 #if defined(__linux__) || defined(__unix__)
 		/// \note Keeping function definition this way to preserve compatibility with gcc 4.7
-		int moduleCallback(dl_phdr_info* info, size_t sz, void* data)
+		int moduleCallback(dl_phdr_info* info, size_t, void*)
 		{
 			std::string name(info->dlpi_name);
 			if (!name.size()) return 0;
@@ -450,15 +512,15 @@ namespace BT {
 			// NOTE: these functions are buggy on various platforms and may fail.
 			// See https://github.com/Microsoft/WSL/issues/888 for an example.
 			{
-				const size_t len = 65536;
-				char hname[len]; // A buffer of size len (65536 bytes)
-				char* charres = NULL;
-				int res = 0;
 #if defined(_POSIX_C_SOURCE)
 # if _POSIX_C_SOURCE >= 199506L
+                const size_t len = 65536;
+                char hname[len]; // A buffer of size len (65536 bytes)
+                int res = 0;
 				res = getlogin_r(hname, len);
 				if (!res) { username = std::string(hname); return BT_POSIX_SUCCESS;}
 # else
+				char* charres = NULL;
 				charres = getlogin();
 				if (charres) { username = std::string(charres); return BT_POSIX_SUCCESS; }
 # endif
@@ -476,7 +538,10 @@ namespace BT {
 				struct passwd ps;
 				struct passwd* pres = nullptr; // A pointer to the result (or NULL on failure)
 				res = getpwuid_r(uid, &ps, hname, len, &pres);
-				if (pres) {
+				// res = 0 on success, and nonzero on error. Subsumed by pres, because it is 
+				// only set to non-null on success.
+				// Adding res==0 check explicitly to suppress a build warning.
+				if (pres && (res==0)) {
 					username = std::string(ps.pw_name);
 					return BT_POSIX_SUCCESS;
 				}
@@ -499,6 +564,7 @@ namespace BT {
 			char hname[len]; // A buffer of size len (65536 bytes)
 			int res = 0; // A return code
 			res = gethostname(hname, len); // May be empty
+			BT_POSIX_CHECK_ERRNO(res!=0);
 			BT_POSIX_CHECK_OSERROR(hname[0] == '\0');
 			username = ::BT::native_path_string_t(hname);
 			return BT_POSIX_SUCCESS;

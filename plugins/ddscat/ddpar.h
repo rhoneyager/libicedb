@@ -316,9 +316,11 @@ namespace icedb {
 						_t.resize(numT);
 						_r.resize(nVals - numT);
 					}
+#if defined(_MSC_FULL_VER)
 #pragma warning( push ) // Suppress warning. MSVC warning is because of how it branches,
 #pragma warning( disable : 4244 ) // even though that part of code is never reached
 #pragma warning( disable : 4146 ) // annoying boost garbage
+#endif
 					template <class S>
 					void get(size_t index, S &val) const
 					{
@@ -359,7 +361,9 @@ namespace icedb {
 							_t[index].set(pval);
 						}
 					}
-#pragma warning( pop ) 
+#if defined(_MSC_FULL_VER)
+#pragma warning( pop )
+#endif
 				protected:
 					mutable size_t _numT, _nVals;
 					// TODO: fix mutability / setSep constness

@@ -4,6 +4,7 @@
 namespace icedb {
 
 	namespace zeros {
+		/// \todo Check function accuracy.
 		double findzero(double a, double b, const std::function<double(double) > &f )
 		{
 			using namespace std;
@@ -16,7 +17,8 @@ namespace icedb {
 			//double (*f)(double) = (double (*)(double)) evalfunc;
 			double convint = 1E-7;
 			double fcint = 1E-13;
-			double fa, fb, fc, fd, fs = 1.0;
+			double fa, fb, fc, fs = 1.0;
+			//double fd; // set but never used.
 			unsigned int i=0;
 			fa = f(a);
 			fb = f(b);
@@ -78,7 +80,7 @@ namespace icedb {
 				d = c;
 				c = b;
 
-				fd = f(d);
+				//fd = f(d);
 				fc = f(c);
 
 				if (fa * fs < 0)

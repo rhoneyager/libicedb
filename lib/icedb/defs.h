@@ -63,6 +63,9 @@ ICEDB_BEGIN_DECL_C
 #ifdef _WIN32
 # define ICEDB_OS_WINDOWS
 #endif
+#ifdef __CYGWIN__ 
+# define ICEDB_OS_LINUX
+#endif
 #if !defined(ICEDB_OS_WINDOWS) && !defined(ICEDB_OS_UNIX) && !defined(ICEDB_OS_LINUX) && !defined(ICEDB_OS_MACOS)
 # define ICEDB_OS_UNSUPPORTED
 # pragma message("ICEDB defs.h warning: operating system is unrecognized.")

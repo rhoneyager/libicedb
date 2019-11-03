@@ -1,4 +1,5 @@
 include(addapp)
+set( CMAKE_DIRECTORY_LABELS "HH" )
 
 # Documents the app in Windows Explorer
 generaterc("icedb-testing" "exe"

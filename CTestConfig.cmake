@@ -14,3 +14,7 @@ set(CTEST_DROP_METHOD "http")
 set(CTEST_DROP_LOCATION "/CDash/submit.php?project=icedb")
 set(CTEST_DROP_SITE_CDASH TRUE)
 
+set(CTEST_USE_LAUNCHERS 1)
+set(CTEST_LABELS_FOR_SUBPROJECTS HH icedb apps plugins algs io test)
+set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
+

@@ -68,7 +68,7 @@ namespace icedb {
 		namespace adda {
 			namespace Shapes {
 				icedb::Shapes::NewShapeProperties readADDAfile(std::shared_ptr<icedb::plugins::adda::adda_handle> h,
-					std::shared_ptr<icedb::registry::IO_options> opts)
+					std::shared_ptr<icedb::registry::IO_options> )
 				{
 					// error_info holds a stack of diagnostic error messages.
 					::icedb::registry::options_ptr error_info = ::icedb::registry::options::generate();
@@ -102,7 +102,10 @@ namespace icedb {
 							const char* lineEnd = strchr(pNumStart + 1, '\n');
 							pNumStart = lineEnd + 1;
 						}
-						if (pNumStart >= pb) throw(std::invalid_argument("Cannot find any points in a shapefile."));
+						if (pNumStart >= pb)
+							ICEDB_throw(icedb::error::error_types::xBadInput)
+								.add("Reason", "Cannot find any points in a shapefile.")
+								;
 
 						const char* firstLineEnd = strchr(pNumStart + 1, '\n'); // End of the first line containing numeric data.
 																				// Attempt to guess the number of points based on the number of lines in the file.
@@ -114,7 +117,7 @@ namespace icedb {
 						for (const char* c = pNumStart; c != pb; ++c)
 							if (c[0] == '\n') guessNumPoints++;
 
-						float max_element = -1, junk_f = -1;
+						//float max_element = -1, junk_f = -1;
 						std::vector<float> firstLineVals;
 						std::vector<float> parser_vals;
 						parser_vals.reserve(guessNumPoints * 4);
@@ -122,7 +125,9 @@ namespace icedb {
 						parse_shapefile_entries(pNumStart, pb, parser_vals);
 						size_t actualNumReads = parser_vals.size();
 						//size_t actualNumReads = strints_array_to_floats(pNumStart, pb - pNumStart, parser_vals.data(), parser_vals.size(), max_element);
-						if (parser_vals.size() == 0) throw (std::invalid_argument("Bad read"));
+						if (parser_vals.size() == 0)
+							ICEDB_throw(icedb::error::error_types::xBadInput)
+                                                                .add("Reason", "Bad read. parser_vals is empty.");
 						//parser_vals.resize(actualNumReads);
 
 						// Also parse just the first line to get the number of columns
@@ -132,7 +137,10 @@ namespace icedb {
 						bool good = false;
 						if (numCols == 3) good = true; // Three columns, x, y and z
 						if (numCols == 4) good = true; // Four columns, x, y, z and material
-						if (!good) throw (std::invalid_argument("Bad read"));
+						if (!good)
+							ICEDB_throw(icedb::error::error_types::xBadInput)
+                                                                .add("Reason", "Bad read. numCols is wrong. Should be 3 or 4.")
+								.add("numCols", numCols);
 
 						size_t actualNumPoints = actualNumReads / numCols;
 
@@ -206,8 +214,9 @@ namespace icedb {
 					}
 					// Error tagging
 					catch (icedb::error::xError &err) {
-						error_info->add<std::string>("Reason", "This file does not have the proper structure for a Penn State geometry file.");
+						error_info->add<std::string>("Reason", "This file does not have the proper structure for an ADDA shape file.");
 						err.push(error_info);
+                        err ICEDB_RSpushErrorvars;
 						throw err;
 					}
 				}
@@ -223,7 +232,7 @@ namespace icedb {
 			read_file_type_multi<icedb::Shapes::NewShapeProperties>
 				(shared_ptr<IOhandler> sh, shared_ptr<IO_options> opts,
 					shared_ptr<icedb::Shapes::NewShapeProperties > s,
-					shared_ptr<const icedb::registry::collectionTyped<icedb::Shapes::NewShapeProperties> > filter)
+					shared_ptr<const icedb::registry::collectionTyped<icedb::Shapes::NewShapeProperties> > )
 			{
 				// Prepare to read the shape - open a "handle" to the file if it is not already open.
 				std::string filename = opts->filename();

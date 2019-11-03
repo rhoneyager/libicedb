@@ -1,5 +1,6 @@
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4996 ) // -D_SCL_SECURE_NO_WARNINGS
-
+#endif
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
