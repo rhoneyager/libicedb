@@ -15,3 +15,4 @@ summary: Relevant papers and talks are listed here.
 
 1. Honeyager, R., et al., "Development of a common framework for handling particle scattering data", at [The 17th Electromagnetic and Light Scattering Conference](https://www.giss.nasa.gov/staff/mmishchenko/ELS-XVII/), Texas A\&M University, College Station, TX, USA, 5 March 2018.
 
+2. Honeyager, R., "Predicting snow particle scattering across different modeling domains", at [The 2nd International Summer Snowfall Workshop](http://snowport.meteo.uni-koeln.de/events/issw2019), University of Helsinki Hyytiälä Research Station, Hyytiälä, Finland, August 2019.
