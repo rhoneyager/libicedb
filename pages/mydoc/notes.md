@@ -39,6 +39,24 @@ We will keep the discussions ongoing via web meetings to work out the details of
 
 **ENTRIES ARE IN REVERSE CHRONOLOGICAL ORDER**
 
+## 10 Feb 2020
+
+Forthcoming meeting. Topic for discussion will be the snow scattering whitepaper draft.
+
+## Notes from the 9th Scattering WebEx Meeting (16 Dec 2019)
+
+WebEx difficulties continue, but fewer than last time. We decided to move away from this platform for future meetings.
+Alan Geer requested an update on scattering table standardization, so we decided to collaborate on the white paper
+and aim for release in time for IPWG-10, which will be in Colorado in early June (abstract deadlne is Jan 31).
+
+The white paper will be written using [Overleaf](https://www.overleaf.com/project), and planning will continue at the next meeting.
+
+## Notes from the 8th Scattering WebEx Meeting (28 Oct 2019)
+
+Technical difficulties with WebEx prevented this meeting from really getting off the ground.
+Ryan started working with Eugene on preparing the PSU particle scattering tables for processing.
+Goal for the next meeting was to continue work on the standard algorithms toolbox.
+
 ## The Second International Summer Snowfall Workshop (27 - 30 Aug 2019)
 
 The meeting slides and report are available [here](http://snowport.meteo.uni-koeln.de/events/issw2019).
