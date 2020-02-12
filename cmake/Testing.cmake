@@ -60,7 +60,7 @@ function(prep_test GITB)
 	message(STATUS "Compilers: ${TESTING_COMPILER}")
 	message(STATUS "HDF5 Version: ${HDF5_VERSION}")
 	set(BUILDNAME_BASE "${GITB}_${TESTING_SYSTEM_NAME}_${TESTING_COMPILER}_H5_${HDF5_VERSION}_${CMAKE_BUILD_TYPE}")
-	set(BUILDNAME "${BUILDNAME_BASE}" CACHE STRING "Build name variable for CTest" )
+	set(BUILDNAME "${BUILDNAME_BASE}" CACHE STRING "Build name variable for CTest" FORCE )
 	set(SITE "${iFQDN}" CACHE STRING "Site name" )
 	message(STATUS "Build ${BUILDNAME}")
 	message(STATUS "Host FQDN ${iFQDN}")
@@ -71,5 +71,9 @@ function(prep_test GITB)
 endfunction()
 
 prep_test("${GITBRANCH}")
+
+include(CTest)
+include(CTestUseLaunchers)
+#ENABLE_TESTING()
 
 

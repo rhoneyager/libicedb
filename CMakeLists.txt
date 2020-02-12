@@ -17,9 +17,6 @@ include(GNUInstallDirs)
 include(BuildOptions)
 include(addBaseProject)
 addBaseProject()
-include(CTest)
-include(CTestUseLaunchers)
-#ENABLE_TESTING()
 
 # Generate doxygen documentation, if needed.
 include(AddDocs)
