@@ -419,6 +419,7 @@ namespace BT {
 		::BT::Error_Res_t GetCurrentModule(void* hModule)
 		{
 			hModule = (void*)GetCurrentModule;
+			if (!hModule) throw; // Junk line to suppress compiler warning. Always gets optimized away.
 			return BT_POSIX_SUCCESS;
 		}
 

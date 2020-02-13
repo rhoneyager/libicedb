@@ -223,7 +223,7 @@ namespace icedb
 					// eps imag in 42-49
 					// mkd in 59-66
 					// substance number in 78+
-					double mre, mim, ere, eim, mkd;
+					double mre, mim, ere, eim; //, mkd;
 					std::complex<double> eps;
 
 					// Different ddscat versions write their numbers differently. There are
@@ -231,7 +231,7 @@ namespace icedb
 					// surrounding other symbols. Valid numeric digits are numbers and '.'
 					std::vector<std::string> snums;
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 
 					auto nDone = [&]()
@@ -242,7 +242,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (csnum.size()) nDone();
@@ -261,7 +261,7 @@ namespace icedb
 					mim = boost::lexical_cast<double>(snums[1]);
 					ere = boost::lexical_cast<double>(snums[2]);
 					eim = boost::lexical_cast<double>(snums[3]);
-					mkd = boost::lexical_cast<float>(snums[4]);
+					//mkd = boost::lexical_cast<float>(snums[4]);
 					subst = boost::lexical_cast<size_t>(snums[5]);
 					m = std::complex<double>(mre, mim);
 					eps = std::complex<double>(ere, eim);
@@ -329,7 +329,7 @@ namespace icedb
 					std::vector<std::string> snums;
 					snums.reserve(30);
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 					csnum.reserve(200);
 
@@ -341,7 +341,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (c == '-') csnum.push_back(c);
@@ -405,7 +405,7 @@ namespace icedb
 					std::vector<std::string> snums;
 					snums.reserve(30);
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 					csnum.reserve(200);
 
@@ -417,7 +417,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (c == '-') csnum.push_back(c);
@@ -468,7 +468,7 @@ namespace icedb
 					std::vector<std::string> snums;
 					snums.reserve(30);
 					char lchar = 0; // last character
-					char cchar = 0; // current character
+					//char cchar = 0; // current character
 					std::string csnum; // current numeric string
 					csnum.reserve(200);
 
@@ -480,7 +480,7 @@ namespace icedb
 
 					for (const auto &c : str)
 					{
-						cchar = c;
+						//cchar = c;
 						if (std::isdigit(c)) csnum.push_back(c);
 						else if (c == '.' && std::isdigit(lchar)) csnum.push_back(c);
 						else if (c == '-') csnum.push_back(c);
@@ -655,7 +655,7 @@ namespace icedb
 				//_statTable_Size_ts.at(stat_entries_size_ts::NUMF) = _scattMatricesRaw.size();
 			}
 
-			void ddOriData::readS_ADDA(std::istream &in)
+			void ddOriData::readS_ADDA(std::istream &) //in)
 			{
 				ICEDB_throw(icedb::error::error_types::xUnimplementedFunction);
 				/*

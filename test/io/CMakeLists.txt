@@ -163,6 +163,19 @@ if(BUILD_APPS)
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 			register_test(io-adda-1 "Testing/IO")
+			add_custom_target(io-adda-1-plugincheck # Test competing plugin matches
+				COMMAND cmake -E echo icedb-3d_structures_importer
+					--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/ADDA/rawtext_nocomments.adda
+					--truncate
+					--in-format adda --out ${CMAKE_BINARY_DIR}/test/adda-rawtext_nocomments.h5
+				COMMAND icedb-3d_structures_importer
+					--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/ADDA/rawtext_nocomments.adda
+					--truncate
+					--in-format adda --out ${CMAKE_BINARY_DIR}/test/adda-rawtext_nocomments.h5
+				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+				)
+			register_test(io-adda-1-plugincheck "Testing/IO")
+
 			add_custom_target(io-adda-2 # Test ADDA file import
 				COMMAND icedb-3d_structures_importer
 					--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/ADDA/sphere.geom
@@ -254,6 +267,11 @@ if(BUILD_APPS)
 				)
 			register_test(io-ddscat7-2 "Testing/IO")
 			add_custom_target(io-ddscat7-3 # Test DDSCAT file import, without the --truncate option
+				COMMAND cmake -E echo icedb-3d_structures_importer
+					--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat7melting.dat
+					--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
+					--dll-load-onelevel $<TARGET_FILE:io_ddscat>
+					--dll-no-default-locations
 				COMMAND icedb-3d_structures_importer
 					--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat7melting.dat
 					--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat7ice.h5
@@ -292,6 +310,19 @@ if(BUILD_APPS)
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				)
 			register_test(io-ddscat6-2 "Testing/IO")
+			add_custom_target(io-ddscat6-1-plugincheck # Test competing plugin matches
+				COMMAND cmake -E echo icedb-3d_structures_importer
+					--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat6ice.dat
+					--truncate
+					--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat6ice.h5
+				COMMAND icedb-3d_structures_importer
+					--in ${CMAKE_SOURCE_DIR}/share/icedb/examples/shapes/DDSCAT/ddscat6ice.dat
+					--truncate
+					--in-format ddscat --out ${CMAKE_BINARY_DIR}/test/ddscat6ice.h5
+				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+				)
+			register_test(io-ddscat6-1-plugincheck "Testing/IO")
+
 			# TODO: Add DDSCAT 6 silo tests?
 			if (BUILD_PLUGIN_SILO)
 				add_custom_target(io-ddscat7-to-silo-1 # Write a file into the SILO visualization format

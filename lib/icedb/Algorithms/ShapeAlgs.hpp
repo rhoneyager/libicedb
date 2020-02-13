@@ -88,7 +88,8 @@ namespace icedb {
 			};
 
 			/// These algorithms are searched by default when we want to calculate new properties.
-			ICEDB_DL extern std::map<std::string, Algorithm> common_algorithms;
+			//ICEDB_DL extern std::map<std::string, Algorithm> common_algorithms;
+			ICEDB_DL const std::map<std::string, Algorithm>& get_common_algorithms();
 		}
 		/// These are the "required" datasets and attributes in a PPP group.
 		ICEDB_DL extern std::set<std::string> PPP_required_datasets, PPP_required_attributes;

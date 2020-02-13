@@ -1,5 +1,7 @@
 #pragma once
+#if defined(_MSC_FULL_VER)
 #pragma warning( disable : 4251 ) // warning C4251: dll-interface
+#endif
 
 #include "defs.hpp"
 #include <memory>

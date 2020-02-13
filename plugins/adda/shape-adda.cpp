@@ -68,7 +68,7 @@ namespace icedb {
 		namespace adda {
 			namespace Shapes {
 				icedb::Shapes::NewShapeProperties readADDAfile(std::shared_ptr<icedb::plugins::adda::adda_handle> h,
-					std::shared_ptr<icedb::registry::IO_options> opts)
+					std::shared_ptr<icedb::registry::IO_options> )
 				{
 					// error_info holds a stack of diagnostic error messages.
 					::icedb::registry::options_ptr error_info = ::icedb::registry::options::generate();
@@ -232,7 +232,7 @@ namespace icedb {
 			read_file_type_multi<icedb::Shapes::NewShapeProperties>
 				(shared_ptr<IOhandler> sh, shared_ptr<IO_options> opts,
 					shared_ptr<icedb::Shapes::NewShapeProperties > s,
-					shared_ptr<const icedb::registry::collectionTyped<icedb::Shapes::NewShapeProperties> > filter)
+					shared_ptr<const icedb::registry::collectionTyped<icedb::Shapes::NewShapeProperties> > )
 			{
 				// Prepare to read the shape - open a "handle" to the file if it is not already open.
 				std::string filename = opts->filename();

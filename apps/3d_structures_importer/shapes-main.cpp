@@ -64,9 +64,8 @@ int main(int argc, char** argv) {
 			;
 		input_matching.add_options()
 			("in,i", po::value<vector<string> >()->multitoken(), "The paths where shapes are read from")
-			// TODO: from-format currently only used for file selection. Pass the option to the plugin code to
-			// select the right code path for each particular file format.
-			("in-format,f", po::value<string>()->default_value("text"), "The format of the input files. Options: text, psu.")
+			("in-format,f", po::value<string>()->default_value("text"), "The format of the input files. "
+			 "Possible options include: text, psu, psu-shape, adda, adda-shape, ddscat, ddscat7, ddscat7-shape, ddscat6-shape.")
 			("in-nosearch", po::value<bool>()->default_value(false),
 				"Set this option if you want to read in a set of files whose paths are exactly specified on the command line. "
 				"This option allows for far greater control of input file selection.")

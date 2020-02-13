@@ -55,7 +55,7 @@ namespace icedb {
 					Algorithm::AlgorithmConstructor a;
 					a.RequiredStructuralDatasets = { "particle_scattering_element_coordinates", "particle_scattering_element_number" };
 					a.ProvidedDatasets = { "ConvexHullPoints" };
-					a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group> & inPPPs)
+					a.func = [](HH::Group res, const HH::Group & shp, const gsl::span<const HH::Group> & )
 					{
 						const auto& SD = icedb::Shapes::Required_Dsets;
 						const auto& SDO = icedb::Shapes::Optional_Dsets;

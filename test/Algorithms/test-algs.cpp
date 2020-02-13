@@ -51,14 +51,16 @@ BOOST_AUTO_TEST_CASE(algs_basic_invocation)
 	icedb::PPP::PPP ppp = icedb::PPP::PPP::createPPP(out.create("psu_geom_agg_4_GMM"), shp);
 	BOOST_TEST_CHECKPOINT("PPP creation succeeded.");
 
+	auto algs = icedb::ShapeAlgs::Algorithms::get_common_algorithms();
+
 	// Apply a "dummy" algorithm.
-	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("dummy") > 0);
-	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("dummy"), shp);
+	BOOST_TEST_REQUIRE(algs.count("dummy") > 0);
+	ppp.apply(algs.at("dummy"), shp);
 	BOOST_TEST_CHECKPOINT("dummy algorithm succeeded.");
 
 	// Apply a second "dummy2" algorithm.
-	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("dummy2") > 0);
-	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("dummy2"), shp);
+	BOOST_TEST_REQUIRE(algs.count("dummy2") > 0);
+	ppp.apply(algs.at("dummy2"), shp);
 	BOOST_TEST_CHECKPOINT("dummy2 algorithm succeeded.");
 
 	//
@@ -67,17 +69,17 @@ BOOST_AUTO_TEST_CASE(algs_basic_invocation)
 	//BOOST_TEST_CHECKPOINT("copy_to_ppp algorithm succeeded.");
 
 	//
-	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("ConvexHull") > 0);
-	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("ConvexHull"), shp);
+	BOOST_TEST_REQUIRE(algs.count("ConvexHull") > 0);
+	ppp.apply(algs.at("ConvexHull"), shp);
 	BOOST_TEST_CHECKPOINT("ConvexHull algorithm succeeded.");
 
 	//
-	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("MaxDistanceTwoPoints") > 0);
-	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("MaxDistanceTwoPoints"), shp);
+	BOOST_TEST_REQUIRE(algs.count("MaxDistanceTwoPoints") > 0);
+	ppp.apply(algs.at("MaxDistanceTwoPoints"), shp);
 	BOOST_TEST_CHECKPOINT("MaxDistanceTwoPoints algorithm succeeded.");
 
 	//
-	BOOST_TEST_REQUIRE(icedb::ShapeAlgs::Algorithms::common_algorithms.count("SmallestCircumscribingSphere_Points") > 0);
-	ppp.apply(icedb::ShapeAlgs::Algorithms::common_algorithms.at("SmallestCircumscribingSphere_Points"), shp);
+	BOOST_TEST_REQUIRE(algs.count("SmallestCircumscribingSphere_Points") > 0);
+	ppp.apply(algs.at("SmallestCircumscribingSphere_Points"), shp);
 	BOOST_TEST_CHECKPOINT("SmallestCircumscribingSphere_Points algorithm succeeded.");
 }

@@ -979,7 +979,7 @@ namespace icedb {
 				std::getline(in, line);
 			}
 
-			double ddOriData::guessTemp(size_t dielIndex) const
+			double ddOriData::guessTemp(size_t ) const
 			{
 				//const auto od = selectData();
 				return -999;
