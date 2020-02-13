@@ -12,6 +12,11 @@ To import a file or folder (shape.dat, shape.nc) into a new, empty database (sha
 icedb-3d_structures_importer --in shape.dat --out shape.hdf5 --truncate
 ```
 
+To import the shapes in share/icedb/examples/shapes/ADDA:
+```
+icedb-3d_structures_importer -o test.hdf5 --truncate -i share/icedb/examples/shapes/ADDA/ -f adda --in-matching-extensions .geom .adda
+```
+
 ## Program options
 
 | Group | Option | Input type | Description |
