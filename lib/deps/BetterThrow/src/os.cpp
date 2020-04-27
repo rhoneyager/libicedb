@@ -296,6 +296,9 @@ namespace BT {
 		if (ret != 0) std::abort(); // This should NEVER happen.
 		return std::pair<int64_t, std::string>(e, std::string(strerrbuf));
 # elif defined(_BSD_SOURCE)
+		const int buflen = 1024; // http://man7.org/linux/man-pages/man3/strerror.3.html
+		char strerrbuf[buflen] = "\0";
+
 		//char *strerror_r(int errnum, char *buf, size_t buflen); // GNU-specific
 		strerror_r(e, strerrbuf, buflen);
 		return std::pair<int64_t, std::string>(e, std::string(strerrbuf));
